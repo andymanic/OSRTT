@@ -23,10 +23,13 @@ My aim was to keep everything as transparent as possible, so when a test is begu
 
 # Current software limitations
 - The program has a hand written algorithm for finding the start and end points of the transition. It bases this on 250 points at the start of the result and 400 points at the end. If the transition starts within that first 250 points, or ends during the final 400, the results may be slightly off. 
+- The hardware has no way to cancel the test mid-run except for disconnecting the USB cable - I have some ideas that may help with that but not yet implemented.
+- The hardware has no way of knowing if the test program (UE4 game) is the selected window. Again I've got ideas but not added any yet.
+- The hardware is well suited to doing input lag testing, but as of yet that's something I've not explored. I do aim to do that fairly soon, possibly with a "switch mode" option which will load a different .ino file rather than extending the response time file. Not sure yet.
 - I'm not a professional developer, so I can guarantee this program doesn't conform to best practices. Don't worry, I'm not running the processing on the UI thread! I've tested everything before publication but if you do find any errors either in use or in the code please do let me know in an Issue or Pull Request
 
 # Current human limitations
 Please be patient when it comes to solving issues or implementing new feature requests. I'm only human, a bearly functional one at that. I struggle with mental and physical limitations and disabilities, and run both [TechteamGB](https://youtube.com/techteamgb) and [At The Wheel](https://youtube.com/c/atthewheel), and run the short linking platform [Locally Links](https://locallylinks.com), so please excuse any delays. 
 
 # Licensing 
-I've gone with the GNU GPL V3 License for the whole project, both hardware and software. That means you are free to use anything here as you like, on the condition that anything you make with this is also open source. If you'd like to use anything here in a closed-source project, please send me [an email](mailto:inbox@techteamgb.com). 
+I've gone with the GNU GPL V3 License for the whole project, both hardware and software. That means you are free to use anything here as you like, on the condition that anything you make with this is also open source. If you'd like to use anything here in a closed-source project or if you'd like to manufacture the hardware elements commercially, please send me [an email](mailto:inbox@techteamgb.com). 
