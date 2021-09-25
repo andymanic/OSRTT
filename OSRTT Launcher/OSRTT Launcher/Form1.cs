@@ -30,6 +30,7 @@ namespace OSRTT_Launcher
 
         // TODO //
         // Fix averaging multiple runs
+        // Initial Setup for ArduinoCLI on boot/startup (check board listall?)
         //
         // Current known issues //
         // Device will continue to run test even if game closed/not selected/program error
@@ -88,6 +89,7 @@ namespace OSRTT_Launcher
         public Form1()
         {
             InitializeComponent();
+            initialSetup();
             //UpdateMe();
             this.launchBtn.Enabled = false;
             this.setRepeatBtn.Enabled = false;
@@ -103,7 +105,30 @@ namespace OSRTT_Launcher
             listMonitors();
             
         }
+        private void initialSetup()
+        {
+            var samdCore = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "\\Local\\Arduino15\\packages\\adafruit\\hardware\\samd\\");
 
+            DialogResult d = MessageBox.Show("Further setup is required to connect and update device, do that now?", "Setup Required", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (!Directory.Exists(samdCore))
+            {
+                System.Diagnostics.Process process = new System.Diagnostics.Process();
+                process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                process.StartInfo.FileName = "cmd.exe";
+                process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe config init && .\\arduinoCLI\\arduino-cli.exe config add board_manager.additional_urls https://adafruit.github.io/arduino-board-index/package_adafruit_index.json && .\\arduinoCLI\\arduino-cli.exe core update-index && .\\arduinoCLI\\arduino-cli.exe core install adafruit:samd";
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.CreateNoWindow = true;
+                process.Start();
+                string output = process.StandardOutput.ReadToEnd();
+                process.WaitForExit();
+                Console.WriteLine(output);
+
+                process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe core install arduino:samd && .\\arduinoCLI\\arduino-cli.exe core install adafruit:samd";
+                process.Start();
+                process.WaitForExit();
+            }
+        }
         private void listMonitors()
         {
             monitorCB.Items.Clear(); // Clear existing array and list before filling them
@@ -111,9 +136,13 @@ namespace OSRTT_Launcher
             // Find monitor names, refresh rate and connection
             foreach (var target in WindowsDisplayAPI.DisplayConfig.PathInfo.GetActivePaths())
             {
+                Console.WriteLine(target);
+                Console.WriteLine(target.DisplaySource);
                 foreach (var item in target.TargetsInfo)
-                {
-                    string con = "";
+                { 
+                    Console.WriteLine(item);
+
+                    string con = "Other";
                     if (item.OutputTechnology.ToString() == "DisplayPortExternal")
                     {
                         con = "DP";
@@ -123,10 +152,14 @@ namespace OSRTT_Launcher
                         con = "HDMI";
                     }
                     int refresh = ((int)item.FrequencyInMillihertz) / 1000;
-
-                    var data = new Displays { Name = item.DisplayTarget.ToString(), Freq = refresh, Connection = con };
+                    string name = item.DisplayTarget.ToString();
+                    if (name == "")
+                    {
+                        name = target.DisplaySource.ToString().Remove(0, 4);
+                    }
+                    var data = new Displays { Name = name, Freq = refresh, Connection = con };
                     displayList.Add(data);
-                    monitorCB.Items.Add(item.DisplayTarget.ToString());
+                    monitorCB.Items.Add(name);
                 }
             }
             monitorCB.SelectedIndex = 0; // Pre-select the primary display
