@@ -30,7 +30,7 @@ namespace OSRTT_Launcher
 
         // TODO //
         // Fix averaging multiple runs
-        // Initial Setup for ArduinoCLI on boot/startup (check board listall?)
+        // Initial Setup for ArduinoCLI on boot/startup (check board listall?) - done? TEST IT
         //
         // Current known issues //
         // Device will continue to run test even if game closed/not selected/program error
@@ -50,7 +50,12 @@ namespace OSRTT_Launcher
         string resultsFolderPath = "";
         public List<int[]> results = new List<int[]>();
         public List<double[]> processedData = new List<double[]>();
-        public List<List<double[]>> multipleProcessedData = new List<List<double[]>>();
+        public List<List<double[]>> multipleRunData = new List<List<double[]>>();
+        public class multiRunData
+        {
+            public List<double[]> runData { get; set; }
+        }
+        public List<multiRunData> multipleRuns = new List<multiRunData>();
         public class Displays
         {
             public string Name { get; set; }
@@ -89,44 +94,47 @@ namespace OSRTT_Launcher
         public Form1()
         {
             InitializeComponent();
-            initialSetup();
+            
             //UpdateMe();
             this.launchBtn.Enabled = false;
             this.setRepeatBtn.Enabled = false;
             path = new Uri(System.IO.Path.GetDirectoryName(path)).LocalPath;
             path = path + @"\Results";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
             this.FormClosed += new FormClosedEventHandler(Form1_FormClosed);
             hardWorker = new BackgroundWorker();
             connectThread = new Thread(new ThreadStart(this.findAndConnectToBoard));
             connectThread.Start();
             Size = new Size(627, 283);
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            
             listMonitors();
-            
+            initialSetup();
         }
         private void initialSetup()
         {
-            var samdCore = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "\\Local\\Arduino15\\packages\\adafruit\\hardware\\samd\\");
-
-            DialogResult d = MessageBox.Show("Further setup is required to connect and update device, do that now?", "Setup Required", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var samdCore = appData + "\\Arduino15\\packages\\adafruit\\hardware\\samd";
+            Console.WriteLine(samdCore);
             if (!Directory.Exists(samdCore))
             {
-                System.Diagnostics.Process process = new System.Diagnostics.Process();
-                process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                process.StartInfo.FileName = "cmd.exe";
-                process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe config init && .\\arduinoCLI\\arduino-cli.exe config add board_manager.additional_urls https://adafruit.github.io/arduino-board-index/package_adafruit_index.json && .\\arduinoCLI\\arduino-cli.exe core update-index && .\\arduinoCLI\\arduino-cli.exe core install adafruit:samd";
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.CreateNoWindow = true;
-                process.Start();
-                string output = process.StandardOutput.ReadToEnd();
-                process.WaitForExit();
-                Console.WriteLine(output);
-
-                process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe core install arduino:samd && .\\arduinoCLI\\arduino-cli.exe core install adafruit:samd";
-                process.Start();
-                process.WaitForExit();
+                DialogResult d = MessageBox.Show("Further setup is required to connect and update device, do that now?", "Setup Required", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (d == DialogResult.Yes)
+                {
+                    System.Diagnostics.Process process = new System.Diagnostics.Process();
+                    //process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    process.StartInfo.FileName = "cmd.exe";
+                    process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe config init && .\\arduinoCLI\\arduino-cli.exe config add board_manager.additional_urls https://adafruit.github.io/arduino-board-index/package_adafruit_index.json && .\\arduinoCLI\\arduino-cli.exe core update-index && .\\arduinoCLI\\arduino-cli.exe core install arduino:samd && .\\arduinoCLI\\arduino-cli.exe core install adafruit:samd";
+                    //process.StartInfo.UseShellExecute = false;
+                    //process.StartInfo.RedirectStandardOutput = true;
+                    //process.StartInfo.CreateNoWindow = true;
+                    process.Start();
+                    //string output = process.StandardOutput.ReadToEnd();
+                    process.WaitForExit();
+                    //Console.WriteLine(output);
+                }
             }
         }
         private void listMonitors()
@@ -214,7 +222,7 @@ namespace OSRTT_Launcher
                 {
                     if (boardVersion < downloadedFirmwareVersion)
                     {
-                        string p = "";
+                        string p = ""; 
                         p = port.PortName;
                         if (port.IsOpen)
                         {
@@ -319,7 +327,6 @@ namespace OSRTT_Launcher
                     //updateFirmware();
                     boardUpdate = true;
                 }
-                
             }
         }
 
@@ -368,7 +375,6 @@ namespace OSRTT_Launcher
             else
             {
                 this.devStat.Text = text;
-
             }
         }
 
@@ -474,7 +480,7 @@ namespace OSRTT_Launcher
                         // CREATE FOLDER WITH CURRENT FILE NAME SHIT
                         // SAVE FOLDER PATH AS currentResultsPath
                         makeResultsFolder();
-                        multipleProcessedData.Clear();
+                        multipleRuns.Clear();
                         processedData.Clear();
                         results.Clear();
                     }
@@ -510,7 +516,7 @@ namespace OSRTT_Launcher
                     else if (message.Contains("Test Complete"))
                     {
                         // READ IN 
-                        processMultipleRunData();
+                        processMultipleRuns();
                         DialogResult d = MessageBox.Show("Test complete, open results folder?","Test Complete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                         if (d == DialogResult.Yes)
                         {
@@ -523,7 +529,7 @@ namespace OSRTT_Launcher
                         // Brightness too low - take brightnes reading and convert to a percentage to show how big a change is needed. 65,000 is the max supported reading, but 60,000 is the lower bound so picking 62,000 gives a middleground percentage
                         string[] currentLevel = message.Split(':');
                         int currLvl = int.Parse(currentLevel[1]);
-                        double percentOff = (100 - (currLvl / 62000) * 100);
+                        double percentOff = (100 - (currLvl / 64000) * 100);
                         MessageBox.Show("Monitor Brightness Too Low! It's roughly " + percentOff + "% too dim. Please increase the brightness and press the button again.", "Test Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                     else if (message.Contains("high"))
@@ -582,9 +588,18 @@ namespace OSRTT_Launcher
             // When form is closed halt read thread & close Serial Port
             ControlLaunchButton(false);
             ControlRepeatButton(false);
-            readThread.Abort();
-            connectThread.Abort();
-            port.Close();
+            if (readThread != null)
+            {
+                readThread.Abort();
+            }
+            if (connectThread != null)
+            {
+                connectThread.Abort();
+            }
+            if (port != null)
+            {
+                port.Close();
+            }
 
         }
 
@@ -614,13 +629,11 @@ namespace OSRTT_Launcher
                 p[0].WaitForExit();
                 Console.WriteLine("Game closed");
                 port.Write("C");
-
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "UE4 Project Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
         }
 
 
@@ -777,7 +790,7 @@ namespace OSRTT_Launcher
                     }
                     avg = avg / 450;
                     gamma.Add(new int[] { resLine[1], avg });
-                }                
+                }
             }
             // Extrapolate rough values for every RGB value
             for (int i = 0; i < gamma.Count - 1; i++)
@@ -920,7 +933,6 @@ namespace OSRTT_Launcher
                                     startMax = samples[j];
                                 }
                             }
-
                         }
                     }
                     else
@@ -974,8 +986,8 @@ namespace OSRTT_Launcher
                             if (samples[j] <= (endMin + 20)) //Check for regular finish point
                             {
                                 if ((samples[j - 100] < (samples[j] - 50) || samples[j - 106] < (samples[j] - 50))
-                                    && (samples[j - 125] < (samples[j] - 50) || samples[j - 131] < (samples[j] - 50))
-                                    && (samples[j - 150] < (samples[j] - 50) || samples[j - 156] < (samples[j] - 50))) // check the trigger point is actually the trigger and not noise
+                                    && (samples[j - 125] < (samples[j] - 75) || samples[j - 131] < (samples[j] - 75))
+                                    && (samples[j - 150] < (samples[j] - 100) || samples[j - 156] < (samples[j] - 100))) // check the trigger point is actually the trigger and not noise
                                 {
                                     transEnd = j;
                                     break;
@@ -1015,8 +1027,8 @@ namespace OSRTT_Launcher
                             if (samples[j] > endMax) //Check for regular finish point
                             {
                                 if ((samples[j - 100] > (samples[j] + 50) || samples[j - 106] > (samples[j] + 50))
-                                    && (samples[j - 125] > (samples[j] + 50) || samples[j - 131] > (samples[j] + 50))
-                                    && (samples[j - 150] > (samples[j] + 50) || samples[j - 156] > (samples[j] + 50)))
+                                    && (samples[j - 125] > (samples[j] + 75) || samples[j - 131] > (samples[j] + 75))
+                                    && (samples[j - 150] > (samples[j] + 100) || samples[j - 156] > (samples[j] + 100)))
                                 {
                                     transEnd = j;
                                     break;
@@ -1103,9 +1115,11 @@ namespace OSRTT_Launcher
                 double[] completeResult = new double[] { StartingRGB, EndRGB, responseTime, overshootPercent };
                 processedData.Add(completeResult);
             }
-            List<double[]> tempData = new List<double[]>();
-            tempData = processedData;
-            multipleProcessedData.Add(tempData);
+            //multiRunData tempData = new multiRunData { runData = processedData };
+            //multipleRuns.Add(tempData);
+            List<double[]> temp = new List<double[]>();
+            temp.AddRange(processedData);
+            multipleRunData.Add(temp);
             // Write results to csv using new name
 
             decimal fileNumber = 001;
@@ -1120,7 +1134,6 @@ namespace OSRTT_Launcher
                     fileNumber = num + 1;
                 }
             }
-
 
             string filePath = resultsFolderPath + "\\" + fileNumber.ToString("000") + "-FULL-OSRTT.csv";
 
@@ -1163,28 +1176,28 @@ namespace OSRTT_Launcher
             port.Write("M" + this.testCount.Value.ToString());
         }
 
-        private void processMultipleRunData()
+        private void processMultipleRuns()
         {
-            if (multipleProcessedData[0][0].Length == 0)
+            if (multipleRunData.Count == 0)
             {
                 MessageBox.Show("No results are imported. Use the Import Raw Results Folder button to import an existing set of results.", "No Results Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
                 // Fill processed data with the first set of results then average from there                
-                int sizeCheck = multipleProcessedData[0].Count();
+                int resultCount = multipleRunData[0].Count();
 
                 List<double[]> averageData = new List<double[]>();
-                for (int p = 0; p < sizeCheck; p++)
+                for (int p = 0; p < resultCount; p++)
                 {
                     double[] row = { processedData[p][0], processedData[p][1], 0, 0 };
                     averageData.Add(row);
                 }
 
                 // Average response time and overshoot results
-                foreach (var L in multipleProcessedData)
+                foreach (var L in multipleRunData)
                 {
-                    if (L.Count() != sizeCheck)
+                    if (L.Count() != resultCount)
                     {
                         MessageBox.Show("Unable to process results, a file may be missing result entries.", "Results Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
@@ -1200,16 +1213,18 @@ namespace OSRTT_Launcher
                         }
                     }
                 }
-                int runCount = multipleProcessedData.Count();
+                int runCount = multipleRunData.Count();
                 foreach (var res in averageData)
                 {
                     res[2] = res[2] / runCount;
+                    res[2] = Math.Round(res[2], 1);
                     if (res[3] != 0)
                     {
                         res[3] = res[3] / runCount;
+                        res[3] = Math.Round(res[3], 1);
                     }
                 }
-                processedData = averageData;
+                
 
                 // Output averaged results to file
                 int monitor = getSelectedMonitor();
@@ -1219,11 +1234,29 @@ namespace OSRTT_Launcher
                 string strSeparator = ",";
                 StringBuilder csvString = new StringBuilder();
                 csvString.AppendLine("Starting RGB, End RGB, Response Time (ms), Overshoot RGB (%)");
-                foreach (var res in processedData)
+                foreach (var res in averageData)
                 {
                     csvString.AppendLine(string.Join(strSeparator, res));
                 }
-                File.WriteAllText(filePath, csvString.ToString());
+                try
+                {
+                    File.WriteAllText(filePath, csvString.ToString());
+                }
+                catch (IOException e)
+                {
+                    DialogResult d = MessageBox.Show("Unable to write final results file as the file is open in another program. Please close it then hit retry.", "Unable to write file", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+                    if (d == DialogResult.Retry)
+                    {
+                        try
+                        {
+                            File.WriteAllText(filePath, csvString.ToString());
+                        }
+                        catch
+                        {
+                            MessageBox.Show("Still can't write to the file. Please importing the folder or running the test again", "Write Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
             }
         }
 
@@ -1273,9 +1306,9 @@ namespace OSRTT_Launcher
 
                     if (filePath != path)
                     {
+                        multipleRuns.Clear();
                         string[] files = Directory.GetFiles(filePath);
                         bool valid = false;
-                        multipleProcessedData.Clear();
                         foreach (var f in files)
                         {
                             if (f.Contains("-RAW-OSRTT"))
@@ -1320,8 +1353,7 @@ namespace OSRTT_Launcher
                         }
                         if (valid)
                         {
-                            processThread = new Thread(new ThreadStart(this.processMultipleRunData));
-                            processThread.Start();
+                            processMultipleRuns();
                         }
                         else
                         {

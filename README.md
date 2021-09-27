@@ -8,12 +8,21 @@ The C# based program handles all interaction with the hardware, primarily over S
 
 My aim was to keep everything as transparent as possible, so when a test is begun it will create a numbered folder within the /Results folder using the monitor, refresh rate and connection you are using. It will save the raw results, as well as an interpolated gamma table and processed results to individual files for each run, then will output a "FINAL-DATA-OSRTT.csv" file that averages all the processed data. If you are unsure of a particular result, you are able to check each processed file to find any outliers. You can also analyse both individual files and whole folders of raw results by pressing the "Analyse Results" button in the top menu bar.
 
+# Installation
+- Download the latest zip file from the [releases](https://github.com/andymanic/OSRTT/releases) page. 
+- Extract the OSRTT folder anywhere you like, personally I keep it on the desktop.
+- Run the "OSRTT Launcher.exe" program. On first run it will ask to install additional files, openning a CMD window to run arduino CLI commands.
+
 # Usage
-- Assuming you have the hardware built, connect it via USB then run the launcher.
+- Assuming you have the hardware built, connect it via USB then run the launcher. **CONNECT IT DIRECTLY TO YOUR SYSTEM, OR AT LEAST A POWERED HUB**
+- On the first launch on a new device, you will be prompted to allow installation of additional files. This is installing the Arduino & Adafruit SAMD cores and Adafruit board library in %APP_DATA%\Arduino15. It may take a minute or two, but is necessary to connect to the board.
 - Once the launcher has connected to the device, you can launch the test program. 
 - Once the test program is up, press the button on the device. Use numbers 1 - 7 to limit the frame rate: 1 = 1000, 2 = 360, 3 = 240, 4 = 165, 5 = 144, 6 = 120, 7 = 60
 - Assuming the monitor's brightness is in the correct range, the device will run through the test sequence. By default it will run 3 times, although you can set that in the launcher. 
 - Once the test is complete, check the "Results" folder, the highest numbered folder with your current monitor, refresh rate and connection is the most recent result. "FINAL-DATA-OSRTT.csv" includes a list of the starting and ending RGB values, response time and overshoot percentage (gamma corrected)
+
+# Building from source
+If you'd prefer to compile it yourself, you'll need to download the latest [Arduino CLI](https://github.com/arduino/arduino-cli), and place it in a folder called "arduinoCLI" in the working directory of the launcher. 
 
 # Current hardware limitations
 - ~160 nits of brightness is the recommended target using the included 3D printed casing. Different Z heights for the sensor to the display lead to differing maximum supported brightness levels and vary the noise level
@@ -30,6 +39,15 @@ My aim was to keep everything as transparent as possible, so when a test is begu
 
 # Current human limitations
 Please be patient when it comes to solving issues or implementing new feature requests. I'm only human, a bearly functional one at that. I struggle with mental and physical limitations and disabilities, and run both [TechteamGB](https://youtube.com/techteamgb) and [At The Wheel](https://youtube.com/c/atthewheel), and run the short linking platform [Locally Links](https://locallylinks.com), so please excuse any delays. 
+
+# Support the project
+If you would like to support this project, there are a number of both direct and indirect ways to help. As stated above, the main goal of this project is to create an accessible solution for testing monitor response times. I want as many reviewers and enthusiasts to have the ability to test this with a degree of accuracy that is currently painstaking to reach. 
+- Non-monetary support: please do reach out to your favourite reviewers who don't currently test monitor response times and (politely!) ask them to check out the project. 
+- Buy one prebuilt by me: I very much appreciate many won't have the equipment, skills or time to build these units themselves, which is why I'm happy to purchase the parts in bulk, solder everything up, flash the bootloader and firmware, and 3D print the case. I'm still finalising that process, so haven't got a final price as of yet but I'm expecting it to be around $100/£75. Ping me [an email](mailto:inbox@techteamgb.com) if you want one!
+- Buy me a ~~Beer~~ - ~~Coffee~~ - Cookie. I like cookies. [Paypal](https://paypal.me/techteamgb) | [Patreon](https://patreon.com/techteamgb)
+
+# Warranties & Guarantees
+I should make it clear that this software, circuit diagrams, STL and Gerber files, and any hardware bundles I produce, are provided AS-IS. I can't guarantee I've accounted for every possibility or edge case, or even that what I've written will be infinitely reliable. I have it output every step of processing, so if you want to verify any result you can do so manually. 
 
 # Licensing 
 I've gone with the GNU GPL V3 License for the whole project, both hardware and software. That means you are free to use anything here as you like, on the condition that anything you make with this is also open source. If you'd like to use anything here in a closed-source project or if you'd like to manufacture the hardware elements commercially, please send me [an email](mailto:inbox@techteamgb.com). 
