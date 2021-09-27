@@ -29,8 +29,7 @@ namespace OSRTT_Launcher
         private double softwareVersion = 1.0;
 
         // TODO //
-        // Fix averaging multiple runs
-        // Initial Setup for ArduinoCLI on boot/startup (check board listall?) - done? TEST IT
+        // Possibly replace processedData since each run will now be stored in multipleRunData
         //
         // Current known issues //
         // Device will continue to run test even if game closed/not selected/program error
@@ -51,11 +50,6 @@ namespace OSRTT_Launcher
         public List<int[]> results = new List<int[]>();
         public List<double[]> processedData = new List<double[]>();
         public List<List<double[]>> multipleRunData = new List<List<double[]>>();
-        public class multiRunData
-        {
-            public List<double[]> runData { get; set; }
-        }
-        public List<multiRunData> multipleRuns = new List<multiRunData>();
         public class Displays
         {
             public string Name { get; set; }
@@ -480,7 +474,7 @@ namespace OSRTT_Launcher
                         // CREATE FOLDER WITH CURRENT FILE NAME SHIT
                         // SAVE FOLDER PATH AS currentResultsPath
                         makeResultsFolder();
-                        multipleRuns.Clear();
+                        multipleRunData.Clear();
                         processedData.Clear();
                         results.Clear();
                     }
@@ -1306,7 +1300,7 @@ namespace OSRTT_Launcher
 
                     if (filePath != path)
                     {
-                        multipleRuns.Clear();
+                        multipleRunData.Clear();
                         string[] files = Directory.GetFiles(filePath);
                         bool valid = false;
                         foreach (var f in files)
