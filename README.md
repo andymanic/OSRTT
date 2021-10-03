@@ -1,6 +1,4 @@
-# ![OSRTT](icon_small.png)
-
-# OSRTT
+### ![OSRTT](icon_small.png)  # OSRTT
 Open Source Response Time Tool - LCD response time tool, includes hardware, firmware and software!
 
 # Project Aim
