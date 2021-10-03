@@ -640,9 +640,11 @@ namespace OSRTT_Launcher
                     else if (message.Contains("FPS Key:"))
                     {
                         string[] sp = message.Split(':');
-                        var lim = fpsList.Find(x => x.Key == sp[1]);
+                        string k = sp[1];
+                        k = k.Replace("\r", string.Empty);
+                        var lim = fpsList.Find(x => x.Key == k);
                         string selectedFps = getSelectedFps();
-                        if (lim.FPSValue != this.fpsLimitList.SelectedItem.ToString())
+                        if (lim.FPSValue != selectedFps)
                         {
                             setSelectedFps(lim.FPSValue);
                         }
@@ -948,12 +950,6 @@ namespace OSRTT_Launcher
 
                 double SampleTime = ((double)TimeTaken / (double)SampleCount); // Get the time taken between samples
 
-                //foreach(var t in samples)
-                //{
-                //    Console.Write(t + ",");
-                //}
-                //Console.WriteLine();
-
                 // Clean up noisy data using moving average function
                 int period = 10;
                 int[] buffer = new int[period];
@@ -970,12 +966,6 @@ namespace OSRTT_Launcher
                     averagedSamples[a] = movAvg;
                     current_index = (current_index + 1) % period;
                 }
-                //foreach (var t in averagedSamples)
-                //{
-                //    Console.Write(t + ",");
-                //}
-                //Console.WriteLine();
-                //Console.WriteLine();
 
                 samples = averagedSamples.Skip(period).ToArray(); //Moving average spoils the first 10 samples so currently removing them.
 
@@ -1346,39 +1336,6 @@ namespace OSRTT_Launcher
                     double[] row = { multipleRunData[0][p][0], multipleRunData[0][p][1], 0, 0 };
                     averageData.Add(row);
                 }
-
-                /*
-                // Average response time and overshoot results
-                foreach (var L in multipleRunData)
-                {
-                    if (L.Count() != resultCount)
-                    {
-                        MessageBox.Show("Unable to process results, a file may be missing result entries.", "Results Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    else
-                    {
-                        for (int i = 0; i < L.Count; i++)
-                        {
-                            // Add response time values
-                            averageData[i][2] += L[i][2];
-
-                            // Add overshoot values
-                            averageData[i][3] = L[i][3];
-                        }
-                    }
-                }
-                int runCount = multipleRunData.Count();
-                foreach (var res in averageData)
-                {
-                    res[2] = res[2] / runCount;
-                    res[2] = Math.Round(res[2], 1);
-                    if (res[3] != 0)
-                    {
-                        res[3] = res[3] / runCount;
-                        res[3] = Math.Round(res[3], 1);
-                    }
-                } */
-
 
                 // Average the data, excluding outliers
                 for (int k = 0 ; k < resultCount; k++)
