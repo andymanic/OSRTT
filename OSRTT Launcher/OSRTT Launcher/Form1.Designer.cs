@@ -37,6 +37,7 @@
             this.analyseResultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resultsSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.testButtonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.devStatLbl = new System.Windows.Forms.Label();
             this.devStat = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -49,7 +50,9 @@
             this.label1 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.importRawFolder = new System.Windows.Forms.Button();
-            this.testButtonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fpsLimitBtn = new System.Windows.Forms.Button();
+            this.fpsLimitList = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.testCount)).BeginInit();
@@ -61,7 +64,7 @@
             this.launchBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.launchBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.launchBtn.Font = new System.Drawing.Font("Arial Black", 16F, System.Drawing.FontStyle.Bold);
-            this.launchBtn.Location = new System.Drawing.Point(18, 136);
+            this.launchBtn.Location = new System.Drawing.Point(18, 172);
             this.launchBtn.Name = "launchBtn";
             this.launchBtn.Size = new System.Drawing.Size(551, 46);
             this.launchBtn.TabIndex = 0;
@@ -103,7 +106,7 @@
             this.testButtonToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1106, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1107, 24);
             this.menuStrip1.TabIndex = 4;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -128,8 +131,7 @@
             // 
             // analyseResultsToolStripMenuItem
             // 
-            this.analyseResultsToolStripMenuItem.Checked = true;
-            this.analyseResultsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.analyseResultsToolStripMenuItem.CheckOnClick = true;
             this.analyseResultsToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.analyseResultsToolStripMenuItem.Name = "analyseResultsToolStripMenuItem";
             this.analyseResultsToolStripMenuItem.Size = new System.Drawing.Size(100, 20);
@@ -150,6 +152,13 @@
             this.debugModeToolStripMenuItem.Size = new System.Drawing.Size(88, 20);
             this.debugModeToolStripMenuItem.Text = "Debug mode";
             this.debugModeToolStripMenuItem.Click += new System.EventHandler(this.debugModeToolStripMenuItem_Click);
+            // 
+            // testButtonToolStripMenuItem
+            // 
+            this.testButtonToolStripMenuItem.Name = "testButtonToolStripMenuItem";
+            this.testButtonToolStripMenuItem.Size = new System.Drawing.Size(78, 20);
+            this.testButtonToolStripMenuItem.Text = "Test Button";
+            this.testButtonToolStripMenuItem.Click += new System.EventHandler(this.testButtonToolStripMenuItem_Click);
             // 
             // devStatLbl
             // 
@@ -184,6 +193,9 @@
             // panel1
             // 
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.fpsLimitBtn);
+            this.panel1.Controls.Add(this.fpsLimitList);
+            this.panel1.Controls.Add(this.label4);
             this.panel1.Controls.Add(this.setRepeatBtn);
             this.panel1.Controls.Add(this.testCount);
             this.panel1.Controls.Add(this.label2);
@@ -195,7 +207,7 @@
             this.panel1.Controls.Add(this.devStat);
             this.panel1.Location = new System.Drawing.Point(12, 36);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(588, 204);
+            this.panel1.Size = new System.Drawing.Size(588, 241);
             this.panel1.TabIndex = 15;
             this.panel1.Tag = "";
             // 
@@ -204,7 +216,7 @@
             this.setRepeatBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.setRepeatBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.setRepeatBtn.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.setRepeatBtn.Location = new System.Drawing.Point(387, 97);
+            this.setRepeatBtn.Location = new System.Drawing.Point(387, 133);
             this.setRepeatBtn.Name = "setRepeatBtn";
             this.setRepeatBtn.Size = new System.Drawing.Size(182, 26);
             this.setRepeatBtn.TabIndex = 19;
@@ -215,7 +227,7 @@
             // testCount
             // 
             this.testCount.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.testCount.Location = new System.Drawing.Point(326, 97);
+            this.testCount.Location = new System.Drawing.Point(326, 133);
             this.testCount.Maximum = new decimal(new int[] {
             10,
             0,
@@ -239,7 +251,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(14, 99);
+            this.label2.Location = new System.Drawing.Point(14, 135);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(301, 24);
             this.label2.TabIndex = 17;
@@ -284,9 +296,9 @@
             this.panel2.Controls.Add(this.importRawFolder);
             this.panel2.Controls.Add(this.resultsBtn);
             this.panel2.Controls.Add(this.label3);
-            this.panel2.Location = new System.Drawing.Point(12, 246);
+            this.panel2.Location = new System.Drawing.Point(12, 283);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(588, 137);
+            this.panel2.Size = new System.Drawing.Size(588, 138);
             this.panel2.TabIndex = 16;
             // 
             // importRawFolder
@@ -303,19 +315,45 @@
             this.importRawFolder.UseVisualStyleBackColor = false;
             this.importRawFolder.Click += new System.EventHandler(this.importRawFolder_Click);
             // 
-            // testButtonToolStripMenuItem
+            // fpsLimitBtn
             // 
-            this.testButtonToolStripMenuItem.Name = "testButtonToolStripMenuItem";
-            this.testButtonToolStripMenuItem.Size = new System.Drawing.Size(78, 20);
-            this.testButtonToolStripMenuItem.Text = "Test Button";
-            this.testButtonToolStripMenuItem.Click += new System.EventHandler(this.testButtonToolStripMenuItem_Click);
+            this.fpsLimitBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.fpsLimitBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.fpsLimitBtn.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.fpsLimitBtn.Location = new System.Drawing.Point(428, 96);
+            this.fpsLimitBtn.Name = "fpsLimitBtn";
+            this.fpsLimitBtn.Size = new System.Drawing.Size(141, 26);
+            this.fpsLimitBtn.TabIndex = 22;
+            this.fpsLimitBtn.Text = "Save to Device";
+            this.fpsLimitBtn.UseVisualStyleBackColor = false;
+            this.fpsLimitBtn.Click += new System.EventHandler(this.fpsLimitBtn_Click);
+            // 
+            // fpsLimitList
+            // 
+            this.fpsLimitList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.fpsLimitList.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.fpsLimitList.FormattingEnabled = true;
+            this.fpsLimitList.Location = new System.Drawing.Point(215, 96);
+            this.fpsLimitList.Name = "fpsLimitList";
+            this.fpsLimitList.Size = new System.Drawing.Size(207, 26);
+            this.fpsLimitList.TabIndex = 21;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(14, 96);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(195, 24);
+            this.label4.TabIndex = 20;
+            this.label4.Text = "Set test framerate limit:";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.ClientSize = new System.Drawing.Size(1106, 809);
+            this.ClientSize = new System.Drawing.Size(1107, 808);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.menuStrip1);
@@ -325,6 +363,7 @@
             this.Name = "Form1";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "OSRTT Launcher & Analyser";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.panel1.ResumeLayout(false);
@@ -361,6 +400,9 @@
         private System.Windows.Forms.NumericUpDown testCount;
         private System.Windows.Forms.Button importRawFolder;
         private System.Windows.Forms.ToolStripMenuItem testButtonToolStripMenuItem;
+        private System.Windows.Forms.Button fpsLimitBtn;
+        private System.Windows.Forms.ComboBox fpsLimitList;
+        private System.Windows.Forms.Label label4;
     }
 }
 

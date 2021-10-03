@@ -16,8 +16,7 @@ using System.IO;
 using WindowsDisplayAPI.DisplayConfig;
 using AutoUpdaterDotNET;
 using Newtonsoft.Json;
-
-
+using System.Resources;
 
 namespace OSRTT_Launcher
 {
@@ -26,16 +25,26 @@ namespace OSRTT_Launcher
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
         private double boardVersion = 1.0;
         private double downloadedFirmwareVersion = 1.0;
-        private double softwareVersion = 1.0;
+        private string softwareVersion = "0.9";
 
         // TODO //
-        // Possibly replace processedData since each run will now be stored in multipleRunData
+        // handle failed results inputs just in case 
+        // settings runs to 5 ran 6 times - offset required?
+        // get current focused window, if ue4 game isn't selected port.write("C"); until it is then port.write("T");
+        // messagebox don't always play sound, may not draw over ue4 game?
+        // 
+        // TESTING
+        // Test overshoot properly
+        // Test brightness setup (calibration window? extra step in arduino code?)
+        // 
         //
         // Current known issues //
         // Device will continue to run test even if game closed/not selected/program error
         // Device will still activate button even if program/game closed - check if serial connected on the board, if not connected break loop
         //
-        // LOW PRIORITY - Possibly set RGB values in C# 
+        // LOW PRIORITY
+        // "Set framerate cap" option (just presses the correspoinding key based on which dropdown option is selected and if checkbox is ticked, by default no?)
+        // - Possibly set RGB values in C# 
 
         public static System.IO.Ports.SerialPort port;
         delegate void SetTextCallback(string text);
@@ -47,9 +56,9 @@ namespace OSRTT_Launcher
 
         string path = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
         string resultsFolderPath = "";
-        public List<int[]> results = new List<int[]>();
-        public List<double[]> processedData = new List<double[]>();
-        public List<List<double[]>> multipleRunData = new List<List<double[]>>();
+        private List<int[]> results = new List<int[]>();
+        
+        private List<List<double[]>> multipleRunData = new List<List<double[]>>();
         public class Displays
         {
             public string Name { get; set; }
@@ -57,20 +66,30 @@ namespace OSRTT_Launcher
             public string Connection { get; set; }
         }
         public List<Displays> displayList = new List<Displays>();
+        public class FPS
+        {
+            public string FPSValue { get; set; }
+            public string Key { get; set; }
+        }
+        public List<FPS> fpsList = new List<FPS>();
         private BackgroundWorker hardWorker;
         private Thread readThread = null;
         private Thread connectThread = null;
         private Thread processThread = null;
         private Thread launchGameThread = null;
 
+        private ResourceManager rm = OSRTT_Launcher.Properties.Resources.ResourceManager;
+
         public void UpdateMe()
         {
-            AutoUpdater.LetUserSelectRemindLater = false;
+            AutoUpdater.InstalledVersion = new Version(softwareVersion);
+            AutoUpdater.ShowSkipButton = false;
             AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Days;
             AutoUpdater.RemindLaterAt = 2;
             AutoUpdater.RunUpdateAsAdmin = false;
+            AutoUpdater.HttpUserAgent = "Autoupdater";
+            AutoUpdater.UpdateFormSize = new System.Drawing.Size(800, 600);
             AutoUpdater.ParseUpdateInfoEvent += AutoUpdaterOnParseUpdateInfoEvent;
-            AutoUpdater.InstalledVersion = new Version(softwareVersion.ToString());
             AutoUpdater.Start("https://api.github.com/repos/andymanic/OSRTT/releases/latest");
         }
 
@@ -80,20 +99,21 @@ namespace OSRTT_Launcher
             args.UpdateInfo = new UpdateInfoEventArgs
             {
                 CurrentVersion = json.tag_name,
-                ChangelogURL = "https://github.com/andymanic/OSRTT/releases/latest",
+                ChangelogURL = json.html_url,
                 DownloadURL = json.assets[0].browser_download_url,
             };
         }
 
         public Form1()
         {
+            Console.WriteLine(softwareVersion.ToString());
             InitializeComponent();
-            
-            //UpdateMe();
+            this.Icon = (Icon)rm.GetObject("osrttIcon");
             this.launchBtn.Enabled = false;
             this.setRepeatBtn.Enabled = false;
+            this.fpsLimitBtn.Enabled = false;
             path = new Uri(System.IO.Path.GetDirectoryName(path)).LocalPath;
-            path = path + @"\Results";
+            path += @"\Results";
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
@@ -102,9 +122,10 @@ namespace OSRTT_Launcher
             hardWorker = new BackgroundWorker();
             connectThread = new Thread(new ThreadStart(this.findAndConnectToBoard));
             connectThread.Start();
-            Size = new Size(627, 283);
+            Size = new Size(624, 321);
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             listMonitors();
+            listFramerates();
             initialSetup();
         }
         private void initialSetup()
@@ -138,12 +159,8 @@ namespace OSRTT_Launcher
             // Find monitor names, refresh rate and connection
             foreach (var target in WindowsDisplayAPI.DisplayConfig.PathInfo.GetActivePaths())
             {
-                Console.WriteLine(target);
-                Console.WriteLine(target.DisplaySource);
                 foreach (var item in target.TargetsInfo)
-                { 
-                    Console.WriteLine(item);
-
+                {
                     string con = "Other";
                     if (item.OutputTechnology.ToString() == "DisplayPortExternal")
                     {
@@ -165,6 +182,25 @@ namespace OSRTT_Launcher
                 }
             }
             monitorCB.SelectedIndex = 0; // Pre-select the primary display
+        }
+
+        private void listFramerates()
+        {
+            fpsLimitList.Items.Clear();
+            fpsList.Clear();
+            fpsList.Add(new FPS { FPSValue = "1000", Key = "1" });
+            fpsList.Add(new FPS { FPSValue = "360", Key = "2" });
+            fpsList.Add(new FPS { FPSValue = "240", Key = "3" });
+            fpsList.Add(new FPS { FPSValue = "165", Key = "4" });
+            fpsList.Add(new FPS { FPSValue = "144", Key = "5" });
+            fpsList.Add(new FPS { FPSValue = "120", Key = "6" });
+            fpsList.Add(new FPS { FPSValue = "100", Key = "7" });
+            fpsList.Add(new FPS { FPSValue = "60", Key = "8" });
+            foreach (var f in fpsList)
+            {
+                fpsLimitList.Items.Add(f.FPSValue);
+            }
+            fpsLimitList.SelectedIndex = 3; //CHANGE TO 0 FOR PRODUCTION
         }
 
         private void findAndConnectToBoard()
@@ -202,9 +238,11 @@ namespace OSRTT_Launcher
                         try
                         {
                             connectToBoard(p);
+                            Thread.Sleep(2000);
                             SetDeviceStatus("Connected to Device!");
                             ControlLaunchButton(true);
                             ControlRepeatButton(true);
+                            ControlFPSButton(true);
                         }
                         catch (Exception e)
                         {
@@ -222,6 +260,7 @@ namespace OSRTT_Launcher
                         {
                             ControlLaunchButton(false);
                             ControlRepeatButton(false);
+                            ControlFPSButton(false);
                             // readThread.Abort();
                             port.Close();
                         }
@@ -289,6 +328,7 @@ namespace OSRTT_Launcher
             port.DtrEnable = true;
             port.ReadTimeout = 5000;
             port.WriteTimeout = 500;
+            port.ReadBufferSize = 64000;
             Console.WriteLine("Port details set");
             try
             { port.Open(); }
@@ -301,13 +341,14 @@ namespace OSRTT_Launcher
                 readThread = new Thread(new ThreadStart(this.Read));
                 readThread.Start();
                 this.hardWorker.RunWorkerAsync();
-                port.Write("F");
+                port.Write("I" + (this.testCount.Value - 1).ToString());
             }
             else
             {
                 SetDeviceStatus("Board Disconnected");
                 ControlLaunchButton(false);
                 ControlRepeatButton(false);
+                ControlFPSButton(false);
             }
         }
 
@@ -323,7 +364,6 @@ namespace OSRTT_Launcher
                 }
             }
         }
-
         private void ControlLaunchButton(bool state)
         {
             if (this.launchBtn.InvokeRequired)
@@ -340,11 +380,46 @@ namespace OSRTT_Launcher
         {
             if (this.setRepeatBtn.InvokeRequired)
             {
-                this.launchBtn.Invoke((MethodInvoker)(() => setRepeatBtn.Enabled = state));
+                this.setRepeatBtn.Invoke((MethodInvoker)(() => setRepeatBtn.Enabled = state));
             }
             else
             {
                 this.setRepeatBtn.Enabled = state;
+            }
+        }
+        private void ControlFPSButton(bool state)
+        {
+            if (this.fpsLimitBtn.InvokeRequired)
+            {
+                this.fpsLimitBtn.Invoke((MethodInvoker)(() => fpsLimitBtn.Enabled = state));
+            }
+            else
+            {
+                this.fpsLimitBtn.Enabled = state;
+            }
+        }
+
+        private void setRepeatCounter(int runs)
+        {
+            if (this.testCount.InvokeRequired)
+            {
+                this.testCount.Invoke((MethodInvoker)(() => testCount.Value = runs));
+            }
+            else
+            {
+                this.testCount.Value = runs;
+            }
+        }
+
+        private void setSelectedFps(string limit)
+        {
+            if (this.fpsLimitList.InvokeRequired)
+            {
+                this.fpsLimitList.Invoke((MethodInvoker)(() => fpsLimitList.SelectedItem = limit));
+            }
+            else
+            {
+                this.fpsLimitList.SelectedItem = limit;
             }
         }
 
@@ -403,6 +478,20 @@ namespace OSRTT_Launcher
             }
         }
 
+        private string getSelectedFps()
+        {
+            if (fpsLimitList.InvokeRequired)
+            {
+                return (string)fpsLimitList.Invoke(
+                  new Func<string>(() => fpsLimitList.SelectedItem.ToString())
+                );
+            }
+            else
+            {
+                return fpsLimitList.SelectedItem.ToString();
+            }
+        }
+
         public void Read()
         {
             while (port.IsOpen)
@@ -411,7 +500,6 @@ namespace OSRTT_Launcher
                 {
                     string message = port.ReadLine();
                     Console.WriteLine(message);
-                    SetText(message);
                     if (message.Contains("RGB Array"))
                     {
                         // Don't really need this bit.. in theory it's good for expandability but... meh
@@ -455,7 +543,6 @@ namespace OSRTT_Launcher
                                 {
                                     Console.WriteLine(values[i]);
                                 }
-                                
                             }
                             else
                             {
@@ -466,16 +553,12 @@ namespace OSRTT_Launcher
                     }
                     else if (message.Contains("STARTING RUN"))
                     {
-                        processedData.Clear();
                         results.Clear();
                     }
                     else if (message.Contains("STARTING TEST"))
                     {
-                        // CREATE FOLDER WITH CURRENT FILE NAME SHIT
-                        // SAVE FOLDER PATH AS currentResultsPath
                         makeResultsFolder();
                         multipleRunData.Clear();
-                        processedData.Clear();
                         results.Clear();
                     }
                     else if (message.Contains("Run Complete"))
@@ -510,6 +593,7 @@ namespace OSRTT_Launcher
                     else if (message.Contains("Test Complete"))
                     {
                         // READ IN 
+                        Thread.Sleep(500); //Had an issue with data processing not being finished by the time the command comes it to start averaging the data.
                         processMultipleRuns();
                         DialogResult d = MessageBox.Show("Test complete, open results folder?","Test Complete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                         if (d == DialogResult.Yes)
@@ -543,7 +627,25 @@ namespace OSRTT_Launcher
                         string[] sp = message.Split(':');
                         boardVersion = double.Parse(sp[1]);
                         compareFirmware();
-                        //MessageBox.Show(message, "Firmware Version", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else if (message.Contains("Runs:"))
+                    {
+                        string[] sp = message.Split(':');
+                        int runs = Int32.Parse(sp[1]);
+                        if (runs != (this.testCount.Value - 1))
+                        {
+                            setRepeatCounter(runs);
+                        }
+                    }
+                    else if (message.Contains("FPS Key:"))
+                    {
+                        string[] sp = message.Split(':');
+                        var lim = fpsList.Find(x => x.Key == sp[1]);
+                        string selectedFps = getSelectedFps();
+                        if (lim.FPSValue != this.fpsLimitList.SelectedItem.ToString())
+                        {
+                            setSelectedFps(lim.FPSValue);
+                        }
                     }
                     else
                     {
@@ -570,9 +672,9 @@ namespace OSRTT_Launcher
                     portConnected = false;
                     ControlLaunchButton(false);
                     ControlRepeatButton(false);
+                    ControlFPSButton(false);
                     SetDeviceStatus("Board Disconnected");
                     readThread.Abort();
-                    // findAndConnectToBoard();
                 }
             }
         }
@@ -616,6 +718,9 @@ namespace OSRTT_Launcher
                 Process.Start(ue4Path);
                 port.Write("T");
                 Process[] p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
+                ControlLaunchButton(false);
+                ControlRepeatButton(false);
+                ControlFPSButton(false);
                 while (p.Length == 0)
                 {
                     p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
@@ -623,6 +728,13 @@ namespace OSRTT_Launcher
                 p[0].WaitForExit();
                 Console.WriteLine("Game closed");
                 port.Write("C");
+                ControlLaunchButton(true);
+                ControlRepeatButton(true);
+                ControlFPSButton(true);
+            }
+            catch (InvalidOperationException e)
+            {
+                Console.WriteLine(e);
             }
             catch (Exception ex)
             {
@@ -652,6 +764,7 @@ namespace OSRTT_Launcher
                 {
                     //Get the path of specified file
                     filePath = openFileDialog.FileName;
+                    results.Clear();
 
                     //Read the contents of the file into a stream
                     try
@@ -702,7 +815,15 @@ namespace OSRTT_Launcher
 
         private void analyseResultsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Size = new Size(627, 432);
+            if (analyseResultsToolStripMenuItem.Checked)
+            {
+                Size = new Size(624, 467);
+            }
+            else
+            {
+                Size = new Size(624, 321);
+            }
+
         }
 
         private void debugModeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -752,6 +873,7 @@ namespace OSRTT_Launcher
         private void processResponseTimeData()
         {
             //This is a long one. This is the code that builds the gamma curve, finds the start/end points and calculates response times and overshoot % (gamma corrected)
+            List<double[]> processedData = new List<double[]>();
             processedData.Clear();
 
             // First, create gamma array from the data
@@ -826,45 +948,36 @@ namespace OSRTT_Launcher
 
                 double SampleTime = ((double)TimeTaken / (double)SampleCount); // Get the time taken between samples
 
-                // Clean up noisy data
-                // CONSIDER REDOING HOW THIS WORKS to average data better
-                for (int k = 0; k < samples.Length - 5; k += 5)
-                {
-                    int partAvg = samples[k] + samples[k + 1] + samples[k + 2] + samples[k + 3] + samples[k + 4];
-                    int avg = partAvg / 5;
-                    samples[k] = avg;
-                    samples[k + 1] = avg;
-                    samples[k + 2] = avg;
-                    samples[k + 3] = avg;
-                    samples[k + 4] = avg;
-                }
-                for (int k = 2; k < samples.Length - 5; k += 5)
-                {
-                    int partAvg = samples[k] + samples[k + 1] + samples[k + 2] + samples[k + 3] + samples[k + 4];
-                    int avg = partAvg / 5;
-                    samples[k] = avg;
-                    samples[k + 1] = avg;
-                    samples[k + 2] = avg;
-                    samples[k + 3] = avg;
-                    samples[k + 4] = avg;
-                }
-                for (int k = 0; k < samples.Length - 10; k += 10)
-                {
-                    int partAvg = samples[k] + samples[k + 1] + samples[k + 2] + samples[k + 3] + samples[k + 4] + samples[k + 5] + samples[k + 6] + samples[k + 7] + samples[k + 8] + samples[k + 9];
-                    int avg = partAvg / 10;
-                    samples[k] = avg;
-                    samples[k + 1] = avg;
-                    samples[k + 2] = avg;
-                    samples[k + 3] = avg;
-                    samples[k + 4] = avg;
-                    samples[k + 5] = avg;
-                    samples[k + 6] = avg;
-                    samples[k + 7] = avg;
-                    samples[k + 8] = avg;
-                    samples[k + 9] = avg;
-                }
+                //foreach(var t in samples)
+                //{
+                //    Console.Write(t + ",");
+                //}
+                //Console.WriteLine();
 
-                samples = samples.Take(samples.Length - 5).ToArray();
+                // Clean up noisy data using moving average function
+                int period = 10;
+                int[] buffer = new int[period];
+                int[] averagedSamples = new int[samples.Length];
+                int current_index = 0;
+                for (int a = 0; a<samples.Length; a++)
+                {
+                    buffer[current_index] = samples[a] / period;
+                    int movAvg = 0;
+                    for (int b = 0; b < period; b++)
+                    {
+                        movAvg += buffer[b];
+                    }
+                    averagedSamples[a] = movAvg;
+                    current_index = (current_index + 1) % period;
+                }
+                //foreach (var t in averagedSamples)
+                //{
+                //    Console.Write(t + ",");
+                //}
+                //Console.WriteLine();
+                //Console.WriteLine();
+
+                samples = averagedSamples.Skip(period).ToArray(); //Moving average spoils the first 10 samples so currently removing them.
 
                 int maxValue = samples.Max(); // Find the maximum value for overshoot
                 int minValue = samples.Min(); // Find the minimum value for undershoot
@@ -876,32 +989,32 @@ namespace OSRTT_Launcher
 
                 int startMax = samples[5]; // Initialise these variables with a real value 
                 int startMin = samples[5]; // Initialise these variables with a real value 
-                int endMax = samples[item.Length - 10]; // Initialise these variables with a real value 
-                int endMin = samples[item.Length - 10]; // Initialise these variables with a real value 
+                int endMax = samples[samples.Length - 10]; // Initialise these variables with a real value 
+                int endMin = samples[samples.Length - 10]; // Initialise these variables with a real value 
 
                 // Build start min/max to compare against
-                for (int j = 0; j < 250; j++) //CHANGE TO 180 FOR RUN 2 DATA
+                for (int l = 0; l < 250; l++) //CHANGE TO 180 FOR RUN 2 DATA
                 {
-                    if (samples[j] < startMin)
+                    if (samples[l] < startMin)
                     {
-                        startMin = samples[j];
+                        startMin = samples[l];
                     }
-                    else if (samples[j] > startMax)
+                    else if (samples[l] > startMax)
                     {
-                        startMax = samples[j];
+                        startMax = samples[l];
                     }
                 }
 
                 // Build end min/max to compare against
-                for (int j = samples.Length - 5; j > samples.Length - 450; j--)
+                for (int m = samples.Length - 5; m > samples.Length - 450; m--)
                 {
-                    if (samples[j] < endMin)
+                    if (samples[m] < endMin)
                     {
-                        endMin = samples[j];
+                        endMin = samples[m];
                     }
-                    else if (samples[j] > endMax)
+                    else if (samples[m] > endMax)
                     {
-                        endMax = samples[j];
+                        endMax = samples[m];
                     }
                 }
 
@@ -912,19 +1025,40 @@ namespace OSRTT_Launcher
                     {
                         if (samples[j] > (startMax))
                         {
-                            if ((samples[j + 50] > (samples[j] + 100) || samples[j + 56] > (samples[j] + 50))
-                                && (samples[j + 100] > (samples[j] + 100) || samples[j + 106] > (samples[j] + 100))
-                                && (samples[j + 125] > (samples[j] + 100) || samples[j + 131] > (samples[j] + 100))
-                                && (samples[j + 150] > (samples[j] + 100) || samples[j + 156] > (samples[j] + 100))) // check the trigger point is actually the trigger and not noise
+                            if (StartingRGB == 0 && EndRGB == 26)
                             {
-                                transStart = j;
-                                break;
+                                if ((samples[j + 50] > (samples[j] + 25) || samples[j + 56] > (samples[j] + 25))
+                                    && (samples[j + 100] > (samples[j] + 50) || samples[j + 106] > (samples[j] + 50))
+                                    && (samples[j + 125] > (samples[j] + 75) || samples[j + 131] > (samples[j] + 75))
+                                    && (samples[j + 150] > (samples[j] + 100) || samples[j + 156] > (samples[j] + 100))) // check the trigger point is actually the trigger and not noise
+                                {
+                                    transStart = j;
+                                    break;
+                                }
+                                else
+                                {
+                                    if (samples[j] > startMax)
+                                    {
+                                        startMax = samples[j];
+                                    }
+                                }
                             }
                             else
                             {
-                                if (samples[j] > startMax)
+                                if ((samples[j + 50] > (samples[j] + 50) || samples[j + 56] > (samples[j] + 50))
+                                    && (samples[j + 100] > (samples[j] + 100) || samples[j + 106] > (samples[j] + 100))
+                                    && (samples[j + 125] > (samples[j] + 100) || samples[j + 131] > (samples[j] + 100))
+                                    && (samples[j + 150] > (samples[j] + 100) || samples[j + 156] > (samples[j] + 100))) // check the trigger point is actually the trigger and not noise
                                 {
-                                    startMax = samples[j];
+                                    transStart = j;
+                                    break;
+                                }
+                                else
+                                {
+                                    if (samples[j] > startMax)
+                                    {
+                                        startMax = samples[j];
+                                    }
                                 }
                             }
                         }
@@ -933,19 +1067,40 @@ namespace OSRTT_Launcher
                     {
                         if (samples[j] < (startMin))
                         {
-                            if ((samples[j + 50] < (samples[j] - 100) || samples[j + 56] < (samples[j] - 100))
-                                && (samples[j + 100] < (samples[j] - 100) || samples[j + 106] < (samples[j] - 100))
-                                && (samples[j + 125] < (samples[j] - 100) || samples[j + 131] < (samples[j] - 100))
-                                && (samples[j + 150] < (samples[j] - 100) || samples[j + 156] < (samples[j] - 100))) // check the trigger point is actually the trigger and not noise
+                            if (StartingRGB == 26 && EndRGB == 0)
                             {
-                                transStart = j;
-                                break;
+                                if ((samples[j + 50] < (samples[j] - 25) || samples[j + 56] < (samples[j] - 25))
+                                && (samples[j + 100] < (samples[j] - 50) || samples[j + 106] < (samples[j] - 50))
+                                && (samples[j + 125] < (samples[j] - 75) || samples[j + 131] < (samples[j] - 75))
+                                && (samples[j + 150] < (samples[j] - 100) || samples[j + 156] < (samples[j] - 100))) // check the trigger point is actually the trigger and not noise
+                                {
+                                    transStart = j;
+                                    break;
+                                }
+                                else
+                                {
+                                    if (samples[j] < startMin)
+                                    {
+                                        startMin = samples[j];
+                                    }
+                                }
                             }
                             else
                             {
-                                if (samples[j] < startMin)
+                                if ((samples[j + 50] < (samples[j] - 50) || samples[j + 56] < (samples[j] - 50))
+                                    && (samples[j + 100] < (samples[j] - 100) || samples[j + 106] < (samples[j] - 100))
+                                    && (samples[j + 125] < (samples[j] - 100) || samples[j + 131] < (samples[j] - 100))
+                                    && (samples[j + 150] < (samples[j] - 100) || samples[j + 156] < (samples[j] - 100))) // check the trigger point is actually the trigger and not noise
                                 {
-                                    startMin = samples[j];
+                                    transStart = j;
+                                    break;
+                                }
+                                else
+                                {
+                                    if (samples[j] < startMin)
+                                    {
+                                        startMin = samples[j];
+                                    }
                                 }
                             }
                         }
@@ -1109,9 +1264,7 @@ namespace OSRTT_Launcher
                 double[] completeResult = new double[] { StartingRGB, EndRGB, responseTime, overshootPercent };
                 processedData.Add(completeResult);
             }
-            //multiRunData tempData = new multiRunData { runData = processedData };
-            //multipleRuns.Add(tempData);
-            List<double[]> temp = new List<double[]>();
+            List<double[]> temp = new List<double[]>(); //probably not needed now processedData is a local variable
             temp.AddRange(processedData);
             multipleRunData.Add(temp);
             // Write results to csv using new name
@@ -1138,6 +1291,7 @@ namespace OSRTT_Launcher
             {
                 csvString.AppendLine(string.Join(strSeparator, res));
             }
+            Console.WriteLine(filePath);
             File.WriteAllText(filePath, csvString.ToString());
 
             // Save Gamme curve to a file too
@@ -1148,7 +1302,6 @@ namespace OSRTT_Launcher
             foreach (var s in existingGammaFiles)
             {
                 decimal num = decimal.Parse(Path.GetFileNameWithoutExtension(s).Remove(3));
-                Console.WriteLine("Num: " + num);
                 if (num >= gammaFileNumber)
                 {
                     gammaFileNumber = num + 1;
@@ -1167,7 +1320,13 @@ namespace OSRTT_Launcher
 
         private void setRepeatBtn_Click(object sender, EventArgs e)
         {
-            port.Write("M" + this.testCount.Value.ToString());
+            setRepeats();
+        }
+
+        private void setRepeats()
+        {
+            decimal runs = this.testCount.Value - 1;
+            port.Write("M" + runs.ToString());
         }
 
         private void processMultipleRuns()
@@ -1184,10 +1343,11 @@ namespace OSRTT_Launcher
                 List<double[]> averageData = new List<double[]>();
                 for (int p = 0; p < resultCount; p++)
                 {
-                    double[] row = { processedData[p][0], processedData[p][1], 0, 0 };
+                    double[] row = { multipleRunData[0][p][0], multipleRunData[0][p][1], 0, 0 };
                     averageData.Add(row);
                 }
 
+                /*
                 // Average response time and overshoot results
                 foreach (var L in multipleRunData)
                 {
@@ -1217,13 +1377,49 @@ namespace OSRTT_Launcher
                         res[3] = res[3] / runCount;
                         res[3] = Math.Round(res[3], 1);
                     }
-                }
-                
+                } */
 
-                // Output averaged results to file
-                int monitor = getSelectedMonitor();
-                string monitorName = displayList[monitor].Name;
-                string monitorInfo = monitorName.Replace(" ", "-") + "-" + displayList[monitor].Freq.ToString() + "-" + displayList[monitor].Connection;
+
+                // Average the data, excluding outliers
+                for (int k = 0 ; k < resultCount; k++)
+                {
+                    List<double> rTLine = new List<double>();
+                    List<double> oSLine = new List<double>();
+                    foreach (var list in multipleRunData)
+                    {
+                        rTLine.Add(list[k][2]);
+                        oSLine.Add(list[k][3]);
+                    }
+                    double rtMedian = GetMedian(rTLine.ToArray());
+                    double osMedian = GetMedian(oSLine.ToArray());
+                    int validTimeResults = 0;
+                    int validOvershootResults = 0;
+                    foreach (var o in multipleRunData)
+                    {
+                        if (o[k][2] < (rtMedian * 1.2) && o[k][2] > (rtMedian * 0.8))
+                        {
+                            averageData[k][2] += o[k][2];
+                            validTimeResults++;
+                        }
+                        if (o[k][3] < (osMedian * 1.2) && o[k][3] > (osMedian * 0.8))
+                        {
+                            averageData[k][3] += o[k][3];
+                            validOvershootResults++;
+                        }
+                    }
+                    averageData[k][2] = averageData[k][2] / validTimeResults;
+                    averageData[k][2] = Math.Round(averageData[k][2], 1);
+                    if (averageData[k][3] != 0)
+                    {
+                        averageData[k][3] = averageData[k][3] / validOvershootResults;
+                        averageData[k][3] = Math.Round(averageData[k][3], 1);
+                    }
+                }
+
+                // Output averaged results to file using folder name/monitor info
+                string[] folders = resultsFolderPath.Split('\\');
+                string monitorInfo = folders.Last();
+                monitorInfo = monitorInfo.Remove(0, 4);
                 string filePath = resultsFolderPath + "\\" + monitorInfo + "-FINAL-DATA-OSRTT.csv";
                 string strSeparator = ",";
                 StringBuilder csvString = new StringBuilder();
@@ -1252,6 +1448,23 @@ namespace OSRTT_Launcher
                     }
                 }
             }
+        }
+
+        public static double GetMedian(double[] sourceNumbers)
+        {
+            //Framework 2.0 version of this method. there is an easier way in F4        
+            if (sourceNumbers == null || sourceNumbers.Length == 0)
+                throw new System.Exception("Median of empty array not defined.");
+
+            //make sure the list is sorted, but use a new array
+            double[] sortedPNumbers = (double[])sourceNumbers.Clone();
+            Array.Sort(sortedPNumbers);
+
+            //get the median
+            int size = sortedPNumbers.Length;
+            int mid = size / 2;
+            double median = (size % 2 != 0) ? (double)sortedPNumbers[mid] : ((double)sortedPNumbers[mid] + (double)sortedPNumbers[mid - 1]) / 2;
+            return median;
         }
 
         private void makeResultsFolder()
@@ -1308,41 +1521,49 @@ namespace OSRTT_Launcher
                             if (f.Contains("-RAW-OSRTT"))
                             {
                                 valid = true;
-                                using (OpenFileDialog OFD = new OpenFileDialog())
+                                try
                                 {
-                                    OFD.FileName = f;
-                                    //Read the contents of the file into a stream
-                                    var fileStream = OFD.OpenFile();
-                                    using (StreamReader reader = new StreamReader(fileStream))
+                                    using (OpenFileDialog OFD = new OpenFileDialog())
                                     {
-                                        results.Clear();
-                                        while (!reader.EndOfStream)
-                                        {
+                                        OFD.FileName = f;
+                                        //Read the contents of the file into a stream
 
-                                            // This can probably be done better
-                                            string[] line = reader.ReadLine().Split(',');
-                                            int[] intLine = new int[line.Length];
-                                            for (int i = 0; i < line.Length; i++)
+                                        var fileStream = OFD.OpenFile();
+                                        using (StreamReader reader = new StreamReader(fileStream))
+                                        {
+                                            results.Clear();
+                                            while (!reader.EndOfStream)
                                             {
-                                                if (line[i] == "0")
+
+                                                // This can probably be done better
+                                                string[] line = reader.ReadLine().Split(',');
+                                                int[] intLine = new int[line.Length];
+                                                for (int i = 0; i < line.Length; i++)
                                                 {
-                                                    intLine[i] = 0;
+                                                    if (line[i] == "0")
+                                                    {
+                                                        intLine[i] = 0;
+                                                    }
+                                                    else if (line[i] != "")
+                                                    {
+                                                        intLine[i] = int.Parse(line[i]);
+                                                    }
+                                                    else
+                                                    {
+                                                        continue;
+                                                    }
                                                 }
-                                                else if (line[i] != "")
-                                                {
-                                                    intLine[i] = int.Parse(line[i]);
-                                                }
-                                                else
-                                                {
-                                                    continue;
-                                                }
+                                                Array.Resize(ref intLine, intLine.Length - 1);
+                                                results.Add(intLine);
                                             }
-                                            Array.Resize(ref intLine, intLine.Length - 1);
-                                            results.Add(intLine);
                                         }
                                     }
+                                    processResponseTimeData();
                                 }
-                                processResponseTimeData();
+                                catch (IOException iex)
+                                {
+                                    MessageBox.Show("Unable to open file - it may be in use in another program. Please close it out and try again.", "Unable to open file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
                             }
                         }
                         if (valid)
@@ -1364,7 +1585,29 @@ namespace OSRTT_Launcher
 
         private void testButtonToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Process.Start("explorer.exe", path + "\\008-AORUS-FI27Q-P-165-DP");
+            resultsFolderPath=  path + "\\008-AORUS-FI27Q-P-165-DP";
+            string[] folders = resultsFolderPath.Split('\\');
+            string monitorInfo = folders.Last();
+            monitorInfo = monitorInfo.Remove(0, 4);
+            string filePath = resultsFolderPath + "\\" + monitorInfo + "-FINAL-DATA-OSRTT.csv";
+            Console.WriteLine(resultsFolderPath);
+            Console.WriteLine(monitorInfo);
+            Console.WriteLine(filePath);
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            UpdateMe();
+        }
+
+        private void fpsLimitBtn_Click(object sender, EventArgs e)
+        {
+            setFPSLimit();
+        }
+        private void setFPSLimit()
+        {
+            var item = fpsList.Find(x => x.FPSValue == this.fpsLimitList.SelectedItem.ToString());
+            port.Write("L" + item.Key);
         }
     }
 }

@@ -1,3 +1,5 @@
+# ![OSRTT](icon_small.png)
+
 # OSRTT
 Open Source Response Time Tool - LCD response time tool, includes hardware, firmware and software!
 
@@ -16,10 +18,18 @@ My aim was to keep everything as transparent as possible, so when a test is begu
 # Usage
 - Assuming you have the hardware built, connect it via USB then run the launcher. **CONNECT IT DIRECTLY TO YOUR SYSTEM, OR AT LEAST A POWERED HUB**
 - On the first launch on a new device, you will be prompted to allow installation of additional files. This is installing the Arduino & Adafruit SAMD cores and Adafruit board library in %APP_DATA%\Arduino15. It may take a minute or two, but is necessary to connect to the board.
-- Once the launcher has connected to the device, you can launch the test program. 
-- Once the test program is up, press the button on the device. Use numbers 1 - 7 to limit the frame rate: 1 = 1000, 2 = 360, 3 = 240, 4 = 165, 5 = 144, 6 = 120, 7 = 60
+- Once the launcher has connected to the device, you can set how many times the test should run. Default is 3.
+- You can then launch the test program with the large button on the bottom. 
+- Once the test program is up, press the button on the device. Use numbers 1 - 8 to limit the frame rate: 1 = 1000, 2 = 360, 3 = 240, 4 = 165, 5 = 144, 6 = 120, 7 = 100, 8 = 60
 - Assuming the monitor's brightness is in the correct range, the device will run through the test sequence. By default it will run 3 times, although you can set that in the launcher. 
 - Once the test is complete, check the "Results" folder, the highest numbered folder with your current monitor, refresh rate and connection is the most recent result. "FINAL-DATA-OSRTT.csv" includes a list of the starting and ending RGB values, response time and overshoot percentage (gamma corrected)
+- If you'd like to manually analyse an individual file, or import an existing folder, click the "Analyse Results" button in the menu bar at the top, then use either button to select a file or folder to analyse.
+
+# The Files
+The desktop program saves 3 files per test run, plus a final averaged file at the end. So, by default the folder with the monitor's name, refresh rate and connection type will contain 3 "RAW" files, 3 "PROCESSED" files, and 3 "GAMMA" files.
+- RAW: The raw files are the full sample list from each run. The file doesn't have column headers, but is arranged as: Initial RGB value; Final RGB value; Time taken to collect samples; Number of samples; Data - where data is ~6420 16 bit integers the correspond to ADC (analog-to-digital-converter) readings from the light sensor on the bottom of the device. 
+- PROCESSED: The processed files are a column-headed table of the starting and ending RGB values, the response time in milliseconds and a gamma-corrected percentage of over/undershoot. Gamma corrected meaning instead of giving a percentage of how much extra light output there was, instead referencing that light level against the full gamma table and using the RGB value that light reading corresponds to as our comparison to what the final RGB value should be.
+- GAMMA: Gamma files are an interpolated list of every RGB value from 0 to 255, calculated from the 11 'base' measurements the device takes during the test. These 'in-between' points currently aren't following a perfect trend line, instead are flat point-to-point additions so accuracy may be 1 or 2 RGB values off.
 
 # Building from source
 If you'd prefer to compile it yourself, you'll need to download the latest [Arduino CLI](https://github.com/arduino/arduino-cli), and place it in a folder called "arduinoCLI" in the working directory of the launcher. 
@@ -34,6 +44,8 @@ If you'd prefer to compile it yourself, you'll need to download the latest [Ardu
 - The program has a hand written algorithm for finding the start and end points of the transition. It bases this on 250 points at the start of the result and 400 points at the end. If the transition starts within that first 250 points, or ends during the final 400, the results may be slightly off. 
 - The hardware has no way to cancel the test mid-run except for disconnecting the USB cable - I have some ideas that may help with that but not yet implemented.
 - The hardware has no way of knowing if the test program (UE4 game) is the selected window. Again I've got ideas but not added any yet.
+- The test pattern is currently fixed. The processing software in theory is written such that you can run as many or as few RGB values as you like, with the key difficulty being RGB values that are too close to eachother. RGB 0 to RGB 26 is already so close that the program has had a hard time picking a start and end point effectively. Anything smaller than this I would expect to break the program - although shorter sequences should work just fine. You'll need to modify the OSRTT_FULL_CODE.ino file, and if you want to use different RGB values rather than remove some, you'll also need to modify the Unreal Engine project too.
+- The serial connection isn't perfect - I'm sure this could be made better so if you've done reliable data transfer over serial with C# please do have a look! My biggest issue is with the amount of data, it's likely upwards of 50KB per line so the in buffer size is now 64KB just in case.
 - The hardware is well suited to doing input lag testing, but as of yet that's something I've not explored. I do aim to do that fairly soon, possibly with a "switch mode" option which will load a different .ino file rather than extending the response time file. Not sure yet.
 - I'm not a professional developer, so I can guarantee this program doesn't conform to best practices. Don't worry, I'm not running the processing on the UI thread! I've tested everything before publication but if you do find any errors either in use or in the code please do let me know in an Issue or Pull Request
 

@@ -55,6 +55,7 @@ SPISettings settingsA(10000000, MSBFIRST, SPI_MODE0);
 bool connected = false;
 String firmware = "1.0";
 int testRuns = 2;
+char fpsLimit = '1';
 
 void ADC_Clocks()
 {
@@ -130,7 +131,6 @@ int checkLightLevel()
       Serial.print(value);
   while(value <= 64000 || value >= 64001)
   {
-    Serial.println("While Loop");
     ADC0->SWTRIG.bit.START = 1; //Start ADC 
     while(!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
     value = ADC0->RESULT.reg;
@@ -206,8 +206,10 @@ void runADC(int curr, int nxt, char key)
 
     // Set next colour
     Keyboard.print(key);  // This order may not work
-    
+
+    curr_time = micros(); //need to run this in case board is left connected for long period as first run won't read any samples
     long start_time = micros();
+    
   
     //50ms worth of samples @100ksps= 5000 samples
     //50ms worth of samples @129ksps = 6451 samples
@@ -340,18 +342,32 @@ void loop() {
     }
     else if (input[0] == 'F')
     {
-      digitalWrite(13, LOW);
-      delay(1000);
-      digitalWrite(13, HIGH);
+      Serial.println("FW:" + firmware);
+    }
+    else if (input[0] == 'I')
+    {
+      testRuns = input[1] - '0';
+      delay(100);
+      Serial.print("Runs:");
+      char runs = testRuns + '0';
+      Serial.println(testRuns);
+      delay(100);
       Serial.println("FW:" + firmware);
     }
     else if (input[0] == 'M')
     {
       testRuns = input[1] - '0';
       delay(100);
-      Serial.print("Runs: ");
+      Serial.print("Runs:");
       char runs = testRuns + '0';
       Serial.println(testRuns);
+    }
+    else if (input[0] == 'L')
+    {
+      fpsLimit = input[1];
+      delay(100);
+      Serial.print("FPS Key:");
+      Serial.println(fpsLimit);
     }
     else if (input[0] == 'T')
     {
@@ -387,6 +403,9 @@ void loop() {
             }
             else
             {
+              // Set FPS limit (default 1000 FPS, key '1')
+              Keyboard.print(fpsLimit);
+              
               Serial.println("STARTING TEST"); 
               for (int k = 0; k <= testRuns; k++)
               {
@@ -448,6 +467,7 @@ void loop() {
                 }
               }
               digitalPotWrite(0x80);
+              delay(100);
               Serial.println("Test Complete");
             }
           }
