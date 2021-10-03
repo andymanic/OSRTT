@@ -1,4 +1,4 @@
-<img src="icon_small.png" width="200">
+/*<img src="icon_small.png" width="200">*/
 
 # OSRTT
 Open Source Response Time Tool - LCD response time tool, includes hardware, firmware and software!
