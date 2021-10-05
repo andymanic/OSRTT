@@ -123,7 +123,7 @@ int checkLightLevel()
 {
   Keyboard.write('f');
   delay(200);
-  int potValue = 100;
+  int potValue = 160;
   ADC0->SWTRIG.bit.START = 1; //Start ADC 
   while(!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
   int value = ADC0->RESULT.reg;
@@ -158,7 +158,7 @@ int checkLightLevel()
     {
       break;  
     }
-    if (potValue == 0 || potValue == 255)
+    if (potValue <= 155 || potValue == 255)
     {
       Serial.print("Unable to set brightness, last value: ");
       Serial.println(value);
@@ -171,33 +171,6 @@ int checkLightLevel()
   Keyboard.write('q');
   delay(200);
   return 1;
-  //Check to see if the dark level is too close to noise floor
-//  ADC0->SWTRIG.bit.START = 1; //Start ADC 
-//  while(!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
-//  int lowValue = ADC0->RESULT.reg;
-//  
-//  if (lowValue <= 2400) //verify noise floor
-//  {
-//    Serial.print("Brightness too low - dark: ");
-//    Serial.println(lowValue);
-//    ADC0->SWTRIG.bit.START = 0; //Stop ADC 
-//    return 0;
-//  }
-//  else if (lowValue >= 5000)
-//  {
-//    Serial.print("Monitor brightness too high: ");
-//    Serial.println(lowValue);
-//    ADC0->SWTRIG.bit.START = 0; //Stop ADC 
-//    return 0;
-//  }
-//  else
-//  {
-//    Serial.print("Monitor brightness correct: ");
-//    Serial.println(lowValue);
-//    runADC(0, 26, 'f');
-//    ADC0->SWTRIG.bit.START = 0; //Stop ADC 
-//    return 1;
-//  }
 }
 
 void runADC(int curr, int nxt, char key)

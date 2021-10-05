@@ -25,12 +25,12 @@ namespace OSRTT_Launcher
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
         private double boardVersion = 1.0;
         private double downloadedFirmwareVersion = 1.0;
-        private string softwareVersion = "0.9";
+        private string softwareVersion = "1.0";
 
         // TODO //
         // handle failed results inputs just in case 
-        // settings runs to 5 ran 6 times - offset required?
-        // get current focused window, if ue4 game isn't selected port.write("C"); until it is then port.write("T");
+        // OVERSHOOT CALCULATION IS REAL BAD - TEST/FIX
+        // get current focused window, if ue4 game isn't selected port.write("C"); until it is then port.write("T"); ----------------- TEST THIS
         // messagebox don't always play sound, may not draw over ue4 game?
         // 
         // TESTING
@@ -240,9 +240,8 @@ namespace OSRTT_Launcher
                             connectToBoard(p);
                             Thread.Sleep(2000);
                             SetDeviceStatus("Connected to Device!");
-                            ControlLaunchButton(true);
-                            ControlRepeatButton(true);
-                            ControlFPSButton(true);
+                            ControlDeviceButtons(true);
+                            
                         }
                         catch (Exception e)
                         {
@@ -258,9 +257,7 @@ namespace OSRTT_Launcher
                         p = port.PortName;
                         if (port.IsOpen)
                         {
-                            ControlLaunchButton(false);
-                            ControlRepeatButton(false);
-                            ControlFPSButton(false);
+                            ControlDeviceButtons(false);
                             // readThread.Abort();
                             port.Close();
                         }
@@ -346,9 +343,7 @@ namespace OSRTT_Launcher
             else
             {
                 SetDeviceStatus("Board Disconnected");
-                ControlLaunchButton(false);
-                ControlRepeatButton(false);
-                ControlFPSButton(false);
+                ControlDeviceButtons(false);
             }
         }
 
@@ -364,37 +359,19 @@ namespace OSRTT_Launcher
                 }
             }
         }
-        private void ControlLaunchButton(bool state)
+        
+        private void ControlDeviceButtons(bool state)
         {
-            if (this.launchBtn.InvokeRequired)
+            if (this.launchBtn.InvokeRequired || this.setRepeatBtn.InvokeRequired || this.fpsLimitBtn.InvokeRequired)
             {
                 this.launchBtn.Invoke((MethodInvoker)(() => launchBtn.Enabled = state));
-            }
-            else
-            {
-                this.launchBtn.Enabled = state;
-            }
-        }
-
-        private void ControlRepeatButton(bool state)
-        {
-            if (this.setRepeatBtn.InvokeRequired)
-            {
                 this.setRepeatBtn.Invoke((MethodInvoker)(() => setRepeatBtn.Enabled = state));
-            }
-            else
-            {
-                this.setRepeatBtn.Enabled = state;
-            }
-        }
-        private void ControlFPSButton(bool state)
-        {
-            if (this.fpsLimitBtn.InvokeRequired)
-            {
                 this.fpsLimitBtn.Invoke((MethodInvoker)(() => fpsLimitBtn.Enabled = state));
             }
             else
             {
+                this.launchBtn.Enabled = state;
+                this.setRepeatBtn.Enabled = state;
                 this.fpsLimitBtn.Enabled = state;
             }
         }
@@ -592,9 +569,9 @@ namespace OSRTT_Launcher
                     }
                     else if (message.Contains("Test Complete"))
                     {
-                        // READ IN 
                         Thread.Sleep(500); //Had an issue with data processing not being finished by the time the command comes it to start averaging the data.
                         processMultipleRuns();
+                        port.Write("T");
                         DialogResult d = MessageBox.Show("Test complete, open results folder?","Test Complete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                         if (d == DialogResult.Yes)
                         {
@@ -672,9 +649,7 @@ namespace OSRTT_Launcher
                     Console.WriteLine("Trying to reconnect");
                     port.Close();
                     portConnected = false;
-                    ControlLaunchButton(false);
-                    ControlRepeatButton(false);
-                    ControlFPSButton(false);
+                    ControlDeviceButtons(false);
                     SetDeviceStatus("Board Disconnected");
                     readThread.Abort();
                 }
@@ -684,8 +659,7 @@ namespace OSRTT_Launcher
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             // When form is closed halt read thread & close Serial Port
-            ControlLaunchButton(false);
-            ControlRepeatButton(false);
+            ControlDeviceButtons(false);
             if (readThread != null)
             {
                 readThread.Abort();
@@ -720,19 +694,20 @@ namespace OSRTT_Launcher
                 Process.Start(ue4Path);
                 port.Write("T");
                 Process[] p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
-                ControlLaunchButton(false);
-                ControlRepeatButton(false);
-                ControlFPSButton(false);
+                ControlDeviceButtons(false);
                 while (p.Length == 0)
                 {
+                    // Added in case game hasn't finished launching yet
                     p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
                 }
+                Thread checkWindowThread = new Thread(new ThreadStart(this.checkFocusedWindow));
+                checkWindowThread.Start();
+                // Wait for game to close then send cancel command to board
                 p[0].WaitForExit();
+                checkWindowThread.Abort();
                 Console.WriteLine("Game closed");
                 port.Write("C");
-                ControlLaunchButton(true);
-                ControlRepeatButton(true);
-                ControlFPSButton(true);
+                ControlDeviceButtons(true);
             }
             catch (InvalidOperationException e)
             {
@@ -741,6 +716,23 @@ namespace OSRTT_Launcher
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "UE4 Project Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void checkFocusedWindow()
+        {
+            FocusedWindow fw = new FocusedWindow();
+            string pName = fw.GetForegroundProcessName();
+            while (pName == "ResponseTimeTest-Win64-Shipping")
+            { 
+                fw.GetForegroundProcessName();
+                Thread.Sleep(1000);
+            }
+            if (pName != "ResponseTimeTest-Win64-Shipping")
+            {
+                // cancel test? idk
+                port.Write("C");
+                Console.WriteLine("Process not selected");
             }
         }
 
@@ -1542,14 +1534,8 @@ namespace OSRTT_Launcher
 
         private void testButtonToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            resultsFolderPath=  path + "\\008-AORUS-FI27Q-P-165-DP";
-            string[] folders = resultsFolderPath.Split('\\');
-            string monitorInfo = folders.Last();
-            monitorInfo = monitorInfo.Remove(0, 4);
-            string filePath = resultsFolderPath + "\\" + monitorInfo + "-FINAL-DATA-OSRTT.csv";
-            Console.WriteLine(resultsFolderPath);
-            Console.WriteLine(monitorInfo);
-            Console.WriteLine(filePath);
+            Thread checkWindowThread = new Thread(new ThreadStart(this.checkFocusedWindow));
+            checkWindowThread.Start();
         }
 
         private void Form1_Load(object sender, EventArgs e)
