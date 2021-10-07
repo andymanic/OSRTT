@@ -20,7 +20,7 @@ using System.Resources;
 
 namespace OSRTT_Launcher
 {
-    public partial class Form1 : Form
+    public partial class Main : Form
     {
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
         private double boardVersion = 1.0;
@@ -29,9 +29,14 @@ namespace OSRTT_Launcher
 
         // TODO //
         // handle failed results inputs just in case 
-        // OVERSHOOT CALCULATION IS REAL BAD - TEST/FIX
         // get current focused window, if ue4 game isn't selected port.write("C"); until it is then port.write("T"); ----------------- TEST THIS
-        // messagebox don't always play sound, may not draw over ue4 game?
+        // messagebox don't always play sound, may not draw over ue4 game? - MAKE THEM PLAY SOUNDS!
+        // program can crash - change process data functions to separate files & call them in try/catch with message boxes
+        // test wouldn't start(button activate?) after initial launch - perhaps brightness was too high but no messagebox to show it?
+        //
+        //
+        // Brightness calibration window that loops brightness test when entered, fixed pot value of 170(?), readout to one side saying "too bright", "too dark"
+        // Lanuch button will have messagebox show on first press saying do you want to calibrate monitor brightness
         // 
         // TESTING
         // Test overshoot properly
@@ -50,9 +55,13 @@ namespace OSRTT_Launcher
         delegate void SetTextCallback(string text);
         private bool boardUpdate = false;
         private bool portConnected = false;
+        private bool brightnessCheck = false;
+        public bool brightnessWindowOpen = false;
 
         private int[] RGBArr;
         private int resultsLimit = 110;
+
+        private int potVal = 0;
 
         string path = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
         string resultsFolderPath = "";
@@ -77,6 +86,7 @@ namespace OSRTT_Launcher
         private Thread connectThread = null;
         private Thread processThread = null;
         private Thread launchGameThread = null;
+        private Thread checkWindowThread = null;
 
         private ResourceManager rm = OSRTT_Launcher.Properties.Resources.ResourceManager;
 
@@ -104,21 +114,19 @@ namespace OSRTT_Launcher
             };
         }
 
-        public Form1()
+        public Main()
         {
             Console.WriteLine(softwareVersion.ToString());
             InitializeComponent();
             this.Icon = (Icon)rm.GetObject("osrttIcon");
-            this.launchBtn.Enabled = false;
-            this.setRepeatBtn.Enabled = false;
-            this.fpsLimitBtn.Enabled = false;
+            ControlDeviceButtons(false);
             path = new Uri(System.IO.Path.GetDirectoryName(path)).LocalPath;
             path += @"\Results";
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
-            this.FormClosed += new FormClosedEventHandler(Form1_FormClosed);
+            this.FormClosed += new FormClosedEventHandler(Main_FormClosed);
             hardWorker = new BackgroundWorker();
             connectThread = new Thread(new ThreadStart(this.findAndConnectToBoard));
             connectThread.Start();
@@ -367,12 +375,14 @@ namespace OSRTT_Launcher
                 this.launchBtn.Invoke((MethodInvoker)(() => launchBtn.Enabled = state));
                 this.setRepeatBtn.Invoke((MethodInvoker)(() => setRepeatBtn.Enabled = state));
                 this.fpsLimitBtn.Invoke((MethodInvoker)(() => fpsLimitBtn.Enabled = state));
+                this.menuStrip1.Invoke((MethodInvoker)(() => BrightnessCalBtn.Visible = state));
             }
             else
             {
                 this.launchBtn.Enabled = state;
                 this.setRepeatBtn.Enabled = state;
                 this.fpsLimitBtn.Enabled = state;
+                this.BrightnessCalBtn.Visible = state;
             }
         }
 
@@ -400,7 +410,7 @@ namespace OSRTT_Launcher
             }
         }
 
-        private void sendText(string textToSend)
+        public void sendText(string textToSend)
         {
             if (port.IsOpen)
             {
@@ -579,26 +589,6 @@ namespace OSRTT_Launcher
                             Process.Start("explorer.exe", resultsFolderPath);
                         }
                     }
-                    else if (message.Contains("low"))
-                    {
-                        // Brightness too low - take brightnes reading and convert to a percentage to show how big a change is needed. 65,000 is the max supported reading, but 60,000 is the lower bound so picking 62,000 gives a middleground percentage
-                        string[] currentLevel = message.Split(':');
-                        int currLvl = int.Parse(currentLevel[1]);
-                        double percentOff = (100 - (currLvl / 64000) * 100);
-                        MessageBox.Show("Monitor Brightness Too Low! It's roughly " + percentOff + "% too dim. Please increase the brightness and press the button again.", "Test Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    else if (message.Contains("high"))
-                    {
-                        // Brightness too high - can't show % off figure as the values clip at 65,539
-                        MessageBox.Show("Monitor Brightness Too High! Please decrease the brightness and press the button again.", "Test Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    else if (message.Contains("Unable to set brightness"))
-                    {
-                        string[] currentLevel = message.Split(':');
-                        int currLvl = int.Parse(currentLevel[1]);
-                        MessageBox.Show("Unable to set sensor calibration, monitor brightness may be too low.", "Test Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-
                     else if (message.Contains("FW:"))
                     {
                         string[] sp = message.Split(':');
@@ -624,6 +614,25 @@ namespace OSRTT_Launcher
                         if (lim.FPSValue != selectedFps)
                         {
                             setSelectedFps(lim.FPSValue);
+                        }
+                    }
+                    else if (message.Contains("Brightness:"))
+                    {
+                        if (brightnessWindowOpen)
+                        {
+                            string[] sp = message.Split(':');
+                            updateBrightness(Int32.Parse(sp[1]));
+                        }
+                    }
+                    else if (message.Contains("TEST CANCELLED"))
+                    {
+                        if (message.Contains("LIGHT LEVEL"))
+                        {
+                            MessageBox.Show("ERROR - TEST CANCELLED. Monitor's brightness may not be in the acceptable range.", "Test Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        else if (message.Contains("USB VOLTAGE"))
+                        {
+                            MessageBox.Show("ERROR - TEST CANCELLED. USB supply voltage may be too low - please plug the device either directly into your system or a powered USB hub.", "Test Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                     else
@@ -656,10 +665,14 @@ namespace OSRTT_Launcher
             }
         }
 
-        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        private void Main_FormClosed(object sender, FormClosedEventArgs e)
         {
             // When form is closed halt read thread & close Serial Port
             ControlDeviceButtons(false);
+            if (checkWindowThread != null)
+            {
+                checkWindowThread.Abort();
+            }
             if (readThread != null)
             {
                 readThread.Abort();
@@ -670,6 +683,11 @@ namespace OSRTT_Launcher
             }
             if (port != null)
             {
+                try
+                {
+                    port.Write("C");
+                }
+                catch {}
                 port.Close();
             }
 
@@ -677,12 +695,27 @@ namespace OSRTT_Launcher
 
         private void launchBtn_Click(object sender, EventArgs e)
         {
+            if (!brightnessCheck)
+            {
+                DialogResult d = MessageBox.Show("It looks like you haven't calibrated your monitor brightness since launch, do you want to do that first? " +
+                "\n\n" + "Not calibrating the brightness level may lead to errors, failed tests or invalid data.", "Calibrate Monitor Brightness?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (d == DialogResult.Yes)
+                {
+                    launchBrightnessCal();
+                }
+            }
+            
+            // block game until brightness window closes - that done already thanks to dialog result?
             launchGameThread = new Thread(new ThreadStart(this.launchGameAndWaitForExit));
             launchGameThread.Start();
         }
 
         private void launchGameAndWaitForExit()
         {
+            while (brightnessWindowOpen)
+            {
+                Thread.Sleep(500);
+            }
             // Launch UE4 game
             // thinking about it you can probably just bundle this into one process instead of launching, then finding it again...
             string ue4Path = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
@@ -700,11 +733,11 @@ namespace OSRTT_Launcher
                     // Added in case game hasn't finished launching yet
                     p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
                 }
-                Thread checkWindowThread = new Thread(new ThreadStart(this.checkFocusedWindow));
-                checkWindowThread.Start();
+                //checkWindowThread = new Thread(new ThreadStart(this.checkFocusedWindow));
+                //checkWindowThread.Start();
                 // Wait for game to close then send cancel command to board
                 p[0].WaitForExit();
-                checkWindowThread.Abort();
+                //checkWindowThread.Abort();
                 Console.WriteLine("Game closed");
                 port.Write("C");
                 ControlDeviceButtons(true);
@@ -723,16 +756,16 @@ namespace OSRTT_Launcher
         {
             FocusedWindow fw = new FocusedWindow();
             string pName = fw.GetForegroundProcessName();
-            while (pName == "ResponseTimeTest-Win64-Shipping")
+            while (true)
             { 
-                fw.GetForegroundProcessName();
+                pName = fw.GetForegroundProcessName();
                 Thread.Sleep(1000);
-            }
-            if (pName != "ResponseTimeTest-Win64-Shipping")
-            {
-                // cancel test? idk
-                port.Write("C");
-                Console.WriteLine("Process not selected");
+                if (pName != "ResponseTimeTest-Win64-Shipping")
+                {
+                    // cancel test? idk
+                    port.Write("C");
+                    Console.WriteLine("Process not selected");
+                }
             }
         }
 
@@ -1094,7 +1127,7 @@ namespace OSRTT_Launcher
                 {
                     if (StartingRGB < EndRGB)
                     {
-                        if (maxValue > (endMax + 200)) //Check for overshoot
+                        if (maxValue > (endMax + 100)) //Check for overshoot
                         {
                             if (samples[j] > endMax)
                             {
@@ -1135,7 +1168,7 @@ namespace OSRTT_Launcher
                     }
                     else
                     {
-                        if (minValue < (endMin - 200)) //Check for undershoot
+                        if (minValue < (endMin - 100)) //Check for undershoot
                         {
                             if (samples[j] < endMin) //Check for under-shot finish point
                             {
@@ -1204,8 +1237,30 @@ namespace OSRTT_Launcher
                                 }
                                 break;
                             }
+                            else if (maxValue > fullGammaTable.Last()[1])
+                            {
+                                if (maxValue > 65500)
+                                {
+                                    overUnderRGB = -1;
+                                    break;
+                                }
+                                else
+                                {
+                                    overUnderRGB = 255;
+                                    break;
+
+                                }
+                            }
                         }
-                        overshootPercent = Math.Round((((overUnderRGB - EndRGB) / EndRGB) * 100), 2);
+                        if (overUnderRGB == -1)
+                        {
+                            overshootPercent = 100;
+                        }
+                        else
+                        {
+                            double os = (overUnderRGB - EndRGB) / EndRGB;
+                            overshootPercent = Math.Round((os * 100), 2);
+                        }
                     }
                 }
                 else
@@ -1221,21 +1276,31 @@ namespace OSRTT_Launcher
                             // Find what RGB value matches or exceeds the peak light reading for this run
                             if (minValue <= fullGammaTable[i][1])
                             {
-                                // Check if peak light reading is closer to upper or lower bound value
-                                int diff1 = fullGammaTable[i][1] - maxValue;
-                                int diff2 = maxValue - fullGammaTable[i - 1][1];
-                                if (diff1 < diff2)
+                                if (i == 0)
                                 {
-                                    overUnderRGB = fullGammaTable[i][0];
+                                    overUnderRGB = 0;
+                                    break;
                                 }
                                 else
                                 {
-                                    overUnderRGB = fullGammaTable[i - 1][0];
+                                    // Check if peak light reading is closer to upper or lower bound value
+                                    int diff1 = fullGammaTable[i][1] - minValue;
+                                    int diff2 = minValue - fullGammaTable[i - 1][1];
+                                    if (diff1 < diff2)
+                                    {
+                                        overUnderRGB = fullGammaTable[i][0];
+                                    }
+                                    else
+                                    {
+                                        overUnderRGB = fullGammaTable[i - 1][0];
+                                    }
+                                    break;
                                 }
-                                break;
                             }
                         }
-                        overshootPercent = Math.Round((((overUnderRGB - EndRGB) / EndRGB) * 100), 2);
+                        double os = (overUnderRGB - EndRGB) / EndRGB;
+                        os = os * -1;
+                        overshootPercent = Math.Round((os * 100), 2);
                     }
                 }
                 double transCount = transEnd - transStart;
@@ -1368,7 +1433,7 @@ namespace OSRTT_Launcher
                 // Output averaged results to file using folder name/monitor info
                 string[] folders = resultsFolderPath.Split('\\');
                 string monitorInfo = folders.Last();
-                monitorInfo = monitorInfo.Remove(0, 4);
+                //monitorInfo = monitorInfo.Remove(0, 4);
                 string filePath = resultsFolderPath + "\\" + monitorInfo + "-FINAL-DATA-OSRTT.csv";
                 string strSeparator = ",";
                 StringBuilder csvString = new StringBuilder();
@@ -1538,7 +1603,7 @@ namespace OSRTT_Launcher
             checkWindowThread.Start();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void Main_Load(object sender, EventArgs e)
         {
             UpdateMe();
         }
@@ -1551,6 +1616,120 @@ namespace OSRTT_Launcher
         {
             var item = fpsList.Find(x => x.FPSValue == this.fpsLimitList.SelectedItem.ToString());
             port.Write("L" + item.Key);
+        }
+
+        private void BrightnessCalBtn_Click(object sender, EventArgs e)
+        {
+            if (port != null)
+            {
+                //Thread brightCalThread = new Thread(new ThreadStart(this.launchBrightnessCal));
+                //brightCalThread.Start();
+
+                launchBrightnessCal();
+            }
+            else
+            {
+                MessageBox.Show("Error: device not connected. Please connect the hardware via USB and try again!", "Device Not Connected", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }    
+        }
+
+        private void launchBrightnessCal()
+        {
+            analysePanel.Location = new Point(1100, 283);
+            controlsPanel.Location = new Point(1100, 36);
+            brightnessPanel.Location = new Point(0, 0);
+            Size = new Size(1000, 800);
+            menuStrip1.Visible = false;
+            
+            richTextBox1.Location = new Point(1500, 36);
+            try
+            {
+                port.Write("B");
+                brightnessWindowOpen = true;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
+
+        private void updateBrightness(int lvl)
+        {
+            string txt = "";
+            
+            if (lvl < 63500)
+            {
+                txt = "Too Low!";
+            }
+            else if (lvl >= 63500 && lvl < 64500)
+            {
+                txt = "Perfect!";
+            }
+            else if (lvl >= 64500)
+            {
+                txt = "Too High!";
+            }
+            else
+            {
+                txt = "No Results";
+            }
+
+            this.rawValText.Invoke((MethodInvoker)(() => rawValText.Text = lvl.ToString()));
+            this.brightnessText.Invoke((MethodInvoker)(() => brightnessText.Text = txt));
+        }
+
+        private void closeWindowBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                brightnessCheck = true;
+                port.Write("C");
+                menuStrip1.Visible = true;
+                analysePanel.Location = new Point(12, 283);
+                controlsPanel.Location = new Point(12, 36);
+                brightnessPanel.Location = new Point(1100, 36);
+                Size = new Size(624, 321);
+                brightnessWindowOpen = false;
+
+                richTextBox1.Location = new Point(723, 36);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void incPotValBtn_Click(object sender, EventArgs e)
+        {
+            potVal += 1;
+            if (potVal > 5)
+            {
+                MessageBox.Show("Your monitor's brightness may be too low. Make sure your monitor is set to its maximum brightness, otherwise any results the tool generates may be inaccurate.", "Brightness Too Low", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else
+            {
+                try
+                {
+                    port.Write(potVal.ToString());
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
+        private void resetBtn_Click(object sender, EventArgs e)
+        {
+            potVal = 1;
+            try
+            {
+                port.Write(potVal.ToString());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }

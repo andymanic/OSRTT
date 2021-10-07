@@ -160,7 +160,7 @@ int checkLightLevel()
     }
     if (potValue <= 155 || potValue == 255)
     {
-      Serial.print("Unable to set brightness, last value: ");
+      Serial.print("TEST CANCELLED - LIGHT LEVEL");
       Serial.println(value);
       Keyboard.write('q');
       return 0;
@@ -175,8 +175,6 @@ int checkLightLevel()
 
 void runADC(int curr, int nxt, char key)
 {
-    //Serial.println("Light output results...");
-
     // Set next colour
     Keyboard.print(key);  // This order may not work
 
@@ -308,10 +306,40 @@ void loop() {
       }
       Serial.println();
     }
-    else if (input[0] == 'R')
+    else if (input[0] == 'B')
     {
-      connected = false;
-      digitalWrite(13, HIGH);  
+      // Brightness Calibration screen
+      Serial.setTimeout(100);
+      digitalPotWrite(170);
+      while (input[0] != 'C')
+      {
+          ADC0->SWTRIG.bit.START = 1; //Start ADC 
+          while(!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
+          int value = ADC0->RESULT.reg;
+          Serial.print("Brightness:");
+          Serial.println(value);
+
+          // Check serial for cancel or new potentiometer value
+          for (int i = 0; i < INPUT_SIZE + 1; i++)
+          {
+            input[i] = ' ';
+          }
+          byte sized = Serial.readBytes(input, INPUT_SIZE);
+          input[sized] = 0;
+          int in = input[0] - '0'; // Convert char to int  
+          if (in > 1 && in <= 5)
+          {
+            // Increment potentiometer value by multiples of 10 up to 220
+            int add = 10 * in;
+            add += 170;
+            digitalPotWrite(add);  
+          }
+          else if (in == 1)
+          {
+            digitalPotWrite(170);
+          }
+          delay(200);
+      }
     }
     else if (input[0] == 'F')
     {
@@ -326,6 +354,9 @@ void loop() {
       Serial.println(testRuns);
       delay(100);
       Serial.println("FW:" + firmware);
+      delay(100);
+      Serial.print("FPS Key:");
+      Serial.println(fpsLimit);
     }
     else if (input[0] == 'M')
     {
@@ -359,7 +390,7 @@ void loop() {
           if (voltageTest == 0)
           {
             // If brightness too low or high, don't run the test
-            Serial.println("Cancelling test");
+            Serial.println("TEST CANCELLED - USB VOLTAGE");
             digitalWrite(13, HIGH); 
             digitalPotWrite(0x80);
           } 
@@ -378,8 +409,10 @@ void loop() {
             {
               // Set FPS limit (default 1000 FPS, key '1')
               Keyboard.print(fpsLimit);
+              delay(50);
               
               Serial.println("STARTING TEST"); 
+              delay(50);
               for (int k = 0; k <= testRuns; k++)
               {
                 digitalWrite(13, LOW);
@@ -428,10 +461,10 @@ void loop() {
                       runADC(next, current, currentKey);
                     
                       // Wait short amount of time after finishing capturing
-                      delay(50);        
+                      delay(100);        
                     }
                   }
-                  delay(50);
+                  delay(150);
                 }
                 Serial.println("Run Complete");                
                 if (k != testRuns)
