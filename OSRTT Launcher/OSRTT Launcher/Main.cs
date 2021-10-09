@@ -116,25 +116,22 @@ namespace OSRTT_Launcher
 
         public Main()
         {
-            Console.WriteLine(softwareVersion.ToString());
             InitializeComponent();
             this.Icon = (Icon)rm.GetObject("osrttIcon");
             ControlDeviceButtons(false);
             path = new Uri(System.IO.Path.GetDirectoryName(path)).LocalPath;
             path += @"\Results";
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
+            if (!Directory.Exists(path)) { Directory.CreateDirectory(path); }
             this.FormClosed += new FormClosedEventHandler(Main_FormClosed);
             hardWorker = new BackgroundWorker();
             connectThread = new Thread(new ThreadStart(this.findAndConnectToBoard));
             connectThread.Start();
-            Size = new Size(624, 321);
+            Size = new Size(628, 275);
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             listMonitors();
             listFramerates();
             initialSetup();
+            testCount.Value = Properties.Settings.Default.Runs;
         }
         private void initialSetup()
         {
@@ -208,7 +205,7 @@ namespace OSRTT_Launcher
             {
                 fpsLimitList.Items.Add(f.FPSValue);
             }
-            fpsLimitList.SelectedIndex = 3; //CHANGE TO 0 FOR PRODUCTION
+            fpsLimitList.SelectedIndex = Properties.Settings.Default.FPS;
         }
 
         private void findAndConnectToBoard()
@@ -347,6 +344,7 @@ namespace OSRTT_Launcher
                 readThread.Start();
                 this.hardWorker.RunWorkerAsync();
                 port.Write("I" + (this.testCount.Value - 1).ToString());
+                setFPSLimit();
             }
             else
             {
@@ -370,18 +368,14 @@ namespace OSRTT_Launcher
         
         private void ControlDeviceButtons(bool state)
         {
-            if (this.launchBtn.InvokeRequired || this.setRepeatBtn.InvokeRequired || this.fpsLimitBtn.InvokeRequired)
+            if (this.launchBtn.InvokeRequired)
             {
                 this.launchBtn.Invoke((MethodInvoker)(() => launchBtn.Enabled = state));
-                this.setRepeatBtn.Invoke((MethodInvoker)(() => setRepeatBtn.Enabled = state));
-                this.fpsLimitBtn.Invoke((MethodInvoker)(() => fpsLimitBtn.Enabled = state));
                 this.menuStrip1.Invoke((MethodInvoker)(() => BrightnessCalBtn.Visible = state));
             }
             else
             {
                 this.launchBtn.Enabled = state;
-                this.setRepeatBtn.Enabled = state;
-                this.fpsLimitBtn.Enabled = state;
                 this.BrightnessCalBtn.Visible = state;
             }
         }
@@ -476,6 +470,20 @@ namespace OSRTT_Launcher
             else
             {
                 return fpsLimitList.SelectedItem.ToString();
+            }
+        }
+
+        private int getRunCount()
+        {
+            if (testCount.InvokeRequired)
+            {
+                return (int)testCount.Invoke(
+                  new Func<int>(() => Decimal.ToInt32(testCount.Value))
+                );
+            }
+            else
+            {
+                return Decimal.ToInt32(testCount.Value);
             }
         }
 
@@ -697,13 +705,16 @@ namespace OSRTT_Launcher
         {
             if (!brightnessCheck)
             {
-                DialogResult d = MessageBox.Show("It looks like you haven't calibrated your monitor brightness since launch, do you want to do that first? " +
-                "\n\n" + "Not calibrating the brightness level may lead to errors, failed tests or invalid data.", "Calibrate Monitor Brightness?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (d == DialogResult.Yes)
-                {
+                //DialogResult d = MessageBox.Show("It looks like you haven't calibrated your monitor brightness since launch, do you want to do that first? " +
+                //"\n\n" + "Not calibrating the brightness level may lead to errors, failed tests or invalid data.", "Calibrate Monitor Brightness?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                //if (d == DialogResult.Yes)
+                //{
                     launchBrightnessCal();
-                }
+                //}
             }
+            Properties.Settings.Default.FPS = fpsLimitList.SelectedIndex;
+            Properties.Settings.Default.Runs = Decimal.ToInt32(testCount.Value);
+            Properties.Settings.Default.Save();
             
             // block game until brightness window closes - that done already thanks to dialog result?
             launchGameThread = new Thread(new ThreadStart(this.launchGameAndWaitForExit));
@@ -716,6 +727,11 @@ namespace OSRTT_Launcher
             {
                 Thread.Sleep(500);
             }
+            // Save current & FPS to hardware on run
+            setFPSLimit();
+            setRepeats();
+
+
             // Launch UE4 game
             // thinking about it you can probably just bundle this into one process instead of launching, then finding it again...
             string ue4Path = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
@@ -844,11 +860,11 @@ namespace OSRTT_Launcher
         {
             if (analyseResultsToolStripMenuItem.Checked)
             {
-                Size = new Size(624, 467);
+                Size = new Size(628, 424);
             }
             else
             {
-                Size = new Size(624, 321);
+                Size = new Size(628, 275);
             }
 
         }
@@ -955,13 +971,6 @@ namespace OSRTT_Launcher
                 }
             }
             fullGammaTable.Add(gamma[10]);
-
-
-            foreach (var item in fullGammaTable)
-            {
-                Console.WriteLine(item[0] + "," + item[1]);
-            }
-
 
             // Then process the lines
             foreach (int[] item in this.results)
@@ -1248,7 +1257,6 @@ namespace OSRTT_Launcher
                                 {
                                     overUnderRGB = 255;
                                     break;
-
                                 }
                             }
                         }
@@ -1365,14 +1373,9 @@ namespace OSRTT_Launcher
             File.WriteAllText(gammaFilePath, gammaCsvString.ToString());
         }
 
-        private void setRepeatBtn_Click(object sender, EventArgs e)
-        {
-            setRepeats();
-        }
-
         private void setRepeats()
         {
-            decimal runs = this.testCount.Value - 1;
+            decimal runs = getRunCount() - 1;
             port.Write("M" + runs.ToString());
         }
 
@@ -1608,13 +1611,10 @@ namespace OSRTT_Launcher
             UpdateMe();
         }
 
-        private void fpsLimitBtn_Click(object sender, EventArgs e)
-        {
-            setFPSLimit();
-        }
+        
         private void setFPSLimit()
         {
-            var item = fpsList.Find(x => x.FPSValue == this.fpsLimitList.SelectedItem.ToString());
+            var item = fpsList.Find(x => x.FPSValue == getSelectedFps());
             port.Write("L" + item.Key);
         }
 
@@ -1635,13 +1635,22 @@ namespace OSRTT_Launcher
 
         private void launchBrightnessCal()
         {
-            analysePanel.Location = new Point(1100, 283);
+            analysePanel.Location = new Point(1100, 238);
             controlsPanel.Location = new Point(1100, 36);
             brightnessPanel.Location = new Point(0, 0);
             Size = new Size(1000, 800);
             menuStrip1.Visible = false;
             
             richTextBox1.Location = new Point(1500, 36);
+
+            if (!brightnessCheck)
+            {
+                closeWindowBtn.Text = "Continue";
+            }
+            else
+            {
+                closeWindowBtn.Text = "Stop Calibration";
+            }
             try
             {
                 port.Write("B");
@@ -1685,10 +1694,10 @@ namespace OSRTT_Launcher
                 brightnessCheck = true;
                 port.Write("C");
                 menuStrip1.Visible = true;
-                analysePanel.Location = new Point(12, 283);
+                analysePanel.Location = new Point(12, 238);
                 controlsPanel.Location = new Point(12, 36);
                 brightnessPanel.Location = new Point(1100, 36);
-                Size = new Size(624, 321);
+                Size = new Size(628, 275);
                 brightnessWindowOpen = false;
 
                 richTextBox1.Location = new Point(723, 36);

@@ -44,10 +44,8 @@
             this.devStat = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.controlsPanel = new System.Windows.Forms.Panel();
-            this.fpsLimitBtn = new System.Windows.Forms.Button();
             this.fpsLimitList = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.setRepeatBtn = new System.Windows.Forms.Button();
             this.testCount = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
             this.refreshMonitorListBtn = new System.Windows.Forms.Button();
@@ -78,12 +76,12 @@
             // 
             this.launchBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.launchBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.launchBtn.Font = new System.Drawing.Font("Arial Black", 16F, System.Drawing.FontStyle.Bold);
-            this.launchBtn.Location = new System.Drawing.Point(18, 172);
+            this.launchBtn.Font = new System.Drawing.Font("Consolas", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.launchBtn.Location = new System.Drawing.Point(18, 131);
             this.launchBtn.Name = "launchBtn";
             this.launchBtn.Size = new System.Drawing.Size(551, 46);
-            this.launchBtn.TabIndex = 0;
-            this.launchBtn.Text = "Launch Test Program";
+            this.launchBtn.TabIndex = 5;
+            this.launchBtn.Text = "Start Testing";
             this.launchBtn.UseVisualStyleBackColor = false;
             this.launchBtn.Click += new System.EventHandler(this.launchBtn_Click);
             // 
@@ -92,11 +90,11 @@
             this.resultsBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.resultsBtn.FlatAppearance.BorderSize = 0;
             this.resultsBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.resultsBtn.Font = new System.Drawing.Font("Arial Black", 18F, System.Drawing.FontStyle.Bold);
+            this.resultsBtn.Font = new System.Drawing.Font("Consolas", 20F, System.Drawing.FontStyle.Bold);
             this.resultsBtn.Location = new System.Drawing.Point(17, 47);
             this.resultsBtn.Name = "resultsBtn";
             this.resultsBtn.Size = new System.Drawing.Size(268, 75);
-            this.resultsBtn.TabIndex = 1;
+            this.resultsBtn.TabIndex = 6;
             this.resultsBtn.Text = "Import Raw Data File";
             this.resultsBtn.UseVisualStyleBackColor = false;
             this.resultsBtn.Click += new System.EventHandler(this.resultsBtn_Click);
@@ -123,8 +121,8 @@
             this.toolStripMenuItem1});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(611, 24);
-            this.menuStrip1.TabIndex = 4;
+            this.menuStrip1.Size = new System.Drawing.Size(2106, 24);
+            this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // analyseResultsToolStripMenuItem
@@ -153,6 +151,7 @@
             this.deviceToolStripMenuItem.Name = "deviceToolStripMenuItem";
             this.deviceToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
             this.deviceToolStripMenuItem.Text = "Device";
+            this.deviceToolStripMenuItem.Visible = false;
             // 
             // updateDeviceToolStripMenuItem
             // 
@@ -169,6 +168,7 @@
             this.resultsSettingsToolStripMenuItem.Name = "resultsSettingsToolStripMenuItem";
             this.resultsSettingsToolStripMenuItem.Size = new System.Drawing.Size(101, 20);
             this.resultsSettingsToolStripMenuItem.Text = "Results Settings";
+            this.resultsSettingsToolStripMenuItem.Visible = false;
             // 
             // debugModeToolStripMenuItem
             // 
@@ -176,6 +176,7 @@
             this.debugModeToolStripMenuItem.Name = "debugModeToolStripMenuItem";
             this.debugModeToolStripMenuItem.Size = new System.Drawing.Size(88, 20);
             this.debugModeToolStripMenuItem.Text = "Debug mode";
+            this.debugModeToolStripMenuItem.Visible = false;
             this.debugModeToolStripMenuItem.Click += new System.EventHandler(this.debugModeToolStripMenuItem_Click);
             // 
             // testButtonToolStripMenuItem
@@ -223,10 +224,8 @@
             // controlsPanel
             // 
             this.controlsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.controlsPanel.Controls.Add(this.fpsLimitBtn);
             this.controlsPanel.Controls.Add(this.fpsLimitList);
             this.controlsPanel.Controls.Add(this.label4);
-            this.controlsPanel.Controls.Add(this.setRepeatBtn);
             this.controlsPanel.Controls.Add(this.testCount);
             this.controlsPanel.Controls.Add(this.label2);
             this.controlsPanel.Controls.Add(this.refreshMonitorListBtn);
@@ -237,60 +236,35 @@
             this.controlsPanel.Controls.Add(this.devStat);
             this.controlsPanel.Location = new System.Drawing.Point(12, 36);
             this.controlsPanel.Name = "controlsPanel";
-            this.controlsPanel.Size = new System.Drawing.Size(588, 241);
+            this.controlsPanel.Size = new System.Drawing.Size(588, 192);
             this.controlsPanel.TabIndex = 15;
             this.controlsPanel.Tag = "";
-            // 
-            // fpsLimitBtn
-            // 
-            this.fpsLimitBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.fpsLimitBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.fpsLimitBtn.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fpsLimitBtn.Location = new System.Drawing.Point(428, 96);
-            this.fpsLimitBtn.Name = "fpsLimitBtn";
-            this.fpsLimitBtn.Size = new System.Drawing.Size(141, 26);
-            this.fpsLimitBtn.TabIndex = 22;
-            this.fpsLimitBtn.Text = "Save to Device";
-            this.fpsLimitBtn.UseVisualStyleBackColor = false;
-            this.fpsLimitBtn.Click += new System.EventHandler(this.fpsLimitBtn_Click);
             // 
             // fpsLimitList
             // 
             this.fpsLimitList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.fpsLimitList.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.fpsLimitList.FormattingEnabled = true;
-            this.fpsLimitList.Location = new System.Drawing.Point(215, 96);
+            this.fpsLimitList.Location = new System.Drawing.Point(158, 94);
             this.fpsLimitList.Name = "fpsLimitList";
-            this.fpsLimitList.Size = new System.Drawing.Size(207, 26);
-            this.fpsLimitList.TabIndex = 21;
+            this.fpsLimitList.Size = new System.Drawing.Size(145, 26);
+            this.fpsLimitList.TabIndex = 3;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(14, 96);
+            this.label4.Location = new System.Drawing.Point(14, 94);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(195, 24);
+            this.label4.Size = new System.Drawing.Size(138, 24);
             this.label4.TabIndex = 20;
-            this.label4.Text = "Set test framerate limit:";
-            // 
-            // setRepeatBtn
-            // 
-            this.setRepeatBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.setRepeatBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.setRepeatBtn.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.setRepeatBtn.Location = new System.Drawing.Point(387, 133);
-            this.setRepeatBtn.Name = "setRepeatBtn";
-            this.setRepeatBtn.Size = new System.Drawing.Size(182, 26);
-            this.setRepeatBtn.TabIndex = 19;
-            this.setRepeatBtn.Text = "Save to Device";
-            this.setRepeatBtn.UseVisualStyleBackColor = false;
-            this.setRepeatBtn.Click += new System.EventHandler(this.setRepeatBtn_Click);
+            this.label4.Text = "Framerate limit:";
             // 
             // testCount
             // 
+            this.testCount.Cursor = System.Windows.Forms.Cursors.Hand;
             this.testCount.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.testCount.Location = new System.Drawing.Point(326, 133);
+            this.testCount.Location = new System.Drawing.Point(524, 94);
             this.testCount.Maximum = new decimal(new int[] {
             10,
             0,
@@ -303,7 +277,7 @@
             0});
             this.testCount.Name = "testCount";
             this.testCount.Size = new System.Drawing.Size(45, 26);
-            this.testCount.TabIndex = 18;
+            this.testCount.TabIndex = 4;
             this.testCount.Value = new decimal(new int[] {
             3,
             0,
@@ -314,21 +288,21 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(14, 135);
+            this.label2.Location = new System.Drawing.Point(345, 94);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(301, 24);
+            this.label2.Size = new System.Drawing.Size(165, 24);
             this.label2.TabIndex = 17;
-            this.label2.Text = "Averaging - Number of tests to run:";
+            this.label2.Text = "Number of Cycles:";
             // 
             // refreshMonitorListBtn
             // 
             this.refreshMonitorListBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.refreshMonitorListBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.refreshMonitorListBtn.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.refreshMonitorListBtn.Location = new System.Drawing.Point(428, 59);
+            this.refreshMonitorListBtn.Font = new System.Drawing.Font("Consolas", 12.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.refreshMonitorListBtn.Location = new System.Drawing.Point(441, 59);
             this.refreshMonitorListBtn.Name = "refreshMonitorListBtn";
-            this.refreshMonitorListBtn.Size = new System.Drawing.Size(141, 26);
-            this.refreshMonitorListBtn.TabIndex = 16;
+            this.refreshMonitorListBtn.Size = new System.Drawing.Size(128, 26);
+            this.refreshMonitorListBtn.TabIndex = 2;
             this.refreshMonitorListBtn.Text = "Refresh List";
             this.refreshMonitorListBtn.UseVisualStyleBackColor = false;
             this.refreshMonitorListBtn.Click += new System.EventHandler(this.refreshMonitorListBtn_Click);
@@ -338,10 +312,10 @@
             this.monitorCB.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.monitorCB.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.monitorCB.FormattingEnabled = true;
-            this.monitorCB.Location = new System.Drawing.Point(202, 59);
+            this.monitorCB.Location = new System.Drawing.Point(195, 59);
             this.monitorCB.Name = "monitorCB";
-            this.monitorCB.Size = new System.Drawing.Size(220, 26);
-            this.monitorCB.TabIndex = 15;
+            this.monitorCB.Size = new System.Drawing.Size(238, 26);
+            this.monitorCB.TabIndex = 1;
             // 
             // label1
             // 
@@ -359,7 +333,7 @@
             this.analysePanel.Controls.Add(this.importRawFolder);
             this.analysePanel.Controls.Add(this.resultsBtn);
             this.analysePanel.Controls.Add(this.label3);
-            this.analysePanel.Location = new System.Drawing.Point(12, 283);
+            this.analysePanel.Location = new System.Drawing.Point(12, 238);
             this.analysePanel.Name = "analysePanel";
             this.analysePanel.Size = new System.Drawing.Size(588, 138);
             this.analysePanel.TabIndex = 16;
@@ -369,11 +343,11 @@
             this.importRawFolder.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.importRawFolder.FlatAppearance.BorderSize = 0;
             this.importRawFolder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.importRawFolder.Font = new System.Drawing.Font("Arial Black", 18F, System.Drawing.FontStyle.Bold);
+            this.importRawFolder.Font = new System.Drawing.Font("Consolas", 20F, System.Drawing.FontStyle.Bold);
             this.importRawFolder.Location = new System.Drawing.Point(301, 47);
             this.importRawFolder.Name = "importRawFolder";
             this.importRawFolder.Size = new System.Drawing.Size(268, 75);
-            this.importRawFolder.TabIndex = 14;
+            this.importRawFolder.TabIndex = 7;
             this.importRawFolder.Text = "Import Raw Data Folder";
             this.importRawFolder.UseVisualStyleBackColor = false;
             this.importRawFolder.Click += new System.EventHandler(this.importRawFolder_Click);
@@ -535,7 +509,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.ClientSize = new System.Drawing.Size(611, 284);
+            this.ClientSize = new System.Drawing.Size(2106, 795);
             this.Controls.Add(this.brightnessPanel);
             this.Controls.Add(this.analysePanel);
             this.Controls.Add(this.controlsPanel);
@@ -581,11 +555,9 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button refreshMonitorListBtn;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button setRepeatBtn;
         private System.Windows.Forms.NumericUpDown testCount;
         private System.Windows.Forms.Button importRawFolder;
         private System.Windows.Forms.ToolStripMenuItem testButtonToolStripMenuItem;
-        private System.Windows.Forms.Button fpsLimitBtn;
         private System.Windows.Forms.ComboBox fpsLimitList;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
