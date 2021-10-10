@@ -28,19 +28,10 @@ namespace OSRTT_Launcher
         private string softwareVersion = "1.0";
 
         // TODO //
-        // handle failed results inputs just in case 
         // get current focused window, if ue4 game isn't selected port.write("C"); until it is then port.write("T"); ----------------- TEST THIS
-        // messagebox don't always play sound, may not draw over ue4 game? - MAKE THEM PLAY SOUNDS!
         // program can crash - change process data functions to separate files & call them in try/catch with message boxes
         // test wouldn't start(button activate?) after initial launch - perhaps brightness was too high but no messagebox to show it?
         //
-        //
-        // Brightness calibration window that loops brightness test when entered, fixed pot value of 170(?), readout to one side saying "too bright", "too dark"
-        // Lanuch button will have messagebox show on first press saying do you want to calibrate monitor brightness
-        // 
-        // TESTING
-        // Test overshoot properly
-        // Test brightness setup (calibration window? extra step in arduino code?)
         // 
         //
         // Current known issues //
@@ -48,7 +39,6 @@ namespace OSRTT_Launcher
         // Device will still activate button even if program/game closed - check if serial connected on the board, if not connected break loop
         //
         // LOW PRIORITY
-        // "Set framerate cap" option (just presses the correspoinding key based on which dropdown option is selected and if checkbox is ticked, by default no?)
         // - Possibly set RGB values in C# 
 
         public static System.IO.Ports.SerialPort port;
