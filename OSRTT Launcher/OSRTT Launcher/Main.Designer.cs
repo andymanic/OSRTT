@@ -28,16 +28,24 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.launchBtn = new System.Windows.Forms.Button();
             this.resultsBtn = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.analyseResultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resultsSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.verboseOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.measurementsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.threePercentMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tenPercentMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.noGammaCorrectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gammaCorrectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.percentageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BrightnessCalBtn = new System.Windows.Forms.ToolStripMenuItem();
+            this.debugModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deviceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateDeviceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.resultsSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.debugModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.testButtonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.devStatLbl = new System.Windows.Forms.Label();
@@ -65,6 +73,9 @@
             this.closeWindowBtn = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
             this.brightnessPanel = new System.Windows.Forms.Panel();
+            this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.gamCorMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip1.SuspendLayout();
             this.controlsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.testCount)).BeginInit();
@@ -113,10 +124,10 @@
             this.menuStrip1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.analyseResultsToolStripMenuItem,
-            this.BrightnessCalBtn,
-            this.deviceToolStripMenuItem,
             this.resultsSettingsToolStripMenuItem,
+            this.BrightnessCalBtn,
             this.debugModeToolStripMenuItem,
+            this.deviceToolStripMenuItem,
             this.testButtonToolStripMenuItem,
             this.toolStripMenuItem1});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
@@ -134,6 +145,85 @@
             this.analyseResultsToolStripMenuItem.Text = "Analyse Results";
             this.analyseResultsToolStripMenuItem.Click += new System.EventHandler(this.analyseResultsToolStripMenuItem_Click);
             // 
+            // resultsSettingsToolStripMenuItem
+            // 
+            this.resultsSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.verboseOutputToolStripMenuItem,
+            this.measurementsToolStripMenuItem,
+            this.noGammaCorrectionToolStripMenuItem});
+            this.resultsSettingsToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.resultsSettingsToolStripMenuItem.Name = "resultsSettingsToolStripMenuItem";
+            this.resultsSettingsToolStripMenuItem.Size = new System.Drawing.Size(101, 20);
+            this.resultsSettingsToolStripMenuItem.Text = "Results Settings";
+            // 
+            // verboseOutputToolStripMenuItem
+            // 
+            this.verboseOutputToolStripMenuItem.CheckOnClick = true;
+            this.verboseOutputToolStripMenuItem.Name = "verboseOutputToolStripMenuItem";
+            this.verboseOutputToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.verboseOutputToolStripMenuItem.Text = "Verbose Output";
+            this.verboseOutputToolStripMenuItem.ToolTipText = "Include all processed fields in each \"FULL\" CSV. \r\nIncludes transition start & en" +
+    "d position, sample time, overshoot light level and overshoot RGB value.";
+            this.verboseOutputToolStripMenuItem.Click += new System.EventHandler(this.verboseOutputToolStripMenuItem_Click);
+            // 
+            // measurementsToolStripMenuItem
+            // 
+            this.measurementsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.gamCorMenuItem,
+            this.toolStripSeparator1,
+            this.threePercentMenuItem,
+            this.tenPercentMenuItem});
+            this.measurementsToolStripMenuItem.Name = "measurementsToolStripMenuItem";
+            this.measurementsToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.measurementsToolStripMenuItem.Text = "GtG Measurement Style";
+            // 
+            // threePercentMenuItem
+            // 
+            this.threePercentMenuItem.Checked = true;
+            this.threePercentMenuItem.CheckOnClick = true;
+            this.threePercentMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.threePercentMenuItem.Name = "threePercentMenuItem";
+            this.threePercentMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.threePercentMenuItem.Text = "3% / 97% Response Time";
+            this.threePercentMenuItem.Click += new System.EventHandler(this.threePercentMenuItem_Click);
+            // 
+            // tenPercentMenuItem
+            // 
+            this.tenPercentMenuItem.CheckOnClick = true;
+            this.tenPercentMenuItem.Name = "tenPercentMenuItem";
+            this.tenPercentMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.tenPercentMenuItem.Text = "10% / 90% Response Time";
+            this.tenPercentMenuItem.Click += new System.EventHandler(this.tenPercentMenuItem_Click);
+            // 
+            // noGammaCorrectionToolStripMenuItem
+            // 
+            this.noGammaCorrectionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.gammaCorrectedToolStripMenuItem,
+            this.percentageToolStripMenuItem});
+            this.noGammaCorrectionToolStripMenuItem.Name = "noGammaCorrectionToolStripMenuItem";
+            this.noGammaCorrectionToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.noGammaCorrectionToolStripMenuItem.Text = "Overshoot Settings";
+            // 
+            // gammaCorrectedToolStripMenuItem
+            // 
+            this.gammaCorrectedToolStripMenuItem.Checked = true;
+            this.gammaCorrectedToolStripMenuItem.CheckOnClick = true;
+            this.gammaCorrectedToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.gammaCorrectedToolStripMenuItem.Name = "gammaCorrectedToolStripMenuItem";
+            this.gammaCorrectedToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.gammaCorrectedToolStripMenuItem.Text = "Gamma Corrected";
+            this.gammaCorrectedToolStripMenuItem.Click += new System.EventHandler(this.gammaCorrectedToolStripMenuItem_Click);
+            // 
+            // percentageToolStripMenuItem
+            // 
+            this.percentageToolStripMenuItem.Checked = true;
+            this.percentageToolStripMenuItem.CheckOnClick = true;
+            this.percentageToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.percentageToolStripMenuItem.Name = "percentageToolStripMenuItem";
+            this.percentageToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.percentageToolStripMenuItem.Text = "Percentage";
+            this.percentageToolStripMenuItem.Click += new System.EventHandler(this.percentageToolStripMenuItem_Click);
+            // 
             // BrightnessCalBtn
             // 
             this.BrightnessCalBtn.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
@@ -141,6 +231,15 @@
             this.BrightnessCalBtn.Size = new System.Drawing.Size(124, 20);
             this.BrightnessCalBtn.Text = "Calibrate Brightness";
             this.BrightnessCalBtn.Click += new System.EventHandler(this.BrightnessCalBtn_Click);
+            // 
+            // debugModeToolStripMenuItem
+            // 
+            this.debugModeToolStripMenuItem.CheckOnClick = true;
+            this.debugModeToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.debugModeToolStripMenuItem.Name = "debugModeToolStripMenuItem";
+            this.debugModeToolStripMenuItem.Size = new System.Drawing.Size(88, 20);
+            this.debugModeToolStripMenuItem.Text = "Debug mode";
+            this.debugModeToolStripMenuItem.Click += new System.EventHandler(this.debugModeToolStripMenuItem_Click);
             // 
             // deviceToolStripMenuItem
             // 
@@ -161,23 +260,6 @@
             this.updateDeviceToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.updateDeviceToolStripMenuItem.Text = "Update Device Firmware";
             this.updateDeviceToolStripMenuItem.Click += new System.EventHandler(this.updateDeviceToolStripMenuItem_Click);
-            // 
-            // resultsSettingsToolStripMenuItem
-            // 
-            this.resultsSettingsToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.resultsSettingsToolStripMenuItem.Name = "resultsSettingsToolStripMenuItem";
-            this.resultsSettingsToolStripMenuItem.Size = new System.Drawing.Size(101, 20);
-            this.resultsSettingsToolStripMenuItem.Text = "Results Settings";
-            this.resultsSettingsToolStripMenuItem.Visible = false;
-            // 
-            // debugModeToolStripMenuItem
-            // 
-            this.debugModeToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.debugModeToolStripMenuItem.Name = "debugModeToolStripMenuItem";
-            this.debugModeToolStripMenuItem.Size = new System.Drawing.Size(88, 20);
-            this.debugModeToolStripMenuItem.Text = "Debug mode";
-            this.debugModeToolStripMenuItem.Visible = false;
-            this.debugModeToolStripMenuItem.Click += new System.EventHandler(this.debugModeToolStripMenuItem_Click);
             // 
             // testButtonToolStripMenuItem
             // 
@@ -263,8 +345,8 @@
             // testCount
             // 
             this.testCount.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.testCount.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.testCount.Location = new System.Drawing.Point(524, 94);
+            this.testCount.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.testCount.Location = new System.Drawing.Point(516, 94);
             this.testCount.Maximum = new decimal(new int[] {
             10,
             0,
@@ -276,7 +358,7 @@
             0,
             0});
             this.testCount.Name = "testCount";
-            this.testCount.Size = new System.Drawing.Size(45, 26);
+            this.testCount.Size = new System.Drawing.Size(53, 26);
             this.testCount.TabIndex = 4;
             this.testCount.Value = new decimal(new int[] {
             3,
@@ -288,7 +370,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(345, 94);
+            this.label2.Location = new System.Drawing.Point(342, 94);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(165, 24);
             this.label2.TabIndex = 17;
@@ -465,6 +547,7 @@
             // 
             this.closeWindowBtn.BackColor = System.Drawing.SystemColors.InactiveCaption;
             this.closeWindowBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.closeWindowBtn.Enabled = false;
             this.closeWindowBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.closeWindowBtn.Font = new System.Drawing.Font("Arial Unicode MS", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.closeWindowBtn.Location = new System.Drawing.Point(27, 699);
@@ -504,12 +587,32 @@
             this.brightnessPanel.Size = new System.Drawing.Size(994, 758);
             this.brightnessPanel.TabIndex = 28;
             // 
+            // notifyIcon
+            // 
+            this.notifyIcon.Visible = true;
+            this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_MouseDoubleClick);
+            // 
+            // gamCorMenuItem
+            // 
+            this.gamCorMenuItem.Checked = true;
+            this.gamCorMenuItem.CheckOnClick = true;
+            this.gamCorMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.gamCorMenuItem.Name = "gamCorMenuItem";
+            this.gamCorMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.gamCorMenuItem.Text = "Gamma Corrected Response Time";
+            this.gamCorMenuItem.Click += new System.EventHandler(this.gamCorMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(250, 6);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.ClientSize = new System.Drawing.Size(2106, 795);
+            this.ClientSize = new System.Drawing.Size(2106, 805);
             this.Controls.Add(this.brightnessPanel);
             this.Controls.Add(this.analysePanel);
             this.Controls.Add(this.controlsPanel);
@@ -574,6 +677,16 @@
         private System.Windows.Forms.Button closeWindowBtn;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Panel brightnessPanel;
+        private System.Windows.Forms.NotifyIcon notifyIcon;
+        private System.Windows.Forms.ToolStripMenuItem verboseOutputToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem measurementsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem noGammaCorrectionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem threePercentMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tenPercentMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gammaCorrectedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem percentageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gamCorMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
     }
 }
 

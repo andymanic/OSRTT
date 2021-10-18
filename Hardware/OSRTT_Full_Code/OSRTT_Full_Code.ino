@@ -119,7 +119,7 @@ void ADC_Init(Adc *ADCx)
   while(ADCx->SYNCBUSY.bit.ENABLE);
 }
 
-int checkLightLevel()
+int checkLightLevel() // Check light level & modulate potentiometer value 
 {
   Keyboard.write('f');
   delay(200);
@@ -173,7 +173,7 @@ int checkLightLevel()
   return 1;
 }
 
-void runADC(int curr, int nxt, char key)
+void runADC(int curr, int nxt, char key) // Run test, press key and print results
 {
     // Set next colour
     Keyboard.print(key);  // This order may not work
@@ -238,7 +238,7 @@ void digitalPotWrite(int value)
   SPI.endTransaction();  
 }
 
-int checkUSBVoltage()
+int checkUSBVoltage() // Check USB voltage is between 4.8V and 5.2V
 {
   ADC1->SWTRIG.bit.START = 1; //Start ADC1 
   while(!ADC1->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
@@ -384,7 +384,7 @@ void loop() {
         buttonState = digitalRead(buttonPin);
         if (buttonState == HIGH) //Run when button pressed
         {
-          Serial.setTimeout(1000);
+          Serial.setTimeout(200);
           // Check USB voltage level
           int voltageTest = checkUSBVoltage();
           if (voltageTest == 0)
@@ -393,6 +393,7 @@ void loop() {
             Serial.println("TEST CANCELLED - USB VOLTAGE");
             digitalWrite(13, HIGH); 
             digitalPotWrite(0x80);
+            break;
           } 
           else 
           {
@@ -404,6 +405,7 @@ void loop() {
               Serial.println("Cancelling test");
               digitalWrite(13, HIGH); 
               digitalPotWrite(0x80);
+              break;
             }
             else
             {
@@ -418,6 +420,7 @@ void loop() {
                 digitalWrite(13, LOW);
                 // If brightness fine, continue with test
                 long start_time = micros();
+                int delayTime = 200000;
                 
                 Serial.println("STARTING RUN"); 
                 // Get size of array for for loop, so it's expandable for different test sizes
@@ -444,32 +447,106 @@ void loop() {
           
                       // Wait short amount of time
                       delay(200);
-          
-                      // Set next colour
-                      //Keyboard.print(Keys[j]);  // This order may not work
                     
                       // Get light output values & pass in RGB values in use
                       runADC(current, next, Keys[j]);
           
                       // Wait short amount of time after finishing capturing
-                      delay(200);
-          
-                      // Set back to starting colour
-                      //Keyboard.print(currentKey);
+                      // Swapped delay with while loop polling serial
+                      start_time = micros();
+                      while(curr_time <= (start_time + delayTime))
+                      {
+                        for (int i = 0; i < INPUT_SIZE + 1; i++)
+                        {
+                          input[i] = ' ';
+                        }
+                        byte sized = Serial.readBytes(input, INPUT_SIZE);
+                        input[sized] = 0;  
+                        if (input[0] == 'P') // If game not selected, pause test
+                        {
+                          while (input[0] != 'C' && input[0] != 'S')
+                          {
+                            for (int i = 0; i < INPUT_SIZE + 1; i++)
+                            {
+                              input[i] = ' ';
+                            }
+                            byte sized = Serial.readBytes(input, INPUT_SIZE);
+                            input[sized] = 0; 
+                          }
+                        }
+                        else if (input[0] == 'C')
+                        {
+                          break;  
+                        }
+                        curr_time = micros(); //update current time
+                      }
             
                       // Get light output values & pass in RGB values in use
                       runADC(next, current, currentKey);
                     
                       // Wait short amount of time after finishing capturing
-                      delay(100);        
+                      start_time = micros();
+                      while(curr_time <= (start_time + delayTime))
+                      {
+                        for (int i = 0; i < INPUT_SIZE + 1; i++)
+                        {
+                          input[i] = ' ';
+                        }
+                        byte sized = Serial.readBytes(input, INPUT_SIZE);
+                        input[sized] = 0;  
+                        if (input[0] == 'P')
+                        {
+                          while (input[0] != 'C' && input[0] != 'S')
+                          {
+                            for (int i = 0; i < INPUT_SIZE + 1; i++)
+                            {
+                              input[i] = ' ';
+                            }
+                            byte sized = Serial.readBytes(input, INPUT_SIZE);
+                            input[sized] = 0; 
+                          }
+                        }
+                        else if (input[0] == 'C')
+                        {
+                          break;  
+                        }
+                        curr_time = micros(); //update current time
+                      }        
                     }
                   }
-                  delay(150);
                 }
                 Serial.println("Run Complete");                
                 if (k != testRuns)
                 {
-                  delay(5000);
+                  // Swapped delay with while loop polling serial
+                  start_time = micros();
+                  while(curr_time <= (start_time + (3000000)))
+                  {
+                    for (int i = 0; i < INPUT_SIZE + 1; i++)
+                    {
+                      input[i] = ' ';
+                    }
+                    byte sized = Serial.readBytes(input, INPUT_SIZE);
+                    input[sized] = 0;  
+                    
+                    if (input[0] == 'P')
+                    {
+                      while (input[0] != 'C' && input[0] != 'S')
+                      {
+                        for (int i = 0; i < INPUT_SIZE + 1; i++)
+                        {
+                          input[i] = ' ';
+                        }
+                        byte sized = Serial.readBytes(input, INPUT_SIZE);
+                        input[sized] = 0; 
+                      }
+                    }
+                    else if (input[0] == 'C')
+                    {
+                      break;  
+                    }
+                    curr_time = micros(); //update current time
+                  }
                 }
               }
               digitalPotWrite(0x80);

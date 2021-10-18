@@ -46,5 +46,77 @@ namespace OSRTT_Launcher.Properties {
                 this["FPS"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Verbose {
+            get {
+                return ((bool)(this["Verbose"]));
+            }
+            set {
+                this["Verbose"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool threePercentSetting {
+            get {
+                return ((bool)(this["threePercentSetting"]));
+            }
+            set {
+                this["threePercentSetting"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool tenPercentSetting {
+            get {
+                return ((bool)(this["tenPercentSetting"]));
+            }
+            set {
+                this["tenPercentSetting"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool gammaCorrectedSetting {
+            get {
+                return ((bool)(this["gammaCorrectedSetting"]));
+            }
+            set {
+                this["gammaCorrectedSetting"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool gammaPercentSetting {
+            get {
+                return ((bool)(this["gammaPercentSetting"]));
+            }
+            set {
+                this["gammaPercentSetting"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool gammaCorrRT {
+            get {
+                return ((bool)(this["gammaCorrRT"]));
+            }
+            set {
+                this["gammaCorrRT"] = value;
+            }
+        }
     }
 }
