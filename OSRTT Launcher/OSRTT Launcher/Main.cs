@@ -31,7 +31,7 @@ namespace OSRTT_Launcher
         // get current focused window, if ue4 game isn't selected port.write("C"); until it is then port.write("T"); ----------------- TEST THIS
         // program can crash - change process data functions to separate files & call them in try/catch with message boxes
         // test wouldn't start(button activate?) after initial launch - perhaps brightness was too high but no messagebox to show it?
-        //
+        // Overshoot - use first time it crosses end max, when it hits 65520, when it drops off that, when it finally drops to end to calculate/estimate 'actual' overshoot position.
         // 
         //
         // Current known issues //
@@ -153,7 +153,7 @@ namespace OSRTT_Launcher
             hardWorker = new BackgroundWorker();
             connectThread = new Thread(new ThreadStart(this.findAndConnectToBoard));
             connectThread.Start();
-            Size = new Size(628, 275);
+            changeSizeAndState("standard");
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             listMonitors();
             listFramerates();
@@ -451,10 +451,7 @@ namespace OSRTT_Launcher
             {
                 this.testCount.Invoke((MethodInvoker)(() => testCount.Value = runs));
             }
-            else
-            {
-                this.testCount.Value = runs;
-            }
+            else { this.testCount.Value = runs;}
         }
 
         private void setSelectedFps(string limit)
@@ -463,10 +460,7 @@ namespace OSRTT_Launcher
             {
                 this.fpsLimitList.Invoke((MethodInvoker)(() => fpsLimitList.SelectedItem = limit));
             }
-            else
-            {
-                this.fpsLimitList.SelectedItem = limit;
-            }
+            else { this.fpsLimitList.SelectedItem = limit; }
         }
 
         public void sendText(string textToSend)
@@ -489,17 +483,11 @@ namespace OSRTT_Launcher
                 this.statusTrayBtn.Text = text;
                 this.notifyIcon.Text = text;
             }
-            else
-            {
-                this.devStat.Text = text;
-            }
+            else { this.devStat.Text = text; }
         }
 
         private void SetText(string text)
         {
-            // InvokeRequired required compares the thread ID of the
-            // calling thread to the thread ID of the creating thread.
-            // If these threads are different, it returns true.
             if (this.richTextBox1.InvokeRequired)
             {
                 SetTextCallback d = new SetTextCallback(SetText);
@@ -520,10 +508,7 @@ namespace OSRTT_Launcher
                   new Func<int>(() => monitorCB.SelectedIndex)
                 );
             }
-            else
-            {
-                return monitorCB.SelectedIndex;
-            }
+            else { return monitorCB.SelectedIndex; }
         }
 
         private string getSelectedFps()
@@ -534,10 +519,7 @@ namespace OSRTT_Launcher
                   new Func<string>(() => fpsLimitList.SelectedItem.ToString())
                 );
             }
-            else
-            {
-                return fpsLimitList.SelectedItem.ToString();
-            }
+            else { return fpsLimitList.SelectedItem.ToString(); }
         }
 
         private int getRunCount()
@@ -548,10 +530,7 @@ namespace OSRTT_Launcher
                   new Func<int>(() => Decimal.ToInt32(testCount.Value))
                 );
             }
-            else
-            {
-                return Decimal.ToInt32(testCount.Value);
-            }
+            else { return Decimal.ToInt32(testCount.Value); }
         }
 
         public void Read()
@@ -610,10 +589,7 @@ namespace OSRTT_Launcher
                                     Console.WriteLine(values[i]);
                                 }
                             }
-                            else
-                            {
-                                continue;
-                            }
+                            else { continue; }
                         }
                         // Added extra check to make sure test is cancelled if there isn't a light level difference between start and end. Using 5 samples to account for noise.
                         int start = intValues[50] + intValues[51] + intValues[52] + intValues[53] + intValues[54];
@@ -783,11 +759,14 @@ namespace OSRTT_Launcher
         {
             // When form is closed halt read thread & close Serial Port
             notifyIcon.Visible = false;
-            try
-            {
-                port.Write("C");
+            if (port != null)
+            { 
+                try
+                {
+                    port.Write("C");
+                }
+                catch { Console.WriteLine("Port not open"); } 
             }
-            catch { }
             Process[] p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
             if (p.Length != 0)
             {
@@ -810,7 +789,6 @@ namespace OSRTT_Launcher
                 port.Close();
             }
             Environment.Exit(Environment.ExitCode);
-
         }
 
         private void launchBtn_Click(object sender, EventArgs e)
@@ -893,8 +871,6 @@ namespace OSRTT_Launcher
                 Thread.Sleep(1000);
                 if (pName != "ResponseTimeTest-Win64-Shipping")
                 {
-                    // cancel test? idk - select window?
-                    //port.Write("C");
                     Console.WriteLine("Process not selected");
                     port.Write("P");
                     paused = true;
@@ -903,7 +879,8 @@ namespace OSRTT_Launcher
                 { 
                     if (paused)
                     {
-                        port.Write("S"); 
+                        port.Write("S");
+                        paused = false;
                     }
                 }
                 if (testRunning == false)
@@ -991,13 +968,12 @@ namespace OSRTT_Launcher
         {
             if (analyseResultsToolStripMenuItem.Checked)
             {
-                Size = new Size(628, 424);
+                changeSizeAndState("analyse");
             }
             else
             {
-                Size = new Size(628, 275);
+                changeSizeAndState("standard");
             }
-
         }
 
         private void debugModeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1356,25 +1332,25 @@ namespace OSRTT_Launcher
                     // 10% / 90% Measurements 
                     if (Properties.Settings.Default.tenPercentSetting)
                     {
-                        if (StartingRGB < EndRGB)
+                        if (StartingRGB < EndRGB) 
                         {
-                            double range3 = (endMin - startMax) * 0.1;
-                            double start3 = startMax + range3;
-                            double end3 = endMin - range3;
-                            if (Properties.Settings.Default.gammaCorrRT)
+                            double range3 = (endMin - startMax) * 0.1; // Subtract low value from high value to get light level range
+                            double start3 = startMax + range3; // Start trigger value
+                            double end3 = endMin - range3; // End trigger value
+                            if (Properties.Settings.Default.gammaCorrRT) // RGB corrected overwrites light level trigger points
                             {
                                 double rgbRange = (EndRGB - StartingRGB) * 0.1;
                                 rgbRange = Math.Round(rgbRange, 0);
                                 start3 = fullGammaTable[Convert.ToInt32(StartingRGB + rgbRange)][1];
                                 end3 = fullGammaTable[Convert.ToInt32(EndRGB - rgbRange)][1];
                             }
-                            for (int j = 0; j < samples.Length; j++)
+                            for (int j = 0; j < samples.Length; j++) // search samples for start & end trigger points
                             {
-                                if (samples[j] >= start3 && percentTransStart == 0)
+                                if (samples[j] >= start3 && percentTransStart == 0) // save the FIRST time value exceeds start trigger
                                 {
                                     percentTransStart = j;
                                 }
-                                else if (samples[j] >= end3)
+                                else if (samples[j] >= end3) // Save when value exceeds end trigger then break.
                                 {
                                     percentTransEnd = j;
                                     break;
@@ -1962,13 +1938,9 @@ namespace OSRTT_Launcher
 
         private void launchBrightnessCal()
         {
-            analysePanel.Location = new Point(1100, 238);
-            controlsPanel.Location = new Point(1100, 36);
-            brightnessPanel.Location = new Point(0, 0);
-            Size = new Size(1000, 800);
-            menuStrip1.Visible = false;
+            changeSizeAndState("brightness");
             ready = false;
-            richTextBox1.Location = new Point(1500, 36);
+            
 
             if (!brightnessCheck)
             {
@@ -2026,13 +1998,9 @@ namespace OSRTT_Launcher
                 brightnessCheck = true;
                 port.Write("C");
                 menuStrip1.Visible = true;
-                analysePanel.Location = new Point(12, 238);
-                controlsPanel.Location = new Point(12, 36);
-                brightnessPanel.Location = new Point(1100, 36);
-                Size = new Size(628, 275);
+                changeSizeAndState("close brightness");
                 brightnessWindowOpen = false;
                 ready = false;
-                richTextBox1.Location = new Point(723, 36);
             }
             catch (Exception ex)
             {
@@ -2070,6 +2038,37 @@ namespace OSRTT_Launcher
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void changeSizeAndState(string state)
+        {
+            switch (state)
+            {
+                case "standard":
+                    Size = new Size(628, 275);
+                    break;
+                case "analyse":
+                    Size = new Size(628, 424);
+                    break;
+                case "brightness":
+                    analysePanel.Location = new Point(1100, 238);
+                    controlsPanel.Location = new Point(1100, 36);
+                    brightnessPanel.Location = new Point(0, 0);
+                    Size = new Size(1000, 800);
+                    richTextBox1.Location = new Point(1500, 36);
+                    menuStrip1.Visible = false;
+                    break;
+                case "close brightness":
+                    analysePanel.Location = new Point(12, 238);
+                    controlsPanel.Location = new Point(12, 36);
+                    brightnessPanel.Location = new Point(1100, 36);
+                    Size = new Size(628, 275);
+                    richTextBox1.Location = new Point(723, 36);
+                    break;
+                default:
+                    Size = new Size(628, 275);
+                    break;
             }
         }
 
