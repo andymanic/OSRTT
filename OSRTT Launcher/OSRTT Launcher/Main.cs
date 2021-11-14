@@ -28,18 +28,14 @@ namespace OSRTT_Launcher
         private string softwareVersion = "1.0";
 
         // TODO //
-        // get current focused window, if ue4 game isn't selected port.write("C"); until it is then port.write("T"); ----------------- TEST THIS
-        // program can crash - change process data functions to separate files & call them in try/catch with message boxes
-        // test wouldn't start(button activate?) after initial launch - perhaps brightness was too high but no messagebox to show it?
+        // get current focused window, if ue4 game isn't selected port.write("P"); until it is then port.write("T"); ----------------- TEST THIS
         // Overshoot - use first time it crosses end max, when it hits 65520, when it drops off that, when it finally drops to end to calculate/estimate 'actual' overshoot position.
-        // 
+        //
+        //
         //
         // Current known issues //
         // Device will continue to run test even if game closed/not selected/program error
-        // Device will still activate button even if program/game closed - check if serial connected on the board, if not connected break loop
         //
-        // LOW PRIORITY
-        // - Possibly set RGB values in C# 
 
         public static System.IO.Ports.SerialPort port;
         delegate void SetTextCallback(string text);
@@ -52,6 +48,7 @@ namespace OSRTT_Launcher
         private bool testRunning = false;
         private bool processingFailed = false;
         private bool ready = false;
+        private bool testMode = false;
 
         private int[] RGBArr;
         private int resultsLimit = 110;
@@ -158,8 +155,11 @@ namespace OSRTT_Launcher
             listMonitors();
             listFramerates();
             initialSetup();
+            checkFolderPermissions();
             testCount.Value = Properties.Settings.Default.Runs;
             verboseOutputToolStripMenuItem.Checked = Properties.Settings.Default.Verbose;
+            saveGammaTableToolStripMenuItem.Checked = Properties.Settings.Default.saveGammaTable;
+            saveSmoothedDataToolStripMenuItem.Checked = Properties.Settings.Default.saveSmoothData;
             threePercentMenuItem.Checked = Properties.Settings.Default.threePercentSetting;
             tenPercentMenuItem.Checked = Properties.Settings.Default.tenPercentSetting;
             gammaCorrectedToolStripMenuItem.Checked = Properties.Settings.Default.gammaCorrectedSetting;
@@ -271,6 +271,32 @@ namespace OSRTT_Launcher
             fpsLimitList.SelectedIndex = Properties.Settings.Default.FPS;
         }
 
+        private void checkFolderPermissions()
+        {
+            string filePath = path + "\\permissionsTest";
+            bool test = false;
+            try
+            {
+                Directory.CreateDirectory(filePath);
+                test = true;
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("Access to the path"))
+                {
+                    MessageBox.Show("Permissions Error - program unable to create new results folders, please relaunch the program as admin.", "Permissions Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    this.Close();
+                }
+            }
+            finally
+            {
+                if (test)
+                {
+                    Directory.Delete(filePath);
+                }
+            }
+        }
+
         private void findAndConnectToBoard()
         {
             while (true)
@@ -280,6 +306,11 @@ namespace OSRTT_Launcher
                     ControlDeviceButtons(false);
                     SetDeviceStatus("Board Disconnected");
                     testRunning = false;
+                    Process[] game = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
+                    if (game.Length != 0)
+                    {
+                        game[0].Kill();
+                    }
                     System.Diagnostics.Process process = new System.Diagnostics.Process();
                     process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                     process.StartInfo.FileName = "cmd.exe";
@@ -394,8 +425,8 @@ namespace OSRTT_Launcher
             port.BaudRate = 115200;
             port.DtrEnable = true;
             port.ReadTimeout = 5000;
-            port.WriteTimeout = 500;
-            port.ReadBufferSize = 64000;
+            port.WriteTimeout = 1000;
+            port.ReadBufferSize = 128000;
             Console.WriteLine("Port details set");
             try
             { port.Open(); }
@@ -602,7 +633,7 @@ namespace OSRTT_Launcher
                             }
                             else
                             {
-                                port.Write("C");
+                                port.Write("X");
                                 testRunning = false;
                                 MessageBox.Show("The last test result showed no difference in light level. The brightness may be too high. The test has been cancelled.", "Test Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
@@ -615,10 +646,48 @@ namespace OSRTT_Launcher
                             }
                             else
                             {
-                                port.Write("C");
+                                port.Write("X");
                                 testRunning = false;
                                 MessageBox.Show("The last test result showed no difference in light level. The brightness may be too high. The test has been cancelled.", "Test Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
+                        }
+                    }
+                    else if (message.Contains("Stability"))
+                    {
+                        // Split result string into individual results
+                        String newMessage = message.Remove(0, 10);
+                        string[] values = newMessage.Split(',');
+                        List<int> intValues = new List<int>();
+                        for (int i = 0; i < values.Length - 1; i++)
+                        {
+                            if (values[i] == "0")
+                            {
+                                intValues.Add(0);
+                            }
+                            else if (values[i] != "")
+                            {
+                                try
+                                {
+                                    intValues.Add(int.Parse(values[i]));
+                                }
+                                catch
+                                {
+                                    Console.WriteLine(values[i]);
+                                }
+                            }
+                            else { continue; }
+                        }
+                        intValues.RemoveRange(0, 200);
+                        int diff = intValues.Max() - intValues.Min();
+                        if (diff > 1000)
+                        {
+                            MessageBox.Show("ERROR: The monitor's backlight appears to be strobing significantly. This is likely to make any data collected innacurate, so it's best to turn any strobing off if possible." +
+                                "\n You are free to continue the test, but you may need to verify the results manually and the data may be unusable.", "Backlight Strobing Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        else if (diff > 500)
+                        {
+                            MessageBox.Show("ERROR: The monitor's backlight appears to be strobing. This may make any data collected innacurate, so it's best to turn any strobing off if possible." +
+                                "\n You are free to continue the test, but you may need to verify the results manually.", "Backlight Strobing Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                     else if (message.Contains("STARTING RUN"))
@@ -712,20 +781,92 @@ namespace OSRTT_Launcher
                         if (brightnessWindowOpen)
                         {
                             string[] sp = message.Split(':');
-                            updateBrightness(Int32.Parse(sp[1]));
+                            updateBrightness(Int32.Parse(sp[1]), Int32.Parse(sp[2]));
+                        }
+                    }
+                    else if (message.Contains("BRIGHTNESS CHECK"))
+                    {
+                        port.Write(potVal.ToString("X"));
+                    }
+                    else if (message.Contains("USB V:"))
+                    {
+                        SetText(message);
+                        String newMessage = message.Remove(0, 6);
+                        string[] values = newMessage.Split(',');
+                        List<int> intValues = new List<int>();
+                        for (int i = 0; i < values.Length - 1; i++)
+                        {
+                            if (values[i] == "0")
+                            {
+                                intValues.Add(0);
+                            }
+                            else if (values[i] != "")
+                            {
+                                try
+                                {
+                                    intValues.Add(int.Parse(values[i]));
+                                }
+                                catch
+                                {
+                                    Console.WriteLine(values[i]);
+                                }
+                            }
+                            else { continue; }
+                        }
+                        intValues.RemoveRange(0, 200);
+                        int diff = intValues.Max() - intValues.Min();
+                        if (diff > 1000)
+                        {
+                            MessageBox.Show("ERROR: The USB supply voltage is very noisy. This may mean the results are unusable. It's recommended to try a different USB port/controller before continuing.", "USB Voltage Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        /*else if (diff > 500)
+                        {
+                            MessageBox.Show("ERROR: The USB supply voltage is noisy. This may mean the results are unusable, or inaccurate.. It's recommended to try a different USB port/controller before continuing.", "USB Voltage Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }*/
+                        double voltage = intValues.Average();
+                        if (voltage < 46000 || voltage > 51500)
+                        {
+                            double v = voltage / 65520;
+                            v *= 3.3;
+                            v *= 2;
+                            DialogResult d = MessageBox.Show("USB voltage appears to be too low. Current reading is: " + v + "V. Target is 5V. \n Try moving the device to a powered hub or a direct port. Do you want to check again or quit?", "USB Voltage Out Of Spec", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                            if (d == DialogResult.Retry)
+                            {
+                                port.Write("I");
+                            }
+                            else
+                            {
+                                this.Close();
+                            }
+                        }
+                        else
+                        {
+                            if (voltage > 50000) { potVal = 0; }
+                            else if (voltage > 49500) { potVal = 1; }
+                            else if (voltage > 49000) { potVal = 2; }
+                            else if (voltage > 48500) { potVal = 3; }
+                            else if (voltage > 48000) { potVal = 4; }
+                            else if (voltage > 47500) { potVal = 6; }
+                            else { potVal = 7; }
                         }
                     }
                     else if (message.Contains("TEST CANCELLED"))
                     {
                         testRunning = false;
+                        testMode = false;
                         if (message.Contains("LIGHT LEVEL"))
                         {
                             MessageBox.Show("ERROR - TEST CANCELLED. Monitor's brightness may not be in the acceptable range.", "Test Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            brightnessCheck = false;
                         }
                         else if (message.Contains("USB VOLTAGE"))
                         {
                             MessageBox.Show("ERROR - TEST CANCELLED. USB supply voltage may be too low - please plug the device either directly into your system or a powered USB hub.", "Test Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
+                    }
+                    else if (message.Contains("Ready to test"))
+                    {
+                        testMode = true;
                     }
                     else
                     {
@@ -735,22 +876,27 @@ namespace OSRTT_Launcher
                 catch (TimeoutException ex)
                 {
                     Console.WriteLine(ex);
+                    SetText(ex.Message + ex.StackTrace);
                 }
                 catch (Exception e)
                 {
                     try
                     {
-                        port.Write("C");
+                        port.Write("X");
                     }
                     catch (Exception exc)
                     {
                         Console.WriteLine(exc);
                     }
+                    SetText(e.Message + e.StackTrace);
                     Console.WriteLine(e);
                     Console.WriteLine("Trying to reconnect");
                     port.Close();
                     portConnected = false;
                     readThread.Abort();
+                    testRunning = false;
+                    testMode = false;
+                    brightnessCheck = false;
                 }
             }
         }
@@ -763,7 +909,7 @@ namespace OSRTT_Launcher
             { 
                 try
                 {
-                    port.Write("C");
+                    port.Write("X");
                 }
                 catch { Console.WriteLine("Port not open"); } 
             }
@@ -795,12 +941,7 @@ namespace OSRTT_Launcher
         {
             if (!brightnessCheck)
             {
-                //DialogResult d = MessageBox.Show("It looks like you haven't calibrated your monitor brightness since launch, do you want to do that first? " +
-                //"\n\n" + "Not calibrating the brightness level may lead to errors, failed tests or invalid data.", "Calibrate Monitor Brightness?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                //if (d == DialogResult.Yes)
-                //{
-                    launchBrightnessCal();
-                //}
+                launchBrightnessCal();
             }
             Properties.Settings.Default.FPS = fpsLimitList.SelectedIndex;
             Properties.Settings.Default.Runs = Decimal.ToInt32(testCount.Value);
@@ -815,10 +956,13 @@ namespace OSRTT_Launcher
         {
             while (brightnessWindowOpen)
             {
-                Thread.Sleep(500);
+                Thread.Sleep(100);
             }
+            ControlDeviceButtons(false);
             // Save current & FPS to hardware on run
+            Thread.Sleep(200);
             setFPSLimit();
+            Thread.Sleep(200);
             setRepeats();
             testRunning = true;
 
@@ -827,17 +971,35 @@ namespace OSRTT_Launcher
             string ue4Path = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
             ue4Path = new Uri(System.IO.Path.GetDirectoryName(ue4Path)).LocalPath;
             ue4Path += @"\OSRTT UE4\ResponseTimeTest.exe";
-
             try
             {
                 Process.Start(ue4Path);
-                port.Write("T");
+            }
+            catch (Exception strE)
+            {
+                Console.WriteLine(strE);
+                SetText(strE.Message + strE.StackTrace);
+            }
+            try
+            {
                 Process[] p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
-                ControlDeviceButtons(false);
                 while (p.Length == 0)
                 {
                     // Added in case game hasn't finished launching yet
                     p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
+                }
+                while (!testMode) // hacky and I don't like it but for some reason it's not detecting this
+                {
+                    try
+                    {
+                        port.Write("T");
+                    }
+                    catch (Exception exc)
+                    {
+                        SetText(exc.Message + exc.StackTrace);
+                        Console.WriteLine(exc);
+                    }
+                    Thread.Sleep(200);
                 }
                 checkWindowThread = new Thread(new ThreadStart(this.checkFocusedWindow));
                 checkWindowThread.Start();
@@ -845,18 +1007,24 @@ namespace OSRTT_Launcher
                 p[0].WaitForExit();
                 checkWindowThread.Abort();
                 Console.WriteLine("Game closed");
-                port.Write("C");
+                SetText("Game closed");
+                port.Write("X");
                 ControlDeviceButtons(true);
                 testRunning = false;
-                //checkWindowThread.Abort();
+                testMode = false;
             }
             catch (InvalidOperationException e)
             {
                 Console.WriteLine(e);
             }
+            catch (IOException ioex)
+            {
+                Console.WriteLine(ioex);
+                SetText(ioex.Message + ioex.StackTrace + ioex.Source);
+            }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "UE4 Project Not Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message + " " + ex.StackTrace, "Error Launching Test", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -866,20 +1034,23 @@ namespace OSRTT_Launcher
             string pName = fw.GetForegroundProcessName();
             bool paused = false;
             while (true)
-            { 
-                pName = fw.GetForegroundProcessName();
+            {
                 Thread.Sleep(1000);
+                pName = fw.GetForegroundProcessName();
                 if (pName != "ResponseTimeTest-Win64-Shipping")
                 {
                     Console.WriteLine("Process not selected");
-                    port.Write("P");
-                    paused = true;
+                    if (!paused)
+                    {
+                        //port.Write("P");
+                        paused = true;
+                    }
                 }
                 else 
                 { 
                     if (paused)
                     {
-                        port.Write("S");
+                        //port.Write("S");
                         paused = false;
                     }
                 }
@@ -889,6 +1060,8 @@ namespace OSRTT_Launcher
                     if (p.Length != 0)
                     {
                         p[0].Kill();
+                        port.Write("X");
+                        break;
                     }
                 }
             }
@@ -978,8 +1151,7 @@ namespace OSRTT_Launcher
 
         private void debugModeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // REMOVE MEEEEEEEEEEEEEEEEEEEE
-            Size = new Size(1120, 850);
+            changeSizeAndState("debug");
             debugMode = debugModeToolStripMenuItem.Checked;
         }
 
@@ -1029,6 +1201,7 @@ namespace OSRTT_Launcher
             // First, create gamma array from the data
             List<int[]> gamma = new List<int[]>();
             List<int[]> fullGammaTable = new List<int[]>();
+            List<int[]> smoothedDataTable = new List<int[]>();
 
             try //Wrapped whole thing in try just in case
             {
@@ -1112,6 +1285,10 @@ namespace OSRTT_Launcher
                     }
 
                     samples = averagedSamples.Skip(period).ToArray(); //Moving average spoils the first 10 samples so currently removing them.
+
+                    List<int> fullSmoothedLine = new List<int> { StartingRGB, EndRGB, TimeTaken, SampleCount };
+                    fullSmoothedLine.AddRange(samples);
+                    smoothedDataTable.Add(fullSmoothedLine.ToArray());
 
                     int maxValue = samples.Max(); // Find the maximum value for overshoot
                     int minValue = samples.Min(); // Find the minimum value for undershoot
@@ -1243,6 +1420,9 @@ namespace OSRTT_Launcher
                         }
                     }
 
+                    // ADD THE SAME LOW BRIGHTNESS CHECK IN INSTEAD USING SMALLER VALUES
+
+
                     // Search for where the result stops transitioning (from the end) - end position is almost always more sensitive hence lower values - also must account for over/undershoot
                     for (int j = samples.Length - 1; j > 0; j--)
                     {
@@ -1270,18 +1450,38 @@ namespace OSRTT_Launcher
                             {
                                 if (samples[j] <= (endMin + 20)) //Check for regular finish point
                                 {
-                                    if ((samples[j - 100] < (samples[j] - 50) || samples[j - 106] < (samples[j] - 50))
-                                        && (samples[j - 125] < (samples[j] - 75) || samples[j - 131] < (samples[j] - 75))
-                                        && (samples[j - 150] < (samples[j] - 100) || samples[j - 156] < (samples[j] - 100))) // check the trigger point is actually the trigger and not noise
+                                    if (StartingRGB == 0 && EndRGB == 26)
                                     {
-                                        transEnd = j;
-                                        break;
+                                        if ((samples[j - 100] < (samples[j] - 25) || samples[j - 106] < (samples[j] - 25))
+                                        && (samples[j - 125] < (samples[j] - 50) || samples[j - 131] < (samples[j] - 50))
+                                        && (samples[j - 150] < (samples[j] - 75) || samples[j - 156] < (samples[j] - 75))) // check the trigger point is actually the trigger and not noise
+                                        {
+                                            transEnd = j;
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            if (samples[j] < endMin)
+                                            {
+                                                endMin = samples[j];
+                                            }
+                                        }
                                     }
                                     else
                                     {
-                                        if (samples[j] < endMin)
+                                        if ((samples[j - 100] < (samples[j] - 50) || samples[j - 106] < (samples[j] - 50))
+                                        && (samples[j - 125] < (samples[j] - 75) || samples[j - 131] < (samples[j] - 75))
+                                        && (samples[j - 150] < (samples[j] - 100) || samples[j - 156] < (samples[j] - 100))) // check the trigger point is actually the trigger and not noise
                                         {
-                                            endMin = samples[j];
+                                            transEnd = j;
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            if (samples[j] < endMin)
+                                            {
+                                                endMin = samples[j];
+                                            }
                                         }
                                     }
                                 }
@@ -1311,18 +1511,38 @@ namespace OSRTT_Launcher
                             {
                                 if (samples[j] > endMax) //Check for regular finish point
                                 {
-                                    if ((samples[j - 100] > (samples[j] + 50) || samples[j - 106] > (samples[j] + 50))
-                                        && (samples[j - 125] > (samples[j] + 75) || samples[j - 131] > (samples[j] + 75))
-                                        && (samples[j - 150] > (samples[j] + 100) || samples[j - 156] > (samples[j] + 100)))
+                                    if (StartingRGB == 26 && EndRGB == 0)
                                     {
-                                        transEnd = j;
-                                        break;
+                                        if ((samples[j - 100] > (samples[j] + 25) || samples[j - 106] > (samples[j] + 25))
+                                        && (samples[j - 125] > (samples[j] + 50) || samples[j - 131] > (samples[j] + 50))
+                                        && (samples[j - 150] > (samples[j] + 75) || samples[j - 156] > (samples[j] + 75)))
+                                        {
+                                            transEnd = j;
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            if (samples[j] > endMax)
+                                            {
+                                                endMax = samples[j];
+                                            }
+                                        }
                                     }
                                     else
                                     {
-                                        if (samples[j] > endMax)
+                                        if ((samples[j - 100] > (samples[j] + 50) || samples[j - 106] > (samples[j] + 50))
+                                        && (samples[j - 125] > (samples[j] + 75) || samples[j - 131] > (samples[j] + 75))
+                                        && (samples[j - 150] > (samples[j] + 100) || samples[j - 156] > (samples[j] + 100)))
                                         {
-                                            endMax = samples[j];
+                                            transEnd = j;
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            if (samples[j] > endMax)
+                                            {
+                                                endMax = samples[j];
+                                            }
                                         }
                                     }
                                 }
@@ -1619,28 +1839,55 @@ namespace OSRTT_Launcher
                 Console.WriteLine(filePath);
                 File.WriteAllText(filePath, csvString.ToString());
 
-                // Save Gamme curve to a file too
-                decimal gammaFileNumber = 001;
-                // search /Results folder for existing file names, pick new name
-                string[] existingGammaFiles = Directory.GetFiles(resultsFolderPath, "*-GAMMA-OSRTT.csv");
-                // Search \Results folder for existing results to not overwrite existing or have save conflict errors
-                foreach (var s in existingGammaFiles)
+                if (saveGammaTableToolStripMenuItem.Checked)
                 {
-                    decimal num = decimal.Parse(Path.GetFileNameWithoutExtension(s).Remove(3));
-                    if (num >= gammaFileNumber)
+                    // Save Gamma curve to a file too
+                    decimal gammaFileNumber = 001;
+                    // search /Results folder for existing file names, pick new name
+                    string[] existingGammaFiles = Directory.GetFiles(resultsFolderPath, "*-GAMMA-OSRTT.csv");
+                    // Search \Results folder for existing results to not overwrite existing or have save conflict errors
+                    foreach (var s in existingGammaFiles)
                     {
-                        gammaFileNumber = num + 1;
+                        decimal num = decimal.Parse(Path.GetFileNameWithoutExtension(s).Remove(3));
+                        if (num >= gammaFileNumber)
+                        {
+                            gammaFileNumber = num + 1;
+                        }
                     }
-                }
 
-                string gammaFilePath = resultsFolderPath + "\\" + gammaFileNumber.ToString("000") + "-GAMMA-OSRTT.csv";
-                StringBuilder gammaCsvString = new StringBuilder();
-                gammaCsvString.AppendLine("RGB, Light Reading");
-                foreach (var res in fullGammaTable)
-                {
-                    gammaCsvString.AppendLine(string.Join(strSeparator, res));
+                    string gammaFilePath = resultsFolderPath + "\\" + gammaFileNumber.ToString("000") + "-GAMMA-OSRTT.csv";
+                    StringBuilder gammaCsvString = new StringBuilder();
+                    gammaCsvString.AppendLine("RGB, Light Reading");
+                    foreach (var res in fullGammaTable)
+                    {
+                        gammaCsvString.AppendLine(string.Join(strSeparator, res));
+                    }
+                    File.WriteAllText(gammaFilePath, gammaCsvString.ToString());
                 }
-                File.WriteAllText(gammaFilePath, gammaCsvString.ToString());
+                if (saveSmoothedDataToolStripMenuItem.Checked)
+                {
+                    //Save Smoothed Data To File
+                    decimal smoothedFileNumber = 001;
+                    // search /Results folder for existing file names, pick new name
+                    string[] existingSmoothedFiles = Directory.GetFiles(resultsFolderPath, "*-CLEAN-OSRTT.csv");
+                    // Search \Results folder for existing results to not overwrite existing or have save conflict errors
+                    foreach (var s in existingSmoothedFiles)
+                    {
+                        decimal num = decimal.Parse(Path.GetFileNameWithoutExtension(s).Remove(3));
+                        if (num >= smoothedFileNumber)
+                        {
+                            smoothedFileNumber = num + 1;
+                        }
+                    }
+
+                    string smoothedFilePath = resultsFolderPath + "\\" + smoothedFileNumber.ToString("000") + "-CLEAN-OSRTT.csv";
+                    StringBuilder smoothedCsvString = new StringBuilder();
+                    foreach (var res in smoothedDataTable)
+                    {
+                        smoothedCsvString.AppendLine(string.Join(strSeparator, res));
+                    }
+                    File.WriteAllText(smoothedFilePath, smoothedCsvString.ToString());
+                }
             }
             catch
             {
@@ -1649,7 +1896,7 @@ namespace OSRTT_Launcher
                 {
                     if (port.IsOpen)
                     {
-                        port.Write("C");
+                        port.Write("X");
                         MessageBox.Show("One or more set of results failed to process and won't be included in the multi-run averaging. Brightness may be too high - try calibrating the brightness and running the test again.", "Processing Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         processingFailed = false;
                     }
@@ -1961,14 +2208,14 @@ namespace OSRTT_Launcher
             }
         }
 
-        private void updateBrightness(int lvl)
+        private void updateBrightness(int lvl, int val)
         {
             string txt = "";
-            if (lvl < 63500)
+            if (lvl < 62000)
             {
                 txt = "Too Low!";
             }
-            else if (lvl >= 60000 && lvl < 64800)
+            else if (lvl >= 62000 && lvl < 64800)
             {
                 ready = true;
                 txt = "Perfect!";
@@ -1984,7 +2231,7 @@ namespace OSRTT_Launcher
 
             this.rawValText.Invoke((MethodInvoker)(() => rawValText.Text = lvl.ToString()));
             this.brightnessText.Invoke((MethodInvoker)(() => brightnessText.Text = txt));
-            
+            this.potValLabel.Invoke((MethodInvoker)(() => potValLabel.Text = val.ToString()));
             if (ready)
             {
                 this.closeWindowBtn.Invoke((MethodInvoker)(() => closeWindowBtn.Enabled = true));
@@ -1996,7 +2243,7 @@ namespace OSRTT_Launcher
             try
             {
                 brightnessCheck = true;
-                port.Write("C");
+                port.Write("X");
                 menuStrip1.Visible = true;
                 changeSizeAndState("close brightness");
                 brightnessWindowOpen = false;
@@ -2011,15 +2258,16 @@ namespace OSRTT_Launcher
         private void incPotValBtn_Click(object sender, EventArgs e)
         {
             potVal += 1;
-            if (potVal > 5)
+            if (potVal > 15)
             {
                 MessageBox.Show("Your monitor's brightness may be too low. Make sure your monitor is set to its maximum brightness, otherwise any results the tool generates may be inaccurate.", "Brightness Too Low", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                incPotValBtn.Enabled = false;
             }
             else
             {
                 try
                 {
-                    port.Write(potVal.ToString());
+                    port.Write(potVal.ToString("X"));
                 }
                 catch (Exception ex)
                 {
@@ -2030,10 +2278,11 @@ namespace OSRTT_Launcher
 
         private void resetBtn_Click(object sender, EventArgs e)
         {
-            potVal = 1;
+            potVal = 0;
+            incPotValBtn.Enabled = true;
             try
             {
-                port.Write(potVal.ToString());
+                port.Write(potVal.ToString("X"));
             }
             catch (Exception ex)
             {
@@ -2052,12 +2301,13 @@ namespace OSRTT_Launcher
                     Size = new Size(628, 424);
                     break;
                 case "brightness":
-                    analysePanel.Location = new Point(1100, 238);
-                    controlsPanel.Location = new Point(1100, 36);
+                    analysePanel.Location = new Point(1500, 238);
+                    controlsPanel.Location = new Point(1500, 36);
                     brightnessPanel.Location = new Point(0, 0);
-                    Size = new Size(1000, 800);
-                    richTextBox1.Location = new Point(1500, 36);
+                    Size = new Size(1000, 800); // 1000, 800
+                    richTextBox1.Location = new Point(1500, 36); // 1500, 36
                     menuStrip1.Visible = false;
+                    //debugMode = true; //remove
                     break;
                 case "close brightness":
                     analysePanel.Location = new Point(12, 238);
@@ -2065,6 +2315,9 @@ namespace OSRTT_Launcher
                     brightnessPanel.Location = new Point(1100, 36);
                     Size = new Size(628, 275);
                     richTextBox1.Location = new Point(723, 36);
+                    break;
+                case "debug":
+                    Size = new Size(1120, 850);
                     break;
                 default:
                     Size = new Size(628, 275);
@@ -2095,13 +2348,23 @@ namespace OSRTT_Launcher
         {
             Exception e = (Exception)args.ExceptionObject;
             string type = e.Message.ToString();
+            
             if (type != "Safe handle has been closed")
             {
                 MessageBox.Show(e.Message, "Unexpected Error - Program Closing", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            else if (type.Contains("TimeoutException") || type.Contains("operation has timed out"))
+            {
+                Console.WriteLine(e.Message + e.StackTrace);
+            }
             else
             {
                 Console.WriteLine(e.Message + " " + e.StackTrace);
+                Process[] p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
+                if (p.Length != 0)
+                {
+                    p[0].Kill();
+                }
             }    
         }
 
@@ -2198,12 +2461,53 @@ namespace OSRTT_Launcher
 
         private void testButtonToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Console.WriteLine("Percent: " + Properties.Settings.Default.gammaPercentSetting);
-            Console.WriteLine("gamma: " + Properties.Settings.Default.gammaCorrectedSetting);
-            Console.WriteLine("3%: " + Properties.Settings.Default.threePercentSetting);
-            Console.WriteLine("10%: " + Properties.Settings.Default.tenPercentSetting);
-            Console.WriteLine("verbose: " + Properties.Settings.Default.Verbose);
-            Console.WriteLine("gamma corr rt: " + Properties.Settings.Default.gammaCorrRT);
+            try
+            {
+                makeResultsFolder();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + ex.StackTrace);
+            }
+
+        }
+
+        private void fpsLimitList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.FPS = fpsLimitList.SelectedIndex;
+            Properties.Settings.Default.Save();
+            if (port != null)
+            {
+                if (port.IsOpen)
+                {
+                    setFPSLimit();
+                }
+            }
+        }
+
+        private void testCount_ValueChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.Runs = Decimal.ToInt32(testCount.Value);
+            Properties.Settings.Default.Save();
+            if (port != null)
+            {
+                if (port.IsOpen)
+                {
+                    setRepeats();
+                }
+            }
+        }
+
+        private void saveGammaTableToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.saveGammaTable = saveGammaTableToolStripMenuItem.Checked;
+            Properties.Settings.Default.Save();
+        }
+
+        private void saveSmoothedDataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.saveSmoothData = saveSmoothedDataToolStripMenuItem.Checked;
+            Properties.Settings.Default.Save();
         }
     }
 }

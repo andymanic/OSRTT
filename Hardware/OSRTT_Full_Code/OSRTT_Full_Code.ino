@@ -56,6 +56,7 @@ bool connected = false;
 String firmware = "1.0";
 int testRuns = 2;
 char fpsLimit = '1';
+int USBV = 0;
 
 void ADC_Clocks()
 {
@@ -124,12 +125,12 @@ int checkLightLevel() // Check light level & modulate potentiometer value
   Keyboard.write('f');
   delay(200);
   int potValue = 160;
+  digitalPotWrite(potValue);
+  delay(100);
   ADC0->SWTRIG.bit.START = 1; //Start ADC 
   while(!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
   int value = ADC0->RESULT.reg;
-  Serial.print("Value: ");
-      Serial.print(value);
-  while(value <= 64000 || value >= 64001)
+  while(value <= 64000 || value >= 64801)
   {
     ADC0->SWTRIG.bit.START = 1; //Start ADC 
     while(!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
@@ -158,9 +159,9 @@ int checkLightLevel() // Check light level & modulate potentiometer value
     {
       break;  
     }
-    if (potValue <= 155 || potValue == 255)
+    if (potValue <= 159 || potValue == 255)
     {
-      Serial.print("TEST CANCELLED - LIGHT LEVEL");
+      Serial.print("TEST CANCELLED - LIGHT LEVEL:");
       Serial.println(value);
       Keyboard.write('q');
       return 0;
@@ -176,12 +177,11 @@ int checkLightLevel() // Check light level & modulate potentiometer value
 void runADC(int curr, int nxt, char key) // Run test, press key and print results
 {
     // Set next colour
-    Keyboard.print(key);  // This order may not work
+    Keyboard.print(key);
 
     curr_time = micros(); //need to run this in case board is left connected for long period as first run won't read any samples
     long start_time = micros();
     
-  
     //50ms worth of samples @100ksps= 5000 samples
     //50ms worth of samples @129ksps = 6451 samples
   
@@ -240,33 +240,24 @@ void digitalPotWrite(int value)
 
 int checkUSBVoltage() // Check USB voltage is between 4.8V and 5.2V
 {
-  ADC1->SWTRIG.bit.START = 1; //Start ADC1 
-  while(!ADC1->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
-  int voltage = ADC1->RESULT.reg; 
-  Serial.print("USB Voltage: ");
-  Serial.println(voltage);
-  
-  if (voltage < 47000)
+  int counter = 0;
+  while (counter < 1000) // first few samples always seem low, not an issue once it's "warmed up"
+  // so I'm 'waisting' a some samples to resolve that
   {
-    double calcVolt = (3.3 * (voltage/65536))*2;
-    Serial.print("USB Voltage too low: ");
-    Serial.println(calcVolt);
-    ADC1->SWTRIG.bit.START = 0; //Stop ADC 
-    return 0;
+    ADC1->SWTRIG.bit.START = 1; //Start ADC1 
+    while(!ADC1->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
+    adcBuff[counter] = ADC1->RESULT.reg;
+    counter++; 
   }
-  else if (voltage > 52250)
-  {
-    double calcVolt = (3.3 * (voltage/65536))*2;
-    Serial.print("USB Voltage too high: ");
-    Serial.println(calcVolt);
-    ADC1->SWTRIG.bit.START = 0; //Stop ADC 
-    return 0;
-  }
-  else
-  {
-    ADC1->SWTRIG.bit.START = 0; //Stop ADC 
-    return 1;  
-  }
+  Serial.print("USB V:");
+  for (int i = 0; i < counter; i++)
+      {
+        Serial.print(adcBuff[i]);
+        Serial.print(",");
+      }
+  Serial.println();
+  ADC1->SWTRIG.bit.START = 0; //Stop ADC 
+  return 0;
 }
 
 void setup() {
@@ -310,15 +301,28 @@ void loop() {
     {
       // Brightness Calibration screen
       Serial.setTimeout(100);
-      digitalPotWrite(170);
-      while (input[0] != 'C')
+      int potVal = 170;
+      digitalPotWrite(potVal);
+      Serial.println("BRIGHTNESS CHECK");
+      int sample_count = 0;
+      while(sample_count < 1000)
       {
-          ADC0->SWTRIG.bit.START = 1; //Start ADC 
-          while(!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
-          int value = ADC0->RESULT.reg;
-          Serial.print("Brightness:");
-          Serial.println(value);
-
+        ADC0->SWTRIG.bit.START = 1; //Start ADC 
+        while(!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
+        adcBuff[sample_count] = ADC0->RESULT.reg; //save new ADC value to buffer @ sample_count position  
+        sample_count++; //Increment sample count
+      }
+      Serial.print("Stability:");
+      for (int i = 0; i < sample_count; i++)
+      {
+        Serial.print(adcBuff[i]);
+        Serial.print(",");
+      }
+      Serial.println();
+      sample_count = 0;
+      
+      while (input[0] != 'X')
+      {
           // Check serial for cancel or new potentiometer value
           for (int i = 0; i < INPUT_SIZE + 1; i++)
           {
@@ -326,18 +330,35 @@ void loop() {
           }
           byte sized = Serial.readBytes(input, INPUT_SIZE);
           input[sized] = 0;
-          int in = input[0] - '0'; // Convert char to int  
-          if (in > 1 && in <= 5)
+          int in = 20;
+          if (input[0] <= 57)
+          {
+              in = input[0] - '0'; // Convert char to int  
+          }
+          else
+          {
+            in = input[0] - 55;
+          }
+          
+          if (in >= 1 && in <= 15)
           {
             // Increment potentiometer value by multiples of 10 up to 220
-            int add = 10 * in;
-            add += 170;
-            digitalPotWrite(add);  
+            int add = 2 * in;
+            potVal = 170 + add;
+            digitalPotWrite(potVal);  
           }
-          else if (in == 1)
+          else if (in == 0)
           {
-            digitalPotWrite(170);
+            potVal = 170;
+            digitalPotWrite(potVal);
           }
+          ADC0->SWTRIG.bit.START = 1; //Start ADC 
+          while(!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
+          int value = ADC0->RESULT.reg;
+          Serial.print("Brightness:");
+          Serial.print(value);
+          Serial.print(":");
+          Serial.println(potVal);
           delay(200);
       }
     }
@@ -350,20 +371,20 @@ void loop() {
       testRuns = input[1] - '0';
       delay(100);
       Serial.print("Runs:");
-      char runs = testRuns + '0';
       Serial.println(testRuns);
       delay(100);
       Serial.println("FW:" + firmware);
       delay(100);
       Serial.print("FPS Key:");
       Serial.println(fpsLimit);
+      delay(100);
+      int voltageTest = checkUSBVoltage();
     }
     else if (input[0] == 'M')
     {
       testRuns = input[1] - '0';
       delay(100);
       Serial.print("Runs:");
-      char runs = testRuns + '0';
       Serial.println(testRuns);
     }
     else if (input[0] == 'L')
@@ -376,8 +397,8 @@ void loop() {
     else if (input[0] == 'T')
     {
       Serial.println("Ready to test");
-      Serial.setTimeout(100);
-      while (input[0] != 'C')
+      Serial.setTimeout(200);
+      while (input[0] != 'X')
       {
         
         // Check if button has been pressed
@@ -420,7 +441,7 @@ void loop() {
                 digitalWrite(13, LOW);
                 // If brightness fine, continue with test
                 long start_time = micros();
-                int delayTime = 200000;
+                int delayTime = 100000;
                 
                 Serial.println("STARTING RUN"); 
                 // Get size of array for for loop, so it's expandable for different test sizes
@@ -464,7 +485,7 @@ void loop() {
                         input[sized] = 0;  
                         if (input[0] == 'P') // If game not selected, pause test
                         {
-                          while (input[0] != 'C' && input[0] != 'S')
+                          while (input[0] != 'X' && input[0] != 'S')
                           {
                             for (int i = 0; i < INPUT_SIZE + 1; i++)
                             {
@@ -472,9 +493,10 @@ void loop() {
                             }
                             byte sized = Serial.readBytes(input, INPUT_SIZE);
                             input[sized] = 0; 
+                            curr_time = micros(); //update current time
                           }
                         }
-                        else if (input[0] == 'C')
+                        else if (input[0] == 'X')
                         {
                           break;  
                         }
@@ -496,7 +518,7 @@ void loop() {
                         input[sized] = 0;  
                         if (input[0] == 'P')
                         {
-                          while (input[0] != 'C' && input[0] != 'S')
+                          while (input[0] != 'X' && input[0] != 'S')
                           {
                             for (int i = 0; i < INPUT_SIZE + 1; i++)
                             {
@@ -504,9 +526,10 @@ void loop() {
                             }
                             byte sized = Serial.readBytes(input, INPUT_SIZE);
                             input[sized] = 0; 
+                            curr_time = micros(); //update current time
                           }
                         }
-                        else if (input[0] == 'C')
+                        else if (input[0] == 'X')
                         {
                           break;  
                         }
@@ -531,7 +554,7 @@ void loop() {
                     
                     if (input[0] == 'P')
                     {
-                      while (input[0] != 'C' && input[0] != 'S')
+                      while (input[0] != 'X' && input[0] != 'S')
                       {
                         for (int i = 0; i < INPUT_SIZE + 1; i++)
                         {
@@ -539,9 +562,10 @@ void loop() {
                         }
                         byte sized = Serial.readBytes(input, INPUT_SIZE);
                         input[sized] = 0; 
+                        curr_time = micros(); //update current time
                       }
                     }
-                    else if (input[0] == 'C')
+                    else if (input[0] == 'X')
                     {
                       break;  
                     }

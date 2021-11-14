@@ -6,10 +6,11 @@
 
 !define APP_NAME "OSRTT Launcher"
 !define COMP_NAME "TechteamGB"
-!define WEB_SITE "https://github.com/andymanic/OSRTT"
+!define WEB_SITE "https://youtube.com/techteamgb"
 !define VERSION "01.00.00.00"
-!define COPYRIGHT "TechteamGB © 2021"
-!define DESCRIPTION "Launcher for the OSRTT hardware & analysis tool"
+!define COPYRIGHT "Andrew McDonald  © 2021"
+!define DESCRIPTION "OSRTT Launcher & Analysis Tool"
+!define LICENSE_TXT "W:\$Current Projects\Response Time Tool\OSRTT\OSRTT Launcher\OSRTT Launcher\bin\Release\LICENSE.txt"
 !define INSTALLER_NAME "W:\$Current Projects\Response Time Tool\OSRTT\Release Files\OSRTT Installer.exe"
 !define MAIN_APP_EXE "OSRTT Launcher.exe"
 !define INSTALL_TYPE "SetShellVarContext current"
@@ -50,8 +51,6 @@ InstallDir "$PROGRAMFILES\OSRTT Launcher"
 !insertmacro MUI_PAGE_LICENSE "${LICENSE_TXT}"
 !endif
 
-!insertmacro MUI_PAGE_DIRECTORY
-
 !ifdef REG_START_MENU
 !define MUI_STARTMENUPAGE_NODISABLE
 !define MUI_STARTMENUPAGE_DEFAULTFOLDER "OSRTT Launcher"
@@ -81,14 +80,15 @@ ${INSTALL_TYPE}
 SetOverwrite ifnewer
 SetOutPath "$INSTDIR"
 File "W:\$Current Projects\Response Time Tool\OSRTT\OSRTT Launcher\OSRTT Launcher\bin\Release\AutoUpdater.NET.dll"
-File "W:\$Current Projects\Response Time Tool\OSRTT\OSRTT Launcher\OSRTT Launcher\bin\Release\AutoUpdater.NET.pdb"
 File "W:\$Current Projects\Response Time Tool\OSRTT\OSRTT Launcher\OSRTT Launcher\bin\Release\AutoUpdater.NET.xml"
+File "W:\$Current Projects\Response Time Tool\OSRTT\OSRTT Launcher\OSRTT Launcher\bin\Release\LICENSE.txt"
 File "W:\$Current Projects\Response Time Tool\OSRTT\OSRTT Launcher\OSRTT Launcher\bin\Release\Microsoft.Management.Infrastructure.dll"
 File "W:\$Current Projects\Response Time Tool\OSRTT\OSRTT Launcher\OSRTT Launcher\bin\Release\Newtonsoft.Json.dll"
 File "W:\$Current Projects\Response Time Tool\OSRTT\OSRTT Launcher\OSRTT Launcher\bin\Release\Newtonsoft.Json.xml"
+File "W:\$Current Projects\Response Time Tool\OSRTT\OSRTT Launcher\OSRTT Launcher\bin\Release\OSRTT Launcher.application"
 File "W:\$Current Projects\Response Time Tool\OSRTT\OSRTT Launcher\OSRTT Launcher\bin\Release\OSRTT Launcher.exe"
 File "W:\$Current Projects\Response Time Tool\OSRTT\OSRTT Launcher\OSRTT Launcher\bin\Release\OSRTT Launcher.exe.config"
-File "W:\$Current Projects\Response Time Tool\OSRTT\OSRTT Launcher\OSRTT Launcher\bin\Release\OSRTT Launcher.pdb"
+File "W:\$Current Projects\Response Time Tool\OSRTT\OSRTT Launcher\OSRTT Launcher\bin\Release\OSRTT Launcher.exe.manifest"
 File "W:\$Current Projects\Response Time Tool\OSRTT\OSRTT Launcher\OSRTT Launcher\bin\Release\WindowsDisplayAPI.dll"
 File "W:\$Current Projects\Response Time Tool\OSRTT\OSRTT Launcher\OSRTT Launcher\bin\Release\WindowsDisplayAPI.xml"
 SetOutPath "$INSTDIR\OSRTT UE4"
@@ -209,14 +209,15 @@ SectionEnd
 Section Uninstall
 ${INSTALL_TYPE}
 Delete "$INSTDIR\AutoUpdater.NET.dll"
-Delete "$INSTDIR\AutoUpdater.NET.pdb"
 Delete "$INSTDIR\AutoUpdater.NET.xml"
+Delete "$INSTDIR\LICENSE.txt"
 Delete "$INSTDIR\Microsoft.Management.Infrastructure.dll"
 Delete "$INSTDIR\Newtonsoft.Json.dll"
 Delete "$INSTDIR\Newtonsoft.Json.xml"
+Delete "$INSTDIR\OSRTT Launcher.application"
 Delete "$INSTDIR\OSRTT Launcher.exe"
 Delete "$INSTDIR\OSRTT Launcher.exe.config"
-Delete "$INSTDIR\OSRTT Launcher.pdb"
+Delete "$INSTDIR\OSRTT Launcher.exe.manifest"
 Delete "$INSTDIR\WindowsDisplayAPI.dll"
 Delete "$INSTDIR\WindowsDisplayAPI.xml"
 Delete "$INSTDIR\OSRTT UE4\Manifest_NonUFSFiles_Win64.txt"

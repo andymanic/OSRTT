@@ -118,5 +118,29 @@ namespace OSRTT_Launcher.Properties {
                 this["gammaCorrRT"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool saveGammaTable {
+            get {
+                return ((bool)(this["saveGammaTable"]));
+            }
+            set {
+                this["saveGammaTable"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool saveSmoothData {
+            get {
+                return ((bool)(this["saveSmoothData"]));
+            }
+            set {
+                this["saveSmoothData"] = value;
+            }
+        }
     }
 }

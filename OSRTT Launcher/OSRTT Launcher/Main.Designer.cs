@@ -35,8 +35,9 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.analyseResultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resultsSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.verboseOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.measurementsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gamCorMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.threePercentMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tenPercentMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.noGammaCorrectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -74,8 +75,13 @@
             this.label9 = new System.Windows.Forms.Label();
             this.brightnessPanel = new System.Windows.Forms.Panel();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
-            this.gamCorMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.potValLabel = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.outputSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.saveGammaTableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveSmoothedDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.verboseOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.controlsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.testCount)).BeginInit();
@@ -148,23 +154,14 @@
             // resultsSettingsToolStripMenuItem
             // 
             this.resultsSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.verboseOutputToolStripMenuItem,
+            this.outputSettingsToolStripMenuItem,
+            this.toolStripSeparator2,
             this.measurementsToolStripMenuItem,
             this.noGammaCorrectionToolStripMenuItem});
             this.resultsSettingsToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.resultsSettingsToolStripMenuItem.Name = "resultsSettingsToolStripMenuItem";
             this.resultsSettingsToolStripMenuItem.Size = new System.Drawing.Size(101, 20);
             this.resultsSettingsToolStripMenuItem.Text = "Results Settings";
-            // 
-            // verboseOutputToolStripMenuItem
-            // 
-            this.verboseOutputToolStripMenuItem.CheckOnClick = true;
-            this.verboseOutputToolStripMenuItem.Name = "verboseOutputToolStripMenuItem";
-            this.verboseOutputToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.verboseOutputToolStripMenuItem.Text = "Verbose Output";
-            this.verboseOutputToolStripMenuItem.ToolTipText = "Include all processed fields in each \"FULL\" CSV. \r\nIncludes transition start & en" +
-    "d position, sample time, overshoot light level and overshoot RGB value.";
-            this.verboseOutputToolStripMenuItem.Click += new System.EventHandler(this.verboseOutputToolStripMenuItem_Click);
             // 
             // measurementsToolStripMenuItem
             // 
@@ -176,6 +173,21 @@
             this.measurementsToolStripMenuItem.Name = "measurementsToolStripMenuItem";
             this.measurementsToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.measurementsToolStripMenuItem.Text = "GtG Measurement Style";
+            // 
+            // gamCorMenuItem
+            // 
+            this.gamCorMenuItem.Checked = true;
+            this.gamCorMenuItem.CheckOnClick = true;
+            this.gamCorMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.gamCorMenuItem.Name = "gamCorMenuItem";
+            this.gamCorMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.gamCorMenuItem.Text = "Gamma Corrected Response Time";
+            this.gamCorMenuItem.Click += new System.EventHandler(this.gamCorMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(250, 6);
             // 
             // threePercentMenuItem
             // 
@@ -331,6 +343,7 @@
             this.fpsLimitList.Name = "fpsLimitList";
             this.fpsLimitList.Size = new System.Drawing.Size(145, 26);
             this.fpsLimitList.TabIndex = 3;
+            this.fpsLimitList.SelectedIndexChanged += new System.EventHandler(this.fpsLimitList_SelectedIndexChanged);
             // 
             // label4
             // 
@@ -365,6 +378,7 @@
             0,
             0,
             0});
+            this.testCount.ValueChanged += new System.EventHandler(this.testCount_ValueChanged);
             // 
             // label2
             // 
@@ -571,6 +585,8 @@
             // 
             // brightnessPanel
             // 
+            this.brightnessPanel.Controls.Add(this.potValLabel);
+            this.brightnessPanel.Controls.Add(this.label11);
             this.brightnessPanel.Controls.Add(this.whitePanel);
             this.brightnessPanel.Controls.Add(this.rawValText);
             this.brightnessPanel.Controls.Add(this.label9);
@@ -592,20 +608,68 @@
             this.notifyIcon.Visible = true;
             this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_MouseDoubleClick);
             // 
-            // gamCorMenuItem
+            // potValLabel
             // 
-            this.gamCorMenuItem.Checked = true;
-            this.gamCorMenuItem.CheckOnClick = true;
-            this.gamCorMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.gamCorMenuItem.Name = "gamCorMenuItem";
-            this.gamCorMenuItem.Size = new System.Drawing.Size(253, 22);
-            this.gamCorMenuItem.Text = "Gamma Corrected Response Time";
-            this.gamCorMenuItem.Click += new System.EventHandler(this.gamCorMenuItem_Click);
+            this.potValLabel.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.potValLabel.Location = new System.Drawing.Point(160, 471);
+            this.potValLabel.Name = "potValLabel";
+            this.potValLabel.Size = new System.Drawing.Size(96, 21);
+            this.potValLabel.TabIndex = 29;
+            this.potValLabel.Text = "No Result";
+            this.potValLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // toolStripSeparator1
+            // label11
             // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(250, 6);
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label11.Location = new System.Drawing.Point(58, 471);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(83, 21);
+            this.label11.TabIndex = 28;
+            this.label11.Text = "Pot Value:";
+            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // outputSettingsToolStripMenuItem
+            // 
+            this.outputSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.verboseOutputToolStripMenuItem,
+            this.saveGammaTableToolStripMenuItem,
+            this.saveSmoothedDataToolStripMenuItem});
+            this.outputSettingsToolStripMenuItem.Name = "outputSettingsToolStripMenuItem";
+            this.outputSettingsToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.outputSettingsToolStripMenuItem.Text = "Output Settings";
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(195, 6);
+            // 
+            // saveGammaTableToolStripMenuItem
+            // 
+            this.saveGammaTableToolStripMenuItem.Checked = true;
+            this.saveGammaTableToolStripMenuItem.CheckOnClick = true;
+            this.saveGammaTableToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.saveGammaTableToolStripMenuItem.Name = "saveGammaTableToolStripMenuItem";
+            this.saveGammaTableToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.saveGammaTableToolStripMenuItem.Text = "Save Gamma Table";
+            this.saveGammaTableToolStripMenuItem.Click += new System.EventHandler(this.saveGammaTableToolStripMenuItem_Click);
+            // 
+            // saveSmoothedDataToolStripMenuItem
+            // 
+            this.saveSmoothedDataToolStripMenuItem.CheckOnClick = true;
+            this.saveSmoothedDataToolStripMenuItem.Name = "saveSmoothedDataToolStripMenuItem";
+            this.saveSmoothedDataToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.saveSmoothedDataToolStripMenuItem.Text = "Save Smoothed Data";
+            this.saveSmoothedDataToolStripMenuItem.Click += new System.EventHandler(this.saveSmoothedDataToolStripMenuItem_Click);
+            // 
+            // verboseOutputToolStripMenuItem
+            // 
+            this.verboseOutputToolStripMenuItem.CheckOnClick = true;
+            this.verboseOutputToolStripMenuItem.Name = "verboseOutputToolStripMenuItem";
+            this.verboseOutputToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.verboseOutputToolStripMenuItem.Text = "Verbose Output";
+            this.verboseOutputToolStripMenuItem.ToolTipText = "Include all processed fields in each \"FULL\" CSV. \r\nIncludes transition start & en" +
+    "d position, sample time, overshoot light level and overshoot RGB value.";
             // 
             // Main
             // 
@@ -678,7 +742,6 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Panel brightnessPanel;
         private System.Windows.Forms.NotifyIcon notifyIcon;
-        private System.Windows.Forms.ToolStripMenuItem verboseOutputToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem measurementsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem noGammaCorrectionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem threePercentMenuItem;
@@ -687,6 +750,13 @@
         private System.Windows.Forms.ToolStripMenuItem percentageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem gamCorMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.Label potValLabel;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.ToolStripMenuItem outputSettingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem verboseOutputToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveGammaTableToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveSmoothedDataToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
     }
 }
 
