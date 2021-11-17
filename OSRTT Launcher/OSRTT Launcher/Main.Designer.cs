@@ -44,7 +44,6 @@
             this.gammaCorrectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.percentageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BrightnessCalBtn = new System.Windows.Forms.ToolStripMenuItem();
-            this.debugModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deviceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateDeviceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.testButtonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -82,6 +81,8 @@
             this.saveGammaTableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveSmoothedDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.verboseOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.debugModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveUSBOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.controlsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.testCount)).BeginInit();
@@ -132,7 +133,6 @@
             this.analyseResultsToolStripMenuItem,
             this.resultsSettingsToolStripMenuItem,
             this.BrightnessCalBtn,
-            this.debugModeToolStripMenuItem,
             this.deviceToolStripMenuItem,
             this.testButtonToolStripMenuItem,
             this.toolStripMenuItem1});
@@ -244,32 +244,24 @@
             this.BrightnessCalBtn.Text = "Calibrate Brightness";
             this.BrightnessCalBtn.Click += new System.EventHandler(this.BrightnessCalBtn_Click);
             // 
-            // debugModeToolStripMenuItem
-            // 
-            this.debugModeToolStripMenuItem.CheckOnClick = true;
-            this.debugModeToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.debugModeToolStripMenuItem.Name = "debugModeToolStripMenuItem";
-            this.debugModeToolStripMenuItem.Size = new System.Drawing.Size(88, 20);
-            this.debugModeToolStripMenuItem.Text = "Debug mode";
-            this.debugModeToolStripMenuItem.Click += new System.EventHandler(this.debugModeToolStripMenuItem_Click);
-            // 
             // deviceToolStripMenuItem
             // 
             this.deviceToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.deviceToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.debugModeToolStripMenuItem,
+            this.saveUSBOutputToolStripMenuItem,
             this.updateDeviceToolStripMenuItem});
             this.deviceToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.deviceToolStripMenuItem.Name = "deviceToolStripMenuItem";
-            this.deviceToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
-            this.deviceToolStripMenuItem.Text = "Device";
-            this.deviceToolStripMenuItem.Visible = false;
+            this.deviceToolStripMenuItem.Size = new System.Drawing.Size(108, 20);
+            this.deviceToolStripMenuItem.Text = "Debugging Tools";
             // 
             // updateDeviceToolStripMenuItem
             // 
             this.updateDeviceToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.updateDeviceToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.updateDeviceToolStripMenuItem.Name = "updateDeviceToolStripMenuItem";
-            this.updateDeviceToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.updateDeviceToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.updateDeviceToolStripMenuItem.Text = "Update Device Firmware";
             this.updateDeviceToolStripMenuItem.Click += new System.EventHandler(this.updateDeviceToolStripMenuItem_Click);
             // 
@@ -671,6 +663,25 @@
             this.verboseOutputToolStripMenuItem.ToolTipText = "Include all processed fields in each \"FULL\" CSV. \r\nIncludes transition start & en" +
     "d position, sample time, overshoot light level and overshoot RGB value.";
             // 
+            // debugModeToolStripMenuItem
+            // 
+            this.debugModeToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.debugModeToolStripMenuItem.CheckOnClick = true;
+            this.debugModeToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.debugModeToolStripMenuItem.Name = "debugModeToolStripMenuItem";
+            this.debugModeToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.debugModeToolStripMenuItem.Text = "Debug mode";
+            // 
+            // saveUSBOutputToolStripMenuItem
+            // 
+            this.saveUSBOutputToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.saveUSBOutputToolStripMenuItem.CheckOnClick = true;
+            this.saveUSBOutputToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.saveUSBOutputToolStripMenuItem.Name = "saveUSBOutputToolStripMenuItem";
+            this.saveUSBOutputToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.saveUSBOutputToolStripMenuItem.Text = "Save USB Voltage Readout";
+            this.saveUSBOutputToolStripMenuItem.Click += new System.EventHandler(this.saveUSBOutputToolStripMenuItem_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -717,7 +728,6 @@
         private System.Windows.Forms.ToolStripMenuItem analyseResultsToolStripMenuItem;
         private System.Windows.Forms.Panel controlsPanel;
         private System.Windows.Forms.Panel analysePanel;
-        private System.Windows.Forms.ToolStripMenuItem debugModeToolStripMenuItem;
         private System.Windows.Forms.ComboBox monitorCB;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button refreshMonitorListBtn;
@@ -757,6 +767,8 @@
         private System.Windows.Forms.ToolStripMenuItem saveGammaTableToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveSmoothedDataToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem debugModeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveUSBOutputToolStripMenuItem;
     }
 }
 

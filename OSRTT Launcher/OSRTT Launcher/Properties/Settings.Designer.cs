@@ -142,5 +142,17 @@ namespace OSRTT_Launcher.Properties {
                 this["saveSmoothData"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool USBOutput {
+            get {
+                return ((bool)(this["USBOutput"]));
+            }
+            set {
+                this["USBOutput"] = value;
+            }
+        }
     }
 }

@@ -257,7 +257,7 @@ int checkUSBVoltage() // Check USB voltage is between 4.8V and 5.2V
       }
   Serial.println();
   ADC1->SWTRIG.bit.START = 0; //Stop ADC 
-  return 0;
+  return 1;
 }
 
 void setup() {

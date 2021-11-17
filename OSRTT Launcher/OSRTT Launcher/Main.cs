@@ -165,6 +165,7 @@ namespace OSRTT_Launcher
             gammaCorrectedToolStripMenuItem.Checked = Properties.Settings.Default.gammaCorrectedSetting;
             percentageToolStripMenuItem.Checked = Properties.Settings.Default.gammaPercentSetting;
             gamCorMenuItem.Checked = Properties.Settings.Default.gammaCorrRT;
+            saveUSBOutputToolStripMenuItem.Checked = Properties.Settings.Default.USBOutput;
         }
 
         private void setAntivirusExclusion()
@@ -634,6 +635,8 @@ namespace OSRTT_Launcher
                             else
                             {
                                 port.Write("X");
+                                port.Write("X");
+                                port.Write("X");
                                 testRunning = false;
                                 MessageBox.Show("The last test result showed no difference in light level. The brightness may be too high. The test has been cancelled.", "Test Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
@@ -646,6 +649,8 @@ namespace OSRTT_Launcher
                             }
                             else
                             {
+                                port.Write("X");
+                                port.Write("X");
                                 port.Write("X");
                                 testRunning = false;
                                 MessageBox.Show("The last test result showed no difference in light level. The brightness may be too high. The test has been cancelled.", "Test Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -790,8 +795,23 @@ namespace OSRTT_Launcher
                     }
                     else if (message.Contains("USB V:"))
                     {
-                        SetText(message);
                         String newMessage = message.Remove(0, 6);
+                        if (Properties.Settings.Default.USBOutput)
+                        {
+                            // search /Results folder for existing file names, pick new name
+                            string[] existingUSBFile = Directory.GetFiles(path, "USB-Voltage-Output.csv");
+                            // Search \Results folder for existing results to not overwrite existing or have save conflict errors
+                            foreach (var s in existingUSBFile)
+                            {
+                                // Delete existing file if present
+                                File.Delete(s);
+                                Console.WriteLine(s);
+                            }
+                            string USBOutputPath = path + "\\USB-Voltage-Output.csv";
+                            StringBuilder USBOutputString = new StringBuilder();
+                            USBOutputString.AppendLine(newMessage);
+                            File.WriteAllText(USBOutputPath, USBOutputString.ToString());
+                        }
                         string[] values = newMessage.Split(',');
                         List<int> intValues = new List<int>();
                         for (int i = 0; i < values.Length - 1; i++)
@@ -824,12 +844,13 @@ namespace OSRTT_Launcher
                             MessageBox.Show("ERROR: The USB supply voltage is noisy. This may mean the results are unusable, or inaccurate.. It's recommended to try a different USB port/controller before continuing.", "USB Voltage Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }*/
                         double voltage = intValues.Average();
-                        if (voltage < 46000 || voltage > 51500)
+                        Console.WriteLine(voltage);
+                        if (voltage < 46000 || voltage > 52500)
                         {
                             double v = voltage / 65520;
                             v *= 3.3;
                             v *= 2;
-                            DialogResult d = MessageBox.Show("USB voltage appears to be too low. Current reading is: " + v + "V. Target is 5V. \n Try moving the device to a powered hub or a direct port. Do you want to check again or quit?", "USB Voltage Out Of Spec", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                            DialogResult d = MessageBox.Show("USB voltage appears to be too low. Current reading is: " + Math.Round(v,2) + "V. Target is 5V. \n Try moving the device to a powered hub or a direct port. Do you want to check again or quit?", "USB Voltage Out Of Spec", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
                             if (d == DialogResult.Retry)
                             {
                                 port.Write("I");
@@ -846,8 +867,8 @@ namespace OSRTT_Launcher
                             else if (voltage > 49000) { potVal = 2; }
                             else if (voltage > 48500) { potVal = 3; }
                             else if (voltage > 48000) { potVal = 4; }
-                            else if (voltage > 47500) { potVal = 6; }
-                            else { potVal = 7; }
+                            else if (voltage > 47500) { potVal = 5; }
+                            else { potVal = 6; }
                         }
                     }
                     else if (message.Contains("TEST CANCELLED"))
@@ -2507,6 +2528,12 @@ namespace OSRTT_Launcher
         private void saveSmoothedDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Properties.Settings.Default.saveSmoothData = saveSmoothedDataToolStripMenuItem.Checked;
+            Properties.Settings.Default.Save();
+        }
+
+        private void saveUSBOutputToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.USBOutput = saveUSBOutputToolStripMenuItem.Checked;
             Properties.Settings.Default.Save();
         }
     }
