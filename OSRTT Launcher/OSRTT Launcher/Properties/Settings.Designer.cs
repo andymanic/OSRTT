@@ -154,5 +154,29 @@ namespace OSRTT_Launcher.Properties {
                 this["USBOutput"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RGB10Offset {
+            get {
+                return ((bool)(this["RGB10Offset"]));
+            }
+            set {
+                this["RGB10Offset"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RGB5Offset {
+            get {
+                return ((bool)(this["RGB5Offset"]));
+            }
+            set {
+                this["RGB5Offset"] = value;
+            }
+        }
     }
 }

@@ -25,14 +25,15 @@ namespace OSRTT_Launcher
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
         private double boardVersion = 1.0;
         private double downloadedFirmwareVersion = 1.0;
-        private string softwareVersion = "1.0";
+        private string softwareVersion = "1.1";
 
         // TODO //
         // get current focused window, if ue4 game isn't selected port.write("P"); until it is then port.write("T"); ----------------- TEST THIS
         // Overshoot - use first time it crosses end max, when it hits 65520, when it drops off that, when it finally drops to end to calculate/estimate 'actual' overshoot position.
         //
-        //
-        //
+        // CANCEL TEST IF GAME CLOSED!!! (serial buffer still full of multiple results?? use checkfocusedwindow to also check if program is open? Although launchgame func should handle that and close..)
+        // ADD FIXED RGB 10 (5?) OFFSET FOR SIMON
+        // 
         // Current known issues //
         // Device will continue to run test even if game closed/not selected/program error
         //
@@ -162,6 +163,8 @@ namespace OSRTT_Launcher
             saveSmoothedDataToolStripMenuItem.Checked = Properties.Settings.Default.saveSmoothData;
             threePercentMenuItem.Checked = Properties.Settings.Default.threePercentSetting;
             tenPercentMenuItem.Checked = Properties.Settings.Default.tenPercentSetting;
+            fixedRGB5OffsetToolStripMenuItem.Checked = Properties.Settings.Default.RGB5Offset;
+            fixedRGB10OffsetToolStripMenuItem.Checked = Properties.Settings.Default.RGB10Offset;
             gammaCorrectedToolStripMenuItem.Checked = Properties.Settings.Default.gammaCorrectedSetting;
             percentageToolStripMenuItem.Checked = Properties.Settings.Default.gammaPercentSetting;
             gamCorMenuItem.Checked = Properties.Settings.Default.gammaCorrRT;
@@ -1570,8 +1573,86 @@ namespace OSRTT_Launcher
                             }
                         }
                     }
+                    if (Properties.Settings.Default.RGB10Offset)
+                    {
+                        if (StartingRGB < EndRGB)
+                        {
+                            double start3 = fullGammaTable[Convert.ToInt32(StartingRGB + 10)][1];
+                            double end3 = fullGammaTable[Convert.ToInt32(EndRGB - 10)][1];
+                            
+                            for (int j = 0; j < samples.Length; j++) // search samples for start & end trigger points
+                            {
+                                if (samples[j] >= start3 && percentTransStart == 0) // save the FIRST time value exceeds start trigger
+                                {
+                                    percentTransStart = j;
+                                }
+                                else if (samples[j] >= end3) // Save when value exceeds end trigger then break.
+                                {
+                                    percentTransEnd = j;
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            double start3 = fullGammaTable[Convert.ToInt32(StartingRGB - 10)][1];
+                            double end3 = fullGammaTable[Convert.ToInt32(EndRGB + 10)][1];
+                            
+                            for (int j = 0; j < samples.Length; j++)
+                            {
+                                if (samples[j] <= start3 && percentTransStart == 0)
+                                {
+                                    percentTransStart = j;
+                                }
+                                else if (samples[j] <= end3)
+                                {
+                                    percentTransEnd = j;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else if (Properties.Settings.Default.RGB5Offset)
+                    {
+                        if (StartingRGB < EndRGB)
+                        {
+                            double start3 = fullGammaTable[Convert.ToInt32(StartingRGB + 5)][1];
+                            double end3 = fullGammaTable[Convert.ToInt32(EndRGB - 5)][1];
+
+                            for (int j = 0; j < samples.Length; j++) // search samples for start & end trigger points
+                            {
+                                if (samples[j] >= start3 && percentTransStart == 0) // save the FIRST time value exceeds start trigger
+                                {
+                                    percentTransStart = j;
+                                }
+                                else if (samples[j] >= end3) // Save when value exceeds end trigger then break.
+                                {
+                                    percentTransEnd = j;
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            double start3 = fullGammaTable[Convert.ToInt32(StartingRGB - 5)][1];
+                            double end3 = fullGammaTable[Convert.ToInt32(EndRGB + 5)][1];
+
+                            for (int j = 0; j < samples.Length; j++)
+                            {
+                                if (samples[j] <= start3 && percentTransStart == 0)
+                                {
+                                    percentTransStart = j;
+                                }
+                                else if (samples[j] <= end3)
+                                {
+                                    percentTransEnd = j;
+                                    break;
+                                }
+                            }
+                        }
+                    }
                     // 10% / 90% Measurements 
-                    if (Properties.Settings.Default.tenPercentSetting)
+                    else if (Properties.Settings.Default.tenPercentSetting)
                     {
                         if (StartingRGB < EndRGB) 
                         {
@@ -1837,6 +1918,14 @@ namespace OSRTT_Launcher
                 {
                     rtType = "10% Response Time (ms)";
                 }
+                else if (fixedRGB10OffsetToolStripMenuItem.Checked)
+                {
+                    rtType = "RGB 10 Offset Response Time (ms)";
+                }
+                else if (fixedRGB5OffsetToolStripMenuItem.Checked)
+                {
+                    rtType = "RGB 5 Offset Response Time (ms)";
+                }
                 if (gammaCorrectedToolStripMenuItem.Checked)
                 {
                     osType = "Overshoot";
@@ -2009,6 +2098,14 @@ namespace OSRTT_Launcher
                 if (tenPercentMenuItem.Checked)
                 {
                     rtType = "10% Response Time (ms)";
+                }
+                else if (fixedRGB10OffsetToolStripMenuItem.Checked)
+                {
+                    rtType = "RGB 10 Offset Response Time (ms)";
+                }
+                else if (fixedRGB5OffsetToolStripMenuItem.Checked)
+                {
+                    rtType = "RGB 5 Offset Response Time (ms)";
                 }
                 if (gammaCorrectedToolStripMenuItem.Checked)
                 {
@@ -2402,6 +2499,10 @@ namespace OSRTT_Launcher
                 Properties.Settings.Default.threePercentSetting = threePercentMenuItem.Checked;
                 Properties.Settings.Default.tenPercentSetting = false;
                 tenPercentMenuItem.Checked = false;
+                Properties.Settings.Default.RGB10Offset = false;
+                fixedRGB10OffsetToolStripMenuItem.Checked = false;
+                Properties.Settings.Default.RGB5Offset = false;
+                fixedRGB5OffsetToolStripMenuItem.Checked = false;
                 Properties.Settings.Default.Save();
             }
             else
@@ -2417,11 +2518,53 @@ namespace OSRTT_Launcher
                 Properties.Settings.Default.tenPercentSetting = tenPercentMenuItem.Checked;
                 Properties.Settings.Default.threePercentSetting = false;
                 threePercentMenuItem.Checked = false;
+                Properties.Settings.Default.RGB10Offset = false;
+                fixedRGB10OffsetToolStripMenuItem.Checked = false;
+                Properties.Settings.Default.RGB5Offset = false;
+                fixedRGB5OffsetToolStripMenuItem.Checked = false;
                 Properties.Settings.Default.Save();
             }
             else
             {
                 tenPercentMenuItem.Checked = true;
+            }
+        }
+
+        private void fixedRGB10OffsetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!Properties.Settings.Default.RGB10Offset)
+            {
+                Properties.Settings.Default.RGB10Offset = fixedRGB10OffsetToolStripMenuItem.Checked;
+                Properties.Settings.Default.threePercentSetting = false;
+                threePercentMenuItem.Checked = false;
+                Properties.Settings.Default.tenPercentSetting = false;
+                tenPercentMenuItem.Checked = false;
+                Properties.Settings.Default.RGB5Offset = false;
+                fixedRGB5OffsetToolStripMenuItem.Checked = false;
+                Properties.Settings.Default.Save();
+            }
+            else
+            {
+                fixedRGB10OffsetToolStripMenuItem.Checked = true;
+            }
+        }
+
+        private void fixedRGB5OffsetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!Properties.Settings.Default.RGB5Offset)
+            {
+                Properties.Settings.Default.RGB5Offset = fixedRGB5OffsetToolStripMenuItem.Checked;
+                Properties.Settings.Default.threePercentSetting = false;
+                threePercentMenuItem.Checked = false;
+                Properties.Settings.Default.tenPercentSetting = false;
+                tenPercentMenuItem.Checked = false;
+                Properties.Settings.Default.RGB10Offset = false;
+                fixedRGB10OffsetToolStripMenuItem.Checked = false;
+                Properties.Settings.Default.Save();
+            }
+            else
+            {
+                fixedRGB10OffsetToolStripMenuItem.Checked = true;
             }
         }
 
@@ -2536,5 +2679,7 @@ namespace OSRTT_Launcher
             Properties.Settings.Default.USBOutput = saveUSBOutputToolStripMenuItem.Checked;
             Properties.Settings.Default.Save();
         }
+
+        
     }
 }

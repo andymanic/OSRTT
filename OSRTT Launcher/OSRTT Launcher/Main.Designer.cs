@@ -83,6 +83,8 @@
             this.verboseOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveUSBOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fixedRGB10OffsetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fixedRGB5OffsetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.controlsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.testCount)).BeginInit();
@@ -169,7 +171,9 @@
             this.gamCorMenuItem,
             this.toolStripSeparator1,
             this.threePercentMenuItem,
-            this.tenPercentMenuItem});
+            this.tenPercentMenuItem,
+            this.fixedRGB10OffsetToolStripMenuItem,
+            this.fixedRGB5OffsetToolStripMenuItem});
             this.measurementsToolStripMenuItem.Name = "measurementsToolStripMenuItem";
             this.measurementsToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.measurementsToolStripMenuItem.Text = "GtG Measurement Style";
@@ -682,6 +686,22 @@
             this.saveUSBOutputToolStripMenuItem.Text = "Save USB Voltage Readout";
             this.saveUSBOutputToolStripMenuItem.Click += new System.EventHandler(this.saveUSBOutputToolStripMenuItem_Click);
             // 
+            // fixedRGB10OffsetToolStripMenuItem
+            // 
+            this.fixedRGB10OffsetToolStripMenuItem.CheckOnClick = true;
+            this.fixedRGB10OffsetToolStripMenuItem.Name = "fixedRGB10OffsetToolStripMenuItem";
+            this.fixedRGB10OffsetToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.fixedRGB10OffsetToolStripMenuItem.Text = "Fixed RGB 10 Offset";
+            this.fixedRGB10OffsetToolStripMenuItem.Click += new System.EventHandler(this.fixedRGB10OffsetToolStripMenuItem_Click);
+            // 
+            // fixedRGB5OffsetToolStripMenuItem
+            // 
+            this.fixedRGB5OffsetToolStripMenuItem.CheckOnClick = true;
+            this.fixedRGB5OffsetToolStripMenuItem.Name = "fixedRGB5OffsetToolStripMenuItem";
+            this.fixedRGB5OffsetToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.fixedRGB5OffsetToolStripMenuItem.Text = "Fixed RGB 5 Offset";
+            this.fixedRGB5OffsetToolStripMenuItem.Click += new System.EventHandler(this.fixedRGB5OffsetToolStripMenuItem_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -769,6 +789,8 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem debugModeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveUSBOutputToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fixedRGB10OffsetToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fixedRGB5OffsetToolStripMenuItem;
     }
 }
 
