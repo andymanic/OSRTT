@@ -107,7 +107,7 @@ namespace OSRTT_Launcher
             string dlUrl = "";
             foreach (var a in json.assets)
             {
-                string tmp = a.browser_download.url;
+                string tmp = a.browser_download_url;
                 if (tmp.Contains(".zip"))
                 {
                     dlUrl = tmp;
