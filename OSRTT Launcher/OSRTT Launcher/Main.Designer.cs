@@ -35,16 +35,25 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.analyseResultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resultsSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.outputSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.verboseOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveGammaTableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveSmoothedDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.measurementsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gamCorMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.threePercentMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tenPercentMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fixedRGB10OffsetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fixedRGB5OffsetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.noGammaCorrectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gammaCorrectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.percentageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BrightnessCalBtn = new System.Windows.Forms.ToolStripMenuItem();
             this.deviceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.debugModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveUSBOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateDeviceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.testButtonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -73,18 +82,11 @@
             this.closeWindowBtn = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
             this.brightnessPanel = new System.Windows.Forms.Panel();
-            this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.potValLabel = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
-            this.outputSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.saveGammaTableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveSmoothedDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.verboseOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.debugModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveUSBOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.fixedRGB10OffsetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.fixedRGB5OffsetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.programSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.minimiseToTrayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.controlsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.testCount)).BeginInit();
@@ -134,6 +136,7 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.analyseResultsToolStripMenuItem,
             this.resultsSettingsToolStripMenuItem,
+            this.programSettingsToolStripMenuItem,
             this.BrightnessCalBtn,
             this.deviceToolStripMenuItem,
             this.testButtonToolStripMenuItem,
@@ -164,6 +167,48 @@
             this.resultsSettingsToolStripMenuItem.Name = "resultsSettingsToolStripMenuItem";
             this.resultsSettingsToolStripMenuItem.Size = new System.Drawing.Size(101, 20);
             this.resultsSettingsToolStripMenuItem.Text = "Results Settings";
+            // 
+            // outputSettingsToolStripMenuItem
+            // 
+            this.outputSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.verboseOutputToolStripMenuItem,
+            this.saveGammaTableToolStripMenuItem,
+            this.saveSmoothedDataToolStripMenuItem});
+            this.outputSettingsToolStripMenuItem.Name = "outputSettingsToolStripMenuItem";
+            this.outputSettingsToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.outputSettingsToolStripMenuItem.Text = "Output Settings";
+            // 
+            // verboseOutputToolStripMenuItem
+            // 
+            this.verboseOutputToolStripMenuItem.CheckOnClick = true;
+            this.verboseOutputToolStripMenuItem.Name = "verboseOutputToolStripMenuItem";
+            this.verboseOutputToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.verboseOutputToolStripMenuItem.Text = "Verbose Output";
+            this.verboseOutputToolStripMenuItem.ToolTipText = "Include all processed fields in each \"FULL\" CSV. \r\nIncludes transition start & en" +
+    "d position, sample time, overshoot light level and overshoot RGB value.";
+            // 
+            // saveGammaTableToolStripMenuItem
+            // 
+            this.saveGammaTableToolStripMenuItem.Checked = true;
+            this.saveGammaTableToolStripMenuItem.CheckOnClick = true;
+            this.saveGammaTableToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.saveGammaTableToolStripMenuItem.Name = "saveGammaTableToolStripMenuItem";
+            this.saveGammaTableToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.saveGammaTableToolStripMenuItem.Text = "Save Gamma Table";
+            this.saveGammaTableToolStripMenuItem.Click += new System.EventHandler(this.saveGammaTableToolStripMenuItem_Click);
+            // 
+            // saveSmoothedDataToolStripMenuItem
+            // 
+            this.saveSmoothedDataToolStripMenuItem.CheckOnClick = true;
+            this.saveSmoothedDataToolStripMenuItem.Name = "saveSmoothedDataToolStripMenuItem";
+            this.saveSmoothedDataToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.saveSmoothedDataToolStripMenuItem.Text = "Save Smoothed Data";
+            this.saveSmoothedDataToolStripMenuItem.Click += new System.EventHandler(this.saveSmoothedDataToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(195, 6);
             // 
             // measurementsToolStripMenuItem
             // 
@@ -210,6 +255,22 @@
             this.tenPercentMenuItem.Size = new System.Drawing.Size(253, 22);
             this.tenPercentMenuItem.Text = "10% / 90% Response Time";
             this.tenPercentMenuItem.Click += new System.EventHandler(this.tenPercentMenuItem_Click);
+            // 
+            // fixedRGB10OffsetToolStripMenuItem
+            // 
+            this.fixedRGB10OffsetToolStripMenuItem.CheckOnClick = true;
+            this.fixedRGB10OffsetToolStripMenuItem.Name = "fixedRGB10OffsetToolStripMenuItem";
+            this.fixedRGB10OffsetToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.fixedRGB10OffsetToolStripMenuItem.Text = "Fixed RGB 10 Offset";
+            this.fixedRGB10OffsetToolStripMenuItem.Click += new System.EventHandler(this.fixedRGB10OffsetToolStripMenuItem_Click);
+            // 
+            // fixedRGB5OffsetToolStripMenuItem
+            // 
+            this.fixedRGB5OffsetToolStripMenuItem.CheckOnClick = true;
+            this.fixedRGB5OffsetToolStripMenuItem.Name = "fixedRGB5OffsetToolStripMenuItem";
+            this.fixedRGB5OffsetToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.fixedRGB5OffsetToolStripMenuItem.Text = "Fixed RGB 5 Offset";
+            this.fixedRGB5OffsetToolStripMenuItem.Click += new System.EventHandler(this.fixedRGB5OffsetToolStripMenuItem_Click);
             // 
             // noGammaCorrectionToolStripMenuItem
             // 
@@ -259,6 +320,25 @@
             this.deviceToolStripMenuItem.Name = "deviceToolStripMenuItem";
             this.deviceToolStripMenuItem.Size = new System.Drawing.Size(108, 20);
             this.deviceToolStripMenuItem.Text = "Debugging Tools";
+            // 
+            // debugModeToolStripMenuItem
+            // 
+            this.debugModeToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.debugModeToolStripMenuItem.CheckOnClick = true;
+            this.debugModeToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.debugModeToolStripMenuItem.Name = "debugModeToolStripMenuItem";
+            this.debugModeToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.debugModeToolStripMenuItem.Text = "Debug mode";
+            // 
+            // saveUSBOutputToolStripMenuItem
+            // 
+            this.saveUSBOutputToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.saveUSBOutputToolStripMenuItem.CheckOnClick = true;
+            this.saveUSBOutputToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.saveUSBOutputToolStripMenuItem.Name = "saveUSBOutputToolStripMenuItem";
+            this.saveUSBOutputToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.saveUSBOutputToolStripMenuItem.Text = "Save USB Voltage Readout";
+            this.saveUSBOutputToolStripMenuItem.Click += new System.EventHandler(this.saveUSBOutputToolStripMenuItem_Click);
             // 
             // updateDeviceToolStripMenuItem
             // 
@@ -599,11 +679,6 @@
             this.brightnessPanel.Size = new System.Drawing.Size(994, 758);
             this.brightnessPanel.TabIndex = 28;
             // 
-            // notifyIcon
-            // 
-            this.notifyIcon.Visible = true;
-            this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_MouseDoubleClick);
-            // 
             // potValLabel
             // 
             this.potValLabel.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -625,82 +700,29 @@
             this.label11.Text = "Pot Value:";
             this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // outputSettingsToolStripMenuItem
+            // notifyIcon
             // 
-            this.outputSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.verboseOutputToolStripMenuItem,
-            this.saveGammaTableToolStripMenuItem,
-            this.saveSmoothedDataToolStripMenuItem});
-            this.outputSettingsToolStripMenuItem.Name = "outputSettingsToolStripMenuItem";
-            this.outputSettingsToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.outputSettingsToolStripMenuItem.Text = "Output Settings";
+            this.notifyIcon.Visible = true;
+            this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_MouseDoubleClick);
             // 
-            // toolStripSeparator2
+            // programSettingsToolStripMenuItem
             // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(195, 6);
+            this.programSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.minimiseToTrayToolStripMenuItem});
+            this.programSettingsToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.programSettingsToolStripMenuItem.Name = "programSettingsToolStripMenuItem";
+            this.programSettingsToolStripMenuItem.Size = new System.Drawing.Size(110, 20);
+            this.programSettingsToolStripMenuItem.Text = "Program Settings";
             // 
-            // saveGammaTableToolStripMenuItem
+            // minimiseToTrayToolStripMenuItem
             // 
-            this.saveGammaTableToolStripMenuItem.Checked = true;
-            this.saveGammaTableToolStripMenuItem.CheckOnClick = true;
-            this.saveGammaTableToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.saveGammaTableToolStripMenuItem.Name = "saveGammaTableToolStripMenuItem";
-            this.saveGammaTableToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.saveGammaTableToolStripMenuItem.Text = "Save Gamma Table";
-            this.saveGammaTableToolStripMenuItem.Click += new System.EventHandler(this.saveGammaTableToolStripMenuItem_Click);
-            // 
-            // saveSmoothedDataToolStripMenuItem
-            // 
-            this.saveSmoothedDataToolStripMenuItem.CheckOnClick = true;
-            this.saveSmoothedDataToolStripMenuItem.Name = "saveSmoothedDataToolStripMenuItem";
-            this.saveSmoothedDataToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.saveSmoothedDataToolStripMenuItem.Text = "Save Smoothed Data";
-            this.saveSmoothedDataToolStripMenuItem.Click += new System.EventHandler(this.saveSmoothedDataToolStripMenuItem_Click);
-            // 
-            // verboseOutputToolStripMenuItem
-            // 
-            this.verboseOutputToolStripMenuItem.CheckOnClick = true;
-            this.verboseOutputToolStripMenuItem.Name = "verboseOutputToolStripMenuItem";
-            this.verboseOutputToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.verboseOutputToolStripMenuItem.Text = "Verbose Output";
-            this.verboseOutputToolStripMenuItem.ToolTipText = "Include all processed fields in each \"FULL\" CSV. \r\nIncludes transition start & en" +
-    "d position, sample time, overshoot light level and overshoot RGB value.";
-            // 
-            // debugModeToolStripMenuItem
-            // 
-            this.debugModeToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.debugModeToolStripMenuItem.CheckOnClick = true;
-            this.debugModeToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.debugModeToolStripMenuItem.Name = "debugModeToolStripMenuItem";
-            this.debugModeToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
-            this.debugModeToolStripMenuItem.Text = "Debug mode";
-            // 
-            // saveUSBOutputToolStripMenuItem
-            // 
-            this.saveUSBOutputToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.saveUSBOutputToolStripMenuItem.CheckOnClick = true;
-            this.saveUSBOutputToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.saveUSBOutputToolStripMenuItem.Name = "saveUSBOutputToolStripMenuItem";
-            this.saveUSBOutputToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
-            this.saveUSBOutputToolStripMenuItem.Text = "Save USB Voltage Readout";
-            this.saveUSBOutputToolStripMenuItem.Click += new System.EventHandler(this.saveUSBOutputToolStripMenuItem_Click);
-            // 
-            // fixedRGB10OffsetToolStripMenuItem
-            // 
-            this.fixedRGB10OffsetToolStripMenuItem.CheckOnClick = true;
-            this.fixedRGB10OffsetToolStripMenuItem.Name = "fixedRGB10OffsetToolStripMenuItem";
-            this.fixedRGB10OffsetToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
-            this.fixedRGB10OffsetToolStripMenuItem.Text = "Fixed RGB 10 Offset";
-            this.fixedRGB10OffsetToolStripMenuItem.Click += new System.EventHandler(this.fixedRGB10OffsetToolStripMenuItem_Click);
-            // 
-            // fixedRGB5OffsetToolStripMenuItem
-            // 
-            this.fixedRGB5OffsetToolStripMenuItem.CheckOnClick = true;
-            this.fixedRGB5OffsetToolStripMenuItem.Name = "fixedRGB5OffsetToolStripMenuItem";
-            this.fixedRGB5OffsetToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
-            this.fixedRGB5OffsetToolStripMenuItem.Text = "Fixed RGB 5 Offset";
-            this.fixedRGB5OffsetToolStripMenuItem.Click += new System.EventHandler(this.fixedRGB5OffsetToolStripMenuItem_Click);
+            this.minimiseToTrayToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.minimiseToTrayToolStripMenuItem.CheckOnClick = true;
+            this.minimiseToTrayToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.minimiseToTrayToolStripMenuItem.Name = "minimiseToTrayToolStripMenuItem";
+            this.minimiseToTrayToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.minimiseToTrayToolStripMenuItem.Text = "Minimise To Tray";
+            this.minimiseToTrayToolStripMenuItem.Click += new System.EventHandler(this.minimiseToTrayToolStripMenuItem_Click);
             // 
             // Main
             // 
@@ -791,6 +813,8 @@
         private System.Windows.Forms.ToolStripMenuItem saveUSBOutputToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fixedRGB10OffsetToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fixedRGB5OffsetToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem programSettingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem minimiseToTrayToolStripMenuItem;
     }
 }
 

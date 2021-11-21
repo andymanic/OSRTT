@@ -24,8 +24,8 @@ namespace OSRTT_Launcher
     {
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
         private double boardVersion = 1.0;
-        private double downloadedFirmwareVersion = 1.0;
-        private string softwareVersion = "1.1";
+        private double downloadedFirmwareVersion = 1.1;
+        private string softwareVersion = "1.2";
 
         // TODO //
         // get current focused window, if ue4 game isn't selected port.write("P"); until it is then port.write("T"); ----------------- TEST THIS
@@ -121,9 +121,20 @@ namespace OSRTT_Launcher
             };
         }
 
-        public Main()
+        private void appRunning()
         {
-            InitializeComponent();
+            Process[] p = Process.GetProcessesByName("OSRTT Launcher");
+            Console.WriteLine(p.Length);
+            if (p.Length > 1)
+            {
+                MessageBox.Show("ERROR: Program already open! Please close it before running again, or check the task bar and system tray for the running app.", "Program Open Already", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Console.WriteLine(p.Length);
+                this.Close();
+            }
+        }
+
+        private void setupFormElements()
+        {
             this.Icon = (Icon)rm.GetObject("osrttIcon");
             notifyIcon.Icon = (Icon)rm.GetObject("osrttIcon");
             this.contextMenu1.MenuItems.AddRange(new MenuItem[] { this.statusTrayBtn });
@@ -139,24 +150,12 @@ namespace OSRTT_Launcher
             this.openTrayBtn.Click += new System.EventHandler(this.openTrayBtn_Click);
             this.closeTrayBtn.Click += new System.EventHandler(this.quitTrayBtn_Click);
             notifyIcon.ContextMenu = contextMenu1;
-            ControlDeviceButtons(false);
-            path = new Uri(System.IO.Path.GetDirectoryName(path)).LocalPath;
-            path += @"\Results";
-            if (!Directory.Exists(path)) { Directory.CreateDirectory(path); }
-            this.FormClosing += new FormClosingEventHandler(Main_FormClosing);
-            AppDomain currentDomain = AppDomain.CurrentDomain;
-            currentDomain.UnhandledException += new UnhandledExceptionEventHandler(IFailedYou);
-            this.Resize += new EventHandler(Main_Resize);
             notifyIcon.Visible = false;
-            hardWorker = new BackgroundWorker();
-            connectThread = new Thread(new ThreadStart(this.findAndConnectToBoard));
-            connectThread.Start();
-            changeSizeAndState("standard");
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            listMonitors();
-            listFramerates();
-            initialSetup();
-            checkFolderPermissions();
+        }
+
+        private void initialiseSettings()
+        {
             testCount.Value = Properties.Settings.Default.Runs;
             verboseOutputToolStripMenuItem.Checked = Properties.Settings.Default.Verbose;
             saveGammaTableToolStripMenuItem.Checked = Properties.Settings.Default.saveGammaTable;
@@ -169,6 +168,32 @@ namespace OSRTT_Launcher
             percentageToolStripMenuItem.Checked = Properties.Settings.Default.gammaPercentSetting;
             gamCorMenuItem.Checked = Properties.Settings.Default.gammaCorrRT;
             saveUSBOutputToolStripMenuItem.Checked = Properties.Settings.Default.USBOutput;
+            minimiseToTrayToolStripMenuItem.Checked = Properties.Settings.Default.MinToTray;
+        }
+
+        public Main()
+        {
+            InitializeComponent();
+            appRunning();
+            setupFormElements();
+            ControlDeviceButtons(false);
+            path = new Uri(System.IO.Path.GetDirectoryName(path)).LocalPath;
+            path += @"\Results";
+            if (!Directory.Exists(path)) { Directory.CreateDirectory(path); }
+            this.FormClosing += new FormClosingEventHandler(Main_FormClosing);
+            AppDomain currentDomain = AppDomain.CurrentDomain;
+            currentDomain.UnhandledException += new UnhandledExceptionEventHandler(IFailedYou);
+            this.Resize += new EventHandler(Main_Resize);
+            initialiseSettings();
+            hardWorker = new BackgroundWorker();
+            connectThread = new Thread(new ThreadStart(this.findAndConnectToBoard));
+            connectThread.Start();
+            changeSizeAndState("standard");
+            listMonitors();
+            listFramerates();
+            initialSetup();
+            checkFolderPermissions();
+            
         }
 
         private void setAntivirusExclusion()
@@ -218,10 +243,13 @@ namespace OSRTT_Launcher
         }
         private void Main_Resize(object sender, EventArgs e)
         {
-            if (this.WindowState == FormWindowState.Minimized)
+            if (Properties.Settings.Default.MinToTray)
             {
-                Hide();
-                notifyIcon.Visible = true;
+                if (this.WindowState == FormWindowState.Minimized)
+                {
+                    Hide();
+                    notifyIcon.Visible = true;
+                }
             }
         }
         private void listMonitors()
@@ -1858,13 +1886,13 @@ namespace OSRTT_Launcher
                         double[] completeResult = new double[] { StartingRGB, EndRGB, responseTime, percentResponseTime, overshootPercent, transStart, transEnd, SampleTime, endLevel, maxValue, overUnderRGB };
                         processedData.Add(completeResult);
                     }
-                    else if (percentageToolStripMenuItem.Checked && !gammaCorrectedToolStripMenuItem.Checked)
+                    else if (!percentageToolStripMenuItem.Checked && gammaCorrectedToolStripMenuItem.Checked)
                     {
                         // Standard output with total transition time & gamma corrected overshoot value
                         double[] completeResult = new double[] { StartingRGB, EndRGB, responseTime, percentResponseTime, overshootRGBDiff };
                         processedData.Add(completeResult);
                     }
-                    else if (gammaCorrectedToolStripMenuItem.Checked && !percentageToolStripMenuItem.Checked)
+                    else if (!gammaCorrectedToolStripMenuItem.Checked && percentageToolStripMenuItem.Checked)
                     {
                         // Standard output with total transition time & overshoot light level percentage
                         double os = 0;
@@ -1928,11 +1956,11 @@ namespace OSRTT_Launcher
                 }
                 if (gammaCorrectedToolStripMenuItem.Checked)
                 {
-                    osType = "Overshoot";
+                    osSign = "(RGB)";
                 }
                 if (percentageToolStripMenuItem.Checked)
                 {
-                    osSign = "(RGB)";
+                    osType = "Overshoot";
                 }
                 if (verboseOutputToolStripMenuItem.Checked)
                 {
@@ -2680,6 +2708,10 @@ namespace OSRTT_Launcher
             Properties.Settings.Default.Save();
         }
 
-        
+        private void minimiseToTrayToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.MinToTray = minimiseToTrayToolStripMenuItem.Checked;
+            Properties.Settings.Default.Save();
+        }
     }
 }

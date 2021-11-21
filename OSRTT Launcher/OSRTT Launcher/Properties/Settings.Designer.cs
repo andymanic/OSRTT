@@ -178,5 +178,17 @@ namespace OSRTT_Launcher.Properties {
                 this["RGB5Offset"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MinToTray {
+            get {
+                return ((bool)(this["MinToTray"]));
+            }
+            set {
+                this["MinToTray"] = value;
+            }
+        }
     }
 }

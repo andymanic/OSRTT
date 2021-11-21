@@ -35,12 +35,11 @@ char Keys[] = {'q','a','z','w','s','x','e','d','c','r','f'};
 // Ideally I'd pair these together in an array of key/value pairs but this works for now. 
 
 //ADC values
-long curr_time = micros();
+unsigned long curr_time = micros();
 uint32_t sample_count = 0;
-int one_sample = 0;
 //50ms sample time default
-long samplingTime = 50000;
-uint16_t adcBuff[7000];
+unsigned long samplingTime = 50000;
+uint16_t adcBuff[15000];
 
 //Button values
 int buttonState = 0;
@@ -53,24 +52,18 @@ SPISettings settingsA(10000000, MSBFIRST, SPI_MODE0);
 
 //Serial connection values
 bool connected = false;
-String firmware = "1.0";
+String firmware = "1.1";
 int testRuns = 2;
 char fpsLimit = '1';
 int USBV = 0;
 
-void ADC_Clocks()
+void ADC_Clocks() // Turns out to be superfluous as Adafruit wiring.c already sets these clocks. Keeping for now to guarantee settings are set.
 {
    MCLK->APBDMASK.bit.ADC0_ = 1;
    MCLK->APBDMASK.bit.ADC1_ = 1;
    //Use GCLK1, channel it for ADC0, select DFLL(48MHz) as source and make sure no divider is selected
    GCLK->PCHCTRL[ADC0_GCLK_ID].reg = GCLK_PCHCTRL_GEN_GCLK1_Val | (1 << GCLK_PCHCTRL_CHEN_Pos); // enable gen clock 1 as source for ADC channel
-   GCLK->PCHCTRL[ADC1_GCLK_ID].reg = GCLK_PCHCTRL_GEN_GCLK1_Val | (1 << GCLK_PCHCTRL_CHEN_Pos); // enable gen clock 2 as source for ADC channel
-   GCLK->GENCTRL[0].reg = GCLK_GENCTRL_SRC_DFLL | GCLK_GENCTRL_GENEN | GCLK_GENCTRL_DIV(1);
-   GCLK->GENCTRL[0].bit.DIVSEL = 0;
-   GCLK->GENCTRL[0].bit.DIV = 0;
-   GCLK->GENCTRL[1].reg = GCLK_GENCTRL_SRC_DFLL | GCLK_GENCTRL_GENEN | GCLK_GENCTRL_DIV(1);
-   GCLK->GENCTRL[1].bit.DIVSEL = 0;
-   GCLK->GENCTRL[1].bit.DIV = 0;
+   GCLK->PCHCTRL[ADC1_GCLK_ID].reg = GCLK_PCHCTRL_GEN_GCLK1_Val | (1 << GCLK_PCHCTRL_CHEN_Pos); // enable gen clock 1 as source for ADC channel
 }
 
 void ADC_Init(Adc *ADCx)
@@ -104,7 +97,7 @@ void ADC_Init(Adc *ADCx)
   while(ADCx->SYNCBUSY.reg & ADC_SYNCBUSY_SAMPCTRL);
 
   // Accumulate samples to gain higher final result precision  
-  ADCx->AVGCTRL.reg = ADC_AVGCTRL_SAMPLENUM_16_Val; //Sample 16 values for 16 bit output
+  ADCx->AVGCTRL.reg = ADC_AVGCTRL_SAMPLENUM_16_Val; //Sample 16 values for 16 bit output, 8 for 15 bit, 4 for 14 bit
 
   //Wait for synchronisation
   while(ADCx->SYNCBUSY.reg & ADC_SYNCBUSY_AVGCTRL)
@@ -180,11 +173,11 @@ void runADC(int curr, int nxt, char key) // Run test, press key and print result
     Keyboard.print(key);
 
     curr_time = micros(); //need to run this in case board is left connected for long period as first run won't read any samples
-    long start_time = micros();
+    unsigned long start_time = micros();
     
     //50ms worth of samples @100ksps= 5000 samples
     //50ms worth of samples @129ksps = 6451 samples
-  
+    digitalWrite(3, HIGH);
     /////////////////////////////////////////////////////////////
     //                    Take ADC Readings                    //
     /////////////////////////////////////////////////////////////
@@ -197,7 +190,7 @@ void runADC(int curr, int nxt, char key) // Run test, press key and print result
       sample_count++; //Increment sample count
       curr_time = micros(); //update current time
     }
-
+    digitalWrite(3,LOW);
     ADC0->SWTRIG.bit.START = 0; //Stop ADC 
   
     /////////////////////////////////////////////////////////////
@@ -262,6 +255,7 @@ int checkUSBVoltage() // Check USB voltage is between 4.8V and 5.2V
 
 void setup() {
   pinMode (CS, OUTPUT);
+  pinMode (3, OUTPUT);
   SPI.begin();
   
   digitalPotWrite(0x80);
@@ -440,7 +434,7 @@ void loop() {
               {
                 digitalWrite(13, LOW);
                 // If brightness fine, continue with test
-                long start_time = micros();
+                unsigned long start_time = micros();
                 int delayTime = 100000;
                 
                 Serial.println("STARTING RUN"); 
