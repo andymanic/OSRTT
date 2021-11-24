@@ -24,8 +24,8 @@ namespace OSRTT_Launcher
     {
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
         private double boardVersion = 1.0;
-        private double downloadedFirmwareVersion = 1.1;
-        private string softwareVersion = "1.2";
+        private double downloadedFirmwareVersion = 1.3;
+        private string softwareVersion = "1.3";
 
         // TODO //
         // get current focused window, if ue4 game isn't selected port.write("P"); until it is then port.write("T"); ----------------- TEST THIS
@@ -720,7 +720,7 @@ namespace OSRTT_Launcher
                             MessageBox.Show("ERROR: The monitor's backlight appears to be strobing significantly. This is likely to make any data collected innacurate, so it's best to turn any strobing off if possible." +
                                 "\n You are free to continue the test, but you may need to verify the results manually and the data may be unusable.", "Backlight Strobing Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
-                        else if (diff > 500)
+                        else if (diff > 750)
                         {
                             MessageBox.Show("ERROR: The monitor's backlight appears to be strobing. This may make any data collected innacurate, so it's best to turn any strobing off if possible." +
                                 "\n You are free to continue the test, but you may need to verify the results manually.", "Backlight Strobing Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -784,6 +784,10 @@ namespace OSRTT_Launcher
                             Process.Start("explorer.exe", resultsFolderPath);
                             testRunning = false;
                         }
+                        else
+                        {
+                            testRunning = false;
+                        }
                     }
                     else if (message.Contains("FW:"))
                     {
@@ -802,7 +806,7 @@ namespace OSRTT_Launcher
                     }
                     else if (message.Contains("FPS Key:"))
                     {
-                        string[] sp = message.Split(':');
+                        /*string[] sp = message.Split(':');
                         string k = sp[1];
                         k = k.Replace("\r", string.Empty);
                         var lim = fpsList.Find(x => x.Key == k);
@@ -810,7 +814,7 @@ namespace OSRTT_Launcher
                         if (lim.FPSValue != selectedFps)
                         {
                             setSelectedFps(lim.FPSValue);
-                        }
+                        }*/
                     }
                     else if (message.Contains("Brightness:"))
                     {
@@ -2357,16 +2361,16 @@ namespace OSRTT_Launcher
         private void updateBrightness(int lvl, int val)
         {
             string txt = "";
-            if (lvl < 62000)
+            if (lvl < 61500)
             {
                 txt = "Too Low!";
             }
-            else if (lvl >= 62000 && lvl < 64800)
+            else if (lvl >= 61500 && lvl < 64000)
             {
                 ready = true;
                 txt = "Perfect!";
             }
-            else if (lvl >= 64500)
+            else if (lvl >= 64000)
             {
                 txt = "Too High!";
             }

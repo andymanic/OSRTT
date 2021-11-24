@@ -52,7 +52,7 @@ SPISettings settingsA(10000000, MSBFIRST, SPI_MODE0);
 
 //Serial connection values
 bool connected = false;
-String firmware = "1.1";
+String firmware = "1.3";
 int testRuns = 2;
 char fpsLimit = '1';
 int USBV = 0;
@@ -116,19 +116,19 @@ void ADC_Init(Adc *ADCx)
 int checkLightLevel() // Check light level & modulate potentiometer value 
 {
   Keyboard.write('f');
-  delay(200);
+  delay(400);
   int potValue = 160;
   digitalPotWrite(potValue);
-  delay(100);
+  delay(200);
   ADC0->SWTRIG.bit.START = 1; //Start ADC 
   while(!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
   int value = ADC0->RESULT.reg;
-  while(value <= 64000 || value >= 64801)
+  while(value <= 63000 || value >= 64000)
   {
     ADC0->SWTRIG.bit.START = 1; //Start ADC 
     while(!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
     value = ADC0->RESULT.reg;
-    if (value >= 64500)
+    if (value >= 64000)
     {
       //Set digital pot to decrease voltage
       potValue -= 1; //or the other way...
@@ -138,7 +138,7 @@ int checkLightLevel() // Check light level & modulate potentiometer value
       Serial.print(", Pot Value: ");
       Serial.println(potValue);
     }
-    else if (value <= 64000)
+    else if (value <= 63000)
     {
       //Set digital pot to increase volt
       potValue += 1; //or the other way...
@@ -163,7 +163,7 @@ int checkLightLevel() // Check light level & modulate potentiometer value
     delay(20);
   }
   Keyboard.write('q');
-  delay(200);
+  delay(400);
   return 1;
 }
 
@@ -234,8 +234,7 @@ void digitalPotWrite(int value)
 int checkUSBVoltage() // Check USB voltage is between 4.8V and 5.2V
 {
   int counter = 0;
-  while (counter < 1000) // first few samples always seem low, not an issue once it's "warmed up"
-  // so I'm 'waisting' a some samples to resolve that
+  while (counter < 1000)
   {
     ADC1->SWTRIG.bit.START = 1; //Start ADC1 
     while(!ADC1->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
@@ -294,7 +293,7 @@ void loop() {
     else if (input[0] == 'B')
     {
       // Brightness Calibration screen
-      Serial.setTimeout(100);
+      Serial.setTimeout(200);
       int potVal = 170;
       digitalPotWrite(potVal);
       Serial.println("BRIGHTNESS CHECK");
@@ -353,7 +352,7 @@ void loop() {
           Serial.print(value);
           Serial.print(":");
           Serial.println(potVal);
-          delay(200);
+          delay(400);
       }
     }
     else if (input[0] == 'F')
@@ -399,7 +398,7 @@ void loop() {
         buttonState = digitalRead(buttonPin);
         if (buttonState == HIGH) //Run when button pressed
         {
-          Serial.setTimeout(200);
+          Serial.setTimeout(300);
           // Check USB voltage level
           int voltageTest = checkUSBVoltage();
           if (voltageTest == 0)
@@ -435,7 +434,7 @@ void loop() {
                 digitalWrite(13, LOW);
                 // If brightness fine, continue with test
                 unsigned long start_time = micros();
-                int delayTime = 100000;
+                int delayTime = 250000;
                 
                 Serial.println("STARTING RUN"); 
                 // Get size of array for for loop, so it's expandable for different test sizes
@@ -461,7 +460,7 @@ void loop() {
                       Keyboard.print(currentKey);
           
                       // Wait short amount of time
-                      delay(200);
+                      delay(300);
                     
                       // Get light output values & pass in RGB values in use
                       runADC(current, next, Keys[j]);
@@ -537,7 +536,7 @@ void loop() {
                 {
                   // Swapped delay with while loop polling serial
                   start_time = micros();
-                  while(curr_time <= (start_time + (3000000)))
+                  while(curr_time <= (start_time + (2000000)))
                   {
                     for (int i = 0; i < INPUT_SIZE + 1; i++)
                     {
@@ -568,7 +567,7 @@ void loop() {
                 }
               }
               digitalPotWrite(0x80);
-              delay(100);
+              delay(200);
               Serial.println("Test Complete");
             }
           }
