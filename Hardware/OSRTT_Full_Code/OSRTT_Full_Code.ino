@@ -52,7 +52,7 @@ SPISettings settingsA(10000000, MSBFIRST, SPI_MODE0);
 
 //Serial connection values
 bool connected = false;
-String firmware = "1.3";
+String firmware = "1.4";
 int testRuns = 2;
 char fpsLimit = '1';
 int USBV = 0;
@@ -581,6 +581,23 @@ void loop() {
           }
           byte sized = Serial.readBytes(input, INPUT_SIZE);
           input[sized] = 0;   
+          if (input[0] == 'P')
+          {
+            while (input[0] != 'X' && input[0] != 'S')
+            {
+              for (int i = 0; i < INPUT_SIZE + 1; i++)
+              {
+                input[i] = ' ';
+              }
+              byte sized = Serial.readBytes(input, INPUT_SIZE);
+              input[sized] = 0; 
+              curr_time = micros(); //update current time
+           }
+         }
+         else if (input[0] == 'X')
+         {
+            break;  
+         }
         }
         
       }

@@ -23,9 +23,9 @@ namespace OSRTT_Launcher
     public partial class Main : Form
     {
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
-        private double boardVersion = 1.0;
-        private double downloadedFirmwareVersion = 1.3;
-        private string softwareVersion = "1.3";
+        private double boardVersion = 1.4;
+        private double downloadedFirmwareVersion = 1.4;
+        private string softwareVersion = "1.5";
 
         // TODO //
         // get current focused window, if ue4 game isn't selected port.write("P"); until it is then port.write("T"); ----------------- TEST THIS
@@ -169,6 +169,7 @@ namespace OSRTT_Launcher
             gamCorMenuItem.Checked = Properties.Settings.Default.gammaCorrRT;
             saveUSBOutputToolStripMenuItem.Checked = Properties.Settings.Default.USBOutput;
             minimiseToTrayToolStripMenuItem.Checked = Properties.Settings.Default.MinToTray;
+            suppressDialogBoxesToolStripMenuItem.Checked = Properties.Settings.Default.SuppressDiagBox;
         }
 
         public Main()
@@ -230,7 +231,7 @@ namespace OSRTT_Launcher
                     System.Diagnostics.Process process = new System.Diagnostics.Process();
                     //process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                     process.StartInfo.FileName = "cmd.exe";
-                    process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe config init && .\\arduinoCLI\\arduino-cli.exe config add board_manager.additional_urls https://adafruit.github.io/arduino-board-index/package_adafruit_index.json && .\\arduinoCLI\\arduino-cli.exe core update-index && .\\arduinoCLI\\arduino-cli.exe core install arduino:samd && .\\arduinoCLI\\arduino-cli.exe core install adafruit:samd";
+                    process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe config init && .\\arduinoCLI\\arduino-cli.exe config add board_manager.additional_urls https://adafruit.github.io/arduino-board-index/package_adafruit_index.json && .\\arduinoCLI\\arduino-cli.exe core update-index && .\\arduinoCLI\\arduino-cli.exe core install arduino:samd && .\\arduinoCLI\\arduino-cli.exe core install adafruit:samd && .\\arduinoCLI\\arduino-cli.exe lib install Keyboard";
                     //process.StartInfo.UseShellExecute = false;
                     //process.StartInfo.RedirectStandardOutput = true;
                     //process.StartInfo.CreateNoWindow = true;
@@ -402,6 +403,7 @@ namespace OSRTT_Launcher
                         }
                         else
                         {
+                            SetDeviceStatus("Updating Firmware");
                             System.Diagnostics.Process process = new System.Diagnostics.Process();
                             process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                             process.StartInfo.FileName = "cmd.exe";
@@ -409,7 +411,7 @@ namespace OSRTT_Launcher
                             process.StartInfo.RedirectStandardOutput = true;
                             process.StartInfo.CreateNoWindow = true;
                             Console.WriteLine("ready to start");
-                            process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe compile --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code && .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code";
+                            process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe lib install Keyboard && .\\arduinoCLI\\arduino-cli.exe compile --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code && .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code";
                             try
                             {
                                 Console.WriteLine("starting");
@@ -417,17 +419,20 @@ namespace OSRTT_Launcher
                                 string output = process.StandardOutput.ReadToEnd();
                                 Console.WriteLine(output);
                                 process.WaitForExit();
+                                MessageBox.Show(output);
                                 if (output.Contains("Error"))
                                 {
                                     MessageBox.Show("Firmware update failed. Error message: " + output, "Update Device Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
+                                    SetDeviceStatus("Update Failed");
                                 }
                                 else
                                 {
                                     MessageBox.Show("Device has been updated successfully!", "Updated Device", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    SetDeviceStatus("Update Complete");
                                 }
                                 
                                 boardUpdate = false;
+                                
                             }
                             catch (Exception ex)
                             {
@@ -483,9 +488,9 @@ namespace OSRTT_Launcher
 
         private void compareFirmware()
         {
-            if (boardVersion < downloadedFirmwareVersion)
+            if (boardVersion < downloadedFirmwareVersion && !Properties.Settings.Default.SuppressDiagBox)
             {
-                DialogResult dialogResult = MessageBox.Show("A newer version of the board's firmware is available, do you want to update now?", "Board Firmware Update Available!", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                DialogResult dialogResult = MessageBox.Show("A newer version of the board's firmware is available, do you want to update now? \n Current version: " + boardVersion + "\n New version: " + downloadedFirmwareVersion, "Board Firmware Update Available!", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (dialogResult == DialogResult.Yes)
                 {
                     //updateFirmware();
@@ -717,12 +722,12 @@ namespace OSRTT_Launcher
                         int diff = intValues.Max() - intValues.Min();
                         if (diff > 1000)
                         {
-                            MessageBox.Show("ERROR: The monitor's backlight appears to be strobing significantly. This is likely to make any data collected innacurate, so it's best to turn any strobing off if possible." +
+                            showMessageBox("ERROR: The monitor's backlight appears to be strobing significantly. This is likely to make any data collected innacurate, so it's best to turn any strobing off if possible." +
                                 "\n You are free to continue the test, but you may need to verify the results manually and the data may be unusable.", "Backlight Strobing Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                         else if (diff > 750)
                         {
-                            MessageBox.Show("ERROR: The monitor's backlight appears to be strobing. This may make any data collected innacurate, so it's best to turn any strobing off if possible." +
+                            showMessageBox("ERROR: The monitor's backlight appears to be strobing. This may make any data collected innacurate, so it's best to turn any strobing off if possible." +
                                 "\n You are free to continue the test, but you may need to verify the results manually.", "Backlight Strobing Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
@@ -872,7 +877,7 @@ namespace OSRTT_Launcher
                         int diff = intValues.Max() - intValues.Min();
                         if (diff > 1000)
                         {
-                            MessageBox.Show("ERROR: The USB supply voltage is very noisy. This may mean the results are unusable. It's recommended to try a different USB port/controller before continuing.", "USB Voltage Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            showMessageBox("ERROR: The USB supply voltage is very noisy. This may mean the results are unusable. It's recommended to try a different USB port/controller before continuing.", "USB Voltage Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                         /*else if (diff > 500)
                         {
@@ -1476,9 +1481,6 @@ namespace OSRTT_Launcher
                         }
                     }
 
-                    // ADD THE SAME LOW BRIGHTNESS CHECK IN INSTEAD USING SMALLER VALUES
-
-
                     // Search for where the result stops transitioning (from the end) - end position is almost always more sensitive hence lower values - also must account for over/undershoot
                     for (int j = samples.Length - 1; j > 0; j--)
                     {
@@ -1605,6 +1607,21 @@ namespace OSRTT_Launcher
                             }
                         }
                     }
+                    double startAverage = 0;
+                    double endAverage = 0;
+                    for (int q = 0; q < transStart; q++)
+                    {
+                        startAverage += samples[q];
+                    }
+                    startAverage /= transStart;
+                    startAverage = Math.Round(startAverage, 0);
+                    for (int q = transEnd; q < samples.Length; q++)
+                    {
+                        endAverage += samples[q];
+                    }
+                    endAverage /= (samples.Length - transEnd);
+                    endAverage = Math.Round(endAverage, 0);
+
                     if (Properties.Settings.Default.RGB10Offset)
                     {
                         if (StartingRGB < EndRGB)
@@ -1688,9 +1705,9 @@ namespace OSRTT_Launcher
                     {
                         if (StartingRGB < EndRGB) 
                         {
-                            double range3 = (endMin - startMax) * 0.1; // Subtract low value from high value to get light level range
-                            double start3 = startMax + range3; // Start trigger value
-                            double end3 = endMin - range3; // End trigger value
+                            double range3 = (endAverage - startAverage) * 0.1; // Subtract low value from high value to get light level range
+                            double start3 = startAverage + range3; // Start trigger value
+                            double end3 = endAverage - range3; // End trigger value
                             if (Properties.Settings.Default.gammaCorrRT) // RGB corrected overwrites light level trigger points
                             {
                                 double rgbRange = (EndRGB - StartingRGB) * 0.1;
@@ -1713,9 +1730,9 @@ namespace OSRTT_Launcher
                         }
                         else
                         {
-                            double range3 = (startMin - endMax) * 0.1;
-                            double start3 = startMin - range3;
-                            double end3 = endMax + range3;
+                            double range3 = (startAverage - endAverage) * 0.1;
+                            double start3 = startAverage - range3;
+                            double end3 = endAverage + range3;
                             if (Properties.Settings.Default.gammaCorrRT)
                             {
                                 double rgbRange = (StartingRGB - EndRGB) * 0.1;
@@ -1742,9 +1759,9 @@ namespace OSRTT_Launcher
                     {
                         if (StartingRGB < EndRGB)
                         {
-                            double range3 = (endMin - startMax) * 0.03;
-                            double start3 = startMax + range3;
-                            double end3 = endMin - range3;
+                            double range3 = (endAverage - startAverage) * 0.03;
+                            double start3 = startAverage + range3;
+                            double end3 = endAverage - range3;
                             for (int j = 0; j < samples.Length; j++)
                             {
                                 if (samples[j] >= start3 && percentTransStart == 0)
@@ -1760,9 +1777,9 @@ namespace OSRTT_Launcher
                         }
                         else
                         {
-                            double range3 = (startMin - endMax) * 0.03;
-                            double start3 = startMin - range3;
-                            double end3 = endMax + range3;
+                            double range3 = (startAverage - endAverage) * 0.03;
+                            double start3 = startAverage - range3;
+                            double end3 = endAverage + range3;
                             for (int j = 0; j < samples.Length; j++)
                             {
                                 if (samples[j] <= start3 && percentTransStart == 0)
@@ -1778,17 +1795,20 @@ namespace OSRTT_Launcher
                         }
                     }
 
+                    // FIND THE MINIMUM VALUE FROM BETWEEN TRANS START AND TRANS END< NOT THE WHOLE THING
+
                     //Overshoot calculations
                     double overshootPercent = 0;
-                    double endLevel = 0;
                     double overshootRGBDiff = 0;
+                    double peakValue = 0;
                     if (StartingRGB < EndRGB)
                     {
-                        endLevel = endMax;
+                        peakValue = maxValue;
                         // Dark to light transition
-                        if (maxValue > (endMax + 100) && maxValue > (fullGammaTable[EndRGB][1] + 100))
+                        if (maxValue > (endAverage + 100) && maxValue > (fullGammaTable[EndRGB][1] + 100))
                         {
                             // undershoot may have occurred
+                            Console.WriteLine("Overshoot found");
                             // convert maxValue to RGB using gamma table
                             for (int i = 0; i < fullGammaTable.Count; i++)
                             {
@@ -1829,16 +1849,17 @@ namespace OSRTT_Launcher
                             else
                             {
                                 double os = (overUnderRGB - EndRGB) / EndRGB;
-                                overshootPercent = Math.Round((os * 100), 2);
+                                os *= 100;
+                                overshootPercent = Math.Round(os, 2);
                                 overshootRGBDiff = overUnderRGB - EndRGB;
                             }
                         }
                     }
                     else
                     {
-                        endLevel = endMin;
+                        peakValue = minValue;
                         // Light to dark transistion
-                        if (minValue < (endMin - 100) && minValue < (fullGammaTable[EndRGB][1] - 100))
+                        if (minValue < (endAverage - 100) && minValue < (fullGammaTable[EndRGB][1] - 100))
                         {
                             // overshoot may have occurred
                             // convert minValue to RGB using gamma table
@@ -1871,8 +1892,9 @@ namespace OSRTT_Launcher
                                 }
                             }
                             double os = (overUnderRGB - EndRGB) / EndRGB;
-                            os = os * -1;
-                            overshootPercent = Math.Round((os * 100), 2);
+                            os *= -1;
+                            os *= 100;
+                            overshootPercent = Math.Round(os, 2);
                             overshootRGBDiff = EndRGB - overUnderRGB;
                         }
                     }
@@ -1887,7 +1909,7 @@ namespace OSRTT_Launcher
                     if (verboseOutputToolStripMenuItem.Checked)
                     {
                         // Verbose output with ALLLL the data
-                        double[] completeResult = new double[] { StartingRGB, EndRGB, responseTime, percentResponseTime, overshootPercent, transStart, transEnd, SampleTime, endLevel, maxValue, overUnderRGB };
+                        double[] completeResult = new double[] { StartingRGB, EndRGB, responseTime, percentResponseTime, overshootPercent, transStart, transEnd, SampleTime, endAverage, peakValue, overUnderRGB };
                         processedData.Add(completeResult);
                     }
                     else if (!percentageToolStripMenuItem.Checked && gammaCorrectedToolStripMenuItem.Checked)
@@ -1902,12 +1924,14 @@ namespace OSRTT_Launcher
                         double os = 0;
                         if (StartingRGB < EndRGB)
                         {
-                            os = (maxValue - endLevel) / endLevel;
+                            os = (maxValue - endAverage) / endAverage;
+                            os *= 100;
                             os = Math.Round(os, 2);
                         }
                         else
                         {
-                            os = (endLevel - minValue) / endLevel;
+                            os = (endAverage - minValue) / endAverage;
+                            os *= 100;
                             os = Math.Round(os, 2);
                         }
                         double[] completeResult = new double[] { StartingRGB, EndRGB, responseTime, percentResponseTime, os };
@@ -1932,7 +1956,11 @@ namespace OSRTT_Launcher
                 // Search \Results folder for existing results to not overwrite existing or have save conflict errors
                 foreach (var s in existingFiles)
                 {
-                    decimal num = decimal.Parse(Path.GetFileNameWithoutExtension(s).Remove(3));
+                    decimal num = 0;
+                    try
+                    { num = decimal.Parse(Path.GetFileNameWithoutExtension(s).Remove(3)); }
+                    catch
+                    { Console.WriteLine("Non-standard file name found"); }
                     if (num >= fileNumber)
                     {
                         fileNumber = num + 1;
@@ -1962,13 +1990,17 @@ namespace OSRTT_Launcher
                 {
                     osSign = "(RGB)";
                 }
+                if (gammaCorrectedToolStripMenuItem.Checked && percentageToolStripMenuItem.Checked)
+                {
+                    osSign = "(RGB %)";
+                }
                 if (percentageToolStripMenuItem.Checked)
                 {
                     osType = "Overshoot";
                 }
                 if (verboseOutputToolStripMenuItem.Checked)
                 {
-                    csvString.AppendLine("Starting RGB,End RGB,Complete Response Time (ms)," + rtType + "," + osType + " " + osSign + ",Transition Start Position,Transition End Position,Sampling Time (ms),End Light Level,Max Light Level,Overshoot/Undershoot RGB Value");
+                    csvString.AppendLine("Starting RGB,End RGB,Complete Response Time (ms)," + rtType + "," + osType + " " + osSign + ",Transition Start Position,Transition End Position,Sampling Time (ms),End Light Level,Min/Max Light Level,Overshoot/Undershoot RGB Value");
                 }
                 else
                 {
@@ -2031,15 +2063,16 @@ namespace OSRTT_Launcher
                     File.WriteAllText(smoothedFilePath, smoothedCsvString.ToString());
                 }
             }
-            catch
+            catch (Exception procEx)
             {
+                Console.WriteLine(procEx);
                 processingFailed = true;
                 if (port != null)
                 {
                     if (port.IsOpen)
                     {
                         port.Write("X");
-                        MessageBox.Show("One or more set of results failed to process and won't be included in the multi-run averaging. Brightness may be too high - try calibrating the brightness and running the test again.", "Processing Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        showMessageBox("One or more set of results failed to process and won't be included in the multi-run averaging. Brightness may be too high - try calibrating the brightness and running the test again.", "Processing Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         processingFailed = false;
                     }
                 }
@@ -2716,6 +2749,39 @@ namespace OSRTT_Launcher
         {
             Properties.Settings.Default.MinToTray = minimiseToTrayToolStripMenuItem.Checked;
             Properties.Settings.Default.Save();
+        }
+
+        private void debugModeToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            if (debugModeToolStripMenuItem.Checked)
+            {
+                changeSizeAndState("debug");
+                debugMode = debugModeToolStripMenuItem.Checked;
+            }
+            else
+            {
+                changeSizeAndState("standard");
+                debugMode = debugModeToolStripMenuItem.Checked;
+            }
+        }
+
+        private void opnResultsBtn_Click(object sender, EventArgs e)
+        {
+            Process.Start("explorer.exe", path);
+        }
+
+        private void suppressDialogBoxesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.SuppressDiagBox = suppressDialogBoxesToolStripMenuItem.Checked;
+            Properties.Settings.Default.Save();
+        }
+
+        private void showMessageBox(string title, string message, MessageBoxButtons buttons, MessageBoxIcon icon)
+        {
+            if (!Properties.Settings.Default.SuppressDiagBox)
+            {
+                MessageBox.Show(title, message, buttons, icon);
+            }
         }
     }
 }

@@ -190,5 +190,17 @@ namespace OSRTT_Launcher.Properties {
                 this["MinToTray"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SuppressDiagBox {
+            get {
+                return ((bool)(this["SuppressDiagBox"]));
+            }
+            set {
+                this["SuppressDiagBox"] = value;
+            }
+        }
     }
 }

@@ -50,6 +50,8 @@
             this.noGammaCorrectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gammaCorrectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.percentageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.programSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.minimiseToTrayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BrightnessCalBtn = new System.Windows.Forms.ToolStripMenuItem();
             this.deviceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -85,8 +87,8 @@
             this.potValLabel = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
-            this.programSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.minimiseToTrayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.suppressDialogBoxesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.opnResultsBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.controlsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.testCount)).BeginInit();
@@ -101,7 +103,7 @@
             this.launchBtn.Font = new System.Drawing.Font("Consolas", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.launchBtn.Location = new System.Drawing.Point(18, 131);
             this.launchBtn.Name = "launchBtn";
-            this.launchBtn.Size = new System.Drawing.Size(551, 46);
+            this.launchBtn.Size = new System.Drawing.Size(382, 46);
             this.launchBtn.TabIndex = 5;
             this.launchBtn.Text = "Start Testing";
             this.launchBtn.UseVisualStyleBackColor = false;
@@ -301,6 +303,26 @@
             this.percentageToolStripMenuItem.Text = "Percentage";
             this.percentageToolStripMenuItem.Click += new System.EventHandler(this.percentageToolStripMenuItem_Click);
             // 
+            // programSettingsToolStripMenuItem
+            // 
+            this.programSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.minimiseToTrayToolStripMenuItem,
+            this.suppressDialogBoxesToolStripMenuItem});
+            this.programSettingsToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.programSettingsToolStripMenuItem.Name = "programSettingsToolStripMenuItem";
+            this.programSettingsToolStripMenuItem.Size = new System.Drawing.Size(110, 20);
+            this.programSettingsToolStripMenuItem.Text = "Program Settings";
+            // 
+            // minimiseToTrayToolStripMenuItem
+            // 
+            this.minimiseToTrayToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.minimiseToTrayToolStripMenuItem.CheckOnClick = true;
+            this.minimiseToTrayToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.minimiseToTrayToolStripMenuItem.Name = "minimiseToTrayToolStripMenuItem";
+            this.minimiseToTrayToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.minimiseToTrayToolStripMenuItem.Text = "Minimise To Tray";
+            this.minimiseToTrayToolStripMenuItem.Click += new System.EventHandler(this.minimiseToTrayToolStripMenuItem_Click);
+            // 
             // BrightnessCalBtn
             // 
             this.BrightnessCalBtn.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
@@ -329,6 +351,7 @@
             this.debugModeToolStripMenuItem.Name = "debugModeToolStripMenuItem";
             this.debugModeToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
             this.debugModeToolStripMenuItem.Text = "Debug mode";
+            this.debugModeToolStripMenuItem.Click += new System.EventHandler(this.debugModeToolStripMenuItem_Click_1);
             // 
             // saveUSBOutputToolStripMenuItem
             // 
@@ -394,6 +417,7 @@
             // controlsPanel
             // 
             this.controlsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.controlsPanel.Controls.Add(this.opnResultsBtn);
             this.controlsPanel.Controls.Add(this.fpsLimitList);
             this.controlsPanel.Controls.Add(this.label4);
             this.controlsPanel.Controls.Add(this.testCount);
@@ -705,24 +729,31 @@
             this.notifyIcon.Visible = true;
             this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_MouseDoubleClick);
             // 
-            // programSettingsToolStripMenuItem
+            // suppressDialogBoxesToolStripMenuItem
             // 
-            this.programSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.minimiseToTrayToolStripMenuItem});
-            this.programSettingsToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.programSettingsToolStripMenuItem.Name = "programSettingsToolStripMenuItem";
-            this.programSettingsToolStripMenuItem.Size = new System.Drawing.Size(110, 20);
-            this.programSettingsToolStripMenuItem.Text = "Program Settings";
+            this.suppressDialogBoxesToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.suppressDialogBoxesToolStripMenuItem.CheckOnClick = true;
+            this.suppressDialogBoxesToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.suppressDialogBoxesToolStripMenuItem.Name = "suppressDialogBoxesToolStripMenuItem";
+            this.suppressDialogBoxesToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.suppressDialogBoxesToolStripMenuItem.Text = "Suppress Dialog Boxes";
+            this.suppressDialogBoxesToolStripMenuItem.ToolTipText = "Suppress warning and mid-test error dialog boxes.";
+            this.suppressDialogBoxesToolStripMenuItem.Click += new System.EventHandler(this.suppressDialogBoxesToolStripMenuItem_Click);
             // 
-            // minimiseToTrayToolStripMenuItem
+            // opnResultsBtn
             // 
-            this.minimiseToTrayToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.minimiseToTrayToolStripMenuItem.CheckOnClick = true;
-            this.minimiseToTrayToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.minimiseToTrayToolStripMenuItem.Name = "minimiseToTrayToolStripMenuItem";
-            this.minimiseToTrayToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.minimiseToTrayToolStripMenuItem.Text = "Minimise To Tray";
-            this.minimiseToTrayToolStripMenuItem.Click += new System.EventHandler(this.minimiseToTrayToolStripMenuItem_Click);
+            this.opnResultsBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.opnResultsBtn.FlatAppearance.BorderSize = 0;
+            this.opnResultsBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.opnResultsBtn.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Bold);
+            this.opnResultsBtn.ImageAlign = System.Drawing.ContentAlignment.TopRight;
+            this.opnResultsBtn.Location = new System.Drawing.Point(406, 131);
+            this.opnResultsBtn.Name = "opnResultsBtn";
+            this.opnResultsBtn.Size = new System.Drawing.Size(163, 46);
+            this.opnResultsBtn.TabIndex = 14;
+            this.opnResultsBtn.Text = "Open Results Folder";
+            this.opnResultsBtn.UseVisualStyleBackColor = false;
+            this.opnResultsBtn.Click += new System.EventHandler(this.opnResultsBtn_Click);
             // 
             // Main
             // 
@@ -815,6 +846,8 @@
         private System.Windows.Forms.ToolStripMenuItem fixedRGB5OffsetToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem programSettingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem minimiseToTrayToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem suppressDialogBoxesToolStripMenuItem;
+        private System.Windows.Forms.Button opnResultsBtn;
     }
 }
 
