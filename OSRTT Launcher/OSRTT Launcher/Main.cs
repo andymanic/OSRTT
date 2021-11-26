@@ -25,17 +25,14 @@ namespace OSRTT_Launcher
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
         private double boardVersion = 1.4;
         private double downloadedFirmwareVersion = 1.4;
-        private string softwareVersion = "1.5";
+        private string softwareVersion = "1.6";
 
         // TODO //
-        // get current focused window, if ue4 game isn't selected port.write("P"); until it is then port.write("T"); ----------------- TEST THIS
-        // Overshoot - use first time it crosses end max, when it hits 65520, when it drops off that, when it finally drops to end to calculate/estimate 'actual' overshoot position.
+        // Create dedicated gamma test, possibly move to 8x8 instead of 11x11
         //
         // CANCEL TEST IF GAME CLOSED!!! (serial buffer still full of multiple results?? use checkfocusedwindow to also check if program is open? Although launchgame func should handle that and close..)
-        // ADD FIXED RGB 10 (5?) OFFSET FOR SIMON
         // 
         // Current known issues //
-        // Device will continue to run test even if game closed/not selected/program error
         //
 
         public static System.IO.Ports.SerialPort port;
@@ -407,11 +404,12 @@ namespace OSRTT_Launcher
                             System.Diagnostics.Process process = new System.Diagnostics.Process();
                             process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                             process.StartInfo.FileName = "cmd.exe";
+                            
+                            Console.WriteLine("ready to start");
+                            process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe lib install Keyboard && .\\arduinoCLI\\arduino-cli.exe compile --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code && .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code";
                             process.StartInfo.UseShellExecute = false;
                             process.StartInfo.RedirectStandardOutput = true;
                             process.StartInfo.CreateNoWindow = true;
-                            Console.WriteLine("ready to start");
-                            process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe lib install Keyboard && .\\arduinoCLI\\arduino-cli.exe compile --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code && .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code";
                             try
                             {
                                 Console.WriteLine("starting");
@@ -419,7 +417,7 @@ namespace OSRTT_Launcher
                                 string output = process.StandardOutput.ReadToEnd();
                                 Console.WriteLine(output);
                                 process.WaitForExit();
-                                MessageBox.Show(output);
+                                //MessageBox.Show(output);
                                 if (output.Contains("Error"))
                                 {
                                     MessageBox.Show("Firmware update failed. Error message: " + output, "Update Device Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1609,17 +1607,29 @@ namespace OSRTT_Launcher
                     }
                     double startAverage = 0;
                     double endAverage = 0;
-                    for (int q = 0; q < transStart; q++)
+                    int avgStart = transStart - 200;
+                    int avgEnd = transEnd + 400;
+                    if (transStart < 200)
+                    {
+                        int t = transStart / 5;
+                        avgStart = transStart - t;
+                    }
+                    if ((samples.Length - transEnd) < 400)
+                    {
+                        int t = transEnd / 5;
+                        avgEnd = transEnd + t;
+                    }
+                    for (int q = 0; q < avgStart; q++)
                     {
                         startAverage += samples[q];
                     }
-                    startAverage /= transStart;
+                    startAverage /= avgStart;
                     startAverage = Math.Round(startAverage, 0);
-                    for (int q = transEnd; q < samples.Length; q++)
+                    for (int q = avgEnd; q < samples.Length; q++)
                     {
                         endAverage += samples[q];
                     }
-                    endAverage /= (samples.Length - transEnd);
+                    endAverage /= (samples.Length - avgEnd);
                     endAverage = Math.Round(endAverage, 0);
 
                     if (Properties.Settings.Default.RGB10Offset)
