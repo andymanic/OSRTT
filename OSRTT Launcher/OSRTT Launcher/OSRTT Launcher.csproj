@@ -105,6 +105,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DisplayInitCheck.cs" />
     <Compile Include="FocusedWindow.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
@@ -112,11 +113,24 @@
     <Compile Include="Main.Designer.cs">
       <DependentUpon>Main.cs</DependentUpon>
     </Compile>
+    <Compile Include="Matrix.cs" />
+    <Compile Include="MatrixSolver.cs" />
+    <Compile Include="MeasurementsExplained.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MeasurementsExplained.Designer.cs">
+      <DependentUpon>MeasurementsExplained.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NaturalSpline.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="SplineInterpolator.cs" />
     <EmbeddedResource Include="Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MeasurementsExplained.resx">
+      <DependentUpon>MeasurementsExplained.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -2,36 +2,16 @@
 #include <SPI.h>
 #define INPUT_SIZE 2
 
-//////////////////////////
-// RGB Values / Keys //
-//     0      /  q   //       
-//     26     /  a   //       
-//     51     /  z   //       
-//     77     /  w   //       
-//     102    /  s   //       
-//     128    /  x   //       
-//     153    /  e   //       
-//     179    /  d   //       
-//     204    /  c   //       
-//     230    /  r   //       
-//     255    /  f   //       
-
-// Framerate Cap / Keys //
-//    1000FPS    /  1   //
-//     360FPS    /  2   //
-//     240FPS    /  3   //
-//     165FPS    /  4   //
-//     144FPS    /  5   //
-//     120FPS    /  6   //
-//     100FPS    /  7   //
-//      60FPS    /  8   //
-//////////////////////////
-
 //Test values
 // These are the RGB values it tests with
-int RGBArr[] = {0,26,51,77,102,128,153,179,204,230,255};
+int RGBArr[] = {0,51,102,153,204,255};
 // These are the keys that correspond with the above values
-char Keys[] = {'q','a','z','w','s','x','e','d','c','r','f'};
+char Keys[] = {'q','z','s','e','c','f'};
+// Ideally I'd pair these together in an array of key/value pairs but this works for now. 
+// These are the RGB values it tests with
+int OldRGBArr[] = {0,26,51,77,102,128,153,179,204,230,255};
+// These are the keys that correspond with the above values
+char OldKeys[] = {'q','a','z','w','s','x','e','d','c','r','f'};
 // Ideally I'd pair these together in an array of key/value pairs but this works for now. 
 
 //ADC values
@@ -52,7 +32,7 @@ SPISettings settingsA(10000000, MSBFIRST, SPI_MODE0);
 
 //Serial connection values
 bool connected = false;
-String firmware = "1.4";
+String firmware = "1.5";
 int testRuns = 2;
 char fpsLimit = '1';
 int USBV = 0;
@@ -167,7 +147,7 @@ int checkLightLevel() // Check light level & modulate potentiometer value
   return 1;
 }
 
-void runADC(int curr, int nxt, char key) // Run test, press key and print results
+void runADC(int curr, int nxt, char key, String type) // Run test, press key and print results
 {
     // Set next colour
     Keyboard.print(key);
@@ -199,7 +179,7 @@ void runADC(int curr, int nxt, char key) // Run test, press key and print result
     // Get how long the samples took to capture in microseconds
     int timeTaken = curr_time - start_time;
     //Print from & to RGB values, time taken, sample count and all captured results
-    Serial.print("Results: ");
+    Serial.print(type);
     Serial.print(curr);
     Serial.print(",");
     Serial.print(nxt);
@@ -252,6 +232,20 @@ int checkUSBVoltage() // Check USB voltage is between 4.8V and 5.2V
   return 1;
 }
 
+void runGammaTest()
+{
+    Serial.println("G Test Starting");
+    int arrSize = sizeof(RGBArr) / sizeof(int);
+    for (int i = 0; i < arrSize; i++)
+    {
+      Keyboard.print(Keys[i]);
+      delay(200);
+      runADC(RGBArr[i], RGBArr[i], Keys[i], "Gamma: ");
+      delay(200);
+    }
+    Serial.println("G Test Complete");
+}
+
 void setup() {
   pinMode (CS, OUTPUT);
   pinMode (3, OUTPUT);
@@ -294,9 +288,10 @@ void loop() {
     {
       // Brightness Calibration screen
       Serial.setTimeout(200);
-      int potVal = 170;
+      int potVal = 165;
       digitalPotWrite(potVal);
       Serial.println("BRIGHTNESS CHECK");
+      delay(500);
       int sample_count = 0;
       while(sample_count < 1000)
       {
@@ -323,7 +318,7 @@ void loop() {
           }
           byte sized = Serial.readBytes(input, INPUT_SIZE);
           input[sized] = 0;
-          int in = 20;
+          int in = 0;
           if (input[0] <= 57)
           {
               in = input[0] - '0'; // Convert char to int  
@@ -337,12 +332,12 @@ void loop() {
           {
             // Increment potentiometer value by multiples of 10 up to 220
             int add = 2 * in;
-            potVal = 170 + add;
+            potVal = 165 + add;
             digitalPotWrite(potVal);  
           }
           else if (in == 0)
           {
-            potVal = 170;
+            potVal = 165;
             digitalPotWrite(potVal);
           }
           ADC0->SWTRIG.bit.START = 1; //Start ADC 
@@ -387,6 +382,10 @@ void loop() {
       Serial.print("FPS Key:");
       Serial.println(fpsLimit);
     }
+    else if (input[0] == 'G')
+    {
+      runGammaTest();
+    }
     else if (input[0] == 'T')
     {
       Serial.println("Ready to test");
@@ -426,7 +425,8 @@ void loop() {
               // Set FPS limit (default 1000 FPS, key '1')
               Keyboard.print(fpsLimit);
               delay(50);
-              
+              runGammaTest();
+              delay(100);
               Serial.println("STARTING TEST"); 
               delay(50);
               for (int k = 0; k <= testRuns; k++)
@@ -434,7 +434,7 @@ void loop() {
                 digitalWrite(13, LOW);
                 // If brightness fine, continue with test
                 unsigned long start_time = micros();
-                int delayTime = 250000;
+                int delayTime = 300000;
                 
                 Serial.println("STARTING RUN"); 
                 // Get size of array for for loop, so it's expandable for different test sizes
@@ -463,7 +463,7 @@ void loop() {
                       delay(300);
                     
                       // Get light output values & pass in RGB values in use
-                      runADC(current, next, Keys[j]);
+                      runADC(current, next, Keys[j], "Results: ");
           
                       // Wait short amount of time after finishing capturing
                       // Swapped delay with while loop polling serial
@@ -497,7 +497,7 @@ void loop() {
                       }
             
                       // Get light output values & pass in RGB values in use
-                      runADC(next, current, currentKey);
+                      runADC(next, current, currentKey, "Results: ");
                     
                       // Wait short amount of time after finishing capturing
                       start_time = micros();

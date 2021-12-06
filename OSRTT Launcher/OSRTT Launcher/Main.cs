@@ -17,21 +17,28 @@ using WindowsDisplayAPI.DisplayConfig;
 using AutoUpdaterDotNET;
 using Newtonsoft.Json;
 using System.Resources;
+using System.Runtime.InteropServices;
 
 namespace OSRTT_Launcher
 {
     public partial class Main : Form
     {
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
-        private double boardVersion = 1.4;
-        private double downloadedFirmwareVersion = 1.4;
-        private string softwareVersion = "1.6";
+        private double boardVersion = 1.5;
+        private double downloadedFirmwareVersion = 1.5;
+        private string softwareVersion = "1.7";
 
         // TODO //
         // Create dedicated gamma test, possibly move to 8x8 instead of 11x11
         //
         // CANCEL TEST IF GAME CLOSED!!! (serial buffer still full of multiple results?? use checkfocusedwindow to also check if program is open? Although launchgame func should handle that and close..)
         // 
+        // Add check if keyboard folder exists/when update happens catch error say thats Keyboard isn't installed, offer user an option to retry and install keyboard then (separately) run update again...
+        // or download the zip file I'll upload to the github and extract to documents folder.
+        //
+        // Add better error messages to say results weren't processed
+        //
+        //
         // Current known issues //
         //
 
@@ -41,12 +48,15 @@ namespace OSRTT_Launcher
         private bool portConnected = false;
         private bool brightnessCheck = false;
         public bool brightnessWindowOpen = false;
+        public bool brightnessCanceled = false;
+        private TimeSpan uptime;
 
         private bool debugMode = false;
         private bool testRunning = false;
         private bool processingFailed = false;
         private bool ready = false;
         private bool testMode = false;
+        private bool gammaTest = false;
 
         private int[] RGBArr;
         private int resultsLimit = 110;
@@ -56,7 +66,8 @@ namespace OSRTT_Launcher
         string path = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
         string resultsFolderPath = "";
         private List<int[]> results = new List<int[]>();
-        
+        private List<int[]> gamma = new List<int[]>();
+
         private List<List<double[]>> multipleRunData = new List<List<double[]>>();
         public class Displays
         {
@@ -149,6 +160,9 @@ namespace OSRTT_Launcher
             notifyIcon.ContextMenu = contextMenu1;
             notifyIcon.Visible = false;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.softVerLbl.Text = "V" + softwareVersion;
+            this.firmVerLbl.Text = "N/A";
+            this.richTextBox1.TextChanged += richTextBox1_TextChanged;
         }
 
         private void initialiseSettings()
@@ -167,12 +181,14 @@ namespace OSRTT_Launcher
             saveUSBOutputToolStripMenuItem.Checked = Properties.Settings.Default.USBOutput;
             minimiseToTrayToolStripMenuItem.Checked = Properties.Settings.Default.MinToTray;
             suppressDialogBoxesToolStripMenuItem.Checked = Properties.Settings.Default.SuppressDiagBox;
+            perceivedRGB5MenuItem.Checked = Properties.Settings.Default.PerceivedRGB5;
+            perceivedRGB10MenuItem.Checked = Properties.Settings.Default.PerceivedRGB10;
         }
 
         public Main()
         {
             InitializeComponent();
-            appRunning();
+            UpdateMe();
             setupFormElements();
             ControlDeviceButtons(false);
             path = new Uri(System.IO.Path.GetDirectoryName(path)).LocalPath;
@@ -183,6 +199,7 @@ namespace OSRTT_Launcher
             currentDomain.UnhandledException += new UnhandledExceptionEventHandler(IFailedYou);
             this.Resize += new EventHandler(Main_Resize);
             initialiseSettings();
+            appRunning();
             hardWorker = new BackgroundWorker();
             connectThread = new Thread(new ThreadStart(this.findAndConnectToBoard));
             connectThread.Start();
@@ -191,27 +208,11 @@ namespace OSRTT_Launcher
             listFramerates();
             initialSetup();
             checkFolderPermissions();
-            
-        }
-
-        private void setAntivirusExclusion()
-        {
-            string installPath = path = new Uri(System.IO.Path.GetDirectoryName(path)).LocalPath;
-            System.Diagnostics.Process ps = new System.Diagnostics.Process();
-            ps.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-            ps.StartInfo.FileName = "powershell.exe";
-            ps.StartInfo.Arguments = @"& {Set-ExecutionPolicy Unsigned && Set-MpPreference -ExclusionPath " + installPath + "}";
-            ps.StartInfo.UseShellExecute = false;
-            ps.StartInfo.RedirectStandardOutput = true;
-            ps.StartInfo.CreateNoWindow = true;
-            ps.StartInfo.Verb = "runas";
-            try
+            uptime = GetUpTime();
+            if (uptime.TotalMinutes < 30)
             {
-                ps.Start();
-            }
-            catch
-            {
-                MessageBox.Show("Tried to run as admin, denied. Security preferences not set.");
+                showMessageBox("It is HIGHLY RECOMMENDED you allow the display to warm up BEFORE testing - it looks like your system hasn't been running for more than 30 minutes." +
+                    "\n You are welcome to continue, but it's recommended you allow the display to run for around 30 minutes before testing.","Monitor Warm Up",MessageBoxButtons.OK,MessageBoxIcon.Information);
             }
         }
 
@@ -250,11 +251,18 @@ namespace OSRTT_Launcher
                 }
             }
         }
+        public static TimeSpan GetUpTime()
+        {
+            return TimeSpan.FromMilliseconds(GetTickCount64());
+        }
+        [DllImport("kernel32")]
+        extern static UInt64 GetTickCount64();
+
         private void listMonitors()
         {
             monitorCB.Items.Clear(); // Clear existing array and list before filling them
             displayList.Clear();
-            // Find monitor names, refresh rate and connection
+            
             foreach (var target in WindowsDisplayAPI.DisplayConfig.PathInfo.GetActivePaths())
             {
                 foreach (var item in target.TargetsInfo)
@@ -289,11 +297,13 @@ namespace OSRTT_Launcher
             fpsList.Add(new FPS { FPSValue = "1000", Key = "1" });
             fpsList.Add(new FPS { FPSValue = "360", Key = "2" });
             fpsList.Add(new FPS { FPSValue = "240", Key = "3" });
-            fpsList.Add(new FPS { FPSValue = "165", Key = "4" });
-            fpsList.Add(new FPS { FPSValue = "144", Key = "5" });
-            fpsList.Add(new FPS { FPSValue = "120", Key = "6" });
-            fpsList.Add(new FPS { FPSValue = "100", Key = "7" });
-            fpsList.Add(new FPS { FPSValue = "60", Key = "8" });
+            fpsList.Add(new FPS { FPSValue = "170", Key = "4" });
+            fpsList.Add(new FPS { FPSValue = "165", Key = "5" });
+            fpsList.Add(new FPS { FPSValue = "144", Key = "6" });
+            fpsList.Add(new FPS { FPSValue = "120", Key = "7" });
+            fpsList.Add(new FPS { FPSValue = "100", Key = "8" });
+            fpsList.Add(new FPS { FPSValue = "75", Key = "9" });
+            fpsList.Add(new FPS { FPSValue = "60", Key = "0" });
             foreach (var f in fpsList)
             {
                 fpsLimitList.Items.Add(f.FPSValue);
@@ -333,8 +343,14 @@ namespace OSRTT_Launcher
             {
                 if (!portConnected)
                 {
+                    
                     ControlDeviceButtons(false);
                     SetDeviceStatus("Board Disconnected");
+                    Thread.Sleep(1000);
+                    if (this.firmVerLbl.IsHandleCreated)
+                    {
+                        this.firmVerLbl.Invoke((MethodInvoker)(() => this.firmVerLbl.Text = "N/A"));
+                    }
                     testRunning = false;
                     Process[] game = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
                     if (game.Length != 0)
@@ -406,7 +422,7 @@ namespace OSRTT_Launcher
                             process.StartInfo.FileName = "cmd.exe";
                             
                             Console.WriteLine("ready to start");
-                            process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe lib install Keyboard && .\\arduinoCLI\\arduino-cli.exe compile --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code && .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code";
+                            process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe compile --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code && .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code";
                             process.StartInfo.UseShellExecute = false;
                             process.StartInfo.RedirectStandardOutput = true;
                             process.StartInfo.CreateNoWindow = true;
@@ -438,6 +454,7 @@ namespace OSRTT_Launcher
                                 Console.WriteLine(ex);
                             }
                         }
+                        this.firmVerLbl.Invoke((MethodInvoker)(() => this.firmVerLbl.Text = "V" + boardVersion));
                     }
                     else
                     {
@@ -691,6 +708,33 @@ namespace OSRTT_Launcher
                             }
                         }
                     }
+                    else if (message.Contains("Gamma"))
+                    {
+                        // Split result string into individual results
+                        String newMessage = message.Remove(0, 7);
+                        string[] values = newMessage.Split(',');
+                        int[] intValues = new int[values.Length - 1];
+                        for (int i = 0; i < values.Length - 1; i++)
+                        {
+                            if (values[i] == "0")
+                            {
+                                intValues[i] = 0;
+                            }
+                            else if (values[i] != "")
+                            {
+                                try
+                                {
+                                    intValues[i] = int.Parse(values[i]);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine(values[i]);
+                                }
+                            }
+                            else { continue; }
+                        }
+                        gamma.Add(intValues);
+                    }
                     else if (message.Contains("Stability"))
                     {
                         // Split result string into individual results
@@ -726,7 +770,7 @@ namespace OSRTT_Launcher
                         else if (diff > 750)
                         {
                             showMessageBox("ERROR: The monitor's backlight appears to be strobing. This may make any data collected innacurate, so it's best to turn any strobing off if possible." +
-                                "\n You are free to continue the test, but you may need to verify the results manually.", "Backlight Strobing Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                "\n You are free to continue the test, but you may need to verify the results manually.", "Backlight Strobing Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         }
                     }
                     else if (message.Contains("STARTING RUN"))
@@ -766,6 +810,28 @@ namespace OSRTT_Launcher
                         }
                         File.WriteAllText(filePath, csvString.ToString());
 
+                        decimal gammaFileNumber = 001;
+                        // search /Results folder for existing file names, pick new name
+                        string[] existingGammaFiles = Directory.GetFiles(resultsFolderPath, "*-GAMMA-RAW-OSRTT.csv");
+                        //search files for number
+                        foreach (var s in existingGammaFiles)
+                        {
+                            decimal num = decimal.Parse(Path.GetFileNameWithoutExtension(s).Remove(3));
+                            if (num >= gammaFileNumber)
+                            {
+                                gammaFileNumber = num + 1;
+                            }
+                        }
+
+                        string gammaFilePath = resultsFolderPath + "\\" + gammaFileNumber.ToString("000") + "-GAMMA-RAW-OSRTT.csv";
+
+                        StringBuilder gammaCsvString = new StringBuilder();
+                        foreach (var res in gamma)
+                        {
+                            gammaCsvString.AppendLine(string.Join(strSeparator, res));
+                        }
+                        File.WriteAllText(gammaFilePath, gammaCsvString.ToString());
+
                         // Process that raw data
                         processThread = new Thread(new ThreadStart(this.processResponseTimeData));
                         processThread.Start();
@@ -792,11 +858,24 @@ namespace OSRTT_Launcher
                             testRunning = false;
                         }
                     }
+                    else if (message.Contains("G Test"))
+                    {
+                        if (message.Contains("Starting"))
+                        {
+                            gamma.Clear();
+                            gammaTest = true;
+                        }
+                        else if (message.Contains("Complete"))
+                        {
+                            gammaTest = false;
+                        }
+                    }
                     else if (message.Contains("FW:"))
                     {
                         string[] sp = message.Split(':');
                         boardVersion = double.Parse(sp[1]);
                         compareFirmware();
+                        this.firmVerLbl.Invoke((MethodInvoker)(() => this.firmVerLbl.Text = "V" + boardVersion));
                     }
                     else if (message.Contains("Runs:"))
                     {
@@ -1017,73 +1096,80 @@ namespace OSRTT_Launcher
             {
                 Thread.Sleep(100);
             }
-            ControlDeviceButtons(false);
-            // Save current & FPS to hardware on run
-            Thread.Sleep(200);
-            setFPSLimit();
-            Thread.Sleep(200);
-            setRepeats();
-            testRunning = true;
+            if (!brightnessCanceled)
+            {
+                ControlDeviceButtons(false);
+                // Save current & FPS to hardware on run
+                Thread.Sleep(200);
+                setFPSLimit();
+                Thread.Sleep(200);
+                setRepeats();
+                testRunning = true;
 
-            // Launch UE4 game
-            // thinking about it you can probably just bundle this into one process instead of launching, then finding it again...
-            string ue4Path = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
-            ue4Path = new Uri(System.IO.Path.GetDirectoryName(ue4Path)).LocalPath;
-            ue4Path += @"\OSRTT UE4\ResponseTimeTest.exe";
-            try
-            {
-                Process.Start(ue4Path);
-            }
-            catch (Exception strE)
-            {
-                Console.WriteLine(strE);
-                SetText(strE.Message + strE.StackTrace);
-            }
-            try
-            {
-                Process[] p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
-                while (p.Length == 0)
+                // Launch UE4 game
+                // thinking about it you can probably just bundle this into one process instead of launching, then finding it again...
+                string ue4Path = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
+                ue4Path = new Uri(System.IO.Path.GetDirectoryName(ue4Path)).LocalPath;
+                ue4Path += @"\OSRTT UE4\ResponseTimeTest.exe";
+                try
                 {
-                    // Added in case game hasn't finished launching yet
-                    p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
+                    Process.Start(ue4Path);
                 }
-                while (!testMode) // hacky and I don't like it but for some reason it's not detecting this
+                catch (Exception strE)
                 {
-                    try
-                    {
-                        port.Write("T");
-                    }
-                    catch (Exception exc)
-                    {
-                        SetText(exc.Message + exc.StackTrace);
-                        Console.WriteLine(exc);
-                    }
-                    Thread.Sleep(200);
+                    Console.WriteLine(strE);
+                    SetText(strE.Message + strE.StackTrace);
                 }
-                checkWindowThread = new Thread(new ThreadStart(this.checkFocusedWindow));
-                checkWindowThread.Start();
-                // Wait for game to close then send cancel command to board
-                p[0].WaitForExit();
-                checkWindowThread.Abort();
-                Console.WriteLine("Game closed");
-                SetText("Game closed");
-                port.Write("X");
-                ControlDeviceButtons(true);
-                testRunning = false;
-                testMode = false;
+                try
+                {
+                    Process[] p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
+                    while (p.Length == 0)
+                    {
+                        // Added in case game hasn't finished launching yet
+                        p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
+                    }
+                    while (!testMode) // hacky and I don't like it but for some reason it's not detecting this
+                    {
+                        try
+                        {
+                            port.Write("T");
+                        }
+                        catch (Exception exc)
+                        {
+                            SetText(exc.Message + exc.StackTrace);
+                            Console.WriteLine(exc);
+                        }
+                        Thread.Sleep(200);
+                    }
+                    checkWindowThread = new Thread(new ThreadStart(this.checkFocusedWindow));
+                    checkWindowThread.Start();
+                    // Wait for game to close then send cancel command to board
+                    p[0].WaitForExit();
+                    checkWindowThread.Abort();
+                    Console.WriteLine("Game closed");
+                    SetText("Game closed");
+                    port.Write("X");
+                    ControlDeviceButtons(true);
+                    testRunning = false;
+                    testMode = false;
+                }
+                catch (InvalidOperationException e)
+                {
+                    Console.WriteLine(e);
+                }
+                catch (IOException ioex)
+                {
+                    Console.WriteLine(ioex);
+                    SetText(ioex.Message + ioex.StackTrace + ioex.Source);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message + " " + ex.StackTrace, "Error Launching Test", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
-            catch (InvalidOperationException e)
+            else
             {
-                Console.WriteLine(e);
-            }
-            catch (IOException ioex)
-            {
-                Console.WriteLine(ioex);
-                SetText(ioex.Message + ioex.StackTrace + ioex.Source);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message + " " + ex.StackTrace, "Error Launching Test", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                brightnessCanceled = false;
             }
         }
 
@@ -1101,7 +1187,7 @@ namespace OSRTT_Launcher
                     Console.WriteLine("Process not selected");
                     if (!paused)
                     {
-                        //port.Write("P");
+                        port.Write("P");
                         paused = true;
                     }
                 }
@@ -1109,7 +1195,7 @@ namespace OSRTT_Launcher
                 { 
                     if (paused)
                     {
-                        //port.Write("S");
+                        port.Write("S");
                         paused = false;
                     }
                 }
@@ -1148,45 +1234,120 @@ namespace OSRTT_Launcher
                     //Get the path of specified file
                     filePath = openFileDialog.FileName;
                     results.Clear();
-
-                    //Read the contents of the file into a stream
-                    try
-                    { 
-                        var fileStream = openFileDialog.OpenFile();
-                        using (StreamReader reader = new StreamReader(fileStream))
-                        {
-                            while (!reader.EndOfStream)
-                            {
-                                // This can probably be done better
-                                string[] line = reader.ReadLine().Split(',');
-                                int[] intLine = new int[line.Length];
-                                for (int i = 0; i < line.Length; i++)
-                                {
-                                    if (line[i] == "0")
-                                    {
-                                        intLine[i] = 0;
-                                    }
-                                    else if (line[i] != "")
-                                    {
-                                        intLine[i] = int.Parse(line[i]);
-                                    }
-                                    else
-                                    {
-                                        continue;
-                                    }
-                                }
-                                Array.Resize(ref intLine, intLine.Length - 1);
-                                results.Add(intLine);
-                            }
-                        }
-                        resultsFolderPath = filePath.Substring(0, filePath.LastIndexOf('\\'));
-                        processThread = new Thread(new ThreadStart(this.processResponseTimeData));
-                        processThread.Start();
-                    }
-                    catch
+                    gamma.Clear();
+                    if (filePath.Contains("GAMMA-RAW"))
                     {
-                        DialogResult d = MessageBox.Show("File may be in use by another program, please make sure it's not open elsewhere and try again.", "Unable to open file", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }                    
+                        //Read the contents of the file into a stream
+                        try
+                        {
+                            var fileStream = openFileDialog.OpenFile();
+                            using (StreamReader reader = new StreamReader(fileStream))
+                            {
+                                while (!reader.EndOfStream)
+                                {
+                                    // This can probably be done better
+                                    string[] line = reader.ReadLine().Split(',');
+                                    int[] intLine = new int[line.Length];
+                                    for (int i = 0; i < line.Length; i++)
+                                    {
+                                        if (line[i] == "0")
+                                        {
+                                            intLine[i] = 0;
+                                        }
+                                        else if (line[i] != "")
+                                        {
+                                            intLine[i] = int.Parse(line[i]);
+                                        }
+                                        else
+                                        {
+                                            continue;
+                                        }
+                                    }
+                                    Array.Resize(ref intLine, intLine.Length - 1);
+                                    gamma.Add(intLine);
+                                }
+                            }
+                            resultsFolderPath = filePath.Substring(0, filePath.LastIndexOf('\\'));
+                            // Save Gamma curve to a file too
+                            decimal gammaFileNumber = 001;
+                            // search /Results folder for existing file names, pick new name
+                            string[] existingGammaFiles = Directory.GetFiles(resultsFolderPath, "*-GAMMA-OSRTT.csv");
+                            // Search \Results folder for existing results to not overwrite existing or have save conflict errors
+                            foreach (var s in existingGammaFiles)
+                            {
+                                decimal num = decimal.Parse(Path.GetFileNameWithoutExtension(s).Remove(3));
+                                if (num >= gammaFileNumber)
+                                {
+                                    gammaFileNumber = num + 1;
+                                }
+                            }
+
+                            string gammaFilePath = resultsFolderPath + "\\" + gammaFileNumber.ToString("000") + "-GAMMA-OSRTT.csv";
+                            StringBuilder gammaCsvString = new StringBuilder();
+                            gammaCsvString.AppendLine("RGB, Light Reading");
+                            string strSeparator = ",";
+                            List<int[]> fullGammaTable = processGammaTable();
+                            foreach (var res in fullGammaTable)
+                            {
+                                gammaCsvString.AppendLine(string.Join(strSeparator, res));
+                            }
+                            File.WriteAllText(gammaFilePath, gammaCsvString.ToString());
+                            Process.Start("explorer.exe", resultsFolderPath);
+
+                        }
+                        catch
+                        {
+                            DialogResult d = MessageBox.Show("File may be in use by another program, please make sure it's not open elsewhere and try again.", "Unable to open file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                    else if (filePath.Contains("RAW-OSRTT"))
+                    {
+                        //Read the contents of the file into a stream
+                        try
+                        {
+                            var fileStream = openFileDialog.OpenFile();
+                            using (StreamReader reader = new StreamReader(fileStream))
+                            {
+                                while (!reader.EndOfStream)
+                                {
+                                    // This can probably be done better
+                                    string[] line = reader.ReadLine().Split(',');
+                                    int[] intLine = new int[line.Length];
+                                    for (int i = 0; i < line.Length; i++)
+                                    {
+                                        if (line[i] == "0")
+                                        {
+                                            intLine[i] = 0;
+                                        }
+                                        else if (line[i] != "")
+                                        {
+                                            intLine[i] = int.Parse(line[i]);
+                                        }
+                                        else
+                                        {
+                                            continue;
+                                        }
+                                    }
+                                    Array.Resize(ref intLine, intLine.Length - 1);
+                                    results.Add(intLine);
+                                }
+                            }
+                            resultsFolderPath = filePath.Substring(0, filePath.LastIndexOf('\\'));
+                            //processThread = new Thread(new ThreadStart(this.processResponseTimeData));
+                            //processThread.Start();
+                            processResponseTimeData();
+                            Process.Start("explorer.exe", resultsFolderPath);
+
+                        }
+                        catch
+                        {
+                            DialogResult d = MessageBox.Show("File may be in use by another program, please make sure it's not open elsewhere and try again.", "Unable to open file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Sorry, only 'RAW' files can be imported. Please select either a 'RAW-OSRTT.csv' file, or 'GAMMA-RAW-OSRTT.csv' file instead.", "Importer Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }             
                 }
             }
         }
@@ -1252,67 +1413,146 @@ namespace OSRTT_Launcher
             return interpolated;
         }
 
+        private List<int[]> processGammaTable()
+        {
+            if (gamma.Count == 0)
+            {
+                if (!Properties.Settings.Default.SuppressDiagBox)
+                {
+                    MessageBox.Show("No Gamma data is stored in the program.", "Gamma Table Processing Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                return null;
+            }
+            else
+            {
+                double[] rgbVals = new double[gamma.Count];
+                double[] lightLevelVals = new double[gamma.Count];
+                for (int i = 0; i < gamma.Count; i++)
+                {
+                    int[] dataLine = gamma[i].Skip(300).ToArray();
+                    int lineAverage = 0;
+                    for (int j = 0; j < (dataLine.Length - 100); j++)
+                    {
+                        lineAverage += dataLine[j];
+                    }
+                    lineAverage /= (dataLine.Length - 100);
+
+                    rgbVals[i] = gamma[i][0];
+                    lightLevelVals[i] = lineAverage;
+                }
+                /*int gSize = tempGamma.Count;
+                PointF[] points = new PointF[gSize];
+                for (int i = 0; i < gSize; i++)
+                {
+                    points[i] = new PointF { X = tempGamma[i][0], Y = tempGamma[i][1] };
+                };
+                int numberOfPoints = 256;
+                PointF[] partGamma = InterpolatePoints(points, numberOfPoints);*/
+
+                var interpPoints = new ScottPlot.Statistics.Interpolation.NaturalSpline(rgbVals, lightLevelVals, 51);
+                List<int> x = new List<int>();
+                List<int> y = new List<int>();
+                foreach (var p in interpPoints.interpolatedXs)
+                {
+                    x.Add(Convert.ToInt32(p));      
+                }
+                foreach (var p in interpPoints.interpolatedYs)
+                {
+                    y.Add(Convert.ToInt32(p));
+                }
+                List<int[]> xy = new List<int[]>();
+                for (int k = 0; k < x.Count; k++)
+                {
+                    xy.Add(new int[] { x[k], y[k] });
+                }
+                return xy;
+            }
+        }
+
         private void processResponseTimeData()
         {
             //This is a long one. This is the code that builds the gamma curve, finds the start/end points and calculates response times and overshoot % (gamma corrected)
             List<double[]> processedData = new List<double[]>();
 
             // First, create gamma array from the data
-            List<int[]> gamma = new List<int[]>();
+            List<int[]> localGamma = new List<int[]>();
             List<int[]> fullGammaTable = new List<int[]>();
             List<int[]> smoothedDataTable = new List<int[]>();
 
             try //Wrapped whole thing in try just in case
             {
-                for (int i = 0; i < 20; i += 2)
-                {
-                    int[] resLine = this.results[i];
-                    int avg = 0;
-                    if (resLine[0] == 0 && gamma.Count == 0)
+                if (gamma.Count == 6)
+                { // if using the new test pattern (Constant step of 51)
+                    fullGammaTable.AddRange(processGammaTable());
+                }
+                else
+                { // if using old test pattern (Steps of 25 or 26)
+                    int steps = 0;
+                    if (results.Count == 30)
                     {
-                        for (int j = 5; j < 250; j++)
-                        {
-                            avg += resLine[j];
-                        }
-                        avg = avg / 245;
-                        gamma.Add(new int[] { resLine[0], avg });
-                        for (int j = resLine.Length - 455; j < resLine.Length - 5; j++)
-                        {
-                            avg += resLine[j];
-                        }
-                        avg = avg / 450;
-                        gamma.Add(new int[] { resLine[1], avg });
+                        steps = 9;
                     }
                     else
                     {
-                        for (int j = resLine.Length - 455; j < resLine.Length - 5; j++)
-                        {
-                            avg += resLine[j];
-                        }
-                        avg = avg / 450;
-                        gamma.Add(new int[] { resLine[1], avg });
+                        steps = 20;
                     }
-                }
-                // Extrapolate rough values for every RGB value
-                for (int i = 0; i < gamma.Count - 1; i++)
-                {
-                    PointF[] points = new PointF[]
-                        {
-                            new PointF { X = gamma[i][0], Y = gamma[i][1]},
-                            new PointF { X = gamma[i+1][0],  Y = gamma[i+1][1]}
-                        };
-                    int numberOfPoints = gamma[i + 1][0] - gamma[i][0];
-
-                    PointF[] partGamma = InterpolatePoints(points, numberOfPoints);
-                    foreach (var p in partGamma)
+                    for (int i = 0; i < steps; i += 2)
                     {
-                        int[] tempGamma = {
-                            Convert.ToInt32(p.X), Convert.ToInt32(p.Y)
-                        };
-                        fullGammaTable.Add(tempGamma);
+                        int[] resLine = this.results[i];
+                        int avg = 0;
+                        if (resLine[0] == 0 && localGamma.Count == 0)
+                        {
+                            for (int j = 5; j < 250; j++)
+                            {
+                                avg += resLine[j];
+                            }
+                            avg = avg / 245;
+                            localGamma.Add(new int[] { resLine[0], avg });
+                            for (int j = resLine.Length - 455; j < resLine.Length - 5; j++)
+                            {
+                                avg += resLine[j];
+                            }
+                            avg = avg / 450;
+                            localGamma.Add(new int[] { resLine[1], avg });
+                        }
+                        else
+                        {
+                            for (int j = resLine.Length - 455; j < resLine.Length - 5; j++)
+                            {
+                                avg += resLine[j];
+                            }
+                            avg = avg / 450;
+                            localGamma.Add(new int[] { resLine[1], avg });
+                        }
+                    }
+                    // Extrapolate rough values for every RGB value
+                    for (int i = 0; i < localGamma.Count - 1; i++)
+                    {
+                        PointF[] points = new PointF[]
+                            {
+                                new PointF { X = localGamma[i][0], Y = localGamma[i][1]},
+                                new PointF { X = localGamma[i+1][0],  Y = localGamma[i+1][1]}
+                            };
+                        int numberOfPoints = localGamma[i + 1][0] - localGamma[i][0];
+
+                        PointF[] partGamma = InterpolatePoints(points, numberOfPoints);
+                        foreach (var p in partGamma)
+                        {
+                            int[] tempGamma = {
+                                Convert.ToInt32(p.X), Convert.ToInt32(p.Y)
+                            };
+                            fullGammaTable.Add(tempGamma);
+                        }
+                    }
+                    if (results.Count == 30)
+                    {
+                        fullGammaTable.Add(localGamma[5]);
+                    }
+                    else
+                    {
+                        fullGammaTable.Add(localGamma[10]);
                     }
                 }
-                fullGammaTable.Add(gamma[10]);
 
                 // Then process the lines
                 foreach (int[] item in this.results)
@@ -1331,7 +1571,7 @@ namespace OSRTT_Launcher
                     int[] buffer = new int[period];
                     int[] averagedSamples = new int[samples.Length];
                     int current_index = 0;
-                    for (int a = 0; a<samples.Length; a++)
+                    for (int a = 0; a < samples.Length; a++)
                     {
                         buffer[current_index] = samples[a] / period;
                         int movAvg = 0;
@@ -1354,8 +1594,10 @@ namespace OSRTT_Launcher
                     // Initialise in-use variables
                     int transStart = 0;
                     int transEnd = 0;
-                    int percentTransStart = 0;
-                    int percentTransEnd = 0;
+                    int initialTransStart = 0;
+                    int initialTransEnd = 0;
+                    int perceivedTransStart = 0;
+                    int perceivedTransEnd = 0;
 
                     double overUnderRGB = 0.0;
 
@@ -1631,182 +1873,14 @@ namespace OSRTT_Launcher
                     }
                     endAverage /= (samples.Length - avgEnd);
                     endAverage = Math.Round(endAverage, 0);
-
-                    if (Properties.Settings.Default.RGB10Offset)
+                    // Getting min/max from INSIDE the transition window
+                    if ((transEnd - transStart) != 0)
                     {
-                        if (StartingRGB < EndRGB)
-                        {
-                            double start3 = fullGammaTable[Convert.ToInt32(StartingRGB + 10)][1];
-                            double end3 = fullGammaTable[Convert.ToInt32(EndRGB - 10)][1];
-                            
-                            for (int j = 0; j < samples.Length; j++) // search samples for start & end trigger points
-                            {
-                                if (samples[j] >= start3 && percentTransStart == 0) // save the FIRST time value exceeds start trigger
-                                {
-                                    percentTransStart = j;
-                                }
-                                else if (samples[j] >= end3) // Save when value exceeds end trigger then break.
-                                {
-                                    percentTransEnd = j;
-                                    break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            double start3 = fullGammaTable[Convert.ToInt32(StartingRGB - 10)][1];
-                            double end3 = fullGammaTable[Convert.ToInt32(EndRGB + 10)][1];
-                            
-                            for (int j = 0; j < samples.Length; j++)
-                            {
-                                if (samples[j] <= start3 && percentTransStart == 0)
-                                {
-                                    percentTransStart = j;
-                                }
-                                else if (samples[j] <= end3)
-                                {
-                                    percentTransEnd = j;
-                                    break;
-                                }
-                            }
-                        }
+                        int[] transitionSamples = new int[(transEnd - transStart)];
+                        Array.Copy(samples, transStart, transitionSamples, 0, (transEnd - transStart));
+                        maxValue = transitionSamples.Max();
+                        minValue = transitionSamples.Min();
                     }
-                    else if (Properties.Settings.Default.RGB5Offset)
-                    {
-                        if (StartingRGB < EndRGB)
-                        {
-                            double start3 = fullGammaTable[Convert.ToInt32(StartingRGB + 5)][1];
-                            double end3 = fullGammaTable[Convert.ToInt32(EndRGB - 5)][1];
-
-                            for (int j = 0; j < samples.Length; j++) // search samples for start & end trigger points
-                            {
-                                if (samples[j] >= start3 && percentTransStart == 0) // save the FIRST time value exceeds start trigger
-                                {
-                                    percentTransStart = j;
-                                }
-                                else if (samples[j] >= end3) // Save when value exceeds end trigger then break.
-                                {
-                                    percentTransEnd = j;
-                                    break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            double start3 = fullGammaTable[Convert.ToInt32(StartingRGB - 5)][1];
-                            double end3 = fullGammaTable[Convert.ToInt32(EndRGB + 5)][1];
-
-                            for (int j = 0; j < samples.Length; j++)
-                            {
-                                if (samples[j] <= start3 && percentTransStart == 0)
-                                {
-                                    percentTransStart = j;
-                                }
-                                else if (samples[j] <= end3)
-                                {
-                                    percentTransEnd = j;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    // 10% / 90% Measurements 
-                    else if (Properties.Settings.Default.tenPercentSetting)
-                    {
-                        if (StartingRGB < EndRGB) 
-                        {
-                            double range3 = (endAverage - startAverage) * 0.1; // Subtract low value from high value to get light level range
-                            double start3 = startAverage + range3; // Start trigger value
-                            double end3 = endAverage - range3; // End trigger value
-                            if (Properties.Settings.Default.gammaCorrRT) // RGB corrected overwrites light level trigger points
-                            {
-                                double rgbRange = (EndRGB - StartingRGB) * 0.1;
-                                rgbRange = Math.Round(rgbRange, 0);
-                                start3 = fullGammaTable[Convert.ToInt32(StartingRGB + rgbRange)][1];
-                                end3 = fullGammaTable[Convert.ToInt32(EndRGB - rgbRange)][1];
-                            }
-                            for (int j = 0; j < samples.Length; j++) // search samples for start & end trigger points
-                            {
-                                if (samples[j] >= start3 && percentTransStart == 0) // save the FIRST time value exceeds start trigger
-                                {
-                                    percentTransStart = j;
-                                }
-                                else if (samples[j] >= end3) // Save when value exceeds end trigger then break.
-                                {
-                                    percentTransEnd = j;
-                                    break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            double range3 = (startAverage - endAverage) * 0.1;
-                            double start3 = startAverage - range3;
-                            double end3 = endAverage + range3;
-                            if (Properties.Settings.Default.gammaCorrRT)
-                            {
-                                double rgbRange = (StartingRGB - EndRGB) * 0.1;
-                                rgbRange = Math.Round(rgbRange, 0);
-                                start3 = fullGammaTable[Convert.ToInt32(StartingRGB - rgbRange)][1];
-                                end3 = fullGammaTable[Convert.ToInt32(EndRGB + rgbRange)][1];
-                            }
-                            for (int j = 0; j < samples.Length; j++)
-                            {
-                                if (samples[j] <= start3 && percentTransStart == 0)
-                                {
-                                    percentTransStart = j;
-                                }
-                                else if (samples[j] <= end3)
-                                {
-                                    percentTransEnd = j;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    // 3% / 97% measurements
-                    else
-                    {
-                        if (StartingRGB < EndRGB)
-                        {
-                            double range3 = (endAverage - startAverage) * 0.03;
-                            double start3 = startAverage + range3;
-                            double end3 = endAverage - range3;
-                            for (int j = 0; j < samples.Length; j++)
-                            {
-                                if (samples[j] >= start3 && percentTransStart == 0)
-                                {
-                                    percentTransStart = j;
-                                }
-                                else if (samples[j] >= end3)
-                                {
-                                    percentTransEnd = j;
-                                    break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            double range3 = (startAverage - endAverage) * 0.03;
-                            double start3 = startAverage - range3;
-                            double end3 = endAverage + range3;
-                            for (int j = 0; j < samples.Length; j++)
-                            {
-                                if (samples[j] <= start3 && percentTransStart == 0)
-                                {
-                                    percentTransStart = j;
-                                }
-                                else if (samples[j] <= end3)
-                                {
-                                    percentTransEnd = j;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-                    // FIND THE MINIMUM VALUE FROM BETWEEN TRANS START AND TRANS END< NOT THE WHOLE THING
-
                     //Overshoot calculations
                     double overshootPercent = 0;
                     double overshootRGBDiff = 0;
@@ -1908,24 +1982,300 @@ namespace OSRTT_Launcher
                             overshootRGBDiff = EndRGB - overUnderRGB;
                         }
                     }
+
+                    if (Properties.Settings.Default.RGB10Offset)
+                    {
+                        if (StartingRGB < EndRGB)
+                        {
+                            double start3 = fullGammaTable[Convert.ToInt32(StartingRGB + 10)][1];
+                            double end3 = fullGammaTable[Convert.ToInt32(EndRGB - 10)][1];
+
+                            for (int j = 0; j < samples.Length; j++) // search samples for start & end trigger points
+                            {
+                                if (samples[j] >= start3 && initialTransStart == 0) // save the FIRST time value exceeds start trigger
+                                {
+                                    initialTransStart = j;
+                                }
+                                else if (samples[j] >= end3) // Save when value exceeds end trigger then break.
+                                {
+                                    initialTransEnd = j;
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            double start3 = fullGammaTable[Convert.ToInt32(StartingRGB - 10)][1];
+                            double end3 = fullGammaTable[Convert.ToInt32(EndRGB + 10)][1];
+
+                            for (int j = 0; j < samples.Length; j++)
+                            {
+                                if (samples[j] <= start3 && initialTransStart == 0)
+                                {
+                                    initialTransStart = j;
+                                }
+                                else if (samples[j] <= end3)
+                                {
+                                    initialTransEnd = j;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else if (Properties.Settings.Default.RGB5Offset)
+                    {
+                        if (StartingRGB < EndRGB)
+                        {
+                            double start3 = fullGammaTable[Convert.ToInt32(StartingRGB + 5)][1];
+                            double end3 = fullGammaTable[Convert.ToInt32(EndRGB - 5)][1];
+
+                            for (int j = 0; j < samples.Length; j++) // search samples for start & end trigger points
+                            {
+                                if (samples[j] >= start3 && initialTransStart == 0) // save the FIRST time value exceeds start trigger
+                                {
+                                    initialTransStart = j;
+                                }
+                                else if (samples[j] >= end3) // Save when value exceeds end trigger then break.
+                                {
+                                    initialTransEnd = j;
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            double start3 = fullGammaTable[Convert.ToInt32(StartingRGB - 5)][1];
+                            double end3 = fullGammaTable[Convert.ToInt32(EndRGB + 5)][1];
+
+                            for (int j = 0; j < samples.Length; j++)
+                            {
+                                if (samples[j] <= start3 && initialTransStart == 0)
+                                {
+                                    initialTransStart = j;
+                                }
+                                else if (samples[j] <= end3)
+                                {
+                                    initialTransEnd = j;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    // 10% / 90% Measurements 
+                    else if (Properties.Settings.Default.tenPercentSetting)
+                    {
+                        if (StartingRGB < EndRGB)
+                        {
+                            double range3 = (endAverage - startAverage) * 0.1; // Subtract low value from high value to get light level range
+                            double start3 = startAverage + range3; // Start trigger value
+                            double end3 = endAverage - range3; // End trigger value
+                            if (Properties.Settings.Default.gammaCorrRT) // RGB corrected overwrites light level trigger points
+                            {
+                                double rgbRange = (EndRGB - StartingRGB) * 0.1;
+                                rgbRange = Math.Round(rgbRange, 0);
+                                start3 = fullGammaTable[Convert.ToInt32(StartingRGB + rgbRange)][1];
+                                end3 = fullGammaTable[Convert.ToInt32(EndRGB - rgbRange)][1];
+                            }
+                            for (int j = 0; j < samples.Length; j++) // search samples for start & end trigger points
+                            {
+                                if (samples[j] >= start3 && initialTransStart == 0) // save the FIRST time value exceeds start trigger
+                                {
+                                    initialTransStart = j;
+                                }
+                                else if (samples[j] >= end3) // Save when value exceeds end trigger then break.
+                                {
+                                    initialTransEnd = j;
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            double range3 = (startAverage - endAverage) * 0.1;
+                            double start3 = startAverage - range3;
+                            double end3 = endAverage + range3;
+                            if (Properties.Settings.Default.gammaCorrRT)
+                            {
+                                double rgbRange = (StartingRGB - EndRGB) * 0.1;
+                                rgbRange = Math.Round(rgbRange, 0);
+                                start3 = fullGammaTable[Convert.ToInt32(StartingRGB - rgbRange)][1];
+                                end3 = fullGammaTable[Convert.ToInt32(EndRGB + rgbRange)][1];
+                            }
+                            for (int j = 0; j < samples.Length; j++)
+                            {
+                                if (samples[j] <= start3 && initialTransStart == 0)
+                                {
+                                    initialTransStart = j;
+                                }
+                                else if (samples[j] <= end3)
+                                {
+                                    initialTransEnd = j;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    // 3% / 97% measurements
+                    else
+                    {
+                        if (StartingRGB < EndRGB)
+                        {
+                            double range3 = (endAverage - startAverage) * 0.03;
+                            double start3 = startAverage + range3;
+                            double end3 = endAverage - range3;
+                            for (int j = 0; j < samples.Length; j++)
+                            {
+                                if (samples[j] >= start3 && initialTransStart == 0)
+                                {
+                                    initialTransStart = j;
+                                }
+                                else if (samples[j] >= end3)
+                                {
+                                    initialTransEnd = j;
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            double range3 = (startAverage - endAverage) * 0.03;
+                            double start3 = startAverage - range3;
+                            double end3 = endAverage + range3;
+                            for (int j = 0; j < samples.Length; j++)
+                            {
+                                if (samples[j] <= start3 && initialTransStart == 0)
+                                {
+                                    initialTransStart = j;
+                                }
+                                else if (samples[j] <= end3)
+                                {
+                                    initialTransEnd = j;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    // Perceived Response Time
+                    double RGBTolerance = 5;
+                    if (Properties.Settings.Default.PerceivedRGB10)
+                    {
+                        RGBTolerance = 10;
+                    }
+                    // RGB 5/10 Offset measuring response time including overshoot/undershoot
+                    if (StartingRGB < EndRGB)
+                    {
+                        double start3 = fullGammaTable[Convert.ToInt32(StartingRGB + RGBTolerance)][1];
+                        double endOffsetRGB = EndRGB - RGBTolerance;
+                        if (overUnderRGB > (EndRGB + RGBTolerance) && overUnderRGB != 0)
+                        {
+                            endOffsetRGB = EndRGB + RGBTolerance;
+                        }
+                        else if (overUnderRGB == -1)
+                        {
+                            endOffsetRGB = EndRGB;
+                        }
+                        double end3 = fullGammaTable[Convert.ToInt32(endOffsetRGB)][1];
+                        if (overUnderRGB == -1)
+                        {
+                            end3 *= 1.02;
+                            if (end3 > 65520)
+                            {
+                                end3 = 65500;
+                            }
+                        }
+                        for (int j = 0; j < samples.Length; j++) // search samples for start point
+                        {
+                            if (samples[j] >= start3)
+                            {
+                                perceivedTransStart = j;
+                                break;
+                            }
+                        }
+                        for (int j = samples.Length - 1; j > 0; j--) // search samples for end point
+                        {
+                            if (endOffsetRGB > EndRGB || overUnderRGB == -1) // Including overshoot in the curve
+                            {
+                                if (samples[j] >= end3)
+                                {
+                                    perceivedTransEnd = j;
+                                    break;
+                                }
+                            }
+                            else // No overshoot found within RGB tolerance
+                            {
+                                if (samples[j] <= end3)
+                                {
+                                    perceivedTransEnd = j;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        double start3 = fullGammaTable[Convert.ToInt32(StartingRGB - RGBTolerance)][1];
+                        double endOffsetRGB = EndRGB + RGBTolerance;
+                        if (overUnderRGB < (EndRGB - RGBTolerance) && overUnderRGB != 0)
+                        {
+                            endOffsetRGB = EndRGB - RGBTolerance;
+                        }
+                        double end3 = fullGammaTable[Convert.ToInt32(endOffsetRGB)][1];
+                        for (int j = 0; j < samples.Length; j++) // search samples for start point
+                        {
+                            if (samples[j] <= start3)
+                            {
+                                perceivedTransStart = j;
+                                break;
+                            }
+                        }
+                        for (int j = samples.Length - 1; j > 0; j--) // search samples for end point
+                        {
+                            if (endOffsetRGB < EndRGB) // Including undershoot in the curve
+                            {
+                                if (samples[j] <= end3)
+                                {
+                                    perceivedTransEnd = j;
+                                    break;
+                                }
+                            }
+                            else // No overshoot found within RGB tolerance
+                            {
+                                if (samples[j] >= end3)
+                                {
+                                    perceivedTransEnd = j;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
                     double transCount = transEnd - transStart;
                     double transTime = (transCount * SampleTime) / 1000;
 
-                    double percentTransCount = percentTransEnd - percentTransStart;
-                    double percentTransTime = (percentTransCount * SampleTime) / 1000;
+                    double initialTransCount = initialTransEnd - initialTransStart;
+                    double initialTransTime = (initialTransCount * SampleTime) / 1000;
+
+                    double perceivedTransCount = perceivedTransEnd - perceivedTransStart;
+                    double perceivedTransTime = (perceivedTransCount * SampleTime) / 1000;
 
                     double responseTime = Math.Round(transTime, 1);
-                    double percentResponseTime = Math.Round(percentTransTime, 1);
+                    double initialResponseTime = Math.Round(initialTransTime, 1);
+                    double perceivedResponseTime = Math.Round(perceivedTransTime, 1);
                     if (verboseOutputToolStripMenuItem.Checked)
                     {
                         // Verbose output with ALLLL the data
-                        double[] completeResult = new double[] { StartingRGB, EndRGB, responseTime, percentResponseTime, overshootPercent, transStart, transEnd, SampleTime, endAverage, peakValue, overUnderRGB };
+                        double[] completeResult = new double[] { StartingRGB, EndRGB, responseTime, initialResponseTime, perceivedResponseTime, overshootPercent, transStart, transEnd, SampleTime, endAverage, peakValue, overUnderRGB };
                         processedData.Add(completeResult);
                     }
                     else if (!percentageToolStripMenuItem.Checked && gammaCorrectedToolStripMenuItem.Checked)
                     {
                         // Standard output with total transition time & gamma corrected overshoot value
-                        double[] completeResult = new double[] { StartingRGB, EndRGB, responseTime, percentResponseTime, overshootRGBDiff };
+                        if (overUnderRGB == -1)
+                        {
+                            overshootRGBDiff = 100;
+                        }
+                        double[] completeResult = new double[] { StartingRGB, EndRGB, responseTime, initialResponseTime, perceivedResponseTime, overshootRGBDiff };
                         processedData.Add(completeResult);
                     }
                     else if (!gammaCorrectedToolStripMenuItem.Checked && percentageToolStripMenuItem.Checked)
@@ -1944,13 +2294,13 @@ namespace OSRTT_Launcher
                             os *= 100;
                             os = Math.Round(os, 2);
                         }
-                        double[] completeResult = new double[] { StartingRGB, EndRGB, responseTime, percentResponseTime, os };
+                        double[] completeResult = new double[] { StartingRGB, EndRGB, responseTime, initialResponseTime, perceivedResponseTime, os };
                         processedData.Add(completeResult);
                     }
                     else
                     {
                         // Standard output with total transition time & gamma corrected overshoot percentage
-                        double[] completeResult = new double[] { StartingRGB, EndRGB, responseTime, percentResponseTime, overshootPercent };
+                        double[] completeResult = new double[] { StartingRGB, EndRGB, responseTime, initialResponseTime, perceivedResponseTime, overshootPercent };
                         processedData.Add(completeResult);
                     }
 
@@ -1981,20 +2331,25 @@ namespace OSRTT_Launcher
 
                 string strSeparator = ",";
                 StringBuilder csvString = new StringBuilder();
-                string rtType = "3% Response Time (ms)";
-                string osType = "Overshoot RGB";
+                string rtType = "Initial Response Time - 3% (ms)";
+                string osType = "Overshoot";
                 string osSign = "(%)";
+                string perType = "Perceived Response Time - RGB5 (ms)";
                 if (tenPercentMenuItem.Checked)
                 {
-                    rtType = "10% Response Time (ms)";
+                    rtType = "Initial Response Time - 10% (ms)";
                 }
                 else if (fixedRGB10OffsetToolStripMenuItem.Checked)
                 {
-                    rtType = "RGB 10 Offset Response Time (ms)";
+                    rtType = "Initial Response Time - RGB10 (ms)";
                 }
                 else if (fixedRGB5OffsetToolStripMenuItem.Checked)
                 {
-                    rtType = "RGB 5 Offset Response Time (ms)";
+                    rtType = "Initial Response Time - RGB5 (ms)";
+                }
+                if (perceivedRGB10MenuItem.Checked)
+                {
+                    perType = "Perceived Response Time - RGB10 (ms)";
                 }
                 if (gammaCorrectedToolStripMenuItem.Checked)
                 {
@@ -2004,17 +2359,13 @@ namespace OSRTT_Launcher
                 {
                     osSign = "(RGB %)";
                 }
-                if (percentageToolStripMenuItem.Checked)
-                {
-                    osType = "Overshoot";
-                }
                 if (verboseOutputToolStripMenuItem.Checked)
                 {
-                    csvString.AppendLine("Starting RGB,End RGB,Complete Response Time (ms)," + rtType + "," + osType + " " + osSign + ",Transition Start Position,Transition End Position,Sampling Time (ms),End Light Level,Min/Max Light Level,Overshoot/Undershoot RGB Value");
+                    csvString.AppendLine("Starting RGB,End RGB,Complete Response Time (ms)," + rtType + "," + perType + "," + osType + " " + osSign + ",Transition Start Position,Transition End Position,Sampling Time (ms),End Light Level,Min/Max Light Level,Overshoot/Undershoot RGB Value");
                 }
                 else
                 {
-                    csvString.AppendLine("Starting RGB, End RGB, Complete Response Time (ms), " + rtType + ", " + osType + " " + osSign);
+                    csvString.AppendLine("Starting RGB, End RGB, Complete Response Time (ms), " + rtType + "," + perType + "," + osType + " " + osSign);
                 }
                 foreach (var res in processedData)
                 {
@@ -2103,116 +2454,146 @@ namespace OSRTT_Launcher
             }
             else
             {
-                // Fill processed data with the first set of results then average from there                
-                int resultCount = multipleRunData[0].Count();
-
-                List<double[]> averageData = new List<double[]>();
-                for (int p = 0; p < resultCount; p++)
-                {
-                    double[] row = { multipleRunData[0][p][0], multipleRunData[0][p][1], 0, 0, 0 };
-                    averageData.Add(row);
-                }
-
-                // Average the data, excluding outliers
-                for (int k = 0 ; k < resultCount; k++)
-                {
-                    List<double> rTLine = new List<double>();
-                    List<double> perRTLine = new List<double>();
-                    List<double> oSLine = new List<double>();
-                    foreach (var list in multipleRunData)
-                    {
-                        rTLine.Add(list[k][2]);
-                        perRTLine.Add(list[k][3]);
-                        oSLine.Add(list[k][4]);
-                    }
-                    double rtMedian = GetMedian(rTLine.ToArray());
-                    double perRtMedian = GetMedian(perRTLine.ToArray());
-                    double osMedian = GetMedian(oSLine.ToArray());
-                    int validTimeResults = 0;
-                    int validPercentTimeResults = 0;
-                    int validOvershootResults = 0;
-                    foreach (var o in multipleRunData)
-                    {
-                        if (o[k][2] < (rtMedian * 1.2) && o[k][2] > (rtMedian * 0.8))
-                        {
-                            averageData[k][2] += o[k][2];
-                            validTimeResults++;
-                        }
-                        if (o[k][3] < (perRtMedian * 1.2) && o[k][3] > (perRtMedian * 0.8))
-                        {
-                            averageData[k][3] += o[k][3];
-                            validPercentTimeResults++;
-                        }
-                        if (o[k][4] < (osMedian * 1.2) && o[k][4] > (osMedian * 0.8))
-                        {
-                            averageData[k][4] += o[k][4];
-                            validOvershootResults++;
-                        }
-                    }
-                    averageData[k][2] = averageData[k][2] / validTimeResults;
-                    averageData[k][2] = Math.Round(averageData[k][2], 1);
-                    averageData[k][3] = averageData[k][3] / validPercentTimeResults;
-                    averageData[k][3] = Math.Round(averageData[k][3], 1);
-                    if (averageData[k][4] != 0)
-                    {
-                        averageData[k][4] = averageData[k][4] / validOvershootResults;
-                        averageData[k][4] = Math.Round(averageData[k][4], 1);
-                    }
-                }
-
-                // Output averaged results to file using folder name/monitor info
-                string[] folders = resultsFolderPath.Split('\\');
-                string monitorInfo = folders.Last();
-                //monitorInfo = monitorInfo.Remove(0, 4);
-                string filePath = resultsFolderPath + "\\" + monitorInfo + "-FINAL-DATA-OSRTT.csv";
-                string strSeparator = ",";
-                StringBuilder csvString = new StringBuilder();
-                string rtType = "3% Response Time (ms)";
-                string osType = "Overshoot RGB";
-                string osSign = "(%)";
-                if (tenPercentMenuItem.Checked)
-                {
-                    rtType = "10% Response Time (ms)";
-                }
-                else if (fixedRGB10OffsetToolStripMenuItem.Checked)
-                {
-                    rtType = "RGB 10 Offset Response Time (ms)";
-                }
-                else if (fixedRGB5OffsetToolStripMenuItem.Checked)
-                {
-                    rtType = "RGB 5 Offset Response Time (ms)";
-                }
-                if (gammaCorrectedToolStripMenuItem.Checked)
-                {
-                    osType = "Overshoot";
-                }
-                if (percentageToolStripMenuItem.Checked)
-                {
-                    osSign = "(RGB)";
-                }
-                csvString.AppendLine("Starting RGB,End RGB,Complete Response Time (ms), " + rtType + "," + osType + " " + osSign);
-                foreach (var res in averageData)
-                {
-                    csvString.AppendLine(string.Join(strSeparator, res));
-                }
                 try
                 {
-                    File.WriteAllText(filePath, csvString.ToString());
-                }
-                catch (IOException e)
-                {
-                    DialogResult d = MessageBox.Show("Unable to write final results file as the file is open in another program. Please close it then hit retry.", "Unable to write file", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
-                    if (d == DialogResult.Retry)
+                    // Fill processed data with the first set of results then average from there                
+                    int resultCount = multipleRunData[0].Count();
+
+                    List<double[]> averageData = new List<double[]>();
+                    for (int p = 0; p < resultCount; p++)
                     {
-                        try
+                        double[] row = { multipleRunData[0][p][0], multipleRunData[0][p][1], 0, 0, 0, 0 };
+                        averageData.Add(row);
+                    }
+
+                    // Average the data, excluding outliers
+                    for (int k = 0 ; k < resultCount; k++)
+                    {
+                        List<double> rTLine = new List<double>();
+                        List<double> initRTLine = new List<double>();
+                        List<double> perRTLine = new List<double>();
+                        List<double> oSLine = new List<double>();
+                        foreach (var list in multipleRunData)
                         {
-                            File.WriteAllText(filePath, csvString.ToString());
+                            rTLine.Add(list[k][2]);
+                            initRTLine.Add(list[k][3]);
+                            perRTLine.Add(list[k][4]);
+                            oSLine.Add(list[k][5]);
                         }
-                        catch
+                        double rtMedian = GetMedian(rTLine.ToArray());
+                        double initRtMedian = GetMedian(initRTLine.ToArray());
+                        double perRtMedian = GetMedian(perRTLine.ToArray());
+                        double osMedian = GetMedian(oSLine.ToArray());
+                        int validTimeResults = 0;
+                        int validInitialTimeResults = 0;
+                        int validPerceivedTimeResults = 0;
+                        int validOvershootResults = 0;
+                        foreach (var o in multipleRunData)
                         {
-                            MessageBox.Show("Still can't write to the file. Please importing the folder or running the test again", "Write Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            if (o[k][2] < (rtMedian * 1.2) && o[k][2] > (rtMedian * 0.8))
+                            {
+                                averageData[k][2] += o[k][2];
+                                validTimeResults++;
+                            }
+                            if (o[k][3] < (initRtMedian * 1.2) && o[k][3] > (initRtMedian * 0.8))
+                            {
+                                averageData[k][3] += o[k][3];
+                                validInitialTimeResults++;
+                            }
+                            if (o[k][4] < (perRtMedian * 1.2) && o[k][4] > (perRtMedian * 0.8))
+                            {
+                                averageData[k][4] += o[k][4];
+                                validPerceivedTimeResults++;
+                            }
+                            if (o[k][5] < (osMedian * 1.2) && o[k][5] > (osMedian * 0.8))
+                            {
+                                averageData[k][5] += o[k][5];
+                                validOvershootResults++;
+                            }
+                        }
+                        averageData[k][2] = averageData[k][2] / validTimeResults;
+                        averageData[k][2] = Math.Round(averageData[k][2], 1);
+                        averageData[k][3] = averageData[k][3] / validInitialTimeResults;
+                        averageData[k][3] = Math.Round(averageData[k][3], 1);
+                        averageData[k][4] = averageData[k][4] / validPerceivedTimeResults;
+                        averageData[k][4] = Math.Round(averageData[k][4], 1);
+                        if (averageData[k][5] != 0)
+                        {
+                            averageData[k][5] = averageData[k][5] / validOvershootResults;
+                            if (gammaCorrectedToolStripMenuItem.Checked && !percentageToolStripMenuItem.Checked)
+                            {
+                                averageData[k][5] = Math.Round(averageData[k][5], 0);
+                            }
+                            else
+                            {
+                                averageData[k][5] = Math.Round(averageData[k][5], 1);
+                            }
                         }
                     }
+
+                    // Output averaged results to file using folder name/monitor info
+                    string[] folders = resultsFolderPath.Split('\\');
+                    string monitorInfo = folders.Last();
+                    //monitorInfo = monitorInfo.Remove(0, 4);
+                    string filePath = resultsFolderPath + "\\" + monitorInfo + "-FINAL-DATA-OSRTT.csv";
+                    string strSeparator = ",";
+                    StringBuilder csvString = new StringBuilder();
+                    string rtType = "Initial Response Time - 3% (ms)";
+                    string osType = "Overshoot";
+                    string osSign = "(%)";
+                    string perType = "Perceived Response Time - RGB5 (ms)";
+                    if (tenPercentMenuItem.Checked)
+                    {
+                        rtType = "Initial Response Time - 10% (ms)";
+                    }
+                    else if (fixedRGB10OffsetToolStripMenuItem.Checked)
+                    {
+                        rtType = "Initial Response Time - RGB10 (ms)";
+                    }
+                    else if (fixedRGB5OffsetToolStripMenuItem.Checked)
+                    {
+                        rtType = "Initial Response Time - RGB5 (ms)";
+                    }
+                    if (perceivedRGB10MenuItem.Checked)
+                    {
+                        perType = "Perceived Response Time - RGB10 (ms)";
+                    }
+                    if (gammaCorrectedToolStripMenuItem.Checked)
+                    {
+                        osSign = "(RGB)";
+                    }
+                    if (gammaCorrectedToolStripMenuItem.Checked && percentageToolStripMenuItem.Checked)
+                    {
+                        osSign = "(RGB %)";
+                    }
+                    csvString.AppendLine("Starting RGB,End RGB,Complete Response Time (ms), " + rtType + "," + perType + "," + osType + " " + osSign);
+                    foreach (var res in averageData)
+                    {
+                        csvString.AppendLine(string.Join(strSeparator, res));
+                    }
+                    try
+                    {
+                        File.WriteAllText(filePath, csvString.ToString());
+                    }
+                    catch (IOException e)
+                    {
+                        DialogResult d = MessageBox.Show("Unable to write final results file as the file is open in another program. Please close it then hit retry.", "Unable to write file", MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning);
+                        if (d == DialogResult.Retry)
+                        {
+                            try
+                            {
+                                File.WriteAllText(filePath, csvString.ToString());
+                            }
+                            catch
+                            {
+                                MessageBox.Show("Still can't write to the file. Please importing the folder or running the test again", "Write Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    showMessageBox(ex.Message + " " + ex.StackTrace, "Error Processing Multiple Runs", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -2281,11 +2662,60 @@ namespace OSRTT_Launcher
                     if (filePath != path)
                     {
                         multipleRunData.Clear();
+                        gamma.Clear();
+                        //results.Clear();
                         string[] files = Directory.GetFiles(filePath);
                         bool valid = false;
                         foreach (var f in files)
                         {
-                            if (f.Contains("-RAW-OSRTT"))
+                            if (f.Contains("-GAMMA-RAW-OSRTT"))
+                            {
+                                valid = true;
+                                try
+                                {
+                                    using (OpenFileDialog OFD = new OpenFileDialog())
+                                    {
+                                        OFD.FileName = f;
+                                        //Read the contents of the file into a stream
+
+                                        var fileStream = OFD.OpenFile();
+                                        using (StreamReader reader = new StreamReader(fileStream))
+                                        {
+                                            gamma.Clear();
+                                            while (!reader.EndOfStream)
+                                            {
+
+                                                // This can probably be done better
+                                                string[] line = reader.ReadLine().Split(',');
+                                                int[] intLine = new int[line.Length];
+                                                for (int i = 0; i < line.Length; i++)
+                                                {
+                                                    if (line[i] == "0")
+                                                    {
+                                                        intLine[i] = 0;
+                                                    }
+                                                    else if (line[i] != "")
+                                                    {
+                                                        intLine[i] = int.Parse(line[i]);
+                                                    }
+                                                    else
+                                                    {
+                                                        continue;
+                                                    }
+                                                }
+                                                Array.Resize(ref intLine, intLine.Length - 1);
+                                                gamma.Add(intLine);
+                                            }
+                                        }
+                                    }
+                                    processGammaTable();
+                                }
+                                catch (IOException iex)
+                                {
+                                    MessageBox.Show("Unable to open file - it may be in use in another program. Please close it out and try again.", "Unable to open file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
+                            else if (f.Contains("-RAW-OSRTT"))
                             {
                                 valid = true;
                                 try
@@ -2336,6 +2766,7 @@ namespace OSRTT_Launcher
                         if (valid)
                         {
                             processMultipleRuns();
+                            Process.Start("explorer.exe", resultsFolderPath);
                         }
                         else
                         {
@@ -2352,12 +2783,13 @@ namespace OSRTT_Launcher
 
         private void Main_Load(object sender, EventArgs e)
         {
-            UpdateMe();
+            
         }
         
         private void setFPSLimit()
         {
-            var item = fpsList.Find(x => x.FPSValue == getSelectedFps());
+            var item = fpsList.Find(x => x.FPSValue == getSelectedFps()); 
+            //var item = fpsList.Find(x => x.FPSValue == Properties.Settings.Default.FPS.ToString()); //Doesn't work, cba to work out why atm.
             port.Write("L" + item.Key);
         }
 
@@ -2367,6 +2799,7 @@ namespace OSRTT_Launcher
             {
                 //Thread brightCalThread = new Thread(new ThreadStart(this.launchBrightnessCal));
                 //brightCalThread.Start();
+                closeBrightnessBtn.Text = "Stop Calibration";
 
                 launchBrightnessCal();
             }
@@ -2394,6 +2827,7 @@ namespace OSRTT_Launcher
             {
                 port.Write("B");
                 brightnessWindowOpen = true;
+                brightnessCanceled = false;
             }
             catch (Exception e)
             {
@@ -2497,20 +2931,25 @@ namespace OSRTT_Launcher
                     analysePanel.Location = new Point(1500, 238);
                     controlsPanel.Location = new Point(1500, 36);
                     brightnessPanel.Location = new Point(0, 0);
-                    Size = new Size(1000, 800); // 1000, 800
-                    richTextBox1.Location = new Point(1500, 36); // 1500, 36
+                    aboutPanel.Location = new Point(1500, 386);
+                    Size = new Size(1000, 800);
+                    debugPanel.Location = new Point(1500, 36);
                     menuStrip1.Visible = false;
-                    //debugMode = true; //remove
                     break;
                 case "close brightness":
                     analysePanel.Location = new Point(12, 238);
                     controlsPanel.Location = new Point(12, 36);
                     brightnessPanel.Location = new Point(1100, 36);
+                    aboutPanel.Location = new Point(12, 386);
                     Size = new Size(628, 275);
-                    richTextBox1.Location = new Point(723, 36);
+                    debugPanel.Location = new Point(619, 36);
+                    break;
+                case "about":
+                    Size = new Size(628,542);
                     break;
                 case "debug":
                     Size = new Size(1120, 850);
+                    debugPanel.Location = new Point(619, 36);
                     break;
                 default:
                     Size = new Size(628, 275);
@@ -2792,6 +3231,92 @@ namespace OSRTT_Launcher
             {
                 MessageBox.Show(title, message, buttons, icon);
             }
+        }
+
+        private void closeBrightnessBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                //brightnessCheck = true;
+                port.Write("X");
+                menuStrip1.Visible = true;
+                changeSizeAndState("close brightness");
+                brightnessWindowOpen = false;
+                ready = false;
+                testRunning = false;
+                brightnessCanceled = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void aboutProgramToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (aboutProgramToolStripMenuItem.Checked)
+            {
+                changeSizeAndState("about");
+            }
+            else
+            {
+                changeSizeAndState("standard");
+            }
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("https://github.com/andymanic/OSRTT/releases");
+        }
+
+        private void perceivedRGB5MenuItem_Click(object sender, EventArgs e)
+        {
+            if (!Properties.Settings.Default.PerceivedRGB5)
+            {
+                Properties.Settings.Default.PerceivedRGB5 = perceivedRGB5MenuItem.Checked;
+                Properties.Settings.Default.PerceivedRGB10 = false;
+                perceivedRGB10MenuItem.Checked = false;
+                Properties.Settings.Default.Save();
+            }
+            else
+            {
+                perceivedRGB5MenuItem.Checked = true;
+            }
+        }
+
+        private void perceivedRGB10MenuItem_Click(object sender, EventArgs e)
+        {
+            if (!Properties.Settings.Default.PerceivedRGB10)
+            {
+                Properties.Settings.Default.PerceivedRGB10 = perceivedRGB10MenuItem.Checked;
+                Properties.Settings.Default.PerceivedRGB5 = false;
+                perceivedRGB5MenuItem.Checked = false;
+                Properties.Settings.Default.Save();
+            }
+            else
+            {
+                perceivedRGB10MenuItem.Checked = true;
+            }
+        }
+
+        private void serialSendBtn_Click(object sender, EventArgs e)
+        {
+            if (port != null)
+            {
+                if (port.IsOpen)
+                {
+                    port.Write(serialSendBox.Text);
+                    serialSendBox.Clear();
+                }
+            }
+        }
+
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        {
+            // set the current caret position to the end
+            richTextBox1.SelectionStart = richTextBox1.Text.Length;
+            // scroll it automatically
+            richTextBox1.ScrollToCaret();
         }
     }
 }

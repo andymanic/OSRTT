@@ -37,7 +37,7 @@ namespace OSRTT_Launcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
         public int FPS {
             get {
                 return ((int)(this["FPS"]));
@@ -200,6 +200,30 @@ namespace OSRTT_Launcher.Properties {
             }
             set {
                 this["SuppressDiagBox"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool PerceivedRGB5 {
+            get {
+                return ((bool)(this["PerceivedRGB5"]));
+            }
+            set {
+                this["PerceivedRGB5"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool PerceivedRGB10 {
+            get {
+                return ((bool)(this["PerceivedRGB10"]));
+            }
+            set {
+                this["PerceivedRGB10"] = value;
             }
         }
     }

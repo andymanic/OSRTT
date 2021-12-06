@@ -51,7 +51,9 @@
             this.gammaCorrectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.percentageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.programSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutProgramToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.minimiseToTrayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.suppressDialogBoxesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BrightnessCalBtn = new System.Windows.Forms.ToolStripMenuItem();
             this.deviceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -63,6 +65,7 @@
             this.devStat = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.controlsPanel = new System.Windows.Forms.Panel();
+            this.opnResultsBtn = new System.Windows.Forms.Button();
             this.fpsLimitList = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
             this.testCount = new System.Windows.Forms.NumericUpDown();
@@ -84,16 +87,31 @@
             this.closeWindowBtn = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
             this.brightnessPanel = new System.Windows.Forms.Panel();
+            this.closeBrightnessBtn = new System.Windows.Forms.Button();
             this.potValLabel = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
-            this.suppressDialogBoxesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.opnResultsBtn = new System.Windows.Forms.Button();
+            this.aboutPanel = new System.Windows.Forms.Panel();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.firmVerLbl = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.softVerLbl = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.perceivedResponseTimeSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.perceivedRGB5MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.perceivedRGB10MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.debugPanel = new System.Windows.Forms.Panel();
+            this.serialSendBox = new System.Windows.Forms.TextBox();
+            this.serialSendBtn = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.controlsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.testCount)).BeginInit();
             this.analysePanel.SuspendLayout();
             this.brightnessPanel.SuspendLayout();
+            this.aboutPanel.SuspendLayout();
+            this.debugPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // launchBtn
@@ -125,10 +143,11 @@
             // 
             // richTextBox1
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(723, 36);
+            this.richTextBox1.Location = new System.Drawing.Point(15, 11);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(369, 760);
+            this.richTextBox1.Size = new System.Drawing.Size(364, 685);
             this.richTextBox1.TabIndex = 2;
+            this.richTextBox1.TabStop = false;
             this.richTextBox1.Text = "";
             // 
             // menuStrip1
@@ -164,6 +183,7 @@
             this.outputSettingsToolStripMenuItem,
             this.toolStripSeparator2,
             this.measurementsToolStripMenuItem,
+            this.perceivedResponseTimeSettingsToolStripMenuItem,
             this.noGammaCorrectionToolStripMenuItem});
             this.resultsSettingsToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.resultsSettingsToolStripMenuItem.Name = "resultsSettingsToolStripMenuItem";
@@ -177,14 +197,14 @@
             this.saveGammaTableToolStripMenuItem,
             this.saveSmoothedDataToolStripMenuItem});
             this.outputSettingsToolStripMenuItem.Name = "outputSettingsToolStripMenuItem";
-            this.outputSettingsToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.outputSettingsToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
             this.outputSettingsToolStripMenuItem.Text = "Output Settings";
             // 
             // verboseOutputToolStripMenuItem
             // 
             this.verboseOutputToolStripMenuItem.CheckOnClick = true;
             this.verboseOutputToolStripMenuItem.Name = "verboseOutputToolStripMenuItem";
-            this.verboseOutputToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.verboseOutputToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
             this.verboseOutputToolStripMenuItem.Text = "Verbose Output";
             this.verboseOutputToolStripMenuItem.ToolTipText = "Include all processed fields in each \"FULL\" CSV. \r\nIncludes transition start & en" +
     "d position, sample time, overshoot light level and overshoot RGB value.";
@@ -195,7 +215,7 @@
             this.saveGammaTableToolStripMenuItem.CheckOnClick = true;
             this.saveGammaTableToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.saveGammaTableToolStripMenuItem.Name = "saveGammaTableToolStripMenuItem";
-            this.saveGammaTableToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.saveGammaTableToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
             this.saveGammaTableToolStripMenuItem.Text = "Save Gamma Table";
             this.saveGammaTableToolStripMenuItem.Click += new System.EventHandler(this.saveGammaTableToolStripMenuItem_Click);
             // 
@@ -203,14 +223,14 @@
             // 
             this.saveSmoothedDataToolStripMenuItem.CheckOnClick = true;
             this.saveSmoothedDataToolStripMenuItem.Name = "saveSmoothedDataToolStripMenuItem";
-            this.saveSmoothedDataToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.saveSmoothedDataToolStripMenuItem.Text = "Save Smoothed Data";
+            this.saveSmoothedDataToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.saveSmoothedDataToolStripMenuItem.Text = "Save Raw Smoothed Data";
             this.saveSmoothedDataToolStripMenuItem.Click += new System.EventHandler(this.saveSmoothedDataToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(195, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(249, 6);
             // 
             // measurementsToolStripMenuItem
             // 
@@ -219,11 +239,12 @@
             this.toolStripSeparator1,
             this.threePercentMenuItem,
             this.tenPercentMenuItem,
+            this.toolStripSeparator3,
             this.fixedRGB10OffsetToolStripMenuItem,
             this.fixedRGB5OffsetToolStripMenuItem});
             this.measurementsToolStripMenuItem.Name = "measurementsToolStripMenuItem";
-            this.measurementsToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.measurementsToolStripMenuItem.Text = "GtG Measurement Style";
+            this.measurementsToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
+            this.measurementsToolStripMenuItem.Text = "Initial Response Time Settings";
             // 
             // gamCorMenuItem
             // 
@@ -242,9 +263,7 @@
             // 
             // threePercentMenuItem
             // 
-            this.threePercentMenuItem.Checked = true;
             this.threePercentMenuItem.CheckOnClick = true;
-            this.threePercentMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.threePercentMenuItem.Name = "threePercentMenuItem";
             this.threePercentMenuItem.Size = new System.Drawing.Size(253, 22);
             this.threePercentMenuItem.Text = "3% / 97% Response Time";
@@ -268,7 +287,9 @@
             // 
             // fixedRGB5OffsetToolStripMenuItem
             // 
+            this.fixedRGB5OffsetToolStripMenuItem.Checked = true;
             this.fixedRGB5OffsetToolStripMenuItem.CheckOnClick = true;
+            this.fixedRGB5OffsetToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.fixedRGB5OffsetToolStripMenuItem.Name = "fixedRGB5OffsetToolStripMenuItem";
             this.fixedRGB5OffsetToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
             this.fixedRGB5OffsetToolStripMenuItem.Text = "Fixed RGB 5 Offset";
@@ -280,7 +301,7 @@
             this.gammaCorrectedToolStripMenuItem,
             this.percentageToolStripMenuItem});
             this.noGammaCorrectionToolStripMenuItem.Name = "noGammaCorrectionToolStripMenuItem";
-            this.noGammaCorrectionToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.noGammaCorrectionToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
             this.noGammaCorrectionToolStripMenuItem.Text = "Overshoot Settings";
             // 
             // gammaCorrectedToolStripMenuItem
@@ -289,29 +310,38 @@
             this.gammaCorrectedToolStripMenuItem.CheckOnClick = true;
             this.gammaCorrectedToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.gammaCorrectedToolStripMenuItem.Name = "gammaCorrectedToolStripMenuItem";
-            this.gammaCorrectedToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.gammaCorrectedToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.gammaCorrectedToolStripMenuItem.Text = "Gamma Corrected";
             this.gammaCorrectedToolStripMenuItem.Click += new System.EventHandler(this.gammaCorrectedToolStripMenuItem_Click);
             // 
             // percentageToolStripMenuItem
             // 
-            this.percentageToolStripMenuItem.Checked = true;
             this.percentageToolStripMenuItem.CheckOnClick = true;
-            this.percentageToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.percentageToolStripMenuItem.Name = "percentageToolStripMenuItem";
-            this.percentageToolStripMenuItem.Size = new System.Drawing.Size(171, 22);
+            this.percentageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.percentageToolStripMenuItem.Text = "Percentage";
             this.percentageToolStripMenuItem.Click += new System.EventHandler(this.percentageToolStripMenuItem_Click);
             // 
             // programSettingsToolStripMenuItem
             // 
             this.programSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutProgramToolStripMenuItem,
             this.minimiseToTrayToolStripMenuItem,
             this.suppressDialogBoxesToolStripMenuItem});
             this.programSettingsToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.programSettingsToolStripMenuItem.Name = "programSettingsToolStripMenuItem";
             this.programSettingsToolStripMenuItem.Size = new System.Drawing.Size(110, 20);
             this.programSettingsToolStripMenuItem.Text = "Program Settings";
+            // 
+            // aboutProgramToolStripMenuItem
+            // 
+            this.aboutProgramToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.aboutProgramToolStripMenuItem.CheckOnClick = true;
+            this.aboutProgramToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.aboutProgramToolStripMenuItem.Name = "aboutProgramToolStripMenuItem";
+            this.aboutProgramToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.aboutProgramToolStripMenuItem.Text = "About Program";
+            this.aboutProgramToolStripMenuItem.Click += new System.EventHandler(this.aboutProgramToolStripMenuItem_Click);
             // 
             // minimiseToTrayToolStripMenuItem
             // 
@@ -322,6 +352,17 @@
             this.minimiseToTrayToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.minimiseToTrayToolStripMenuItem.Text = "Minimise To Tray";
             this.minimiseToTrayToolStripMenuItem.Click += new System.EventHandler(this.minimiseToTrayToolStripMenuItem_Click);
+            // 
+            // suppressDialogBoxesToolStripMenuItem
+            // 
+            this.suppressDialogBoxesToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.suppressDialogBoxesToolStripMenuItem.CheckOnClick = true;
+            this.suppressDialogBoxesToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.suppressDialogBoxesToolStripMenuItem.Name = "suppressDialogBoxesToolStripMenuItem";
+            this.suppressDialogBoxesToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.suppressDialogBoxesToolStripMenuItem.Text = "Suppress Dialog Boxes";
+            this.suppressDialogBoxesToolStripMenuItem.ToolTipText = "Suppress warning and mid-test error dialog boxes.";
+            this.suppressDialogBoxesToolStripMenuItem.Click += new System.EventHandler(this.suppressDialogBoxesToolStripMenuItem_Click);
             // 
             // BrightnessCalBtn
             // 
@@ -433,6 +474,21 @@
             this.controlsPanel.Size = new System.Drawing.Size(588, 192);
             this.controlsPanel.TabIndex = 15;
             this.controlsPanel.Tag = "";
+            // 
+            // opnResultsBtn
+            // 
+            this.opnResultsBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.opnResultsBtn.FlatAppearance.BorderSize = 0;
+            this.opnResultsBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.opnResultsBtn.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Bold);
+            this.opnResultsBtn.ImageAlign = System.Drawing.ContentAlignment.TopRight;
+            this.opnResultsBtn.Location = new System.Drawing.Point(406, 131);
+            this.opnResultsBtn.Name = "opnResultsBtn";
+            this.opnResultsBtn.Size = new System.Drawing.Size(163, 46);
+            this.opnResultsBtn.TabIndex = 14;
+            this.opnResultsBtn.Text = "Open Results Folder";
+            this.opnResultsBtn.UseVisualStyleBackColor = false;
+            this.opnResultsBtn.Click += new System.EventHandler(this.opnResultsBtn_Click);
             // 
             // fpsLimitList
             // 
@@ -575,7 +631,7 @@
             this.resetBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.resetBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.resetBtn.Font = new System.Drawing.Font("Arial Unicode MS", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.resetBtn.Location = new System.Drawing.Point(191, 612);
+            this.resetBtn.Location = new System.Drawing.Point(191, 627);
             this.resetBtn.Name = "resetBtn";
             this.resetBtn.Size = new System.Drawing.Size(81, 50);
             this.resetBtn.TabIndex = 25;
@@ -587,7 +643,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(33, 546);
+            this.label6.Location = new System.Drawing.Point(33, 561);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(230, 63);
             this.label6.TabIndex = 24;
@@ -601,7 +657,7 @@
             this.incPotValBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.incPotValBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.incPotValBtn.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.incPotValBtn.Location = new System.Drawing.Point(27, 612);
+            this.incPotValBtn.Location = new System.Drawing.Point(27, 627);
             this.incPotValBtn.Name = "incPotValBtn";
             this.incPotValBtn.Size = new System.Drawing.Size(158, 50);
             this.incPotValBtn.TabIndex = 23;
@@ -663,10 +719,10 @@
             this.closeWindowBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.closeWindowBtn.Enabled = false;
             this.closeWindowBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.closeWindowBtn.Font = new System.Drawing.Font("Arial Unicode MS", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.closeWindowBtn.Location = new System.Drawing.Point(27, 699);
+            this.closeWindowBtn.Font = new System.Drawing.Font("Arial Unicode MS", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.closeWindowBtn.Location = new System.Drawing.Point(12, 708);
             this.closeWindowBtn.Name = "closeWindowBtn";
-            this.closeWindowBtn.Size = new System.Drawing.Size(245, 40);
+            this.closeWindowBtn.Size = new System.Drawing.Size(179, 40);
             this.closeWindowBtn.TabIndex = 18;
             this.closeWindowBtn.Text = "Stop Calibration";
             this.closeWindowBtn.UseVisualStyleBackColor = false;
@@ -685,6 +741,7 @@
             // 
             // brightnessPanel
             // 
+            this.brightnessPanel.Controls.Add(this.closeBrightnessBtn);
             this.brightnessPanel.Controls.Add(this.potValLabel);
             this.brightnessPanel.Controls.Add(this.label11);
             this.brightnessPanel.Controls.Add(this.whitePanel);
@@ -702,6 +759,20 @@
             this.brightnessPanel.Name = "brightnessPanel";
             this.brightnessPanel.Size = new System.Drawing.Size(994, 758);
             this.brightnessPanel.TabIndex = 28;
+            // 
+            // closeBrightnessBtn
+            // 
+            this.closeBrightnessBtn.BackColor = System.Drawing.SystemColors.InactiveCaption;
+            this.closeBrightnessBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.closeBrightnessBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.closeBrightnessBtn.Font = new System.Drawing.Font("Arial Unicode MS", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.closeBrightnessBtn.Location = new System.Drawing.Point(197, 708);
+            this.closeBrightnessBtn.Name = "closeBrightnessBtn";
+            this.closeBrightnessBtn.Size = new System.Drawing.Size(90, 40);
+            this.closeBrightnessBtn.TabIndex = 30;
+            this.closeBrightnessBtn.Text = "Cancel";
+            this.closeBrightnessBtn.UseVisualStyleBackColor = false;
+            this.closeBrightnessBtn.Click += new System.EventHandler(this.closeBrightnessBtn_Click);
             // 
             // potValLabel
             // 
@@ -729,31 +800,145 @@
             this.notifyIcon.Visible = true;
             this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_MouseDoubleClick);
             // 
-            // suppressDialogBoxesToolStripMenuItem
+            // aboutPanel
             // 
-            this.suppressDialogBoxesToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.suppressDialogBoxesToolStripMenuItem.CheckOnClick = true;
-            this.suppressDialogBoxesToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.suppressDialogBoxesToolStripMenuItem.Name = "suppressDialogBoxesToolStripMenuItem";
-            this.suppressDialogBoxesToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
-            this.suppressDialogBoxesToolStripMenuItem.Text = "Suppress Dialog Boxes";
-            this.suppressDialogBoxesToolStripMenuItem.ToolTipText = "Suppress warning and mid-test error dialog boxes.";
-            this.suppressDialogBoxesToolStripMenuItem.Click += new System.EventHandler(this.suppressDialogBoxesToolStripMenuItem_Click);
+            this.aboutPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.aboutPanel.Controls.Add(this.linkLabel1);
+            this.aboutPanel.Controls.Add(this.firmVerLbl);
+            this.aboutPanel.Controls.Add(this.label14);
+            this.aboutPanel.Controls.Add(this.softVerLbl);
+            this.aboutPanel.Controls.Add(this.label12);
+            this.aboutPanel.Controls.Add(this.label10);
+            this.aboutPanel.Location = new System.Drawing.Point(12, 386);
+            this.aboutPanel.Name = "aboutPanel";
+            this.aboutPanel.Size = new System.Drawing.Size(588, 109);
+            this.aboutPanel.TabIndex = 29;
             // 
-            // opnResultsBtn
+            // linkLabel1
             // 
-            this.opnResultsBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.opnResultsBtn.FlatAppearance.BorderSize = 0;
-            this.opnResultsBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.opnResultsBtn.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Bold);
-            this.opnResultsBtn.ImageAlign = System.Drawing.ContentAlignment.TopRight;
-            this.opnResultsBtn.Location = new System.Drawing.Point(406, 131);
-            this.opnResultsBtn.Name = "opnResultsBtn";
-            this.opnResultsBtn.Size = new System.Drawing.Size(163, 46);
-            this.opnResultsBtn.TabIndex = 14;
-            this.opnResultsBtn.Text = "Open Results Folder";
-            this.opnResultsBtn.UseVisualStyleBackColor = false;
-            this.opnResultsBtn.Click += new System.EventHandler(this.opnResultsBtn_Click);
+            this.linkLabel1.AutoSize = true;
+            this.linkLabel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.linkLabel1.Location = new System.Drawing.Point(197, 76);
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.Size = new System.Drawing.Size(197, 24);
+            this.linkLabel1.TabIndex = 26;
+            this.linkLabel1.TabStop = true;
+            this.linkLabel1.Text = "Github Releases Page";
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
+            // 
+            // firmVerLbl
+            // 
+            this.firmVerLbl.AutoSize = true;
+            this.firmVerLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.firmVerLbl.Location = new System.Drawing.Point(524, 43);
+            this.firmVerLbl.Name = "firmVerLbl";
+            this.firmVerLbl.Size = new System.Drawing.Size(48, 24);
+            this.firmVerLbl.TabIndex = 24;
+            this.firmVerLbl.Text = "V1.0";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.Location = new System.Drawing.Point(300, 43);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(227, 24);
+            this.label14.TabIndex = 23;
+            this.label14.Text = "Current Firmware version:";
+            // 
+            // softVerLbl
+            // 
+            this.softVerLbl.AutoSize = true;
+            this.softVerLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.softVerLbl.Location = new System.Drawing.Point(238, 43);
+            this.softVerLbl.Name = "softVerLbl";
+            this.softVerLbl.Size = new System.Drawing.Size(48, 24);
+            this.softVerLbl.TabIndex = 22;
+            this.softVerLbl.Text = "V1.0";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label12.Location = new System.Drawing.Point(15, 43);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(220, 24);
+            this.label12.TabIndex = 21;
+            this.label12.Text = "Current Software version:";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label10.Location = new System.Drawing.Point(192, 9);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(214, 24);
+            this.label10.TabIndex = 14;
+            this.label10.Text = "About OSRTT Launcher";
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(250, 6);
+            // 
+            // perceivedResponseTimeSettingsToolStripMenuItem
+            // 
+            this.perceivedResponseTimeSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.perceivedRGB5MenuItem,
+            this.perceivedRGB10MenuItem});
+            this.perceivedResponseTimeSettingsToolStripMenuItem.Name = "perceivedResponseTimeSettingsToolStripMenuItem";
+            this.perceivedResponseTimeSettingsToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
+            this.perceivedResponseTimeSettingsToolStripMenuItem.Text = "Perceived Response Time Settings";
+            // 
+            // perceivedRGB5MenuItem
+            // 
+            this.perceivedRGB5MenuItem.Checked = true;
+            this.perceivedRGB5MenuItem.CheckOnClick = true;
+            this.perceivedRGB5MenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.perceivedRGB5MenuItem.Name = "perceivedRGB5MenuItem";
+            this.perceivedRGB5MenuItem.Size = new System.Drawing.Size(180, 22);
+            this.perceivedRGB5MenuItem.Text = "RGB 5 Offset";
+            this.perceivedRGB5MenuItem.Click += new System.EventHandler(this.perceivedRGB5MenuItem_Click);
+            // 
+            // perceivedRGB10MenuItem
+            // 
+            this.perceivedRGB10MenuItem.CheckOnClick = true;
+            this.perceivedRGB10MenuItem.Name = "perceivedRGB10MenuItem";
+            this.perceivedRGB10MenuItem.Size = new System.Drawing.Size(180, 22);
+            this.perceivedRGB10MenuItem.Text = "RGB 10 Offset";
+            this.perceivedRGB10MenuItem.Click += new System.EventHandler(this.perceivedRGB10MenuItem_Click);
+            // 
+            // debugPanel
+            // 
+            this.debugPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.debugPanel.Controls.Add(this.serialSendBtn);
+            this.debugPanel.Controls.Add(this.serialSendBox);
+            this.debugPanel.Controls.Add(this.richTextBox1);
+            this.debugPanel.Location = new System.Drawing.Point(619, 36);
+            this.debugPanel.Name = "debugPanel";
+            this.debugPanel.Size = new System.Drawing.Size(395, 737);
+            this.debugPanel.TabIndex = 30;
+            // 
+            // serialSendBox
+            // 
+            this.serialSendBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.serialSendBox.Location = new System.Drawing.Point(15, 702);
+            this.serialSendBox.Name = "serialSendBox";
+            this.serialSendBox.Size = new System.Drawing.Size(230, 26);
+            this.serialSendBox.TabIndex = 20;
+            // 
+            // serialSendBtn
+            // 
+            this.serialSendBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.serialSendBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.serialSendBtn.Font = new System.Drawing.Font("Consolas", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.serialSendBtn.Location = new System.Drawing.Point(251, 702);
+            this.serialSendBtn.Name = "serialSendBtn";
+            this.serialSendBtn.Size = new System.Drawing.Size(128, 26);
+            this.serialSendBtn.TabIndex = 21;
+            this.serialSendBtn.Text = "Send to Device";
+            this.serialSendBtn.UseVisualStyleBackColor = false;
+            this.serialSendBtn.Click += new System.EventHandler(this.serialSendBtn_Click);
             // 
             // Main
             // 
@@ -761,16 +946,17 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
             this.ClientSize = new System.Drawing.Size(2106, 805);
+            this.Controls.Add(this.debugPanel);
+            this.Controls.Add(this.aboutPanel);
             this.Controls.Add(this.brightnessPanel);
             this.Controls.Add(this.analysePanel);
             this.Controls.Add(this.controlsPanel);
             this.Controls.Add(this.menuStrip1);
-            this.Controls.Add(this.richTextBox1);
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
             this.Name = "Main";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
-            this.Text = "OSRTT Launcher & Analyser";
+            this.Text = "OSRTT Launcher";
             this.Load += new System.EventHandler(this.Main_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -781,6 +967,10 @@
             this.analysePanel.PerformLayout();
             this.brightnessPanel.ResumeLayout(false);
             this.brightnessPanel.PerformLayout();
+            this.aboutPanel.ResumeLayout(false);
+            this.aboutPanel.PerformLayout();
+            this.debugPanel.ResumeLayout(false);
+            this.debugPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -848,6 +1038,22 @@
         private System.Windows.Forms.ToolStripMenuItem minimiseToTrayToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem suppressDialogBoxesToolStripMenuItem;
         private System.Windows.Forms.Button opnResultsBtn;
+        private System.Windows.Forms.Button closeBrightnessBtn;
+        private System.Windows.Forms.ToolStripMenuItem aboutProgramToolStripMenuItem;
+        private System.Windows.Forms.Panel aboutPanel;
+        private System.Windows.Forms.LinkLabel linkLabel1;
+        private System.Windows.Forms.Label firmVerLbl;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label softVerLbl;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem perceivedResponseTimeSettingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem perceivedRGB5MenuItem;
+        private System.Windows.Forms.ToolStripMenuItem perceivedRGB10MenuItem;
+        private System.Windows.Forms.Panel debugPanel;
+        private System.Windows.Forms.Button serialSendBtn;
+        private System.Windows.Forms.TextBox serialSendBox;
     }
 }
 
