@@ -26,7 +26,7 @@ namespace OSRTT_Launcher
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
         private double boardVersion = 1.5;
         private double downloadedFirmwareVersion = 1.5;
-        private string softwareVersion = "1.7";
+        private string softwareVersion = "1.8";
 
         // TODO //
         // Create dedicated gamma test, possibly move to 8x8 instead of 11x11
