@@ -378,7 +378,6 @@ namespace OSRTT_Launcher
             {
                 if (!portConnected)
                 {
-                    appRunning();
                     ControlDeviceButtons(false);
                     SetDeviceStatus("Board Disconnected");
                     Thread.Sleep(1000);
@@ -387,6 +386,7 @@ namespace OSRTT_Launcher
                         this.firmVerLbl.Invoke((MethodInvoker)(() => this.firmVerLbl.Text = "N/A"));
                     }
                     testRunning = false;
+                    appRunning();
                     Process[] game = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
                     if (game.Length != 0)
                     {
