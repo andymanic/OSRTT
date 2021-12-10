@@ -106,6 +106,7 @@ namespace OSRTT_Launcher
             AutoUpdater.HttpUserAgent = "Autoupdater";
             AutoUpdater.UpdateFormSize = new System.Drawing.Size(800, 600);
             AutoUpdater.ParseUpdateInfoEvent += AutoUpdaterOnParseUpdateInfoEvent;
+            AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;
             AutoUpdater.Start("https://api.github.com/repos/andymanic/OSRTT/releases/latest");
         }
 
@@ -199,7 +200,6 @@ namespace OSRTT_Launcher
             currentDomain.UnhandledException += new UnhandledExceptionEventHandler(IFailedYou);
             this.Resize += new EventHandler(Main_Resize);
             initialiseSettings();
-            appRunning();
             hardWorker = new BackgroundWorker();
             connectThread = new Thread(new ThreadStart(this.findAndConnectToBoard));
             connectThread.Start();
@@ -240,6 +240,41 @@ namespace OSRTT_Launcher
                 }
             }
         }
+        private void AutoUpdater_ApplicationExitEvent()
+        {
+            notifyIcon.Visible = false;
+            if (port != null)
+            {
+                try
+                {
+                    port.Write("X");
+                }
+                catch { Console.WriteLine("Port not open"); }
+            }
+            Process[] p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
+            if (p.Length != 0)
+            {
+                p[0].Kill();
+            }
+            if (checkWindowThread != null)
+            {
+                checkWindowThread.Abort();
+            }
+            if (connectThread != null)
+            {
+                connectThread.Abort();
+            }
+            if (readThread != null)
+            {
+                readThread.Abort();
+            }
+            if (port != null)
+            {
+                port.Close();
+            }
+            Application.Exit();
+        }
+
         private void Main_Resize(object sender, EventArgs e)
         {
             if (Properties.Settings.Default.MinToTray)
@@ -343,7 +378,7 @@ namespace OSRTT_Launcher
             {
                 if (!portConnected)
                 {
-                    
+                    appRunning();
                     ControlDeviceButtons(false);
                     SetDeviceStatus("Board Disconnected");
                     Thread.Sleep(1000);
@@ -836,6 +871,18 @@ namespace OSRTT_Launcher
                         processThread = new Thread(new ThreadStart(this.processResponseTimeData));
                         processThread.Start();
                     }
+                    else if (message.Contains("G Test"))
+                    {
+                        if (message.Contains("Starting"))
+                        {
+                            gamma.Clear();
+                            gammaTest = true;
+                        }
+                        else if (message.Contains("Complete"))
+                        {
+                            gammaTest = false;
+                        }
+                    }
                     else if (message.Contains("Test Complete"))
                     {
                         if (processingFailed)
@@ -856,18 +903,6 @@ namespace OSRTT_Launcher
                         else
                         {
                             testRunning = false;
-                        }
-                    }
-                    else if (message.Contains("G Test"))
-                    {
-                        if (message.Contains("Starting"))
-                        {
-                            gamma.Clear();
-                            gammaTest = true;
-                        }
-                        else if (message.Contains("Complete"))
-                        {
-                            gammaTest = false;
                         }
                     }
                     else if (message.Contains("FW:"))
