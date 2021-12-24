@@ -36,20 +36,26 @@
             this.analyseResultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resultsSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.outputSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveXLSXMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.verboseOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveGammaTableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveSmoothedDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.recommendedSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.advancedSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.measurementsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gamCorMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.fixedRGB5OffsetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fixedRGB10OffsetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.threePercentMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tenPercentMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.fixedRGB10OffsetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.fixedRGB5OffsetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.noGammaCorrectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.overshootSettingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gammaCorrectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.percentageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.differenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.endValueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.programSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutProgramToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.minimiseToTrayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -98,13 +104,9 @@
             this.softVerLbl = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.perceivedResponseTimeSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.perceivedRGB5MenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.perceivedRGB10MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugPanel = new System.Windows.Forms.Panel();
-            this.serialSendBox = new System.Windows.Forms.TextBox();
             this.serialSendBtn = new System.Windows.Forms.Button();
+            this.serialSendBox = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             this.controlsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.testCount)).BeginInit();
@@ -182,9 +184,8 @@
             this.resultsSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.outputSettingsToolStripMenuItem,
             this.toolStripSeparator2,
-            this.measurementsToolStripMenuItem,
-            this.perceivedResponseTimeSettingsToolStripMenuItem,
-            this.noGammaCorrectionToolStripMenuItem});
+            this.recommendedSettingsToolStripMenuItem,
+            this.advancedSettingsToolStripMenuItem});
             this.resultsSettingsToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.resultsSettingsToolStripMenuItem.Name = "resultsSettingsToolStripMenuItem";
             this.resultsSettingsToolStripMenuItem.Size = new System.Drawing.Size(101, 20);
@@ -193,29 +194,38 @@
             // outputSettingsToolStripMenuItem
             // 
             this.outputSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveXLSXMenuItem,
             this.verboseOutputToolStripMenuItem,
             this.saveGammaTableToolStripMenuItem,
             this.saveSmoothedDataToolStripMenuItem});
             this.outputSettingsToolStripMenuItem.Name = "outputSettingsToolStripMenuItem";
-            this.outputSettingsToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
+            this.outputSettingsToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
             this.outputSettingsToolStripMenuItem.Text = "Output Settings";
+            // 
+            // saveXLSXMenuItem
+            // 
+            this.saveXLSXMenuItem.Checked = true;
+            this.saveXLSXMenuItem.CheckOnClick = true;
+            this.saveXLSXMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.saveXLSXMenuItem.Name = "saveXLSXMenuItem";
+            this.saveXLSXMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.saveXLSXMenuItem.Text = "Save Heatmaps in XLSX File";
+            this.saveXLSXMenuItem.Click += new System.EventHandler(this.saveXLSXMenuItem_Click);
             // 
             // verboseOutputToolStripMenuItem
             // 
             this.verboseOutputToolStripMenuItem.CheckOnClick = true;
             this.verboseOutputToolStripMenuItem.Name = "verboseOutputToolStripMenuItem";
-            this.verboseOutputToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.verboseOutputToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.verboseOutputToolStripMenuItem.Text = "Verbose Output";
             this.verboseOutputToolStripMenuItem.ToolTipText = "Include all processed fields in each \"FULL\" CSV. \r\nIncludes transition start & en" +
     "d position, sample time, overshoot light level and overshoot RGB value.";
             // 
             // saveGammaTableToolStripMenuItem
             // 
-            this.saveGammaTableToolStripMenuItem.Checked = true;
             this.saveGammaTableToolStripMenuItem.CheckOnClick = true;
-            this.saveGammaTableToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.saveGammaTableToolStripMenuItem.Name = "saveGammaTableToolStripMenuItem";
-            this.saveGammaTableToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.saveGammaTableToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.saveGammaTableToolStripMenuItem.Text = "Save Gamma Table";
             this.saveGammaTableToolStripMenuItem.Click += new System.EventHandler(this.saveGammaTableToolStripMenuItem_Click);
             // 
@@ -223,28 +233,50 @@
             // 
             this.saveSmoothedDataToolStripMenuItem.CheckOnClick = true;
             this.saveSmoothedDataToolStripMenuItem.Name = "saveSmoothedDataToolStripMenuItem";
-            this.saveSmoothedDataToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.saveSmoothedDataToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.saveSmoothedDataToolStripMenuItem.Text = "Save Raw Smoothed Data";
             this.saveSmoothedDataToolStripMenuItem.Click += new System.EventHandler(this.saveSmoothedDataToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(249, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(197, 6);
+            // 
+            // recommendedSettingsToolStripMenuItem
+            // 
+            this.recommendedSettingsToolStripMenuItem.Checked = true;
+            this.recommendedSettingsToolStripMenuItem.CheckOnClick = true;
+            this.recommendedSettingsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.recommendedSettingsToolStripMenuItem.Name = "recommendedSettingsToolStripMenuItem";
+            this.recommendedSettingsToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.recommendedSettingsToolStripMenuItem.Text = "Recommended Settings";
+            this.recommendedSettingsToolStripMenuItem.Click += new System.EventHandler(this.recommendedSettingsToolStripMenuItem_Click);
+            // 
+            // advancedSettingsToolStripMenuItem
+            // 
+            this.advancedSettingsToolStripMenuItem.CheckOnClick = true;
+            this.advancedSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.measurementsToolStripMenuItem,
+            this.overshootSettingsMenuItem});
+            this.advancedSettingsToolStripMenuItem.Name = "advancedSettingsToolStripMenuItem";
+            this.advancedSettingsToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
+            this.advancedSettingsToolStripMenuItem.Text = "Advanced Settings";
+            this.advancedSettingsToolStripMenuItem.Click += new System.EventHandler(this.advancedSettingsToolStripMenuItem_Click);
             // 
             // measurementsToolStripMenuItem
             // 
             this.measurementsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.gamCorMenuItem,
             this.toolStripSeparator1,
-            this.threePercentMenuItem,
-            this.tenPercentMenuItem,
-            this.toolStripSeparator3,
+            this.fixedRGB5OffsetToolStripMenuItem,
             this.fixedRGB10OffsetToolStripMenuItem,
-            this.fixedRGB5OffsetToolStripMenuItem});
+            this.toolStripSeparator3,
+            this.threePercentMenuItem,
+            this.tenPercentMenuItem});
             this.measurementsToolStripMenuItem.Name = "measurementsToolStripMenuItem";
-            this.measurementsToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
-            this.measurementsToolStripMenuItem.Text = "Initial Response Time Settings";
+            this.measurementsToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.measurementsToolStripMenuItem.Text = "Response Time Settings";
+            this.measurementsToolStripMenuItem.Visible = false;
             // 
             // gamCorMenuItem
             // 
@@ -260,6 +292,29 @@
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(250, 6);
+            // 
+            // fixedRGB5OffsetToolStripMenuItem
+            // 
+            this.fixedRGB5OffsetToolStripMenuItem.Checked = true;
+            this.fixedRGB5OffsetToolStripMenuItem.CheckOnClick = true;
+            this.fixedRGB5OffsetToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.fixedRGB5OffsetToolStripMenuItem.Name = "fixedRGB5OffsetToolStripMenuItem";
+            this.fixedRGB5OffsetToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.fixedRGB5OffsetToolStripMenuItem.Text = "Fixed RGB 5 Offset";
+            this.fixedRGB5OffsetToolStripMenuItem.Click += new System.EventHandler(this.fixedRGB5OffsetToolStripMenuItem_Click);
+            // 
+            // fixedRGB10OffsetToolStripMenuItem
+            // 
+            this.fixedRGB10OffsetToolStripMenuItem.CheckOnClick = true;
+            this.fixedRGB10OffsetToolStripMenuItem.Name = "fixedRGB10OffsetToolStripMenuItem";
+            this.fixedRGB10OffsetToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.fixedRGB10OffsetToolStripMenuItem.Text = "Fixed RGB 10 Offset";
+            this.fixedRGB10OffsetToolStripMenuItem.Click += new System.EventHandler(this.fixedRGB10OffsetToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(250, 6);
             // 
             // threePercentMenuItem
             // 
@@ -277,32 +332,15 @@
             this.tenPercentMenuItem.Text = "10% / 90% Response Time";
             this.tenPercentMenuItem.Click += new System.EventHandler(this.tenPercentMenuItem_Click);
             // 
-            // fixedRGB10OffsetToolStripMenuItem
+            // overshootSettingsMenuItem
             // 
-            this.fixedRGB10OffsetToolStripMenuItem.CheckOnClick = true;
-            this.fixedRGB10OffsetToolStripMenuItem.Name = "fixedRGB10OffsetToolStripMenuItem";
-            this.fixedRGB10OffsetToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
-            this.fixedRGB10OffsetToolStripMenuItem.Text = "Fixed RGB 10 Offset";
-            this.fixedRGB10OffsetToolStripMenuItem.Click += new System.EventHandler(this.fixedRGB10OffsetToolStripMenuItem_Click);
-            // 
-            // fixedRGB5OffsetToolStripMenuItem
-            // 
-            this.fixedRGB5OffsetToolStripMenuItem.Checked = true;
-            this.fixedRGB5OffsetToolStripMenuItem.CheckOnClick = true;
-            this.fixedRGB5OffsetToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.fixedRGB5OffsetToolStripMenuItem.Name = "fixedRGB5OffsetToolStripMenuItem";
-            this.fixedRGB5OffsetToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
-            this.fixedRGB5OffsetToolStripMenuItem.Text = "Fixed RGB 5 Offset";
-            this.fixedRGB5OffsetToolStripMenuItem.Click += new System.EventHandler(this.fixedRGB5OffsetToolStripMenuItem_Click);
-            // 
-            // noGammaCorrectionToolStripMenuItem
-            // 
-            this.noGammaCorrectionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.overshootSettingsMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.gammaCorrectedToolStripMenuItem,
             this.percentageToolStripMenuItem});
-            this.noGammaCorrectionToolStripMenuItem.Name = "noGammaCorrectionToolStripMenuItem";
-            this.noGammaCorrectionToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
-            this.noGammaCorrectionToolStripMenuItem.Text = "Overshoot Settings";
+            this.overshootSettingsMenuItem.Name = "overshootSettingsMenuItem";
+            this.overshootSettingsMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.overshootSettingsMenuItem.Text = "Overshoot Settings";
+            this.overshootSettingsMenuItem.Visible = false;
             // 
             // gammaCorrectedToolStripMenuItem
             // 
@@ -310,17 +348,38 @@
             this.gammaCorrectedToolStripMenuItem.CheckOnClick = true;
             this.gammaCorrectedToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.gammaCorrectedToolStripMenuItem.Name = "gammaCorrectedToolStripMenuItem";
-            this.gammaCorrectedToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.gammaCorrectedToolStripMenuItem.Text = "Gamma Corrected";
+            this.gammaCorrectedToolStripMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.gammaCorrectedToolStripMenuItem.Text = "Gamma Corrected (RGB Values)";
             this.gammaCorrectedToolStripMenuItem.Click += new System.EventHandler(this.gammaCorrectedToolStripMenuItem_Click);
             // 
             // percentageToolStripMenuItem
             // 
             this.percentageToolStripMenuItem.CheckOnClick = true;
+            this.percentageToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.differenceToolStripMenuItem,
+            this.endValueToolStripMenuItem});
             this.percentageToolStripMenuItem.Name = "percentageToolStripMenuItem";
-            this.percentageToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.percentageToolStripMenuItem.Size = new System.Drawing.Size(240, 22);
             this.percentageToolStripMenuItem.Text = "Percentage";
             this.percentageToolStripMenuItem.Click += new System.EventHandler(this.percentageToolStripMenuItem_Click);
+            // 
+            // differenceToolStripMenuItem
+            // 
+            this.differenceToolStripMenuItem.CheckOnClick = true;
+            this.differenceToolStripMenuItem.Name = "differenceToolStripMenuItem";
+            this.differenceToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.differenceToolStripMenuItem.Text = "Difference (end-start)";
+            this.differenceToolStripMenuItem.Click += new System.EventHandler(this.differenceToolStripMenuItem_Click);
+            // 
+            // endValueToolStripMenuItem
+            // 
+            this.endValueToolStripMenuItem.Checked = true;
+            this.endValueToolStripMenuItem.CheckOnClick = true;
+            this.endValueToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.endValueToolStripMenuItem.Name = "endValueToolStripMenuItem";
+            this.endValueToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.endValueToolStripMenuItem.Text = "End Value (% over end)";
+            this.endValueToolStripMenuItem.Click += new System.EventHandler(this.endValueToolStripMenuItem_Click);
             // 
             // programSettingsToolStripMenuItem
             // 
@@ -530,7 +589,7 @@
             this.testCount.Size = new System.Drawing.Size(53, 26);
             this.testCount.TabIndex = 4;
             this.testCount.Value = new decimal(new int[] {
-            3,
+            5,
             0,
             0,
             0});
@@ -698,7 +757,7 @@
             this.label8.Size = new System.Drawing.Size(261, 84);
             this.label8.TabIndex = 20;
             this.label8.Text = "Place the window under the sensor \r\nand set your monitor to its maximum\r\nbrightne" +
-    "ss, then decrease it until it\r\nreads \"Perfect!\". Target is 160 nits.";
+    "ss, then decrease it until it\r\nreads \"Perfect!\". Target is 140 nits.";
             this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // whitePanel
@@ -876,38 +935,6 @@
             this.label10.TabIndex = 14;
             this.label10.Text = "About OSRTT Launcher";
             // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(250, 6);
-            // 
-            // perceivedResponseTimeSettingsToolStripMenuItem
-            // 
-            this.perceivedResponseTimeSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.perceivedRGB5MenuItem,
-            this.perceivedRGB10MenuItem});
-            this.perceivedResponseTimeSettingsToolStripMenuItem.Name = "perceivedResponseTimeSettingsToolStripMenuItem";
-            this.perceivedResponseTimeSettingsToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
-            this.perceivedResponseTimeSettingsToolStripMenuItem.Text = "Perceived Response Time Settings";
-            // 
-            // perceivedRGB5MenuItem
-            // 
-            this.perceivedRGB5MenuItem.Checked = true;
-            this.perceivedRGB5MenuItem.CheckOnClick = true;
-            this.perceivedRGB5MenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.perceivedRGB5MenuItem.Name = "perceivedRGB5MenuItem";
-            this.perceivedRGB5MenuItem.Size = new System.Drawing.Size(180, 22);
-            this.perceivedRGB5MenuItem.Text = "RGB 5 Offset";
-            this.perceivedRGB5MenuItem.Click += new System.EventHandler(this.perceivedRGB5MenuItem_Click);
-            // 
-            // perceivedRGB10MenuItem
-            // 
-            this.perceivedRGB10MenuItem.CheckOnClick = true;
-            this.perceivedRGB10MenuItem.Name = "perceivedRGB10MenuItem";
-            this.perceivedRGB10MenuItem.Size = new System.Drawing.Size(180, 22);
-            this.perceivedRGB10MenuItem.Text = "RGB 10 Offset";
-            this.perceivedRGB10MenuItem.Click += new System.EventHandler(this.perceivedRGB10MenuItem_Click);
-            // 
             // debugPanel
             // 
             this.debugPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -918,14 +945,6 @@
             this.debugPanel.Name = "debugPanel";
             this.debugPanel.Size = new System.Drawing.Size(395, 737);
             this.debugPanel.TabIndex = 30;
-            // 
-            // serialSendBox
-            // 
-            this.serialSendBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.serialSendBox.Location = new System.Drawing.Point(15, 702);
-            this.serialSendBox.Name = "serialSendBox";
-            this.serialSendBox.Size = new System.Drawing.Size(230, 26);
-            this.serialSendBox.TabIndex = 20;
             // 
             // serialSendBtn
             // 
@@ -939,6 +958,14 @@
             this.serialSendBtn.Text = "Send to Device";
             this.serialSendBtn.UseVisualStyleBackColor = false;
             this.serialSendBtn.Click += new System.EventHandler(this.serialSendBtn_Click);
+            // 
+            // serialSendBox
+            // 
+            this.serialSendBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.serialSendBox.Location = new System.Drawing.Point(15, 702);
+            this.serialSendBox.Name = "serialSendBox";
+            this.serialSendBox.Size = new System.Drawing.Size(230, 26);
+            this.serialSendBox.TabIndex = 20;
             // 
             // Main
             // 
@@ -1015,14 +1042,6 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Panel brightnessPanel;
         private System.Windows.Forms.NotifyIcon notifyIcon;
-        private System.Windows.Forms.ToolStripMenuItem measurementsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem noGammaCorrectionToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem threePercentMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem tenPercentMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem gammaCorrectedToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem percentageToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem gamCorMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.Label potValLabel;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ToolStripMenuItem outputSettingsToolStripMenuItem;
@@ -1032,8 +1051,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem debugModeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveUSBOutputToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem fixedRGB10OffsetToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem fixedRGB5OffsetToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem programSettingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem minimiseToTrayToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem suppressDialogBoxesToolStripMenuItem;
@@ -1047,13 +1064,25 @@
         private System.Windows.Forms.Label softVerLbl;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-        private System.Windows.Forms.ToolStripMenuItem perceivedResponseTimeSettingsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem perceivedRGB5MenuItem;
-        private System.Windows.Forms.ToolStripMenuItem perceivedRGB10MenuItem;
         private System.Windows.Forms.Panel debugPanel;
         private System.Windows.Forms.Button serialSendBtn;
         private System.Windows.Forms.TextBox serialSendBox;
+        private System.Windows.Forms.ToolStripMenuItem saveXLSXMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem recommendedSettingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem advancedSettingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem measurementsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gamCorMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem threePercentMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tenPercentMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem fixedRGB10OffsetToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fixedRGB5OffsetToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem overshootSettingsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gammaCorrectedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem percentageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem differenceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem endValueToolStripMenuItem;
     }
 }
 

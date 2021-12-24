@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="Runs" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">3</Value>
+      <Value Profile="(Default)">5</Value>
     </Setting>
     <Setting Name="FPS" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1</Value>
@@ -12,7 +12,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="threePercentSetting" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="tenPercentSetting" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -21,13 +21,13 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="gammaPercentSetting" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="gammaCorrRT" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="saveGammaTable" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="saveSmoothData" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -39,7 +39,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="RGB5Offset" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="MinToTray" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -47,10 +47,13 @@
     <Setting Name="SuppressDiagBox" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="PerceivedRGB5" Type="System.Boolean" Scope="User">
+    <Setting Name="saveXLSX" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="PerceivedRGB10" Type="System.Boolean" Scope="User">
+    <Setting Name="advancedSettings" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="gammaPercentDiff" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>

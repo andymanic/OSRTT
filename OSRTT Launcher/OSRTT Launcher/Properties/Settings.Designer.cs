@@ -25,7 +25,7 @@ namespace OSRTT_Launcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("3")]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
         public int Runs {
             get {
                 return ((int)(this["Runs"]));
@@ -61,7 +61,7 @@ namespace OSRTT_Launcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool threePercentSetting {
             get {
                 return ((bool)(this["threePercentSetting"]));
@@ -97,7 +97,7 @@ namespace OSRTT_Launcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool gammaPercentSetting {
             get {
                 return ((bool)(this["gammaPercentSetting"]));
@@ -121,7 +121,7 @@ namespace OSRTT_Launcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool saveGammaTable {
             get {
                 return ((bool)(this["saveGammaTable"]));
@@ -169,7 +169,7 @@ namespace OSRTT_Launcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool RGB5Offset {
             get {
                 return ((bool)(this["RGB5Offset"]));
@@ -206,24 +206,36 @@ namespace OSRTT_Launcher.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool PerceivedRGB5 {
+        public bool saveXLSX {
             get {
-                return ((bool)(this["PerceivedRGB5"]));
+                return ((bool)(this["saveXLSX"]));
             }
             set {
-                this["PerceivedRGB5"] = value;
+                this["saveXLSX"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool PerceivedRGB10 {
+        public bool advancedSettings {
             get {
-                return ((bool)(this["PerceivedRGB10"]));
+                return ((bool)(this["advancedSettings"]));
             }
             set {
-                this["PerceivedRGB10"] = value;
+                this["advancedSettings"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool gammaPercentDiff {
+            get {
+                return ((bool)(this["gammaPercentDiff"]));
+            }
+            set {
+                this["gammaPercentDiff"] = value;
             }
         }
     }
