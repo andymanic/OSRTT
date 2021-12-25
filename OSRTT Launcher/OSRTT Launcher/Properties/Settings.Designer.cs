@@ -238,5 +238,29 @@ namespace OSRTT_Launcher.Properties {
                 this["gammaPercentDiff"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool saveGraphs {
+            get {
+                return ((bool)(this["saveGraphs"]));
+            }
+            set {
+                this["saveGraphs"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool updateInProgress {
+            get {
+                return ((bool)(this["updateInProgress"]));
+            }
+            set {
+                this["updateInProgress"] = value;
+            }
+        }
     }
 }

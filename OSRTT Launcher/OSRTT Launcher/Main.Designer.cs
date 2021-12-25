@@ -107,6 +107,8 @@
             this.debugPanel = new System.Windows.Forms.Panel();
             this.serialSendBtn = new System.Windows.Forms.Button();
             this.serialSendBox = new System.Windows.Forms.TextBox();
+            this.saveRawDataWithGraphsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveGraphsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.controlsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.testCount)).BeginInit();
@@ -166,7 +168,7 @@
             this.toolStripMenuItem1});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(2106, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1924, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -195,9 +197,11 @@
             // 
             this.outputSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.saveXLSXMenuItem,
+            this.saveGraphsMenuItem,
             this.verboseOutputToolStripMenuItem,
             this.saveGammaTableToolStripMenuItem,
-            this.saveSmoothedDataToolStripMenuItem});
+            this.saveSmoothedDataToolStripMenuItem,
+            this.saveRawDataWithGraphsToolStripMenuItem});
             this.outputSettingsToolStripMenuItem.Name = "outputSettingsToolStripMenuItem";
             this.outputSettingsToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
             this.outputSettingsToolStripMenuItem.Text = "Output Settings";
@@ -373,9 +377,7 @@
             // 
             // endValueToolStripMenuItem
             // 
-            this.endValueToolStripMenuItem.Checked = true;
             this.endValueToolStripMenuItem.CheckOnClick = true;
-            this.endValueToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.endValueToolStripMenuItem.Name = "endValueToolStripMenuItem";
             this.endValueToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
             this.endValueToolStripMenuItem.Text = "End Value (% over end)";
@@ -665,7 +667,7 @@
             // 
             // rawValText
             // 
-            this.rawValText.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rawValText.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rawValText.Location = new System.Drawing.Point(160, 450);
             this.rawValText.Name = "rawValText";
             this.rawValText.Size = new System.Drawing.Size(96, 21);
@@ -676,10 +678,10 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.Location = new System.Drawing.Point(58, 450);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(96, 21);
+            this.label5.Size = new System.Drawing.Size(95, 20);
             this.label5.TabIndex = 26;
             this.label5.Text = "Raw Result:";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -689,7 +691,7 @@
             this.resetBtn.BackColor = System.Drawing.SystemColors.InactiveCaption;
             this.resetBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.resetBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.resetBtn.Font = new System.Drawing.Font("Arial Unicode MS", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.resetBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.resetBtn.Location = new System.Drawing.Point(191, 627);
             this.resetBtn.Name = "resetBtn";
             this.resetBtn.Size = new System.Drawing.Size(81, 50);
@@ -701,10 +703,10 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label6.Location = new System.Drawing.Point(33, 561);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(230, 63);
+            this.label6.Size = new System.Drawing.Size(229, 60);
             this.label6.TabIndex = 24;
             this.label6.Text = "Still too low? Try increasing the \r\nsensitivity - only use this if your\r\nmonitor " +
     "can\'t get any brighter!";
@@ -715,7 +717,7 @@
             this.incPotValBtn.BackColor = System.Drawing.SystemColors.InactiveCaption;
             this.incPotValBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.incPotValBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.incPotValBtn.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.incPotValBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.incPotValBtn.Location = new System.Drawing.Point(27, 627);
             this.incPotValBtn.Name = "incPotValBtn";
             this.incPotValBtn.Size = new System.Drawing.Size(158, 50);
@@ -727,10 +729,10 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Arial Unicode MS", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label7.Location = new System.Drawing.Point(15, 259);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(272, 33);
+            this.label7.Size = new System.Drawing.Size(273, 29);
             this.label7.TabIndex = 22;
             this.label7.Text = "Current brightness level:";
             this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -739,7 +741,7 @@
             // 
             this.brightnessText.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.brightnessText.Cursor = System.Windows.Forms.Cursors.Default;
-            this.brightnessText.Font = new System.Drawing.Font("Arial Unicode MS", 42F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.brightnessText.Font = new System.Drawing.Font("Microsoft Sans Serif", 42F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.brightnessText.Location = new System.Drawing.Point(12, 292);
             this.brightnessText.Margin = new System.Windows.Forms.Padding(0);
             this.brightnessText.Name = "brightnessText";
@@ -751,10 +753,10 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label8.Location = new System.Drawing.Point(17, 144);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(261, 84);
+            this.label8.Size = new System.Drawing.Size(262, 80);
             this.label8.TabIndex = 20;
             this.label8.Text = "Place the window under the sensor \r\nand set your monitor to its maximum\r\nbrightne" +
     "ss, then decrease it until it\r\nreads \"Perfect!\". Target is 140 nits.";
@@ -778,7 +780,7 @@
             this.closeWindowBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.closeWindowBtn.Enabled = false;
             this.closeWindowBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.closeWindowBtn.Font = new System.Drawing.Font("Arial Unicode MS", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.closeWindowBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.closeWindowBtn.Location = new System.Drawing.Point(12, 708);
             this.closeWindowBtn.Name = "closeWindowBtn";
             this.closeWindowBtn.Size = new System.Drawing.Size(179, 40);
@@ -790,10 +792,10 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Arial Unicode MS", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label9.Location = new System.Drawing.Point(16, 4);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(271, 128);
+            this.label9.Size = new System.Drawing.Size(264, 110);
             this.label9.TabIndex = 17;
             this.label9.Text = "Brightness\r\nCalibration";
             this.label9.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -824,7 +826,7 @@
             this.closeBrightnessBtn.BackColor = System.Drawing.SystemColors.InactiveCaption;
             this.closeBrightnessBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.closeBrightnessBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.closeBrightnessBtn.Font = new System.Drawing.Font("Arial Unicode MS", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.closeBrightnessBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.closeBrightnessBtn.Location = new System.Drawing.Point(197, 708);
             this.closeBrightnessBtn.Name = "closeBrightnessBtn";
             this.closeBrightnessBtn.Size = new System.Drawing.Size(90, 40);
@@ -835,7 +837,7 @@
             // 
             // potValLabel
             // 
-            this.potValLabel.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.potValLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.potValLabel.Location = new System.Drawing.Point(160, 471);
             this.potValLabel.Name = "potValLabel";
             this.potValLabel.Size = new System.Drawing.Size(96, 21);
@@ -846,10 +848,10 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Font = new System.Drawing.Font("Arial Unicode MS", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label11.Location = new System.Drawing.Point(58, 471);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(83, 21);
+            this.label11.Size = new System.Drawing.Size(82, 20);
             this.label11.TabIndex = 28;
             this.label11.Text = "Pot Value:";
             this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -967,12 +969,26 @@
             this.serialSendBox.Size = new System.Drawing.Size(230, 26);
             this.serialSendBox.TabIndex = 20;
             // 
+            // saveRawDataWithGraphsToolStripMenuItem
+            // 
+            this.saveRawDataWithGraphsToolStripMenuItem.Name = "saveRawDataWithGraphsToolStripMenuItem";
+            this.saveRawDataWithGraphsToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.saveRawDataWithGraphsToolStripMenuItem.Text = "Save Raw Data With Graphs";
+            // 
+            // saveGraphsMenuItem
+            // 
+            this.saveGraphsMenuItem.CheckOnClick = true;
+            this.saveGraphsMenuItem.Name = "saveGraphsMenuItem";
+            this.saveGraphsMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.saveGraphsMenuItem.Text = "Save Raw Data with Graphs";
+            this.saveGraphsMenuItem.Click += new System.EventHandler(this.saveGraphsMenuItem_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.ClientSize = new System.Drawing.Size(2106, 805);
+            this.ClientSize = new System.Drawing.Size(1924, 805);
             this.Controls.Add(this.debugPanel);
             this.Controls.Add(this.aboutPanel);
             this.Controls.Add(this.brightnessPanel);
@@ -1083,6 +1099,8 @@
         private System.Windows.Forms.ToolStripMenuItem percentageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem differenceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem endValueToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveRawDataWithGraphsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveGraphsMenuItem;
     }
 }
 

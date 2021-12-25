@@ -404,20 +404,19 @@ void loop() {
         buttonState = digitalRead(buttonPin);
         if (buttonState == HIGH) //Run when button pressed
         {
-          Serial.println("Test Started");
           Serial.setTimeout(300);
           // Check USB voltage level
-          int voltageTest = checkUSBVoltage();
-          if (voltageTest == 0)
-          {
+          //int voltageTest = checkUSBVoltage();
+          //if (voltageTest == 0)
+          //{
             // If brightness too low or high, don't run the test
-            Serial.println("TEST CANCELLED - USB VOLTAGE");
-            digitalWrite(13, HIGH); 
-            digitalPotWrite(0x80);
-            break;
-          } 
-          else 
-          {
+          //  Serial.println("TEST CANCELLED - USB VOLTAGE");
+          //  digitalWrite(13, HIGH); 
+          //  digitalPotWrite(0x80);
+          //  break;
+          //} 
+          //else 
+          //{
             // Check monitor brightness level
             int brightnessTest = checkLightLevel();
             if (brightnessTest == 0)
@@ -430,6 +429,7 @@ void loop() {
             }
             else
             {
+              Serial.println("Test Started");
               // Set FPS limit (default 1000 FPS, key '1')
               Keyboard.print(fpsLimit);
               delay(50);
@@ -482,7 +482,7 @@ void loop() {
               }
             }
             digitalPotWrite(0x80);
-          }
+          //}
         }
         else 
         {
@@ -503,12 +503,12 @@ void loop() {
               byte sized = Serial.readBytes(input, INPUT_SIZE);
               input[sized] = 0; 
               curr_time = micros(); //update current time
-           }
-         }
-         else if (input[0] == 'X')
-         {
+            }
+          }
+          else if (input[0] == 'X')
+          {
             break;  
-         }
+          }
         }
       }
     }

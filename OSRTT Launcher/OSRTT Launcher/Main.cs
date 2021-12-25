@@ -80,6 +80,8 @@ namespace OSRTT_Launcher
         private List<List<double[]>> multipleRunData = new List<List<double[]>>();
         private Excel.Application resultsTemplate;
         private Excel._Workbook resultsTemplateWorkbook;
+        private Excel.Application graphTemplate;
+        private Excel._Workbook graphTemplateWorkbook;
         public class Displays
         {
             public string Name { get; set; }
@@ -143,6 +145,8 @@ namespace OSRTT_Launcher
         }
         private void AutoUpdater_ApplicationExitEvent()
         {
+            Properties.Settings.Default.updateInProgress = true;
+            Properties.Settings.Default.Save();
             notifyIcon.Visible = false;
             if (port != null)
             {
@@ -402,6 +406,7 @@ namespace OSRTT_Launcher
 
         private void findAndConnectToBoard()
         {
+            Thread.Sleep(1000);
             while (true)
             {
                 if (!portConnected)
@@ -411,13 +416,20 @@ namespace OSRTT_Launcher
                     testRunning = false;
                     testStarted = false;
                     testMode = false;
-                    Thread.Sleep(1000);
                     if (this.firmVerLbl.IsHandleCreated)
                     {
                         this.firmVerLbl.Invoke((MethodInvoker)(() => this.firmVerLbl.Text = "N/A"));
                     }
                     testRunning = false;
-                    appRunning();
+                    if (!Properties.Settings.Default.updateInProgress)
+                    {
+                        appRunning();
+                    }
+                    else
+                    {
+                        Properties.Settings.Default.updateInProgress = false;
+                        Properties.Settings.Default.Save();
+                    }
                     Process[] game = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
                     if (game.Length != 0)
                     {
@@ -452,7 +464,7 @@ namespace OSRTT_Launcher
                         try
                         {
                             connectToBoard(p);
-                            Thread.Sleep(2000);
+                            Thread.Sleep(1000);
                             SetDeviceStatus("Connected to Device!");
                             ControlDeviceButtons(true);
                         }
@@ -529,7 +541,7 @@ namespace OSRTT_Launcher
                 }
                 else
                 {
-                    Thread.Sleep(2000);
+                    Thread.Sleep(1000);
                 }
             }
         }
@@ -870,6 +882,7 @@ namespace OSRTT_Launcher
                     else if (message.Contains("NEXT"))
                     {
                         triggerNextResult = true;
+                        Console.WriteLine("trigger next result true");
                     }
                     else if (message.Contains("Run Complete"))
                     { // EOL
@@ -1053,8 +1066,8 @@ namespace OSRTT_Launcher
                 }
                 catch (TimeoutException ex)
                 {
-                    Console.WriteLine(ex);
-                    SetText(ex.Message + ex.StackTrace);
+                    //Console.WriteLine(ex);
+                    //SetText(ex.Message + ex.StackTrace);
                 }
                 catch (ArgumentOutOfRangeException aex)
                 {
@@ -1076,11 +1089,13 @@ namespace OSRTT_Launcher
                     SetText(e.Message + e.StackTrace);
                     port.Close();
                     portConnected = false;
-                    readThread.Abort();
                     testRunning = false;
                     testMode = false;
                     testStarted = false;
                     brightnessCheck = false;
+                    if (runTestThread != null)
+                    {   runTestThread.Abort(); }
+                    readThread.Abort();
                 }
             }
         }
@@ -1179,13 +1194,14 @@ namespace OSRTT_Launcher
                     var display = Screen.AllScreens[selectedDisplay];
                     if (display.Primary == false)
                     {
-                        //MoveWindow(p[0].MainWindowHandle, display.WorkingArea.Right, display.WorkingArea.Top, display.WorkingArea.Width, display.WorkingArea.Height, false);
+                        // Force UE4 window to selected display if selected is not primary
                     }
 
                     while (!testMode) // hacky and I don't like it but for some reason it's not detecting this
                     {
                         try
                         {
+                            testStarted = false;
                             port.Write("T");
                         }
                         catch (Exception exc)
@@ -1239,9 +1255,6 @@ namespace OSRTT_Launcher
             }
         }
 
-        [DllImport("user32.dll", SetLastError = true)]
-        internal static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
-
         private void checkFocusedWindow()
         {
             FocusedWindow fw = new FocusedWindow();
@@ -1288,6 +1301,7 @@ namespace OSRTT_Launcher
                 Thread.Sleep(100);
             }
             testStarted = false;
+            Thread.Sleep(100);
             while (gammaTest)
             {
                 Thread.Sleep(100);
@@ -1296,6 +1310,8 @@ namespace OSRTT_Launcher
             while(testRunning)
             {
                 currentRun = 0;
+                currentStart = 0;
+                currentEnd = 0;
                 multipleRunData.Clear();
                 results.Clear();
                 singleResults.Clear();
@@ -1321,31 +1337,32 @@ namespace OSRTT_Launcher
                             { port.Write(i.ToString() + k.ToString()); }
                             catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); }
                             Stopwatch sw = new Stopwatch();
+                            sw.Reset();
                             sw.Start();
-                            while (currentStart != RGBArr[i] && currentEnd != RGBArr[k])
+                            while (sw.ElapsedMilliseconds < 5000)
                             { // wait for CORRECT result to come back
-                                Thread.Sleep(100);
-                                if (sw.ElapsedMilliseconds > 5000)
-                                { // catch the possibility it could get stuck endlessly waiting and set a 5 second timeout
-                                    sw.Stop();
-                                    if (!testRunning)
-                                    {
-                                        break;
-                                    }
-                                    DialogResult d = showMessageBox("Error: The test was unable to run the last transition, try again?","Test Timed Out",MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
-                                    if (d == DialogResult.Retry)
-                                    {
-                                        try
-                                        { port.Write(i.ToString() + k.ToString()); }
-                                        catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); }
-                                    }
-                                    else
-                                    {
-                                        testRunning = false;
-                                        break;
-                                    }
+                                if ((currentStart == RGBArr[i] && currentEnd == RGBArr[k]) || triggerNextResult)
+                                {
+                                    break;
+                                }
+                                Thread.Sleep(10);
+                            }
+                            if (sw.ElapsedMilliseconds > 5000)
+                            {
+                                DialogResult d = showMessageBox("Error: The test was unable to run the last transition, try again?", "Test Timed Out", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                                if (d == DialogResult.Retry)
+                                {
+                                    try
+                                    { port.Write(i.ToString() + k.ToString()); }
+                                    catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); }
+                                }
+                                else
+                                {
+                                    testRunning = false;
+                                    break;
                                 }
                             }
+                            triggerNextResult = false;
                             Thread.Sleep(100);
                             if (port == null)
                             {
@@ -1357,30 +1374,30 @@ namespace OSRTT_Launcher
                             catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); }
                             sw.Reset();
                             sw.Start();
-                            while (currentStart != RGBArr[i] && currentEnd != RGBArr[k])
+                            while (sw.ElapsedMilliseconds < 5000)
                             { // wait for CORRECT result to come back
-                                Thread.Sleep(100);
-                                if (sw.ElapsedMilliseconds > 5000)
-                                { // catch the possibility it could get stuck endlessly waiting and set a 5 second timeout
-                                    sw.Stop();
-                                    if (!testRunning)
-                                    {
-                                        break;
-                                    }
-                                    DialogResult d = showMessageBox("Error: The test was unable to run the last transition, try again?", "Test Timed Out", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
-                                    if (d == DialogResult.Retry)
-                                    {
-                                        try
-                                        { port.Write(k.ToString() + i.ToString()); }
-                                        catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); }
-                                    }
-                                    else
-                                    {
-                                        testRunning = false;
-                                        break;
-                                    }
+                                if ((currentStart == RGBArr[k] && currentEnd == RGBArr[i]) || triggerNextResult)
+                                {
+                                    break;
+                                }
+                                Thread.Sleep(10);
+                            }
+                            if (sw.ElapsedMilliseconds > 5000)
+                            {
+                                DialogResult d = showMessageBox("Error: The test was unable to run the last transition, try again?", "Test Timed Out", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                                if (d == DialogResult.Retry)
+                                {
+                                    try
+                                    { port.Write(k.ToString() + i.ToString()); }
+                                    catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); }
+                                }
+                                else
+                                {
+                                    testRunning = false;
+                                    break;
                                 }
                             }
+                            triggerNextResult = false;
                             if (!testRunning){ break; }
                             Thread.Sleep(100);
                         }
@@ -1453,6 +1470,85 @@ namespace OSRTT_Launcher
             }
             File.WriteAllText(gammaFilePath, gammaCsvString.ToString());
 
+            bool failed = false;
+            if (Properties.Settings.Default.saveGraphs)
+            {
+                string excelFilePath = resultsFolderPath + "\\" + fileNumber.ToString("000") + "-GRAPH-RAW-OSRTT.xlsm";
+                try
+                {
+                    File.Copy(path + "\\Graph View Template.xlsm", excelFilePath);
+                }
+                catch (IOException ioe)
+                {
+                    if (ioe.StackTrace.Contains("exists"))
+                    {
+                        Console.WriteLine("File exists, skipping writing.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    showMessageBox(ex.Message + ex.StackTrace, ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                resultsTemplate = new Excel.Application();
+                try
+                {
+                    graphTemplateWorkbook = graphTemplate.Workbooks.Open(excelFilePath);
+                }
+                catch
+                {
+                    DialogResult d = showMessageBox("Error writing data to XLSX results file, file may be open already. Would you like to try again?", "Unable to Save to XLSX File", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                    if (d == DialogResult.Yes)
+                    {
+                        try
+                        {
+                            graphTemplateWorkbook = graphTemplate.Workbooks.Open(excelFilePath);
+                        }
+                        catch (Exception ex)
+                        {
+                            showMessageBox(ex.Message + ex.StackTrace, "Unable to Save to XLSX File", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                            failed = true;
+                        }
+                    }
+                    else
+                    {
+                        failed = true;
+                    }
+                }
+                if (!failed)
+                {
+                    Excel._Worksheet graphTempSheet = graphTemplateWorkbook.Sheets[1];
+                    try
+                    {
+                        //Console.WriteLine("AverageData Count: " + averageData.Count);
+                        for (int p = 0; p < results[currentRun].Count; p++)
+                        {
+                            for (int m = 0; m < results[currentRun][0].Length; m++)
+                            {
+                                //Console.WriteLine("M: " + m + " P: " + p);
+                                graphTempSheet.Cells[p + 2, m + 1] = results[currentRun][p][m];
+                            }
+                        }
+                        graphTemplateWorkbook.Save();
+                    }
+                    catch (Exception ex)
+                    {
+                        showMessageBox(ex.Message + ex.StackTrace, "Unable to Save to XLSX File", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                        failed = true;
+                    }
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    Marshal.ReleaseComObject(graphTempSheet);
+                    
+                }
+                graphTemplateWorkbook.Close();
+                Marshal.ReleaseComObject(graphTemplateWorkbook);
+                graphTemplate.Quit();
+                Marshal.ReleaseComObject(graphTemplate);
+                if (failed)
+                {
+                    File.Delete(excelFilePath);
+                }
+            }
             // Process that raw data
             processThread = new Thread(new ThreadStart(this.processResponseTimeData));
             processThread.Start();
@@ -2330,13 +2426,23 @@ namespace OSRTT_Launcher
                         {
                             if (samples[j] >= start3 && initialTransStart == 0) // save the FIRST time value exceeds start trigger
                             {
-                                initialTransStart = j;
-                                perceivedTransStart = j;
+                                if ((samples[j + 50] > (start3 + 25) || samples[j + 60] > (start3 + 25))
+                                        && (samples[j + 100] > (start3 + 50) || samples[j + 110] > (start3 + 50))
+                                        && (samples[j + 150] > (start3 + 75) || samples[j + 160] > (start3 + 75)))
+                                {
+                                    initialTransStart = j;
+                                    perceivedTransStart = j;
+                                }
                             }
                             else if (samples[j] >= end3) // Save when value exceeds end trigger then break.
                             {
-                                initialTransEnd = j;
-                                break;
+                                if ((samples[j + 50] > (end3 + 25) || samples[j + 60] > (end3 + 25))
+                                        && (samples[j + 100] > (end3 + 50) || samples[j + 110] > (end3 + 50))
+                                        && (samples[j + 150] > (end3 + 75) || samples[j + 160] > (end3 + 75)))
+                                {
+                                    initialTransEnd = j;
+                                    break;
+                                }
                             }
                         }
                         for (int j = samples.Length - 1; j > 0; j--) // search samples for end point
@@ -2345,16 +2451,25 @@ namespace OSRTT_Launcher
                             {
                                 if (samples[j] >= endPer3)  // add the same sort of more detailed check like complete for finding this
                                 {
-                                    perceivedTransEnd = j;
-                                    break;
+                                    if ((samples[j - 25] > (endPer3 + 25) || samples[j - 30] > (endPer3 + 25))
+                                        && (samples[j - 50] > (endPer3 + 50) || samples[j - 60] > (endPer3 + 50)))
+                                    {
+                                        perceivedTransEnd = j;
+                                        break;
+                                    }
                                 }
                             }
                             else // No overshoot found within RGB tolerance
                             {
                                 if (samples[j] <= endPer3)
                                 {
-                                    perceivedTransEnd = j;
-                                    break;
+                                    if ((samples[j - 50] < (endPer3 - 25) || samples[j - 60] < (endPer3 - 25))
+                                        && (samples[j - 100] < (endPer3 - 50) || samples[j - 110] < (endPer3 - 50))
+                                        && (samples[j - 150] < (endPer3 - 75) || samples[j - 160] < (endPer3 - 75)))
+                                    {
+                                        perceivedTransEnd = j;
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -2416,13 +2531,23 @@ namespace OSRTT_Launcher
                         {
                             if (samples[j] <= start3 && initialTransStart == 0) // save the FIRST time value exceeds start trigger
                             {
-                                initialTransStart = j;
-                                perceivedTransStart = j;
+                                if ((samples[j + 50] < (start3 - 25) || samples[j + 60] < (start3 - 25))
+                                        && (samples[j + 100] < (start3 - 50) || samples[j + 110] < (start3 - 50))
+                                        && (samples[j + 150] < (start3 - 75) || samples[j + 160] < (start3 - 75)))
+                                {
+                                    initialTransStart = j;
+                                    perceivedTransStart = j;
+                                }
                             }
                             else if (samples[j] <= end3) // Save when value exceeds end trigger then break.
                             {
-                                initialTransEnd = j;
-                                break;
+                                if ((samples[j + 50] < (end3 - 25) || samples[j + 60] < (end3 - 25))
+                                        && (samples[j + 100] < (end3 - 50) || samples[j + 110] < (end3 - 50))
+                                        && (samples[j + 150] < (end3 - 75) || samples[j + 160] < (end3 - 75)))
+                                {
+                                    initialTransEnd = j;
+                                    break;
+                                }
                             }
                         }
                         for (int j = samples.Length - 1; j > 0; j--) // search samples for end point
@@ -2431,16 +2556,25 @@ namespace OSRTT_Launcher
                             {
                                 if (samples[j] <= endPer3)
                                 {
-                                    perceivedTransEnd = j;
-                                    break;
+                                    if ((samples[j - 50] < (endPer3 - 25) || samples[j - 60] < (endPer3 - 25))
+                                        && (samples[j - 100] < (endPer3 - 50) || samples[j - 110] < (endPer3 - 50)))
+                                    {
+                                        perceivedTransEnd = j;
+                                        break;
+                                    }
                                 }
                             }
                             else // No overshoot found within RGB tolerance
                             {
                                 if (samples[j] >= endPer3)
                                 {
-                                    perceivedTransEnd = j;
-                                    break;
+                                    if ((samples[j - 50] > (endPer3 + 25) || samples[j - 60] > (endPer3 + 25))
+                                        && (samples[j - 100] > (endPer3 + 50) || samples[j - 110] > (endPer3 + 50))
+                                        && (samples[j - 150] > (endPer3 + 75) || samples[j - 160] > (endPer3 + 75)))
+                                    {
+                                        perceivedTransEnd = j;
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -2752,14 +2886,14 @@ namespace OSRTT_Launcher
                                 averageData[k][4] += o[k][4];
                                 validPerceivedTimeResults++;
                             }
-                            if (o[k][5] < (osMedian * 1.2) && o[k][5] > (osMedian * 0.8))
+                            if (o[k][5] < (osMedian * 1.2) && o[k][5] > (osMedian * 0.8) && o[k][5] != 0)
                             {
                                 averageData[k][5] += o[k][5];
                                 validOvershootResults++;
                             }
                             if (o[k][6] < (vrrMedian * 1.2) && o[k][6] > (vrrMedian * 0.8))
                             {
-                                averageData[k][5] += o[k][6];
+                                averageData[k][6] += o[k][6];
                                 validVRRResults++;
                             }
                         }
@@ -2902,6 +3036,7 @@ namespace OSRTT_Launcher
                             {
                                 int monitor = getSelectedMonitor();
                                 resTempSheet2.Cells[4, 12] = displayList[monitor].Freq.ToString();
+                                resultsTemplateWorkbook.Save();
                             }
                             catch (Exception ex)
                             {
@@ -3796,6 +3931,12 @@ namespace OSRTT_Launcher
                 Properties.Settings.Default.gammaPercentSetting = endValueToolStripMenuItem.Checked;
                 Properties.Settings.Default.Save();
             }
+        }
+
+        private void saveGraphsMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.saveGraphs = saveGraphsMenuItem.Checked;
+            Properties.Settings.Default.Save();
         }
     }
 }
