@@ -1,4 +1,5 @@
 #include "Keyboard.h"
+#include "Mouse.h"
 #include <SPI.h>
 #define INPUT_SIZE 2
 
@@ -19,7 +20,7 @@ unsigned long curr_time = micros();
 uint32_t sample_count = 0;
 //50ms sample time default
 unsigned long samplingTime = 50000;
-uint16_t adcBuff[15000];
+uint16_t adcBuff[16000];
 
 //Button values
 int buttonState = 0;
@@ -32,8 +33,8 @@ SPISettings settingsA(10000000, MSBFIRST, SPI_MODE0);
 
 //Serial connection values
 bool connected = false;
-String firmware = "1.6";
-int testRuns = 2;
+String firmware = "2.0";
+int testRuns = 4;
 char fpsLimit = '1';
 int USBV = 0;
 
@@ -246,6 +247,46 @@ void runGammaTest()
     Serial.println("G Test Complete");
 }
 
+void runInputLagTest(int timeBetween)
+{
+  int sampleTime = 200000;
+  if (timeBetween == 100)
+  {
+    sampleTime = 100000;
+  }
+  curr_time = micros();
+  unsigned long clickTime = micros();
+  Mouse.click(MOUSE_LEFT);
+  unsigned long start_time = micros();  
+  while(curr_time <= (start_time + (sampleTime - 1)))
+  {
+    ADC0->SWTRIG.bit.START = 1; 
+    while(!ADC0->INTFLAG.bit.RESRDY); 
+    adcBuff[sample_count] = ADC0->RESULT.reg;  
+    sample_count++; 
+    curr_time = micros(); 
+  }
+  ADC0->SWTRIG.bit.START = 0; 
+  int timeTaken = curr_time - start_time;
+  Serial.print("IL:");
+  Serial.print(start_time - clickTime);
+  Serial.print(",");
+  Serial.print(timeTaken);
+  Serial.print(",");
+  Serial.print(sample_count);
+  Serial.print(",");
+  for (int i = 0; i < sample_count; i++)
+  {
+    Serial.print(adcBuff[i]);
+    Serial.print(",");
+  }
+  Serial.println();
+    
+  sample_count = 0; //reset sample count
+    
+  curr_time = micros();
+}
+
 void setup() {
   pinMode (CS, OUTPUT);
   pinMode (3, OUTPUT);
@@ -340,14 +381,21 @@ void loop() {
             potVal = 165;
             digitalPotWrite(potVal);
           }
+          int counter = 0;
+          long value = 0;
+          while (counter < 10)
+          {
           ADC0->SWTRIG.bit.START = 1; //Start ADC 
           while(!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
-          int value = ADC0->RESULT.reg;
+          value += ADC0->RESULT.reg;
+          counter++;
+          }
+          value /= counter;
           Serial.print("Brightness:");
           Serial.print(value);
           Serial.print(":");
           Serial.println(potVal);
-          delay(400);
+          delay(300);
       }
     }
     else if (input[0] == 'F')
@@ -394,6 +442,30 @@ void loop() {
     {
       runGammaTest();
     }
+    else if (input[0] == 'N')
+    {
+      int length = input[1] - '0';
+      if (length == 0)
+      {
+        samplingTime = 50000;
+      }
+      else if (length == 1)
+      {
+        samplingTime = 100000;
+      }
+      else if (length == 2)
+      {
+        samplingTime = 150000;
+      }
+      else if (length == 3)
+      {
+        samplingTime = 200000;
+      }
+      else if (length == 4)
+      {
+        samplingTime = 250000;
+      }
+    }
     else if (input[0] == 'T')
     {
       Serial.println("Ready to test");
@@ -404,20 +476,19 @@ void loop() {
         buttonState = digitalRead(buttonPin);
         if (buttonState == HIGH) //Run when button pressed
         {
-          Serial.println("Test Started");
           Serial.setTimeout(300);
           // Check USB voltage level
-          int voltageTest = checkUSBVoltage();
-          if (voltageTest == 0)
-          {
+          //int voltageTest = checkUSBVoltage();
+          //if (voltageTest == 0)
+          //{
             // If brightness too low or high, don't run the test
-            Serial.println("TEST CANCELLED - USB VOLTAGE");
-            digitalWrite(13, HIGH); 
-            digitalPotWrite(0x80);
-            break;
-          } 
-          else 
-          {
+          //  Serial.println("TEST CANCELLED - USB VOLTAGE");
+          //  digitalWrite(13, HIGH); 
+          //  digitalPotWrite(0x80);
+          //  break;
+          //} 
+          //else 
+          //{
             // Check monitor brightness level
             int brightnessTest = checkLightLevel();
             if (brightnessTest == 0)
@@ -430,6 +501,7 @@ void loop() {
             }
             else
             {
+              Serial.println("Test Started");
               // Set FPS limit (default 1000 FPS, key '1')
               Keyboard.print(fpsLimit);
               delay(50);
@@ -482,7 +554,7 @@ void loop() {
               }
             }
             digitalPotWrite(0x80);
-          }
+          //}
         }
         else 
         {
@@ -503,13 +575,95 @@ void loop() {
               byte sized = Serial.readBytes(input, INPUT_SIZE);
               input[sized] = 0; 
               curr_time = micros(); //update current time
-           }
-         }
-         else if (input[0] == 'X')
-         {
+            }
+          }
+          else if (input[0] == 'X')
+          {
             break;  
-         }
+          }
         }
+      }
+    }
+    else if (input[0] == 'P')
+    {
+      // Input lag testing
+      int clicks = 1;
+      int timeBetween = 300;
+      Serial.println("IL Clicks");
+      while (input[0] != 'X')
+      {
+        for (int i = 0; i < INPUT_SIZE + 1; i++)
+        {
+          input[i] = ' ';
+        }
+        byte sized = Serial.readBytes(input, INPUT_SIZE);
+        input[sized] = 0; 
+        if (input[0] != ' ')
+        {
+          int firstDigit = input[0] - '0';
+          int secondDigit = input[1] - '0';
+          if (firstDigit == 0)
+          {
+            clicks = secondDigit;
+          }
+          else
+          {
+            clicks = ((firstDigit * 10) + secondDigit);
+          }
+          break;
+        }
+      }
+      if (input[0] != 'X')  { 
+        Serial.println("IL Time");
+        while (input[0] != 'X')
+        {
+          for (int i = 0; i < INPUT_SIZE + 1; i++)
+          {
+            input[i] = ' ';
+          }
+          byte sized = Serial.readBytes(input, INPUT_SIZE);
+          input[sized] = 0; 
+          if (input[0] != ' ')
+          {
+            int firstDigit = input[0] - '0';
+            int secondDigit = input[1] - '0';
+            if (firstDigit == 0)
+            {
+              timeBetween = secondDigit * 100;
+            }
+            else
+            {
+              timeBetween = (((firstDigit * 10) + secondDigit) * 10);
+            }
+            break;
+          }
+        }
+      }
+      if (input[0] != 'X')  {  
+        Serial.setTimeout(200);
+        digitalPotWrite(170);
+        while (input[0] != 'X')
+        {
+          buttonState = digitalRead(buttonPin);
+          if (buttonState == HIGH) //Run when button pressed
+          {
+            Keyboard.press('Q');
+            for (int k = 0; k < clicks; k++)
+            {
+              runInputLagTest(timeBetween);
+              delay(timeBetween);
+            }
+            Serial.println("IL Finished");
+          }
+          for (int i = 0; i < INPUT_SIZE + 1; i++)
+          {
+            input[i] = ' ';
+          }
+          byte sized = Serial.readBytes(input, INPUT_SIZE);
+          input[sized] = 0; 
+          delay(10);
+        }
+        digitalPotWrite(0x80);
       }
     }
   delay(100); 

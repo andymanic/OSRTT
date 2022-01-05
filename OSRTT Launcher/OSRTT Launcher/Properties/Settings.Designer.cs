@@ -238,5 +238,89 @@ namespace OSRTT_Launcher.Properties {
                 this["gammaPercentDiff"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool saveGraphs {
+            get {
+                return ((bool)(this["saveGraphs"]));
+            }
+            set {
+                this["saveGraphs"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool updateInProgress {
+            get {
+                return ((bool)(this["updateInProgress"]));
+            }
+            set {
+                this["updateInProgress"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.3")]
+        public double timeBetween {
+            get {
+                return ((double)(this["timeBetween"]));
+            }
+            set {
+                this["timeBetween"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("20")]
+        public int numberOfClicks {
+            get {
+                return ((int)(this["numberOfClicks"]));
+            }
+            set {
+                this["numberOfClicks"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int captureTime {
+            get {
+                return ((int)(this["captureTime"]));
+            }
+            set {
+                this["captureTime"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool saveInputLagRaw {
+            get {
+                return ((bool)(this["saveInputLagRaw"]));
+            }
+            set {
+                this["saveInputLagRaw"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ignoreErrors {
+            get {
+                return ((bool)(this["ignoreErrors"]));
+            }
+            set {
+                this["ignoreErrors"] = value;
+            }
+        }
     }
 }
