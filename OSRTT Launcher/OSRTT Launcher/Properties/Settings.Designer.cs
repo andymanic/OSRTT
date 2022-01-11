@@ -313,7 +313,7 @@ namespace OSRTT_Launcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool ignoreErrors {
             get {
                 return ((bool)(this["ignoreErrors"]));

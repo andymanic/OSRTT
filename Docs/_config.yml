@@ -1,0 +1,14 @@
+---
+exclude: ['README.markdown']
+permalink: ':title'
+highlighter: pygments
+safe: false
+
+title: OSRTT Docs
+email: inbox@techteamgb.com
+description: >- # this means to ignore newlines until "baseurl:"
+  Open Source Response Time Tool (OSRTT) Docs & FAQ
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site, e.g. http://example.com
+twitter_username: techteamgb
+github_username:  andymanic

@@ -320,6 +320,37 @@ namespace OSRTT_Launcher
                     //Console.WriteLine(output);
                 }
             }
+            string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            var keyLib = documents + "\\Arduino\\libraries\\Keyboard";
+            var mouseLib = documents + "\\Arduino\\libraries\\Mouse";
+            if (!Directory.Exists(keyLib) || !Directory.Exists(mouseLib))
+            {
+                DialogResult d = MessageBox.Show("Some libraries appear to be missing or not installed. Would you like to try and install them now?", "Missing Libraries", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (d == DialogResult.Yes)
+                {
+                    System.Diagnostics.Process process = new System.Diagnostics.Process();
+                    //process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    process.StartInfo.FileName = "cmd.exe";
+                    process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe lib install Keyboard && .\\arduinoCLI\\arduino-cli.exe lib install Mouse";
+                    //process.StartInfo.UseShellExecute = false;
+                    //process.StartInfo.RedirectStandardOutput = true;
+                    //process.StartInfo.CreateNoWindow = true;
+                    process.Start();
+                    //string output = process.StandardOutput.ReadToEnd();
+                    process.WaitForExit();
+                    //Console.WriteLine(output);
+                }
+                if (!Directory.Exists(keyLib) || !Directory.Exists(mouseLib))
+                {
+                    DialogResult diag = MessageBox.Show("It looks like the libraries still aren't installed. You can install them manually by downloading and extracting the files to \\Documents\\Arduino\\libraries." +
+                        "Would you like to open the download page?", "Missing Libraries", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (diag == DialogResult.Yes)
+                    {
+                        Process.Start("https://downloads.arduino.cc/libraries/github.com/arduino-libraries/Mouse-1.0.1.zip");
+                        Process.Start("https://downloads.arduino.cc/libraries/github.com/arduino-libraries/Keyboard-1.0.3.zip");
+                    }
+                }
+            }
         }
         private void Main_Resize(object sender, EventArgs e)
         {
@@ -581,7 +612,7 @@ namespace OSRTT_Launcher
             port.DtrEnable = true;
             port.ReadTimeout = 5000;
             port.WriteTimeout = 5000;
-            port.ReadBufferSize = 128000;
+            port.ReadBufferSize = 512000;
             Console.WriteLine("Port details set");
             try
             { port.Open(); }
@@ -1308,17 +1339,22 @@ namespace OSRTT_Launcher
                 var display = Screen.AllScreens[selectedDisplay];
                 int WinX = 0;
                 int WinY = 0;
-                if (display.Primary == false)
-                {
-                    // Force UE4 window to selected display if selected is not primary
-                    WinX = display.Bounds.Location.X;
-                    WinY = display.Bounds.Location.Y;
-                }
+                
                 Process ue4 = new Process();
                 try
                 {
                     ue4.StartInfo.FileName = ue4Path;
-                    ue4.StartInfo.Arguments = ue4Path + " WinX=" + WinX + " WinY=" + WinY;
+                    if (display.Primary == false)
+                    {
+                        // Force UE4 window to selected display if selected is not primary
+                        WinX = display.Bounds.Location.X;
+                        WinY = display.Bounds.Location.Y;
+                        ue4.StartInfo.Arguments = ue4Path + " WinX=" + WinX + " WinY=" + WinY;
+                    }
+                    else
+                    {
+                        ue4.StartInfo.Arguments = ue4Path;
+                    }
                     ue4.Start();
                     // Process.Start(ue4Path);
                 }
@@ -2024,32 +2060,47 @@ namespace OSRTT_Launcher
                                 localGamma.Add(new int[] { resLine[1], avg });
                             }
                         }
-                        // Extrapolate rough values for every RGB value
-                        for (int i = 0; i < localGamma.Count - 1; i++)
+                        try
                         {
-                            PointF[] points = new PointF[]
-                                {
-                                new PointF { X = localGamma[i][0], Y = localGamma[i][1]},
-                                new PointF { X = localGamma[i+1][0],  Y = localGamma[i+1][1]}
-                                };
-                            int numberOfPoints = localGamma[i + 1][0] - localGamma[i][0];
-
-                            PointF[] partGamma = InterpolatePoints(points, numberOfPoints);
-                            foreach (var p in partGamma)
+                            // Extrapolate rough values for every RGB value
+                            for (int i = 0; i < localGamma.Count - 1; i++)
                             {
-                                int[] tempGamma = {
-                                Convert.ToInt32(p.X), Convert.ToInt32(p.Y)
-                            };
-                                fullGammaTable.Add(tempGamma);
+                                PointF[] points = new PointF[]
+                                    {
+                                    new PointF { X = localGamma[i][0], Y = localGamma[i][1]},
+                                    new PointF { X = localGamma[i+1][0],  Y = localGamma[i+1][1]}
+                                    };
+                                int numberOfPoints = localGamma[i + 1][0] - localGamma[i][0];
+
+                                PointF[] partGamma = InterpolatePoints(points, numberOfPoints);
+                                foreach (var p in partGamma)
+                                {
+                                    int[] tempGamma = {
+                                    Convert.ToInt32(p.X), Convert.ToInt32(p.Y)
+                                };
+                                    fullGammaTable.Add(tempGamma);
+                                }
+                            }
+                            if (results[currentRun].Count == 30)
+                            {
+                                fullGammaTable.Add(localGamma[5]);
+                            }
+                            else
+                            {
+                                fullGammaTable.Add(localGamma[10]);
                             }
                         }
-                        if (results[currentRun].Count == 30)
+                        catch (Exception ex)
                         {
-                            fullGammaTable.Add(localGamma[5]);
-                        }
-                        else
-                        {
-                            fullGammaTable.Add(localGamma[10]);
+                            if (ex.Message.Contains("Arithmetic"))
+                            {
+                                showMessageBox("Error: Results data may be incomplete or out of order. Please check the file or results and reimport.", "Unable to Process", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                SetText(ex.Message + ex.StackTrace);
+                            }
+                            else
+                            {
+                                SetText(ex.Message + ex.StackTrace);
+                            }
                         }
                     }
 
@@ -2936,7 +2987,7 @@ namespace OSRTT_Launcher
                     }
                     if (verboseOutputToolStripMenuItem.Checked)
                     {
-                        csvString.AppendLine("Starting RGB,End RGB,Complete Response Time (ms)," + rtType + "," + perType + "," + osType + " " + osSign + "Visual Response Rating,Input Lag (ms),Transition Start Position,Transition End Position,Sampling Time (ms),End Light Level,Min/Max Light Level,Overshoot/Undershoot RGB Value");
+                        csvString.AppendLine("Starting RGB,End RGB,Complete Response Time (ms)," + rtType + "," + perType + "," + osType + " " + osSign + ",Visual Response Rating,Input Lag (ms),Transition Start Position,Transition End Position,Sampling Time (ms),End Light Level,Min/Max Light Level,Overshoot/Undershoot RGB Value");
                     }
                     else
                     {
@@ -3227,6 +3278,7 @@ namespace OSRTT_Launcher
                         {
                             Excel._Worksheet resTempSheet = resultsTemplateWorkbook.Sheets[1];
                             Excel._Worksheet resTempSheet2 = resultsTemplateWorkbook.Sheets[2];
+                            Excel._Worksheet resTempSheet3 = resultsTemplateWorkbook.Sheets[3];
                             try
                             {
                                 for (int h = 0; h < headers.Length; h++)
@@ -3256,6 +3308,9 @@ namespace OSRTT_Launcher
                             {
                                 int monitor = getSelectedMonitor();
                                 resTempSheet2.Cells[4, 12] = displayList[monitor].Freq.ToString();
+
+                                resTempSheet3.Activate();
+
                                 resultsTemplateWorkbook.Save();
                             }
                             catch (Exception ex)
@@ -3265,7 +3320,10 @@ namespace OSRTT_Launcher
                             }
                             GC.Collect();
                             GC.WaitForPendingFinalizers();
-                            Marshal.ReleaseComObject(resTempSheet);
+                            Marshal.ReleaseComObject(resTempSheet2);
+                            GC.Collect();
+                            GC.WaitForPendingFinalizers();
+                            Marshal.ReleaseComObject(resTempSheet3);
                         }
                         resultsTemplateWorkbook.Close();
                         Marshal.ReleaseComObject(resultsTemplateWorkbook);
@@ -4020,7 +4078,26 @@ namespace OSRTT_Launcher
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                if (ex.Message.Contains("port"))
+                {
+                    menuStrip1.Visible = true;
+                    changeSizeAndState("close brightness");
+                    brightnessWindowOpen = false;
+                    ready = false;
+                    testRunning = false;
+                    brightnessCanceled = true;
+                }
+                else
+                { 
+                    showMessageBox(ex.Message + ex.StackTrace, ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    menuStrip1.Visible = true;
+                    changeSizeAndState("close brightness");
+                    brightnessWindowOpen = false;
+                    ready = false;
+                    testRunning = false;
+                    brightnessCanceled = true;
+                }
+
             }
         }
 
@@ -4529,6 +4606,11 @@ namespace OSRTT_Launcher
         {
             Properties.Settings.Default.ignoreErrors = IgnoreErrorsMenuItem.Checked;
             Properties.Settings.Default.Save();
+        }
+
+        private void bugReportMenuItem_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://github.com/andymanic/OSRTT/issues/new/choose");
         }
     }
 }

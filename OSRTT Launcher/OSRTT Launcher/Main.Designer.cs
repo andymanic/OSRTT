@@ -60,8 +60,10 @@
             this.endValueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.programSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutProgramToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bugReportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.minimiseToTrayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.suppressDialogBoxesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.IgnoreErrorsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BrightnessCalBtn = new System.Windows.Forms.ToolStripMenuItem();
             this.deviceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -129,7 +131,6 @@
             this.monitorPanel = new System.Windows.Forms.Panel();
             this.resultsButtonPanel = new System.Windows.Forms.Panel();
             this.mainPanel = new System.Windows.Forms.Panel();
-            this.IgnoreErrorsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.controlsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.testCount)).BeginInit();
@@ -260,6 +261,7 @@
             this.verboseOutputToolStripMenuItem.Text = "Verbose Output";
             this.verboseOutputToolStripMenuItem.ToolTipText = "Include all processed fields in each \"FULL\" CSV. \r\nIncludes transition start & en" +
     "d position, sample time, overshoot light level and overshoot RGB value.";
+            this.verboseOutputToolStripMenuItem.Click += new System.EventHandler(this.verboseOutputToolStripMenuItem_Click);
             // 
             // saveGammaTableToolStripMenuItem
             // 
@@ -433,6 +435,7 @@
             // 
             this.programSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.aboutProgramToolStripMenuItem,
+            this.bugReportMenuItem,
             this.minimiseToTrayToolStripMenuItem,
             this.suppressDialogBoxesToolStripMenuItem,
             this.IgnoreErrorsMenuItem});
@@ -450,6 +453,16 @@
             this.aboutProgramToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.aboutProgramToolStripMenuItem.Text = "About Program";
             this.aboutProgramToolStripMenuItem.Click += new System.EventHandler(this.aboutProgramToolStripMenuItem_Click);
+            // 
+            // bugReportMenuItem
+            // 
+            this.bugReportMenuItem.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.bugReportMenuItem.CheckOnClick = true;
+            this.bugReportMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.bugReportMenuItem.Name = "bugReportMenuItem";
+            this.bugReportMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.bugReportMenuItem.Text = "Report A Bug";
+            this.bugReportMenuItem.Click += new System.EventHandler(this.bugReportMenuItem_Click);
             // 
             // minimiseToTrayToolStripMenuItem
             // 
@@ -471,6 +484,19 @@
             this.suppressDialogBoxesToolStripMenuItem.Text = "Suppress Dialog Boxes";
             this.suppressDialogBoxesToolStripMenuItem.ToolTipText = "Suppress warning and mid-test error dialog boxes.";
             this.suppressDialogBoxesToolStripMenuItem.Click += new System.EventHandler(this.suppressDialogBoxesToolStripMenuItem_Click);
+            // 
+            // IgnoreErrorsMenuItem
+            // 
+            this.IgnoreErrorsMenuItem.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.IgnoreErrorsMenuItem.Checked = true;
+            this.IgnoreErrorsMenuItem.CheckOnClick = true;
+            this.IgnoreErrorsMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.IgnoreErrorsMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.IgnoreErrorsMenuItem.Name = "IgnoreErrorsMenuItem";
+            this.IgnoreErrorsMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.IgnoreErrorsMenuItem.Text = "Ignore Mid Run Errors";
+            this.IgnoreErrorsMenuItem.ToolTipText = "Ignore mid-run errors ";
+            this.IgnoreErrorsMenuItem.Click += new System.EventHandler(this.IgnoreErrorsMenuItem_Click);
             // 
             // BrightnessCalBtn
             // 
@@ -1243,17 +1269,6 @@
             this.mainPanel.Size = new System.Drawing.Size(611, 687);
             this.mainPanel.TabIndex = 32;
             // 
-            // IgnoreErrorsMenuItem
-            // 
-            this.IgnoreErrorsMenuItem.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.IgnoreErrorsMenuItem.CheckOnClick = true;
-            this.IgnoreErrorsMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.IgnoreErrorsMenuItem.Name = "IgnoreErrorsMenuItem";
-            this.IgnoreErrorsMenuItem.Size = new System.Drawing.Size(192, 22);
-            this.IgnoreErrorsMenuItem.Text = "Ignore Mid Run Errors";
-            this.IgnoreErrorsMenuItem.ToolTipText = "Ignore mid-run errors ";
-            this.IgnoreErrorsMenuItem.Click += new System.EventHandler(this.IgnoreErrorsMenuItem_Click);
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1401,6 +1416,7 @@
         private System.Windows.Forms.Button helpCaptureBtn;
         private System.Windows.Forms.ToolStripMenuItem saveRawInputLagMenuItem;
         private System.Windows.Forms.ToolStripMenuItem IgnoreErrorsMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem bugReportMenuItem;
     }
 }
 
