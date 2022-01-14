@@ -1781,7 +1781,7 @@ namespace OSRTT_Launcher
             // Open file picker dialogue
             var filePath = string.Empty;
 
-            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            using (System.Windows.Forms.OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog())
             {
                 openFileDialog.InitialDirectory = path;
                 openFileDialog.Filter = "csv files (*.csv)|*.csv";
@@ -2748,6 +2748,11 @@ namespace OSRTT_Launcher
                                         break;
                                     }
                                 }
+                                else if (j == transEnd)
+                                {
+                                    initialTransEnd = transEnd;
+                                    break;
+                                }
                             }
                             for (int j = (transEnd + 20); j > (transStart - 20); j--) // search samples for end point
                             {
@@ -2872,6 +2877,11 @@ namespace OSRTT_Launcher
                                         initialTransEnd = transEnd;
                                         break;
                                     }
+                                }
+                                else if (j == transEnd)
+                                {
+                                    initialTransEnd = transEnd;
+                                    break;
                                 }
                             }
                             for (int j = (transEnd + 20); j > (transStart - 20); j--) // search samples for end point
@@ -3525,7 +3535,7 @@ namespace OSRTT_Launcher
                                 valid = true;
                                 try
                                 {
-                                    using (OpenFileDialog OFD = new OpenFileDialog())
+                                    using (System.Windows.Forms.OpenFileDialog OFD = new System.Windows.Forms.OpenFileDialog())
                                     {
                                         OFD.FileName = f;
                                         //Read the contents of the file into a stream
@@ -3576,7 +3586,7 @@ namespace OSRTT_Launcher
                                 {
                                     List<int[]> tempRes = new List<int[]>();
                                     List<int[]> tempGamma = new List<int[]>();
-                                    using (OpenFileDialog OFD = new OpenFileDialog())
+                                    using (System.Windows.Forms.OpenFileDialog OFD = new System.Windows.Forms.OpenFileDialog())
                                     {
                                         OFD.FileName = f;
                                         //Read the contents of the file into a stream
@@ -3631,7 +3641,7 @@ namespace OSRTT_Launcher
                                 //Read the contents of the file into a stream
                                 try
                                 {
-                                    using (OpenFileDialog OFD = new OpenFileDialog())
+                                    using (System.Windows.Forms.OpenFileDialog OFD = new System.Windows.Forms.OpenFileDialog())
                                     {
                                         OFD.FileName = f;
                                         //Read the contents of the file into a stream
