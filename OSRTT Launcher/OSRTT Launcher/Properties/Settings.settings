@@ -63,7 +63,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="timeBetween" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0.3</Value>
+      <Value Profile="(Default)">0.5</Value>
     </Setting>
     <Setting Name="numberOfClicks" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">20</Value>

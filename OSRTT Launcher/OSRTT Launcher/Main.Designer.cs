@@ -121,7 +121,6 @@
             this.inputLagButton = new System.Windows.Forms.Button();
             this.numberOfClicksLabel = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
-            this.label15 = new System.Windows.Forms.Label();
             this.timeBetweenLabel = new System.Windows.Forms.Label();
             this.numberOfClicksSlider = new System.Windows.Forms.TrackBar();
             this.label16 = new System.Windows.Forms.Label();
@@ -1113,7 +1112,6 @@
             this.inputLagPanel.Controls.Add(this.inputLagButton);
             this.inputLagPanel.Controls.Add(this.numberOfClicksLabel);
             this.inputLagPanel.Controls.Add(this.label20);
-            this.inputLagPanel.Controls.Add(this.label15);
             this.inputLagPanel.Controls.Add(this.timeBetweenLabel);
             this.inputLagPanel.Controls.Add(this.numberOfClicksSlider);
             this.inputLagPanel.Controls.Add(this.label16);
@@ -1157,25 +1155,15 @@
             this.label20.TabIndex = 30;
             this.label20.Text = "Number of Clicks:";
             // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(247, 44);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(19, 24);
-            this.label15.TabIndex = 29;
-            this.label15.Text = "s";
-            // 
             // timeBetweenLabel
             // 
             this.timeBetweenLabel.AutoSize = true;
             this.timeBetweenLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.timeBetweenLabel.Location = new System.Drawing.Point(218, 44);
             this.timeBetweenLabel.Name = "timeBetweenLabel";
-            this.timeBetweenLabel.Size = new System.Drawing.Size(35, 24);
+            this.timeBetweenLabel.Size = new System.Drawing.Size(44, 24);
             this.timeBetweenLabel.TabIndex = 28;
-            this.timeBetweenLabel.Text = "0.1";
+            this.timeBetweenLabel.Text = "0.5s";
             // 
             // numberOfClicksSlider
             // 
@@ -1401,7 +1389,6 @@
         private System.Windows.Forms.Button inputLagButton;
         private System.Windows.Forms.Label numberOfClicksLabel;
         private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label timeBetweenLabel;
         private System.Windows.Forms.TrackBar numberOfClicksSlider;
         private System.Windows.Forms.Label label16;

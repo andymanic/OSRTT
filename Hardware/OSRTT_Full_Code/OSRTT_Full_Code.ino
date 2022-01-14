@@ -547,6 +547,7 @@ void loop() {
                     Keyboard.print(Keys[currentIndex]);
                     delay(300);
                     runADC(current, next, Keys[nextIndex], "Results: ");
+                    delay(50);
                     Serial.println("NEXT");
                   }
                 }
@@ -589,6 +590,7 @@ void loop() {
       // Input lag testing
       int clicks = 1;
       int timeBetween = 300;
+      int totalTime = 100;
       Serial.println("IL Clicks");
       while (input[0] != 'X')
       {
@@ -633,8 +635,27 @@ void loop() {
             }
             else
             {
-              timeBetween = (((firstDigit * 10) + secondDigit) * 10);
+              firstDigit *= 1000;
+              secondDigit *= 100;
+              timeBetween = firstDigit + secondDigit;
             }
+            if (timeBetween == 100)
+            {
+              totalTime = 100;
+              timeBetween = 0;
+            }
+            else if (timeBetween == 200)
+            {
+              totalTime = 200;
+              timeBetween = 0;
+            }
+            else 
+            {
+              totalTime = timeBetween;
+              timeBetween = timeBetween - 200;
+            }
+            Serial.print("Time between saved: ");
+            Serial.println(timeBetween);
             break;
           }
         }
@@ -647,13 +668,21 @@ void loop() {
           buttonState = digitalRead(buttonPin);
           if (buttonState == HIGH) //Run when button pressed
           {
-            Keyboard.press('Q');
+            Keyboard.print('Q');
+            delay(100);
+            int sw = micros();
             for (int k = 0; k < clicks; k++)
             {
-              runInputLagTest(timeBetween);
-              delay(timeBetween);
+              runInputLagTest(totalTime);
+              int sw2 = micros();
+              if (sw2 < (sw + timeBetween))
+              {
+                delay((sw + timeBetween) - sw2);  
+              }
             }
             Serial.println("IL Finished");
+            input[0] = 'X';
+            break;
           }
           for (int i = 0; i < INPUT_SIZE + 1; i++)
           {

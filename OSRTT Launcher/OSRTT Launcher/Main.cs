@@ -258,7 +258,7 @@ namespace OSRTT_Launcher
             }
             timeBetween = Properties.Settings.Default.timeBetween;
             timeBetweenLabel.Text = timeBetween.ToString();
-            timeBetweenSlider.Value = Convert.ToInt32(timeBetween * 10);
+            timeBetweenSlider.Value = Convert.ToInt32(timeBetween * 2);
             numberOfClicks = Properties.Settings.Default.numberOfClicks;
             numberOfClicksLabel.Text = numberOfClicks.ToString();
             numberOfClicksSlider.Value = numberOfClicks;
@@ -973,7 +973,7 @@ namespace OSRTT_Launcher
                     else if (message.Contains("NEXT"))
                     {
                         triggerNextResult = true;
-                        Console.WriteLine("trigger next result true");
+                        //Console.WriteLine("trigger next result true");
                     }
                     else if (message.Contains("Run Complete"))
                     { // EOL
@@ -1182,7 +1182,7 @@ namespace OSRTT_Launcher
                         else if (message.Contains("Time"))
                         {
                             // Send time between setting
-                            double t = timeBetween * 100;
+                            double t = timeBetween * 10;
                             port.Write(t.ToString());
                             Console.WriteLine("Time Between: " + t);
                         }
@@ -1195,6 +1195,10 @@ namespace OSRTT_Launcher
                         {
                             if (Properties.Settings.Default.saveInputLagRaw)
                             {
+                                string[] folders = resultsFolderPath.Split('\\');
+                                string monitorInfo = folders.Last();
+                                string filePath = resultsFolderPath + "\\" + monitorInfo + "-INPUT-LAG-RAW.csv";
+                                /*
                                 decimal fileNumber = 001;
                                 // search /Results folder for existing file names, pick new name
                                 string[] existingFiles = Directory.GetFiles(resultsFolderPath, "*-INPUT-LAG-RAW-OSRTT.csv");
@@ -1209,7 +1213,7 @@ namespace OSRTT_Launcher
                                 }
 
                                 string filePath = resultsFolderPath + "\\" + fileNumber.ToString("000") + "-INPUT-LAG-RAW-OSRTT.csv";
-
+                                */
                                 string strSeparator = ",";
                                 StringBuilder csvString = new StringBuilder();
                                 foreach (var res in inputLagRawData)
@@ -1530,7 +1534,7 @@ namespace OSRTT_Launcher
                             sw.Start();
                             while (sw.ElapsedMilliseconds < 5000)
                             { // wait for CORRECT result to come back
-                                if ((currentStart == RGBArr[i] && currentEnd == RGBArr[k]) || triggerNextResult)
+                                if ((currentStart == RGBArr[i] && currentEnd == RGBArr[k]) && triggerNextResult)
                                 {
                                     break;
                                 }
@@ -1565,7 +1569,7 @@ namespace OSRTT_Launcher
                             sw.Start();
                             while (sw.ElapsedMilliseconds < 5000)
                             { // wait for CORRECT result to come back
-                                if ((currentStart == RGBArr[k] && currentEnd == RGBArr[i]) || triggerNextResult)
+                                if ((currentStart == RGBArr[k] && currentEnd == RGBArr[i]) && triggerNextResult)
                                 {
                                     break;
                                 }
@@ -1594,6 +1598,7 @@ namespace OSRTT_Launcher
                         Thread.Sleep(100);
                     }
                     if (!testRunning) { break; }
+                    Thread.Sleep(200);
                     results.Add(singleResults);
                     runComplete();
                     Thread.Sleep(500);
@@ -1627,6 +1632,10 @@ namespace OSRTT_Launcher
 
             string strSeparator = ",";
             StringBuilder csvString = new StringBuilder();
+            foreach (var res in gamma)
+            {
+                csvString.AppendLine(string.Join(strSeparator, res));
+            }
             foreach (var res in results[currentRun])
             {
                 csvString.AppendLine(string.Join(strSeparator, res));
@@ -1646,6 +1655,7 @@ namespace OSRTT_Launcher
                 }
             }
 
+            /*
             string gammaFilePath = resultsFolderPath + "\\" + gammaFileNumber.ToString("000") + "-GAMMA-RAW-OSRTT.csv";
 
             StringBuilder gammaCsvString = new StringBuilder();
@@ -1654,6 +1664,7 @@ namespace OSRTT_Launcher
                 gammaCsvString.AppendLine(string.Join(strSeparator, res));
             }
             File.WriteAllText(gammaFilePath, gammaCsvString.ToString());
+            */
 
             bool failed = false;
             if (Properties.Settings.Default.saveGraphs)
@@ -1834,6 +1845,7 @@ namespace OSRTT_Launcher
                         try
                         {
                             List<int[]> tempRes = new List<int[]>();
+                            List<int[]> tempGamma = new List<int[]>();
                             var fileStream = openFileDialog.OpenFile();
                             using (StreamReader reader = new StreamReader(fileStream))
                             {
@@ -1858,11 +1870,20 @@ namespace OSRTT_Launcher
                                         }
                                     }
                                     Array.Resize(ref intLine, intLine.Length - 1);
-                                    tempRes.Add(intLine);
+                                    if (intLine[0] == intLine[1])
+                                    {
+                                        tempGamma.Add(intLine);
+                                    }
+                                    else
+                                    {
+                                        tempRes.Add(intLine);
+                                    }
                                 }
                             }
                             results.AddRange(new List<List<int[]>> { tempRes });
+                            gamma.AddRange(tempGamma);
                             resultsFolderPath = filePath.Substring(0, filePath.LastIndexOf('\\'));
+                            //processGammaTable();
                             //processThread = new Thread(new ThreadStart(this.processResponseTimeData));
                             //processThread.Start();
                             processResponseTimeData();
@@ -1874,9 +1895,53 @@ namespace OSRTT_Launcher
                             DialogResult d = MessageBox.Show("File may be in use by another program, please make sure it's not open elsewhere and try again.", "Unable to open file", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
+                    else if (filePath.Contains("LAG-RAW"))
+                    {
+                        //Read the contents of the file into a stream
+                        try
+                        {
+                            var fileStream = openFileDialog.OpenFile();
+                            using (StreamReader reader = new StreamReader(fileStream))
+                            {
+                                while (!reader.EndOfStream)
+                                {
+                                    // This can probably be done better
+                                    string[] line = reader.ReadLine().Split(',');
+                                    int[] intLine = new int[line.Length];
+                                    for (int i = 0; i < line.Length; i++)
+                                    {
+                                        if (line[i] == "0")
+                                        {
+                                            intLine[i] = 0;
+                                        }
+                                        else if (line[i] != "")
+                                        {
+                                            intLine[i] = int.Parse(line[i]);
+                                        }
+                                        else
+                                        {
+                                            continue;
+                                        }
+                                    }
+                                    Array.Resize(ref intLine, intLine.Length - 1);
+                                    inputLagRawData.Add(intLine);
+                                }
+                            }
+                            resultsFolderPath = filePath.Substring(0, filePath.LastIndexOf('\\'));
+                            
+                            processInputLagData();
+                            
+                            Process.Start("explorer.exe", resultsFolderPath);
+
+                        }
+                        catch
+                        {
+                            DialogResult d = MessageBox.Show("File may be in use by another program, please make sure it's not open elsewhere and try again.", "Unable to open file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
                     else
                     {
-                        MessageBox.Show("Sorry, only 'RAW' files can be imported. Please select either a 'RAW-OSRTT.csv' file, or 'GAMMA-RAW-OSRTT.csv' file instead.", "Importer Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Sorry, only 'RAW' files can be imported. Please select either a 'RAW-OSRTT.csv' file, or 'INPUT-LAG-RAW.csv' file instead.", "Importer Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }             
                 }
             }
@@ -2489,19 +2554,19 @@ namespace OSRTT_Launcher
                                     {
                                         if (maxValue > 65500)
                                         {
-                                            overUnderRGB = -1;
+                                            //overUnderRGB = -1;
                                             break;
                                         }
                                         else
                                         {
-                                            overUnderRGB = 255;
+                                            overUnderRGB = 256;
                                             break;
                                         }
                                     }
                                 }
                                 if (overUnderRGB == -1)
                                 {
-                                    overshootPercent = 100;
+                                    //overshootPercent = 100;
                                 }
                                 else
                                 {
@@ -3432,6 +3497,7 @@ namespace OSRTT_Launcher
                         //results.Clear();
                         string[] files = Directory.GetFiles(filePath);
                         bool valid = false;
+                        bool inputLag = false;
                         foreach (var f in files)
                         {
                             if (f.Contains("-GAMMA-RAW-OSRTT"))
@@ -3485,9 +3551,11 @@ namespace OSRTT_Launcher
                             {
                                 valid = true;
                                 results.Clear();
+                                gamma.Clear();
                                 try
                                 {
                                     List<int[]> tempRes = new List<int[]>();
+                                    List<int[]> tempGamma = new List<int[]>();
                                     using (OpenFileDialog OFD = new OpenFileDialog())
                                     {
                                         OFD.FileName = f;
@@ -3498,7 +3566,6 @@ namespace OSRTT_Launcher
                                         {
                                             while (!reader.EndOfStream)
                                             {
-
                                                 // This can probably be done better
                                                 string[] line = reader.ReadLine().Split(',');
                                                 int[] intLine = new int[line.Length];
@@ -3518,11 +3585,20 @@ namespace OSRTT_Launcher
                                                     }
                                                 }
                                                 Array.Resize(ref intLine, intLine.Length - 1);
-                                                tempRes.Add(intLine);
+                                                if (intLine[0] == intLine[1])
+                                                {
+                                                    tempGamma.Add(intLine);
+                                                }
+                                                else
+                                                {
+                                                    tempRes.Add(intLine);
+                                                }
                                             }
                                         }
                                     }
                                     results.AddRange(new List<List<int[]>> { tempRes });
+                                    gamma.AddRange(tempGamma);
+                                    //processGammaTable();
                                     processResponseTimeData();
                                 }
                                 catch (IOException iex)
@@ -3530,10 +3606,62 @@ namespace OSRTT_Launcher
                                     MessageBox.Show("Unable to open file - it may be in use in another program. Please close it out and try again.", "Unable to open file", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
                             }
+                            else if (filePath.Contains("LAG-RAW"))
+                            {
+                                //Read the contents of the file into a stream
+                                try
+                                {
+                                    using (OpenFileDialog OFD = new OpenFileDialog())
+                                    {
+                                        OFD.FileName = f;
+                                        //Read the contents of the file into a stream
+
+                                        var fileStream = OFD.OpenFile();
+                                        using (StreamReader reader = new StreamReader(fileStream))
+                                        {
+                                            while (!reader.EndOfStream)
+                                            {
+                                                // This can probably be done better
+                                                string[] line = reader.ReadLine().Split(',');
+                                                int[] intLine = new int[line.Length];
+                                                for (int i = 0; i < line.Length; i++)
+                                                {
+                                                    if (line[i] == "0")
+                                                    {
+                                                        intLine[i] = 0;
+                                                    }
+                                                    else if (line[i] != "")
+                                                    {
+                                                        intLine[i] = int.Parse(line[i]);
+                                                    }
+                                                    else
+                                                    {
+                                                        continue;
+                                                    }
+                                                }
+                                                Array.Resize(ref intLine, intLine.Length - 1);
+                                                inputLagRawData.Add(intLine);
+                                            }
+                                        }
+                                        resultsFolderPath = filePath.Substring(0, filePath.LastIndexOf('\\'));
+
+                                        processInputLagData();
+                                        inputLag = true;
+                                    }
+                                }
+                                catch
+                                {
+                                    DialogResult d = MessageBox.Show("File may be in use by another program, please make sure it's not open elsewhere and try again.", "Unable to open file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                }
+                            }
                         }
                         if (valid)
                         {
                             processMultipleRuns();
+                            Process.Start("explorer.exe", resultsFolderPath);
+                        }
+                        else if (inputLag)
+                        {
                             Process.Start("explorer.exe", resultsFolderPath);
                         }
                         else
@@ -4276,6 +4404,7 @@ namespace OSRTT_Launcher
                 {
                     // Save start, end, time and sample count then clear the values from the array
                     int ClickTime = item[0];
+                    Console.WriteLine("ClickTime: " + ClickTime);
                     int TimeTaken = item[1];
                     int SampleCount = item[2];
                     int[] samples = item.Skip(3).ToArray();
@@ -4363,13 +4492,15 @@ namespace OSRTT_Launcher
                         }
                     }
 
-
-                    double clickTimeMs = ClickTime / 1000;
+                    Console.WriteLine("ClickTime: " + ClickTime);
+                    double clickTimeMs = ClickTime;
+                    clickTimeMs /= 1000;
+                    Console.WriteLine("ClickTimems: " + clickTimeMs);
                     double transTime = (transStart * SampleTime) / 1000;
-                    double inputLag = Math.Round(transTime, 1);
+                    double inputLag = Math.Round(transTime, 3);
 
                     double totalInputLag = (ClickTime + (transStart * SampleTime)) / 1000;
-                    totalInputLag = Math.Round(totalInputLag, 1);
+                    totalInputLag = Math.Round(totalInputLag, 3);
                     /*if (verboseOutputToolStripMenuItem.Checked)
                     {
                         // Verbose output with ALLLL the data
@@ -4389,7 +4520,7 @@ namespace OSRTT_Launcher
 
                 // convert to double array for each type of average
                 double[] averageInputLag = { 0, 0, 0 };
-                double[] minInputLag = { 0, 0, 0 };
+                double[] minInputLag = { 1000, 1000, 1000 };
                 double[] maxInputLag = { 0, 0, 0 };
                 for (int i = 0; i < processedData.Count; i++)
                 {
@@ -4407,11 +4538,11 @@ namespace OSRTT_Launcher
                     }
                 }
                 averageInputLag[0] /= processedData.Count;
-                averageInputLag[0] = Math.Round(averageInputLag[0], 1);
+                averageInputLag[0] = Math.Round(averageInputLag[0], 3);
                 averageInputLag[1] /= processedData.Count;
-                averageInputLag[1] = Math.Round(averageInputLag[1], 1);
+                averageInputLag[1] = Math.Round(averageInputLag[1], 3);
                 averageInputLag[2] /= processedData.Count;
-                averageInputLag[2] = Math.Round(averageInputLag[2], 1);
+                averageInputLag[2] = Math.Round(averageInputLag[2], 3);
 
                 // Write results to csv using new name
                 decimal fileNumber = 001;
@@ -4430,12 +4561,14 @@ namespace OSRTT_Launcher
                         fileNumber = num + 1;
                     }
                 }
-
-                string filePath = resultsFolderPath + "\\" + fileNumber.ToString("000") + "-INPUT-LAG-OSRTT.csv";
+                string[] folders = resultsFolderPath.Split('\\');
+                string monitorInfo = folders.Last();
+                string filePath = resultsFolderPath + "\\" + monitorInfo + "-INPUT-LAG-OSRTT.csv";
+                //string filePath = resultsFolderPath + "\\" + fileNumber.ToString("000") + "-INPUT-LAG-OSRTT.csv";
 
                 string strSeparator = ",";
                 StringBuilder csvString = new StringBuilder();
-                csvString.AppendLine("Shot Number,Click Time (ms), Input Lag (ms), Total System Input Lag (ms)");
+                csvString.AppendLine("Shot Number,Click Time (ms),Input Lag (ms),Total System Input Lag (ms)");
                 
                 foreach (var res in processedData)
                 {
@@ -4471,6 +4604,12 @@ namespace OSRTT_Launcher
                     }
                     File.WriteAllText(smoothedFilePath, smoothedCsvString.ToString());
                 }*/
+                Process[] p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
+                if (p.Length != 0)
+                {
+                    p[0].Kill();
+                }
+                Process.Start("explorer.exe", resultsFolderPath);
             }
             catch (Exception procEx)
             {
@@ -4493,9 +4632,9 @@ namespace OSRTT_Launcher
         private void timeBetweenSlider_Scroll(object sender, EventArgs e)
         {
             timeBetween = timeBetweenSlider.Value;
-            timeBetween /= 10;
+            timeBetween *= 0.5;
             Console.WriteLine(timeBetween);
-            timeBetweenLabel.Text = timeBetween.ToString();
+            timeBetweenLabel.Text = timeBetween.ToString() + "s";
             // send to device?
 
             Properties.Settings.Default.timeBetween = timeBetween;
