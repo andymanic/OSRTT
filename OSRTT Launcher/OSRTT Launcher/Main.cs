@@ -19,6 +19,7 @@ using Newtonsoft.Json;
 using System.Resources;
 using System.Runtime.InteropServices;
 using Excel = Microsoft.Office.Interop.Excel;
+using Microsoft.Win32;
 
 namespace OSRTT_Launcher
 {
@@ -86,6 +87,7 @@ namespace OSRTT_Launcher
         private Excel._Workbook resultsTemplateWorkbook;
         private Excel.Application graphTemplate;
         private Excel._Workbook graphTemplateWorkbook;
+        private bool excelInstalled = false;
         public class Displays
         {
             public string Name { get; set; }
@@ -349,6 +351,24 @@ namespace OSRTT_Launcher
                         Process.Start("https://downloads.arduino.cc/libraries/github.com/arduino-libraries/Mouse-1.0.1.zip");
                         Process.Start("https://downloads.arduino.cc/libraries/github.com/arduino-libraries/Keyboard-1.0.3.zip");
                     }
+                }
+            }
+            RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\excel.exe");
+            if (key != null)
+            {
+                key.Close();
+                excelInstalled = true;
+            }
+            else
+            {
+                if (Properties.Settings.Default.saveXLSX || Properties.Settings.Default.saveGraphs)
+                {
+                    showMessageBox("Warning: Excel doesn't seem to be installed. Saving to the XLSX or XLSM templates (results or graph view templates) won't work and have been disabled.","Excel Not Installed",MessageBoxButtons.OK,MessageBoxIcon.Exclamation);
+                    Properties.Settings.Default.saveXLSX = false;
+                    Properties.Settings.Default.saveGraphs = false;
+                    saveGraphsMenuItem.Checked = false;
+                    saveXLSXMenuItem.Checked = false;
+                    Properties.Settings.Default.Save();
                 }
             }
         }
