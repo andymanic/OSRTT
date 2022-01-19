@@ -654,13 +654,21 @@ namespace OSRTT_Launcher
                 readThread = new Thread(new ThreadStart(this.Read));
                 readThread.Start();
                 this.hardWorker.RunWorkerAsync();
-                port.Write("X");
-                port.Write("X");
-                port.Write("X");
+                //port.Write("X");
+                //Thread.Sleep(250);
                 port.Write("I" + (this.testCount.Value - 1).ToString());
                 setFPSLimit();
-                monitorCB_SelectedIndexChanged(null, null);
-                port.Write("V" + vsyncStateList.SelectedIndex.ToString());
+                if (displayList[0].Freq < 140)
+                {
+                    if (Properties.Settings.Default.captureTime == 0)
+                    {
+                        this.captureTimeBox.Invoke((MethodInvoker)(() => this.captureTimeBox.SelectedIndex = 1));
+                        Properties.Settings.Default.captureTime = 1;
+                        Properties.Settings.Default.Save();
+                        setCaptureTime();
+                    }
+                }
+                port.Write("V" + Properties.Settings.Default.VSyncState.ToString());
             }
             else
             {

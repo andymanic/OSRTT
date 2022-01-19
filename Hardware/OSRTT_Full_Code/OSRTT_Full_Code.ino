@@ -443,7 +443,7 @@ void loop() {
     {
       runGammaTest();
     }
-    else if (input[0] == 'G')
+    else if (input[0] == 'V')
     {
       int vState = input[1] - '0';
       if (vState == 0)
@@ -454,6 +454,8 @@ void loop() {
       {
         vsync = true;
       }
+      Serial.print("VSync:");
+      Serial.println(vsync);
     }
     else if (input[0] == 'N')
     {
@@ -478,6 +480,8 @@ void loop() {
       {
         samplingTime = 250000;
       }
+      Serial.print("Sampling Time:");
+      Serial.println(samplingTime);
     }
     else if (input[0] == 'T')
     {
