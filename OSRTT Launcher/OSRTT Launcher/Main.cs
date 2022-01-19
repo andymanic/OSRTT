@@ -26,9 +26,9 @@ namespace OSRTT_Launcher
     public partial class Main : Form
     {
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
-        private double boardVersion = 2.0;
-        private double downloadedFirmwareVersion = 2.0;
-        private string softwareVersion = "2.0";
+        private double boardVersion = 2.1;
+        private double downloadedFirmwareVersion = 2.1;
+        private string softwareVersion = "2.1";
 
         // TODO //
         // Test new testing method (program run instead of device run)
@@ -289,6 +289,7 @@ namespace OSRTT_Launcher
             listMonitors();
             listFramerates();
             listCaptureTimes();
+            listVsyncState();
             initialSetup();
             checkFolderPermissions();
             uptime = GetUpTime();
@@ -312,7 +313,7 @@ namespace OSRTT_Launcher
                     System.Diagnostics.Process process = new System.Diagnostics.Process();
                     //process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                     process.StartInfo.FileName = "cmd.exe";
-                    process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe config init && .\\arduinoCLI\\arduino-cli.exe config add board_manager.additional_urls https://adafruit.github.io/arduino-board-index/package_adafruit_index.json && .\\arduinoCLI\\arduino-cli.exe core update-index && .\\arduinoCLI\\arduino-cli.exe core install arduino:samd && .\\arduinoCLI\\arduino-cli.exe core install adafruit:samd && .\\arduinoCLI\\arduino-cli.exe lib install Keyboard && .\\arduinoCLI\\arduino-cli.exe lib install Mouse";
+                    process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe config init && .\\arduinoCLI\\arduino-cli.exe config set directories.user .\\arduinoCLI && .\\arduinoCLI\\arduino-cli.exe config add board_manager.additional_urls https://adafruit.github.io/arduino-board-index/package_adafruit_index.json && .\\arduinoCLI\\arduino-cli.exe core update-index && .\\arduinoCLI\\arduino-cli.exe core install arduino:samd && .\\arduinoCLI\\arduino-cli.exe core install adafruit:samd && .\\arduinoCLI\\arduino-cli.exe lib install Keyboard && .\\arduinoCLI\\arduino-cli.exe lib install Mouse";
                     //process.StartInfo.UseShellExecute = false;
                     //process.StartInfo.RedirectStandardOutput = true;
                     //process.StartInfo.CreateNoWindow = true;
@@ -322,6 +323,7 @@ namespace OSRTT_Launcher
                     //Console.WriteLine(output);
                 }
             }
+            /*
             string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             var keyLib = documents + "\\Arduino\\libraries\\Keyboard";
             var mouseLib = documents + "\\Arduino\\libraries\\Mouse";
@@ -344,15 +346,16 @@ namespace OSRTT_Launcher
                 }
                 if (!Directory.Exists(keyLib) || !Directory.Exists(mouseLib))
                 {
-                    DialogResult diag = MessageBox.Show("It looks like the libraries still aren't installed. You can install them manually by downloading and extracting the files to \\Documents\\Arduino\\libraries." +
+                    DialogResult diag = MessageBox.Show("It looks like the libraries still aren't installed. You can install them manually by downloading and extracting the folder to \\Documents. " +
                         "Would you like to open the download page?", "Missing Libraries", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (diag == DialogResult.Yes)
                     {
-                        Process.Start("https://downloads.arduino.cc/libraries/github.com/arduino-libraries/Mouse-1.0.1.zip");
-                        Process.Start("https://downloads.arduino.cc/libraries/github.com/arduino-libraries/Keyboard-1.0.3.zip");
+                        Process.Start("https://github.com/andymanic/OSRTT/raw/main/Arduino.zip");
+                        //Process.Start("https://downloads.arduino.cc/libraries/github.com/arduino-libraries/Mouse-1.0.1.zip");
+                        //Process.Start("https://downloads.arduino.cc/libraries/github.com/arduino-libraries/Keyboard-1.0.3.zip");
                     }
                 }
-            }
+            }*/
             RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\excel.exe");
             if (key != null)
             {
@@ -452,6 +455,14 @@ namespace OSRTT_Launcher
             captureTimeBox.Items.Add("200ms");
             captureTimeBox.Items.Add("250ms");
             captureTimeBox.SelectedIndex = Properties.Settings.Default.captureTime;
+        }
+
+        private void listVsyncState()
+        {
+            vsyncStateList.Items.Clear();
+            vsyncStateList.Items.Add("Disabled");
+            vsyncStateList.Items.Add("Enabled");
+            vsyncStateList.SelectedIndex = Properties.Settings.Default.VSyncState;
         }
 
         private void checkFolderPermissions()
@@ -574,7 +585,7 @@ namespace OSRTT_Launcher
                             System.Diagnostics.Process process = new System.Diagnostics.Process();
                             process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                             process.StartInfo.FileName = "cmd.exe";
-                            
+
                             Console.WriteLine("ready to start");
                             process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe compile --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code && .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code";
                             process.StartInfo.UseShellExecute = false;
@@ -598,9 +609,7 @@ namespace OSRTT_Launcher
                                     MessageBox.Show("Device has been updated successfully!", "Updated Device", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     SetDeviceStatus("Update Complete");
                                 }
-                                
                                 boardUpdate = false;
-                                
                             }
                             catch (Exception ex)
                             {
@@ -645,8 +654,13 @@ namespace OSRTT_Launcher
                 readThread = new Thread(new ThreadStart(this.Read));
                 readThread.Start();
                 this.hardWorker.RunWorkerAsync();
+                port.Write("X");
+                port.Write("X");
+                port.Write("X");
                 port.Write("I" + (this.testCount.Value - 1).ToString());
                 setFPSLimit();
+                monitorCB_SelectedIndexChanged(null, null);
+                port.Write("V" + vsyncStateList.SelectedIndex.ToString());
             }
             else
             {
@@ -2574,7 +2588,7 @@ namespace OSRTT_Launcher
                                     {
                                         if (maxValue > 65500)
                                         {
-                                            //overUnderRGB = -1;
+                                            overUnderRGB = 260;
                                             break;
                                         }
                                         else
@@ -3856,7 +3870,7 @@ namespace OSRTT_Launcher
                     Size = new Size(628, 480);
                     break;
                 case "analyse":
-                    Size = new Size(628, 631);
+                    Size = new Size(628, 625);
                     break;
                 case "brightness":
                     mainPanel.Location = new Point(1500, 26);
@@ -3886,7 +3900,7 @@ namespace OSRTT_Launcher
                     debugPanel.Location = new Point(619, 30);
                     break;
                 case "about":
-                    Size = new Size(628, 751);
+                    Size = new Size(628, 746);
                     break;
                 case "debug":
                     Size = new Size(1120, 850);
@@ -4298,7 +4312,14 @@ namespace OSRTT_Launcher
 
         private void saveXLSXMenuItem_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.saveXLSX = saveXLSXMenuItem.Checked;
+            if (excelInstalled)
+            {
+                Properties.Settings.Default.saveXLSX = saveXLSXMenuItem.Checked;
+            }
+            else
+            {
+                Properties.Settings.Default.saveXLSX = false;
+            }
             Properties.Settings.Default.Save();
         }
 
@@ -4395,7 +4416,7 @@ namespace OSRTT_Launcher
 
         private void saveGraphsMenuItem_Click(object sender, EventArgs e)
         {
-            if (saveGraphsMenuItem.Checked)
+            if (saveGraphsMenuItem.Checked && excelInstalled)
             {
                 DialogResult d = MessageBox.Show("Warning: This option is incredibly slow and may break the test. " +
                     "It's much better to copy the raw data to the graph view template manually. Are you sure you want to enable this?", 
@@ -4598,7 +4619,7 @@ namespace OSRTT_Launcher
 
                 string strSeparator = ",";
                 StringBuilder csvString = new StringBuilder();
-                csvString.AppendLine("Shot Number,Click Time (ms),Input Lag (ms),Total System Input Lag (ms)");
+                csvString.AppendLine("Shot Number,Click Time (ms),Processing & Display Latency(ms),Total System Input Lag (ms)");
                 
                 foreach (var res in processedData)
                 {
@@ -4609,31 +4630,6 @@ namespace OSRTT_Launcher
                 csvString.AppendLine("MAXIMUM," + maxInputLag[0].ToString() + "," + maxInputLag[1].ToString() + "," + maxInputLag[2].ToString());
                 Console.WriteLine(filePath);
                 File.WriteAllText(filePath, csvString.ToString());
-
-                /*if (saveSmoothedDataToolStripMenuItem.Checked)
-                {
-                    //Save Smoothed Data To File
-                    decimal smoothedFileNumber = 001;
-                    // search /Results folder for existing file names, pick new name
-                    string[] existingSmoothedFiles = Directory.GetFiles(resultsFolderPath, "*-CLEAN-OSRTT.csv");
-                    // Search \Results folder for existing results to not overwrite existing or have save conflict errors
-                    foreach (var s in existingSmoothedFiles)
-                    {
-                        decimal num = decimal.Parse(Path.GetFileNameWithoutExtension(s).Remove(3));
-                        if (num >= smoothedFileNumber)
-                        {
-                            smoothedFileNumber = num + 1;
-                        }
-                    }
-
-                    string smoothedFilePath = resultsFolderPath + "\\" + smoothedFileNumber.ToString("000") + "-CLEAN-OSRTT.csv";
-                    StringBuilder smoothedCsvString = new StringBuilder();
-                    foreach (var res in smoothedDataTable)
-                    {
-                        smoothedCsvString.AppendLine(string.Join(strSeparator, res));
-                    }
-                    File.WriteAllText(smoothedFilePath, smoothedCsvString.ToString());
-                }*/
                 Process[] p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
                 if (p.Length != 0)
                 {
@@ -4717,12 +4713,14 @@ namespace OSRTT_Launcher
             Process ue4 = new Process();
             try
             {
+                ControlDeviceButtons(false);
                 ue4.StartInfo.FileName = ue4Path;
                 ue4.StartInfo.Arguments = ue4Path + " WinX=" + WinX + " WinY=" + WinY;
                 ue4.Start();
                 // Process.Start(ue4Path);
                 ue4.WaitForExit();
                 port.Write("X");
+                ControlDeviceButtons(true);
             }
             catch (Exception strE)
             {
@@ -4780,6 +4778,34 @@ namespace OSRTT_Launcher
         private void bugReportMenuItem_Click(object sender, EventArgs e)
         {
             Process.Start("https://github.com/andymanic/OSRTT/issues/new/choose");
+        }
+
+        private void monitorCB_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (displayList[monitorCB.SelectedIndex].Freq < 140)
+            {
+                if (captureTimeBox.SelectedIndex == 0)
+                {
+                    captureTimeBox.SelectedIndex = 1;
+                    captureTimeBox_SelectedIndexChanged(null, null);
+                }
+            }
+        }
+
+        private void vsyncStateList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.VSyncState = vsyncStateList.SelectedIndex;
+            Properties.Settings.Default.Save();
+            if (port != null)
+            {
+                port.Write("V" + vsyncStateList.SelectedIndex.ToString());
+            }
+        }
+
+        private void vsyncHelpBtn_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("VSync will limit the framerate to the display's refresh rate, regardless of if the FPS cap is set above that. " +
+                "The FPS cap will still function below the refresh rate. Default state is enabled.", "VSync State Help", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

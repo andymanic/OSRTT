@@ -33,8 +33,9 @@ SPISettings settingsA(10000000, MSBFIRST, SPI_MODE0);
 
 //Serial connection values
 bool connected = false;
-String firmware = "2.0";
+String firmware = "2.1";
 int testRuns = 4;
+bool vsync = true;
 char fpsLimit = '1';
 int USBV = 0;
 
@@ -442,6 +443,18 @@ void loop() {
     {
       runGammaTest();
     }
+    else if (input[0] == 'G')
+    {
+      int vState = input[1] - '0';
+      if (vState == 0)
+      {
+        vsync = false;
+      }
+      else if (vState == 1)
+      {
+        vsync = true;
+      }
+    }
     else if (input[0] == 'N')
     {
       int length = input[1] - '0';
@@ -505,6 +518,10 @@ void loop() {
               // Set FPS limit (default 1000 FPS, key '1')
               Keyboard.print(fpsLimit);
               delay(50);
+              if (vsync == false)
+              {
+                Keyboard.print('V');
+              }
               runGammaTest();
               delay(100);
               while (input[0] != 'X')

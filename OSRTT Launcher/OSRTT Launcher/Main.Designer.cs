@@ -85,7 +85,6 @@
             this.label4 = new System.Windows.Forms.Label();
             this.testCount = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
-            this.opnResultsBtn = new System.Windows.Forms.Button();
             this.refreshMonitorListBtn = new System.Windows.Forms.Button();
             this.monitorCB = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -128,8 +127,11 @@
             this.label18 = new System.Windows.Forms.Label();
             this.deviceStatusPanel = new System.Windows.Forms.Panel();
             this.monitorPanel = new System.Windows.Forms.Panel();
-            this.resultsButtonPanel = new System.Windows.Forms.Panel();
             this.mainPanel = new System.Windows.Forms.Panel();
+            this.opnResultsBtn = new System.Windows.Forms.Button();
+            this.vsyncHelpBtn = new System.Windows.Forms.Button();
+            this.label15 = new System.Windows.Forms.Label();
+            this.vsyncStateList = new System.Windows.Forms.ComboBox();
             this.menuStrip1.SuspendLayout();
             this.controlsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.testCount)).BeginInit();
@@ -142,7 +144,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.timeBetweenSlider)).BeginInit();
             this.deviceStatusPanel.SuspendLayout();
             this.monitorPanel.SuspendLayout();
-            this.resultsButtonPanel.SuspendLayout();
             this.mainPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -151,7 +152,7 @@
             this.launchBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.launchBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.launchBtn.Font = new System.Drawing.Font("Consolas", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.launchBtn.Location = new System.Drawing.Point(17, 143);
+            this.launchBtn.Location = new System.Drawing.Point(17, 194);
             this.launchBtn.Name = "launchBtn";
             this.launchBtn.Size = new System.Drawing.Size(248, 74);
             this.launchBtn.TabIndex = 5;
@@ -164,10 +165,10 @@
             this.resultsBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.resultsBtn.FlatAppearance.BorderSize = 0;
             this.resultsBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.resultsBtn.Font = new System.Drawing.Font("Consolas", 20F, System.Drawing.FontStyle.Bold);
-            this.resultsBtn.Location = new System.Drawing.Point(17, 47);
+            this.resultsBtn.Font = new System.Drawing.Font("Consolas", 18F, System.Drawing.FontStyle.Bold);
+            this.resultsBtn.Location = new System.Drawing.Point(206, 46);
             this.resultsBtn.Name = "resultsBtn";
-            this.resultsBtn.Size = new System.Drawing.Size(268, 75);
+            this.resultsBtn.Size = new System.Drawing.Size(175, 75);
             this.resultsBtn.TabIndex = 6;
             this.resultsBtn.Text = "Import Raw Data File";
             this.resultsBtn.UseVisualStyleBackColor = false;
@@ -592,6 +593,9 @@
             // controlsPanel
             // 
             this.controlsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.controlsPanel.Controls.Add(this.vsyncStateList);
+            this.controlsPanel.Controls.Add(this.vsyncHelpBtn);
+            this.controlsPanel.Controls.Add(this.label15);
             this.controlsPanel.Controls.Add(this.helpCaptureBtn);
             this.controlsPanel.Controls.Add(this.helpCyclesBtn);
             this.controlsPanel.Controls.Add(this.helpFramerateBtn);
@@ -605,14 +609,14 @@
             this.controlsPanel.Controls.Add(this.launchBtn);
             this.controlsPanel.Location = new System.Drawing.Point(9, 121);
             this.controlsPanel.Name = "controlsPanel";
-            this.controlsPanel.Size = new System.Drawing.Size(286, 228);
+            this.controlsPanel.Size = new System.Drawing.Size(286, 285);
             this.controlsPanel.TabIndex = 15;
             this.controlsPanel.Tag = "";
             // 
             // helpCaptureBtn
             // 
             this.helpCaptureBtn.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.helpCaptureBtn.Location = new System.Drawing.Point(249, 107);
+            this.helpCaptureBtn.Location = new System.Drawing.Point(249, 114);
             this.helpCaptureBtn.Name = "helpCaptureBtn";
             this.helpCaptureBtn.Size = new System.Drawing.Size(28, 28);
             this.helpCaptureBtn.TabIndex = 25;
@@ -623,7 +627,7 @@
             // helpCyclesBtn
             // 
             this.helpCyclesBtn.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.helpCyclesBtn.Location = new System.Drawing.Point(249, 74);
+            this.helpCyclesBtn.Location = new System.Drawing.Point(249, 77);
             this.helpCyclesBtn.Name = "helpCyclesBtn";
             this.helpCyclesBtn.Size = new System.Drawing.Size(28, 28);
             this.helpCyclesBtn.TabIndex = 24;
@@ -647,7 +651,7 @@
             this.captureTimeBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.captureTimeBox.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.captureTimeBox.FormattingEnabled = true;
-            this.captureTimeBox.Location = new System.Drawing.Point(158, 108);
+            this.captureTimeBox.Location = new System.Drawing.Point(158, 115);
             this.captureTimeBox.Name = "captureTimeBox";
             this.captureTimeBox.Size = new System.Drawing.Size(86, 26);
             this.captureTimeBox.TabIndex = 21;
@@ -657,7 +661,7 @@
             // 
             this.label17.AutoSize = true;
             this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label17.Location = new System.Drawing.Point(13, 108);
+            this.label17.Location = new System.Drawing.Point(13, 115);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(129, 24);
             this.label17.TabIndex = 22;
@@ -698,7 +702,7 @@
             // 
             this.testCount.Cursor = System.Windows.Forms.Cursors.Hand;
             this.testCount.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.testCount.Location = new System.Drawing.Point(196, 75);
+            this.testCount.Location = new System.Drawing.Point(196, 78);
             this.testCount.Maximum = new decimal(new int[] {
             10,
             0,
@@ -723,26 +727,11 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(13, 77);
+            this.label2.Location = new System.Drawing.Point(13, 80);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(165, 24);
             this.label2.TabIndex = 17;
             this.label2.Text = "Number of Cycles:";
-            // 
-            // opnResultsBtn
-            // 
-            this.opnResultsBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.opnResultsBtn.FlatAppearance.BorderSize = 0;
-            this.opnResultsBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.opnResultsBtn.Font = new System.Drawing.Font("Consolas", 16F, System.Drawing.FontStyle.Bold);
-            this.opnResultsBtn.ImageAlign = System.Drawing.ContentAlignment.TopRight;
-            this.opnResultsBtn.Location = new System.Drawing.Point(15, 7);
-            this.opnResultsBtn.Name = "opnResultsBtn";
-            this.opnResultsBtn.Size = new System.Drawing.Size(250, 35);
-            this.opnResultsBtn.TabIndex = 14;
-            this.opnResultsBtn.Text = "Open Results Folder";
-            this.opnResultsBtn.UseVisualStyleBackColor = false;
-            this.opnResultsBtn.Click += new System.EventHandler(this.opnResultsBtn_Click);
             // 
             // refreshMonitorListBtn
             // 
@@ -766,6 +755,7 @@
             this.monitorCB.Name = "monitorCB";
             this.monitorCB.Size = new System.Drawing.Size(238, 26);
             this.monitorCB.TabIndex = 1;
+            this.monitorCB.SelectedIndexChanged += new System.EventHandler(this.monitorCB_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -780,12 +770,13 @@
             // analysePanel
             // 
             this.analysePanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.analysePanel.Controls.Add(this.opnResultsBtn);
             this.analysePanel.Controls.Add(this.importRawFolder);
             this.analysePanel.Controls.Add(this.resultsBtn);
             this.analysePanel.Controls.Add(this.label3);
-            this.analysePanel.Location = new System.Drawing.Point(9, 415);
+            this.analysePanel.Location = new System.Drawing.Point(9, 417);
             this.analysePanel.Name = "analysePanel";
-            this.analysePanel.Size = new System.Drawing.Size(588, 138);
+            this.analysePanel.Size = new System.Drawing.Size(588, 133);
             this.analysePanel.TabIndex = 16;
             // 
             // importRawFolder
@@ -793,10 +784,10 @@
             this.importRawFolder.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.importRawFolder.FlatAppearance.BorderSize = 0;
             this.importRawFolder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.importRawFolder.Font = new System.Drawing.Font("Consolas", 20F, System.Drawing.FontStyle.Bold);
-            this.importRawFolder.Location = new System.Drawing.Point(301, 47);
+            this.importRawFolder.Font = new System.Drawing.Font("Consolas", 18F, System.Drawing.FontStyle.Bold);
+            this.importRawFolder.Location = new System.Drawing.Point(394, 47);
             this.importRawFolder.Name = "importRawFolder";
-            this.importRawFolder.Size = new System.Drawing.Size(268, 75);
+            this.importRawFolder.Size = new System.Drawing.Size(175, 75);
             this.importRawFolder.TabIndex = 7;
             this.importRawFolder.Text = "Import Raw Data Folder";
             this.importRawFolder.UseVisualStyleBackColor = false;
@@ -1007,7 +998,7 @@
             this.aboutPanel.Controls.Add(this.softVerLbl);
             this.aboutPanel.Controls.Add(this.label12);
             this.aboutPanel.Controls.Add(this.label10);
-            this.aboutPanel.Location = new System.Drawing.Point(9, 563);
+            this.aboutPanel.Location = new System.Drawing.Point(9, 562);
             this.aboutPanel.Name = "aboutPanel";
             this.aboutPanel.Size = new System.Drawing.Size(588, 109);
             this.aboutPanel.TabIndex = 29;
@@ -1207,11 +1198,11 @@
             // 
             this.label18.AutoSize = true;
             this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label18.Location = new System.Drawing.Point(68, 5);
+            this.label18.Location = new System.Drawing.Point(35, 5);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(154, 24);
+            this.label18.Size = new System.Drawing.Size(220, 24);
             this.label18.TabIndex = 14;
-            this.label18.Text = "Input Lag Testing";
+            this.label18.Text = "System Input Lag Testing";
             // 
             // deviceStatusPanel
             // 
@@ -1234,19 +1225,9 @@
             this.monitorPanel.Size = new System.Drawing.Size(588, 54);
             this.monitorPanel.TabIndex = 31;
             // 
-            // resultsButtonPanel
-            // 
-            this.resultsButtonPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.resultsButtonPanel.Controls.Add(this.opnResultsBtn);
-            this.resultsButtonPanel.Location = new System.Drawing.Point(9, 355);
-            this.resultsButtonPanel.Name = "resultsButtonPanel";
-            this.resultsButtonPanel.Size = new System.Drawing.Size(286, 51);
-            this.resultsButtonPanel.TabIndex = 31;
-            // 
             // mainPanel
             // 
             this.mainPanel.Controls.Add(this.deviceStatusPanel);
-            this.mainPanel.Controls.Add(this.resultsButtonPanel);
             this.mainPanel.Controls.Add(this.controlsPanel);
             this.mainPanel.Controls.Add(this.monitorPanel);
             this.mainPanel.Controls.Add(this.analysePanel);
@@ -1257,12 +1238,58 @@
             this.mainPanel.Size = new System.Drawing.Size(611, 687);
             this.mainPanel.TabIndex = 32;
             // 
+            // opnResultsBtn
+            // 
+            this.opnResultsBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.opnResultsBtn.FlatAppearance.BorderSize = 0;
+            this.opnResultsBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.opnResultsBtn.Font = new System.Drawing.Font("Consolas", 16F, System.Drawing.FontStyle.Bold);
+            this.opnResultsBtn.ImageAlign = System.Drawing.ContentAlignment.TopRight;
+            this.opnResultsBtn.Location = new System.Drawing.Point(17, 47);
+            this.opnResultsBtn.Name = "opnResultsBtn";
+            this.opnResultsBtn.Size = new System.Drawing.Size(175, 75);
+            this.opnResultsBtn.TabIndex = 15;
+            this.opnResultsBtn.Text = "Open Results Folder";
+            this.opnResultsBtn.UseVisualStyleBackColor = false;
+            // 
+            // vsyncHelpBtn
+            // 
+            this.vsyncHelpBtn.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.vsyncHelpBtn.Location = new System.Drawing.Point(249, 152);
+            this.vsyncHelpBtn.Name = "vsyncHelpBtn";
+            this.vsyncHelpBtn.Size = new System.Drawing.Size(28, 28);
+            this.vsyncHelpBtn.TabIndex = 27;
+            this.vsyncHelpBtn.Text = "?";
+            this.vsyncHelpBtn.UseVisualStyleBackColor = true;
+            this.vsyncHelpBtn.Click += new System.EventHandler(this.vsyncHelpBtn_Click);
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.Location = new System.Drawing.Point(13, 153);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(116, 24);
+            this.label15.TabIndex = 26;
+            this.label15.Text = "VSync State:";
+            // 
+            // vsyncStateList
+            // 
+            this.vsyncStateList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.vsyncStateList.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.vsyncStateList.FormattingEnabled = true;
+            this.vsyncStateList.Location = new System.Drawing.Point(158, 153);
+            this.vsyncStateList.Name = "vsyncStateList";
+            this.vsyncStateList.Size = new System.Drawing.Size(86, 26);
+            this.vsyncStateList.TabIndex = 28;
+            this.vsyncStateList.SelectedIndexChanged += new System.EventHandler(this.vsyncStateList_SelectedIndexChanged);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.ClientSize = new System.Drawing.Size(1924, 812);
+            this.ClientSize = new System.Drawing.Size(1924, 811);
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.debugPanel);
             this.Controls.Add(this.brightnessPanel);
@@ -1294,7 +1321,6 @@
             this.deviceStatusPanel.PerformLayout();
             this.monitorPanel.ResumeLayout(false);
             this.monitorPanel.PerformLayout();
-            this.resultsButtonPanel.ResumeLayout(false);
             this.mainPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -1352,7 +1378,6 @@
         private System.Windows.Forms.ToolStripMenuItem programSettingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem minimiseToTrayToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem suppressDialogBoxesToolStripMenuItem;
-        private System.Windows.Forms.Button opnResultsBtn;
         private System.Windows.Forms.Button closeBrightnessBtn;
         private System.Windows.Forms.ToolStripMenuItem aboutProgramToolStripMenuItem;
         private System.Windows.Forms.Panel aboutPanel;
@@ -1394,7 +1419,6 @@
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.TrackBar timeBetweenSlider;
         private System.Windows.Forms.Panel monitorPanel;
-        private System.Windows.Forms.Panel resultsButtonPanel;
         private System.Windows.Forms.Panel mainPanel;
         private System.Windows.Forms.ComboBox captureTimeBox;
         private System.Windows.Forms.Label label17;
@@ -1404,6 +1428,10 @@
         private System.Windows.Forms.ToolStripMenuItem saveRawInputLagMenuItem;
         private System.Windows.Forms.ToolStripMenuItem IgnoreErrorsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem bugReportMenuItem;
+        private System.Windows.Forms.Button opnResultsBtn;
+        private System.Windows.Forms.ComboBox vsyncStateList;
+        private System.Windows.Forms.Button vsyncHelpBtn;
+        private System.Windows.Forms.Label label15;
     }
 }
 

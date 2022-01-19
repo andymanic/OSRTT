@@ -37,7 +37,7 @@ namespace OSRTT_Launcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public int FPS {
             get {
                 return ((int)(this["FPS"]));
@@ -320,6 +320,18 @@ namespace OSRTT_Launcher.Properties {
             }
             set {
                 this["ignoreErrors"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int VSyncState {
+            get {
+                return ((int)(this["VSyncState"]));
+            }
+            set {
+                this["VSyncState"] = value;
             }
         }
     }
