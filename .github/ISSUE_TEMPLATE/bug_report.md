@@ -25,7 +25,11 @@ If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
  - OS: [e.g. Windows 10]
- - Version [e.g. 22]
+ - Version [e.g. 22] (In "program settings" -> "About program")
+ - Display - resolution, refresh rate, connection, panel type [e.g Gigabyte M32Q, 2560x1440, 144Hz, DP, IPS] (if relevant)
 
 **Additional context**
 Add any other context about the problem here.
+
+**Supporting Files**
+Please dag & drop any relevant program-generated files, specifically the "RAW-OSRTT.csv" files when reporting incorrectly processed results.
