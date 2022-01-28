@@ -28,7 +28,7 @@ namespace OSRTT_Launcher
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
         private double boardVersion = 2.1;
         private double downloadedFirmwareVersion = 2.1;
-        private string softwareVersion = "2.1";
+        private string softwareVersion = "2.2";
 
         // TODO //
         // Test new testing method (program run instead of device run)
