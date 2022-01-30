@@ -313,7 +313,7 @@ namespace OSRTT_Launcher
                     System.Diagnostics.Process process = new System.Diagnostics.Process();
                     //process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                     process.StartInfo.FileName = "cmd.exe";
-                    process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe config init && .\\arduinoCLI\\arduino-cli.exe config set directories.user \"C:\\OSRTT Launcher\\arduinoCLI\" && .\\arduinoCLI\\arduino-cli.exe config add board_manager.additional_urls https://adafruit.github.io/arduino-board-index/package_adafruit_index.json && .\\arduinoCLI\\arduino-cli.exe core update-index && .\\arduinoCLI\\arduino-cli.exe core install arduino:samd && .\\arduinoCLI\\arduino-cli.exe core install adafruit:samd && .\\arduinoCLI\\arduino-cli.exe lib install Keyboard && .\\arduinoCLI\\arduino-cli.exe lib install Mouse";
+                    process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe config init";
                     //process.StartInfo.UseShellExecute = false;
                     //process.StartInfo.RedirectStandardOutput = true;
                     //process.StartInfo.CreateNoWindow = true;
@@ -321,6 +321,18 @@ namespace OSRTT_Launcher
                     //string output = process.StandardOutput.ReadToEnd();
                     process.WaitForExit();
                     //Console.WriteLine(output);
+                    process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe config set directories.user \"C:\\OSRTT Launcher\\arduinoCLI\"";
+                    process.Start();
+                    process.WaitForExit();
+                    process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe config add board_manager.additional_urls https://adafruit.github.io/arduino-board-index/package_adafruit_index.json";
+                    process.Start();
+                    process.WaitForExit();
+                    process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe core update-index && .\\arduinoCLI\\arduino-cli.exe core install arduino:samd && .\\arduinoCLI\\arduino-cli.exe core install adafruit:samd";
+                    process.Start();
+                    process.WaitForExit();
+                    process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe lib install Keyboard && .\\arduinoCLI\\arduino-cli.exe lib install Mouse";
+                    process.Start();
+                    process.WaitForExit();
                 }
             }
             /*
@@ -2280,7 +2292,7 @@ namespace OSRTT_Launcher
                         int endMin = samples[samples.Length - 10]; // Initialise these variables with a real value 
 
                         // Build start min/max to compare against
-                        for (int l = 0; l < 250; l++) //CHANGE TO 180 FOR RUN 2 DATA
+                        for (int l = 0; l < 55; l++) //CHANGE TO 180 FOR RUN 2 DATA
                         {
                             if (samples[l] < startMin)
                             {
@@ -2293,7 +2305,7 @@ namespace OSRTT_Launcher
                         }
 
                         // Build end min/max to compare against
-                        for (int m = samples.Length - 5; m > samples.Length - 450; m--)
+                        for (int m = samples.Length - 5; m > samples.Length - 150; m--)
                         {
                             if (samples[m] < endMin)
                             {
@@ -3382,7 +3394,7 @@ namespace OSRTT_Launcher
                                 }
                                 catch (Exception ex)
                                 {
-                                    showMessageBox(ex.Message + ex.StackTrace, "Unable to Save to XLSX File", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                                    showMessageBox(ex.Message + ex.StackTrace, "Unable to Save to XLSX File", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     failed = true;
                                 }
                             }
