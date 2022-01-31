@@ -42,6 +42,8 @@
             this.saveGammaTableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveSmoothedDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveRawInputLagMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.convertRawGraphMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.recommendedSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.advancedSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -69,12 +71,15 @@
             this.debugModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveUSBOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateDeviceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.testButtonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.testButtonMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.devStatLbl = new System.Windows.Forms.Label();
             this.devStat = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.controlsPanel = new System.Windows.Forms.Panel();
+            this.vsyncStateList = new System.Windows.Forms.ComboBox();
+            this.vsyncHelpBtn = new System.Windows.Forms.Button();
+            this.label15 = new System.Windows.Forms.Label();
             this.helpCaptureBtn = new System.Windows.Forms.Button();
             this.helpCyclesBtn = new System.Windows.Forms.Button();
             this.helpFramerateBtn = new System.Windows.Forms.Button();
@@ -89,6 +94,7 @@
             this.monitorCB = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.analysePanel = new System.Windows.Forms.Panel();
+            this.opnResultsBtn = new System.Windows.Forms.Button();
             this.importRawFolder = new System.Windows.Forms.Button();
             this.rawValText = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -128,10 +134,7 @@
             this.deviceStatusPanel = new System.Windows.Forms.Panel();
             this.monitorPanel = new System.Windows.Forms.Panel();
             this.mainPanel = new System.Windows.Forms.Panel();
-            this.opnResultsBtn = new System.Windows.Forms.Button();
-            this.vsyncHelpBtn = new System.Windows.Forms.Button();
-            this.label15 = new System.Windows.Forms.Label();
-            this.vsyncStateList = new System.Windows.Forms.ComboBox();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.menuStrip1.SuspendLayout();
             this.controlsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.testCount)).BeginInit();
@@ -193,7 +196,6 @@
             this.programSettingsToolStripMenuItem,
             this.BrightnessCalBtn,
             this.deviceToolStripMenuItem,
-            this.testButtonToolStripMenuItem,
             this.toolStripMenuItem1});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -230,7 +232,9 @@
             this.verboseOutputToolStripMenuItem,
             this.saveGammaTableToolStripMenuItem,
             this.saveSmoothedDataToolStripMenuItem,
-            this.saveRawInputLagMenuItem});
+            this.saveRawInputLagMenuItem,
+            this.toolStripSeparator4,
+            this.convertRawGraphMenuItem});
             this.outputSettingsToolStripMenuItem.Name = "outputSettingsToolStripMenuItem";
             this.outputSettingsToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
             this.outputSettingsToolStripMenuItem.Text = "Output Settings";
@@ -241,7 +245,7 @@
             this.saveXLSXMenuItem.CheckOnClick = true;
             this.saveXLSXMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.saveXLSXMenuItem.Name = "saveXLSXMenuItem";
-            this.saveXLSXMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.saveXLSXMenuItem.Size = new System.Drawing.Size(242, 22);
             this.saveXLSXMenuItem.Text = "Save Heatmaps in XLSX File";
             this.saveXLSXMenuItem.Click += new System.EventHandler(this.saveXLSXMenuItem_Click);
             // 
@@ -249,7 +253,7 @@
             // 
             this.saveGraphsMenuItem.CheckOnClick = true;
             this.saveGraphsMenuItem.Name = "saveGraphsMenuItem";
-            this.saveGraphsMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.saveGraphsMenuItem.Size = new System.Drawing.Size(242, 22);
             this.saveGraphsMenuItem.Text = "Save Raw Data with Graphs";
             this.saveGraphsMenuItem.Click += new System.EventHandler(this.saveGraphsMenuItem_Click);
             // 
@@ -257,7 +261,7 @@
             // 
             this.verboseOutputToolStripMenuItem.CheckOnClick = true;
             this.verboseOutputToolStripMenuItem.Name = "verboseOutputToolStripMenuItem";
-            this.verboseOutputToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.verboseOutputToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
             this.verboseOutputToolStripMenuItem.Text = "Verbose Output";
             this.verboseOutputToolStripMenuItem.ToolTipText = "Include all processed fields in each \"FULL\" CSV. \r\nIncludes transition start & en" +
     "d position, sample time, overshoot light level and overshoot RGB value.";
@@ -267,7 +271,7 @@
             // 
             this.saveGammaTableToolStripMenuItem.CheckOnClick = true;
             this.saveGammaTableToolStripMenuItem.Name = "saveGammaTableToolStripMenuItem";
-            this.saveGammaTableToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.saveGammaTableToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
             this.saveGammaTableToolStripMenuItem.Text = "Save Gamma Table";
             this.saveGammaTableToolStripMenuItem.Click += new System.EventHandler(this.saveGammaTableToolStripMenuItem_Click);
             // 
@@ -275,7 +279,7 @@
             // 
             this.saveSmoothedDataToolStripMenuItem.CheckOnClick = true;
             this.saveSmoothedDataToolStripMenuItem.Name = "saveSmoothedDataToolStripMenuItem";
-            this.saveSmoothedDataToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.saveSmoothedDataToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
             this.saveSmoothedDataToolStripMenuItem.Text = "Save Raw Smoothed Data";
             this.saveSmoothedDataToolStripMenuItem.Click += new System.EventHandler(this.saveSmoothedDataToolStripMenuItem_Click);
             // 
@@ -285,9 +289,21 @@
             this.saveRawInputLagMenuItem.CheckOnClick = true;
             this.saveRawInputLagMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.saveRawInputLagMenuItem.Name = "saveRawInputLagMenuItem";
-            this.saveRawInputLagMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.saveRawInputLagMenuItem.Size = new System.Drawing.Size(242, 22);
             this.saveRawInputLagMenuItem.Text = "Save Raw Input Lag Data";
             this.saveRawInputLagMenuItem.Click += new System.EventHandler(this.saveRawInputLagDataToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(239, 6);
+            // 
+            // convertRawGraphMenuItem
+            // 
+            this.convertRawGraphMenuItem.Name = "convertRawGraphMenuItem";
+            this.convertRawGraphMenuItem.Size = new System.Drawing.Size(242, 22);
+            this.convertRawGraphMenuItem.Text = "Convert Raw CSV to Graph View";
+            this.convertRawGraphMenuItem.Click += new System.EventHandler(this.convertRawGraphMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
@@ -512,7 +528,8 @@
             this.deviceToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.debugModeToolStripMenuItem,
             this.saveUSBOutputToolStripMenuItem,
-            this.updateDeviceToolStripMenuItem});
+            this.updateDeviceToolStripMenuItem,
+            this.testButtonMenuItem});
             this.deviceToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.deviceToolStripMenuItem.Name = "deviceToolStripMenuItem";
             this.deviceToolStripMenuItem.Size = new System.Drawing.Size(108, 20);
@@ -547,13 +564,13 @@
             this.updateDeviceToolStripMenuItem.Text = "Update Device Firmware";
             this.updateDeviceToolStripMenuItem.Click += new System.EventHandler(this.updateDeviceToolStripMenuItem_Click);
             // 
-            // testButtonToolStripMenuItem
+            // testButtonMenuItem
             // 
-            this.testButtonToolStripMenuItem.Name = "testButtonToolStripMenuItem";
-            this.testButtonToolStripMenuItem.Size = new System.Drawing.Size(78, 20);
-            this.testButtonToolStripMenuItem.Text = "Test Button";
-            this.testButtonToolStripMenuItem.Visible = false;
-            this.testButtonToolStripMenuItem.Click += new System.EventHandler(this.testButtonToolStripMenuItem_Click);
+            this.testButtonMenuItem.CheckOnClick = true;
+            this.testButtonMenuItem.Name = "testButtonMenuItem";
+            this.testButtonMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.testButtonMenuItem.Text = "Test Button";
+            this.testButtonMenuItem.Click += new System.EventHandler(this.testButtonToolStripMenuItemToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
@@ -613,6 +630,38 @@
             this.controlsPanel.TabIndex = 15;
             this.controlsPanel.Tag = "";
             // 
+            // vsyncStateList
+            // 
+            this.vsyncStateList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.vsyncStateList.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.vsyncStateList.FormattingEnabled = true;
+            this.vsyncStateList.Location = new System.Drawing.Point(158, 153);
+            this.vsyncStateList.Name = "vsyncStateList";
+            this.vsyncStateList.Size = new System.Drawing.Size(86, 26);
+            this.vsyncStateList.TabIndex = 28;
+            this.vsyncStateList.SelectedIndexChanged += new System.EventHandler(this.vsyncStateList_SelectedIndexChanged);
+            // 
+            // vsyncHelpBtn
+            // 
+            this.vsyncHelpBtn.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.vsyncHelpBtn.Location = new System.Drawing.Point(249, 152);
+            this.vsyncHelpBtn.Name = "vsyncHelpBtn";
+            this.vsyncHelpBtn.Size = new System.Drawing.Size(28, 28);
+            this.vsyncHelpBtn.TabIndex = 27;
+            this.vsyncHelpBtn.Text = "?";
+            this.vsyncHelpBtn.UseVisualStyleBackColor = true;
+            this.vsyncHelpBtn.Click += new System.EventHandler(this.vsyncHelpBtn_Click);
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.Location = new System.Drawing.Point(13, 153);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(116, 24);
+            this.label15.TabIndex = 26;
+            this.label15.Text = "VSync State:";
+            // 
             // helpCaptureBtn
             // 
             this.helpCaptureBtn.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -671,7 +720,7 @@
             // 
             this.label13.AutoSize = true;
             this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label13.Location = new System.Drawing.Point(33, 5);
+            this.label13.Location = new System.Drawing.Point(37, 5);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(211, 24);
             this.label13.TabIndex = 15;
@@ -778,6 +827,20 @@
             this.analysePanel.Name = "analysePanel";
             this.analysePanel.Size = new System.Drawing.Size(588, 133);
             this.analysePanel.TabIndex = 16;
+            // 
+            // opnResultsBtn
+            // 
+            this.opnResultsBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.opnResultsBtn.FlatAppearance.BorderSize = 0;
+            this.opnResultsBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.opnResultsBtn.Font = new System.Drawing.Font("Consolas", 16F, System.Drawing.FontStyle.Bold);
+            this.opnResultsBtn.ImageAlign = System.Drawing.ContentAlignment.TopRight;
+            this.opnResultsBtn.Location = new System.Drawing.Point(17, 47);
+            this.opnResultsBtn.Name = "opnResultsBtn";
+            this.opnResultsBtn.Size = new System.Drawing.Size(175, 75);
+            this.opnResultsBtn.TabIndex = 15;
+            this.opnResultsBtn.Text = "Open Results Folder";
+            this.opnResultsBtn.UseVisualStyleBackColor = false;
             // 
             // importRawFolder
             // 
@@ -1122,7 +1185,7 @@
             this.inputLagButton.Name = "inputLagButton";
             this.inputLagButton.Size = new System.Drawing.Size(235, 74);
             this.inputLagButton.TabIndex = 21;
-            this.inputLagButton.Text = "Start Input Lag Testing";
+            this.inputLagButton.Text = "Start Latency Testing";
             this.inputLagButton.UseVisualStyleBackColor = false;
             this.inputLagButton.Click += new System.EventHandler(this.inputLagButton_Click);
             // 
@@ -1198,11 +1261,11 @@
             // 
             this.label18.AutoSize = true;
             this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label18.Location = new System.Drawing.Point(35, 5);
+            this.label18.Location = new System.Drawing.Point(14, 5);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(220, 24);
+            this.label18.Size = new System.Drawing.Size(254, 24);
             this.label18.TabIndex = 14;
-            this.label18.Text = "System Input Lag Testing";
+            this.label18.Text = "Total System Latency Testing";
             // 
             // deviceStatusPanel
             // 
@@ -1235,61 +1298,28 @@
             this.mainPanel.Controls.Add(this.inputLagPanel);
             this.mainPanel.Location = new System.Drawing.Point(2, 26);
             this.mainPanel.Name = "mainPanel";
-            this.mainPanel.Size = new System.Drawing.Size(611, 687);
+            this.mainPanel.Size = new System.Drawing.Size(611, 678);
             this.mainPanel.TabIndex = 32;
             // 
-            // opnResultsBtn
+            // progressBar1
             // 
-            this.opnResultsBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.opnResultsBtn.FlatAppearance.BorderSize = 0;
-            this.opnResultsBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.opnResultsBtn.Font = new System.Drawing.Font("Consolas", 16F, System.Drawing.FontStyle.Bold);
-            this.opnResultsBtn.ImageAlign = System.Drawing.ContentAlignment.TopRight;
-            this.opnResultsBtn.Location = new System.Drawing.Point(17, 47);
-            this.opnResultsBtn.Name = "opnResultsBtn";
-            this.opnResultsBtn.Size = new System.Drawing.Size(175, 75);
-            this.opnResultsBtn.TabIndex = 15;
-            this.opnResultsBtn.Text = "Open Results Folder";
-            this.opnResultsBtn.UseVisualStyleBackColor = false;
-            // 
-            // vsyncHelpBtn
-            // 
-            this.vsyncHelpBtn.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.vsyncHelpBtn.Location = new System.Drawing.Point(249, 152);
-            this.vsyncHelpBtn.Name = "vsyncHelpBtn";
-            this.vsyncHelpBtn.Size = new System.Drawing.Size(28, 28);
-            this.vsyncHelpBtn.TabIndex = 27;
-            this.vsyncHelpBtn.Text = "?";
-            this.vsyncHelpBtn.UseVisualStyleBackColor = true;
-            this.vsyncHelpBtn.Click += new System.EventHandler(this.vsyncHelpBtn_Click);
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(13, 153);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(116, 24);
-            this.label15.TabIndex = 26;
-            this.label15.Text = "VSync State:";
-            // 
-            // vsyncStateList
-            // 
-            this.vsyncStateList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.vsyncStateList.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.vsyncStateList.FormattingEnabled = true;
-            this.vsyncStateList.Location = new System.Drawing.Point(158, 153);
-            this.vsyncStateList.Name = "vsyncStateList";
-            this.vsyncStateList.Size = new System.Drawing.Size(86, 26);
-            this.vsyncStateList.TabIndex = 28;
-            this.vsyncStateList.SelectedIndexChanged += new System.EventHandler(this.vsyncStateList_SelectedIndexChanged);
+            this.progressBar1.Location = new System.Drawing.Point(12, 710);
+            this.progressBar1.MarqueeAnimationSpeed = 30;
+            this.progressBar1.Maximum = 50;
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(588, 23);
+            this.progressBar1.Step = 50;
+            this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
+            this.progressBar1.TabIndex = 33;
+            this.progressBar1.Visible = false;
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.ClientSize = new System.Drawing.Size(1924, 811);
+            this.ClientSize = new System.Drawing.Size(1924, 809);
+            this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.debugPanel);
             this.Controls.Add(this.brightnessPanel);
@@ -1348,7 +1378,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.NumericUpDown testCount;
         private System.Windows.Forms.Button importRawFolder;
-        private System.Windows.Forms.ToolStripMenuItem testButtonToolStripMenuItem;
         private System.Windows.Forms.ComboBox fpsLimitList;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
@@ -1432,6 +1461,10 @@
         private System.Windows.Forms.ComboBox vsyncStateList;
         private System.Windows.Forms.Button vsyncHelpBtn;
         private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem convertRawGraphMenuItem;
+        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.ToolStripMenuItem testButtonMenuItem;
     }
 }
 

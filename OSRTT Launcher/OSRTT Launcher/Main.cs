@@ -56,6 +56,7 @@ namespace OSRTT_Launcher
         private TimeSpan uptime;
 
         private bool debugMode = false;
+        private bool progressBarActive = false;
         private bool testRunning = false;
         private bool processingFailed = false;
         private bool ready = false;
@@ -79,8 +80,10 @@ namespace OSRTT_Launcher
         private List<List<int[]>> results = new List<List<int[]>>();
         private List<int[]> singleResults = new List<int[]>();
         private List<int[]> gamma = new List<int[]>();
+        private List<int[]> noiseLevel = new List<int[]>();
         private List<int[]> inputLagRawData = new List<int[]>();
         private List<double[]> inputLagProcessed = new List<double[]>();
+        private List<int[]> importedFile = new List<int[]>();
 
         private List<List<double[]>> multipleRunData = new List<List<double[]>>();
         private Excel.Application resultsTemplate;
@@ -290,6 +293,8 @@ namespace OSRTT_Launcher
             listFramerates();
             listCaptureTimes();
             listVsyncState();
+            progressBar1.Style = ProgressBarStyle.Continuous;
+            progressBar1.MarqueeAnimationSpeed = 0;
             initialSetup();
             checkFolderPermissions();
             uptime = GetUpTime();
@@ -594,6 +599,7 @@ namespace OSRTT_Launcher
                         else
                         {
                             SetDeviceStatus("Updating Firmware");
+                            setProgressBar(true);
                             System.Diagnostics.Process process = new System.Diagnostics.Process();
                             process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                             process.StartInfo.FileName = "cmd.exe";
@@ -628,6 +634,7 @@ namespace OSRTT_Launcher
                                 MessageBox.Show("Unable to write to device, check it's connected via USB.", "Update Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 Console.WriteLine(ex);
                             }
+                            setProgressBar(false);
                         }
                         this.firmVerLbl.Invoke((MethodInvoker)(() => this.firmVerLbl.Text = "V" + boardVersion));
                     }
@@ -1380,6 +1387,7 @@ namespace OSRTT_Launcher
             if (!brightnessCanceled)
             {
                 ControlDeviceButtons(false);
+                setProgressBar(true);
                 // Save current & FPS to hardware on run
                 Thread.Sleep(200);
                 setFPSLimit();
@@ -1471,6 +1479,7 @@ namespace OSRTT_Launcher
                     SetText("Game closed");
                     port.Write("X");
                     ControlDeviceButtons(true);
+                    setProgressBar(false);
                     testRunning = false;
                     testStarted = false;
                     testMode = false;
@@ -2074,6 +2083,7 @@ namespace OSRTT_Launcher
             }
             else
             {
+                noiseLevel.Clear();
                 double[] rgbVals = new double[gamma.Count];
                 double[] lightLevelVals = new double[gamma.Count];
                 for (int i = 0; i < gamma.Count; i++)
@@ -2084,8 +2094,8 @@ namespace OSRTT_Launcher
                     {
                         lineAverage += dataLine[j];
                     }
+                    noiseLevel.Add(new int[] { gamma[i][0], (dataLine.Max() - dataLine.Min()) });
                     lineAverage /= (dataLine.Length - 100);
-
                     rgbVals[i] = gamma[i][0];
                     lightLevelVals[i] = lineAverage;
                 }
@@ -2140,6 +2150,7 @@ namespace OSRTT_Launcher
                     }
                     else
                     { // if using old test pattern (Steps of 25 or 26)
+                        noiseLevel.Clear();
                         int steps = 0;
                         if (results[currentRun].Count == 30)
                         {
@@ -2151,7 +2162,7 @@ namespace OSRTT_Launcher
                         }
                         for (int i = 0; i < steps; i += 2)
                         {
-                            int[] resLine = this.results[currentRun][i];
+                            int[] resLine = this.results[currentRun][i].Take(250).ToArray();
                             int avg = 0;
                             if (resLine[0] == 0 && localGamma.Count == 0)
                             {
@@ -2161,7 +2172,7 @@ namespace OSRTT_Launcher
                                 }
                                 avg = avg / 245;
                                 localGamma.Add(new int[] { resLine[0], avg });
-                                noise = resLine.Max() - resLine.Min();
+                                noiseLevel.Add(new int[] { resLine[1], (resLine.Max() - resLine.Min()) });
                                 for (int j = resLine.Length - 455; j < resLine.Length - 5; j++)
                                 {
                                     avg += resLine[j];
@@ -2176,6 +2187,7 @@ namespace OSRTT_Launcher
                                     avg += resLine[j];
                                 }
                                 avg = avg / 450;
+                                noiseLevel.Add(new int[] { resLine[1], (resLine.Max() - resLine.Min()) });
                                 localGamma.Add(new int[] { resLine[1], avg });
                             }
                         }
@@ -2237,6 +2249,14 @@ namespace OSRTT_Launcher
 
                         // Clean up noisy data using moving average function
                         int period = 10;
+                        foreach (var n in noiseLevel)
+                        {
+                            if (n[0] == StartingRGB || n[0] == EndRGB)
+                            {
+                                noise = n[1];
+                                break;
+                            }
+                        }
                         if (noise < 250)
                         {
                             period = 20;
@@ -3562,6 +3582,7 @@ namespace OSRTT_Launcher
                         string[] files = Directory.GetFiles(filePath);
                         bool valid = false;
                         bool inputLag = false;
+                        setProgressBar(true);
                         foreach (var f in files)
                         {
                             if (f.Contains("-GAMMA-RAW-OSRTT"))
@@ -3732,6 +3753,7 @@ namespace OSRTT_Launcher
                         {
                             MessageBox.Show("Please select a results folder with one or more raw data files", "Unable to load files", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
+                        setProgressBar(false);
                     }
                     else
                     {
@@ -3764,7 +3786,7 @@ namespace OSRTT_Launcher
             {
                 //Thread brightCalThread = new Thread(new ThreadStart(this.launchBrightnessCal));
                 //brightCalThread.Start();
-                closeBrightnessBtn.Text = "Stop Calibration";
+                closeWindowBtn.Text = "Stop Calibration";
 
                 launchBrightnessCal();
             }
@@ -3887,12 +3909,26 @@ namespace OSRTT_Launcher
             switch (state)
             {
                 case "standard":
-                    Size = new Size(628, 480);
+                    if (progressBarActive)
+                    {
+                        progressBar1.Location = new Point(11, 435);
+                        Size = new Size(628, 498);
+                    }
+                    else { Size = new Size(628, 480); }
                     break;
                 case "analyse":
-                    Size = new Size(628, 625);
+                    if (progressBarActive)
+                    {
+                        progressBar1.Location = new Point(11, 580);
+                        Size = new Size(628, 643);
+                    }
+                    else { Size = new Size(628, 625); }
                     break;
                 case "brightness":
+                    if (progressBarActive)
+                    {
+                        setProgressBar(false);
+                    }
                     mainPanel.Location = new Point(1500, 26);
                     //deviceStatusPanel.Location = new Point(1500, 36);
                     //monitorPanel.Location = new Point(1500, 88);
@@ -3920,11 +3956,32 @@ namespace OSRTT_Launcher
                     debugPanel.Location = new Point(619, 30);
                     break;
                 case "about":
-                    Size = new Size(628, 746);
+                    if (progressBarActive)
+                    {
+                        progressBar1.Location = new Point(11, 701);
+                        Size = new Size(628, 764);
+                    }
+                    else
+                    { Size = new Size(628, 746); }
                     break;
                 case "debug":
                     Size = new Size(1120, 850);
                     debugPanel.Location = new Point(619, 30);
+                    break;
+                case "show progress bar":
+                    Size s = Size;
+                    progressBar1.Location = new Point(11, (s.Height - 45));
+                    progressBar1.Visible = true;
+                    progressBar1.BringToFront();
+                    s.Height += 18;
+                    Size = s;
+                    break;
+                case "hide progress bar":
+                    Size s2 = Size;
+                    progressBar1.Location = new Point(11, 710);
+                    progressBar1.Visible = false;
+                    s2.Height -= 18;
+                    Size = s2;
                     break;
                 default:
                     Size = new Size(628, 480);
@@ -4121,12 +4178,6 @@ namespace OSRTT_Launcher
         {
             Properties.Settings.Default.gammaCorrRT = gamCorMenuItem.Checked;
             Properties.Settings.Default.Save();
-        }
-
-        private void testButtonToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Thread test = new Thread(new ThreadStart(testRun));
-            test.Start();
         }
 
         private void testRun()
@@ -4827,6 +4878,218 @@ namespace OSRTT_Launcher
             MessageBox.Show("VSync will limit the framerate to the display's refresh rate, regardless of if the FPS cap is set above that. " +
                 "The FPS cap will still function below the refresh rate. Default state is enabled.", "VSync State Help", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+
+        private void convertRawGraphMenuItem_Click(object sender, EventArgs e)
+        {
+            
+            if (excelInstalled)
+            {
+                // Open file picker dialogue
+                var filePath = string.Empty;
+
+                using (System.Windows.Forms.OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog())
+                {
+                    openFileDialog.InitialDirectory = path;
+                    openFileDialog.Filter = "csv files (*.csv)|*.csv";
+                    openFileDialog.FilterIndex = 2;
+                    openFileDialog.RestoreDirectory = true;
+
+                    if (openFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        //Get the path of specified file
+                        filePath = openFileDialog.FileName;
+                        results.Clear();
+                        gamma.Clear();
+                        setProgressBar(true);
+                        if (filePath.Contains("RAW-OSRTT"))
+                        {
+                            //Read the contents of the file into a stream
+                            try
+                            {
+                                var fileStream = openFileDialog.OpenFile();
+                                using (StreamReader reader = new StreamReader(fileStream))
+                                {
+                                    while (!reader.EndOfStream)
+                                    {
+                                        // This can probably be done better
+                                        string[] line = reader.ReadLine().Split(',');
+                                        int[] intLine = new int[line.Length];
+                                        for (int i = 0; i < line.Length; i++)
+                                        {
+                                            if (line[i] == "0")
+                                            {
+                                                intLine[i] = 0;
+                                            }
+                                            else if (line[i] != "")
+                                            {
+                                                intLine[i] = int.Parse(line[i]);
+                                            }
+                                            else
+                                            {
+                                                continue;
+                                            }
+                                        }
+                                        Array.Resize(ref intLine, intLine.Length - 1);
+                                        importedFile.Add(intLine);
+                                    }
+                                }
+                                Thread convertThread = new Thread(this.convertCSVtoGraph);
+                                convertThread.Start(filePath);
+                            }
+                            catch
+                            {
+                                DialogResult d = MessageBox.Show("File may be in use by another program, please make sure it's not open elsewhere and try again.", "Unable to open file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Sorry, only 'RAW' files can be imported. Please select a RAW-OSRTT.csv' file instead.", "Importer Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        setProgressBar(false);
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Excel doesn't appear to be installed, so this operation can't continue.", "Excel Not Installed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+        private void convertCSVtoGraph(object data)
+        {
+            string filePath = data.ToString();
+            resultsFolderPath = filePath.Substring(0, filePath.LastIndexOf('\\'));
+            string fileName = filePath.Substring(1, filePath.LastIndexOf('\\'));
+            //int fileNumber = Int32.Parse(fileName.Split('-')[0]);
+            string excelFilePath = resultsFolderPath + "\\" + fileName.Split('-')[0] + "-GRAPH-RAW-OSRTT.xlsm";
+            bool failed = false;
+            try
+            {
+                File.Copy(path + "\\Graph View Template.xlsm", excelFilePath);
+            }
+            catch (IOException ioe)
+            {
+                if (ioe.StackTrace.Contains("exists"))
+                {
+                    Console.WriteLine("File exists, skipping writing.");
+                }
+            }
+            catch (Exception ex)
+            {
+                showMessageBox(ex.Message + ex.StackTrace, ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            graphTemplate = new Excel.Application();
+            try
+            {
+                graphTemplateWorkbook = graphTemplate.Workbooks.Open(excelFilePath);
+            }
+            catch
+            {
+                DialogResult d = showMessageBox("Error writing data to XLSX results file, file may be open already. Would you like to try again?", "Unable to Save to XLSX File", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                if (d == DialogResult.Yes)
+                {
+                    try
+                    {
+                        graphTemplateWorkbook = graphTemplate.Workbooks.Open(excelFilePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        showMessageBox(ex.Message + ex.StackTrace, "Unable to Save to XLSX File", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                        failed = true;
+                    }
+                }
+                else
+                {
+                    failed = true;
+                }
+            }
+            if (!failed)
+            {
+                Excel._Worksheet graphTempSheet = graphTemplateWorkbook.Sheets[1];
+                try
+                {
+                    for (int p = 0; p < importedFile.Count; p++)
+                    {
+
+                        for (int m = 0; m < importedFile[p].Length; m++)
+                        {
+                            //Console.WriteLine("M: " + m + " P: " + p);
+                            graphTempSheet.Cells[p + 2, m + 1] = importedFile[p][m];
+                        }
+
+                    }
+                    graphTemplateWorkbook.Save();
+                }
+                catch (Exception ex)
+                {
+                    showMessageBox(ex.Message + ex.StackTrace, "Unable to Save to XLSX File", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                    failed = true;
+                }
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                Marshal.ReleaseComObject(graphTempSheet);
+
+            }
+            graphTemplateWorkbook.Close();
+            Marshal.ReleaseComObject(graphTemplateWorkbook);
+            graphTemplate.Quit();
+            Marshal.ReleaseComObject(graphTemplate);
+            if (failed)
+            {
+                File.Delete(excelFilePath);
+            }
+            Process.Start("explorer.exe", resultsFolderPath);
+        }
+
+        private void setProgressBar(bool on)
+        {
+            if (on)
+            {
+                progressBarActive = true;
+                changeSizeAndState("show progress bar");
+                if (progressBar1.InvokeRequired)
+                {
+                    this.progressBar1.Invoke((MethodInvoker)(() => { this.progressBar1.Style = ProgressBarStyle.Marquee; this.progressBar1.MarqueeAnimationSpeed = 30; }));
+                }
+                else
+                {
+                    progressBar1.Style = ProgressBarStyle.Marquee;
+                    progressBar1.MarqueeAnimationSpeed = 30;
+                }
+            }
+            else
+            {
+                progressBarActive = false;
+                changeSizeAndState("hide progress bar");
+                if (progressBar1.InvokeRequired)
+                {
+                    this.progressBar1.Invoke((MethodInvoker)(() => { this.progressBar1.Style = ProgressBarStyle.Continuous; this.progressBar1.MarqueeAnimationSpeed = 0; }));
+                }
+                else
+                {
+                    progressBar1.Style = ProgressBarStyle.Continuous;
+                    progressBar1.MarqueeAnimationSpeed = 0;
+                }
+            }
+        }
+
+        private void testButtonToolStripMenuItemToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!testButtonMenuItem.Checked)
+            {
+                setProgressBar(false);
+                
+            }
+            else
+            {
+                setProgressBar(true);
+                
+            }
+        }
+
+
+
+
+
     }
 }
 
