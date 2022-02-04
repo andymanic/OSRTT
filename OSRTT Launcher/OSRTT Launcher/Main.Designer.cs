@@ -60,6 +60,7 @@
             this.percentageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.differenceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.endValueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.extendedGammaTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.programSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutProgramToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bugReportMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -297,12 +298,14 @@
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
             this.toolStripSeparator4.Size = new System.Drawing.Size(239, 6);
+            this.toolStripSeparator4.Visible = false;
             // 
             // convertRawGraphMenuItem
             // 
             this.convertRawGraphMenuItem.Name = "convertRawGraphMenuItem";
             this.convertRawGraphMenuItem.Size = new System.Drawing.Size(242, 22);
             this.convertRawGraphMenuItem.Text = "Convert Raw CSV to Graph View";
+            this.convertRawGraphMenuItem.Visible = false;
             this.convertRawGraphMenuItem.Click += new System.EventHandler(this.convertRawGraphMenuItem_Click);
             // 
             // toolStripSeparator2
@@ -325,7 +328,8 @@
             this.advancedSettingsToolStripMenuItem.CheckOnClick = true;
             this.advancedSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.measurementsToolStripMenuItem,
-            this.overshootSettingsMenuItem});
+            this.overshootSettingsMenuItem,
+            this.extendedGammaTestToolStripMenuItem});
             this.advancedSettingsToolStripMenuItem.Name = "advancedSettingsToolStripMenuItem";
             this.advancedSettingsToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
             this.advancedSettingsToolStripMenuItem.Text = "Advanced Settings";
@@ -446,6 +450,18 @@
             this.endValueToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
             this.endValueToolStripMenuItem.Text = "End Value (% over end)";
             this.endValueToolStripMenuItem.Click += new System.EventHandler(this.endValueToolStripMenuItem_Click);
+            // 
+            // extendedGammaTestToolStripMenuItem
+            // 
+            this.extendedGammaTestToolStripMenuItem.Checked = true;
+            this.extendedGammaTestToolStripMenuItem.CheckOnClick = true;
+            this.extendedGammaTestToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.extendedGammaTestToolStripMenuItem.Name = "extendedGammaTestToolStripMenuItem";
+            this.extendedGammaTestToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.extendedGammaTestToolStripMenuItem.Text = "Extended Gamma Test";
+            this.extendedGammaTestToolStripMenuItem.ToolTipText = "Extended gamma test using 16 RGB shades instead of basic 6. Provides better accur" +
+    "acy, highly recommended.";
+            this.extendedGammaTestToolStripMenuItem.Click += new System.EventHandler(this.extendedGammaTestToolStripMenuItem_Click);
             // 
             // programSettingsToolStripMenuItem
             // 
@@ -1303,11 +1319,11 @@
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(12, 710);
+            this.progressBar1.Location = new System.Drawing.Point(0, 710);
             this.progressBar1.MarqueeAnimationSpeed = 30;
             this.progressBar1.Maximum = 50;
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(588, 23);
+            this.progressBar1.Size = new System.Drawing.Size(613, 23);
             this.progressBar1.Step = 50;
             this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             this.progressBar1.TabIndex = 33;
@@ -1465,6 +1481,7 @@
         private System.Windows.Forms.ToolStripMenuItem convertRawGraphMenuItem;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.ToolStripMenuItem testButtonMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem extendedGammaTestToolStripMenuItem;
     }
 }
 

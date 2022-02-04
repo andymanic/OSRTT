@@ -14,6 +14,8 @@ int OldRGBArr[] = {0,26,51,77,102,128,153,179,204,230,255};
 // These are the keys that correspond with the above values
 char OldKeys[] = {'q','a','z','w','s','x','e','d','c','r','f'};
 // Ideally I'd pair these together in an array of key/value pairs but this works for now. 
+int extGammaArr[] = {0,17,34,51,68,85,102,119,136,153,170,187,204,221,238,255};
+char extGammaKeys[] = {'q','y','h','z','n','u','s','j','m','e','i','k','c','o','l','f',};
 
 //ADC values
 unsigned long curr_time = micros();
@@ -36,6 +38,7 @@ bool connected = false;
 String firmware = "2.1";
 int testRuns = 4;
 bool vsync = true;
+bool extendedGamma = true;
 char fpsLimit = '1';
 int USBV = 0;
 
@@ -237,13 +240,27 @@ int checkUSBVoltage() // Check USB voltage is between 4.8V and 5.2V
 void runGammaTest()
 {
     Serial.println("G Test Starting");
-    int arrSize = sizeof(RGBArr) / sizeof(int);
-    for (int i = 0; i < arrSize; i++)
+    if (extendedGamma)
     {
-      Keyboard.print(Keys[i]);
-      delay(200);
-      runADC(RGBArr[i], RGBArr[i], Keys[i], "Gamma: ");
-      delay(200);
+        int arrSize = sizeof(extGammaArr) / sizeof(int);
+        for (int i = 0; i < arrSize; i++)
+        {
+          Keyboard.print(extGammaKeys[i]);
+          delay(200);
+          runADC(extGammaArr[i], extGammaArr[i], extGammaKeys[i], "Gamma: ");
+          delay(200);
+        }
+    }
+    else
+    {
+        int arrSize = sizeof(RGBArr) / sizeof(int);
+        for (int i = 0; i < arrSize; i++)
+        {
+          Keyboard.print(Keys[i]);
+          delay(200);
+          runADC(RGBArr[i], RGBArr[i], Keys[i], "Gamma: ");
+          delay(200);
+        }
     }
     Serial.println("G Test Complete");
 }
@@ -286,6 +303,32 @@ void runInputLagTest(int timeBetween)
   sample_count = 0; //reset sample count
     
   curr_time = micros();
+}
+
+void checkLatency() {
+  Keyboard.print('Q');
+  delay(100);
+  runADC(1000,1000,'F',"TL:");
+  while (input[0] != 'X')
+  {
+    for (int i = 0; i < INPUT_SIZE + 1; i++)
+    {
+      input[i] = ' ';
+    }
+    byte sized = Serial.readBytes(input, INPUT_SIZE);
+    input[sized] = 0;  
+    if (input[0] == 'X')
+    {
+      break;
+    }
+    else if (input[0] == 'S')
+    {
+      int t = input[1] - '0';
+      t++;
+      samplingTime = 50000 * t;
+      break;
+    }  
+  }
 }
 
 void setup() {
@@ -457,6 +500,20 @@ void loop() {
       Serial.print("VSync:");
       Serial.println(vsync);
     }
+    else if (input[0] == 'Q')
+    {
+      int extGammaState = input[1] - '0';
+      if (extGammaState == 0)
+      {
+        extendedGamma = false;
+      }
+      else if (extGammaState == 1)
+      {
+        extendedGamma = true;
+      }
+      Serial.print("Extended Gamma:");
+      Serial.println(extendedGamma);
+    }
     else if (input[0] == 'N')
     {
       int length = input[1] - '0';
@@ -518,6 +575,8 @@ void loop() {
             }
             else
             {
+              checkLatency();
+              delay(100);
               Serial.println("Test Started");
               // Set FPS limit (default 1000 FPS, key '1')
               Keyboard.print(fpsLimit);
@@ -530,6 +589,9 @@ void loop() {
               delay(100);
               while (input[0] != 'X')
               {
+                Keyboard.print('Q');
+              delay(100);
+              runADC(1000,1000,'F',"TL:");
                 for (int i = 0; i < INPUT_SIZE + 1; i++)
                 {
                   input[i] = ' ';
@@ -539,6 +601,12 @@ void loop() {
                 if (input[0] == 'X')
                 {
                   break;
+                }
+                else if (input[0] == 'S')
+                {
+                  int t = input[1] - '0';
+                  t++;
+                  samplingTime = 50000 * t;
                 }
                 else
                 {

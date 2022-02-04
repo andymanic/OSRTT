@@ -84,6 +84,7 @@ namespace OSRTT_Launcher
         private List<int[]> inputLagRawData = new List<int[]>();
         private List<double[]> inputLagProcessed = new List<double[]>();
         private List<int[]> importedFile = new List<int[]>();
+        private int[] testLatency;
 
         private List<List<double[]>> multipleRunData = new List<List<double[]>>();
         private Excel.Application resultsTemplate;
@@ -253,6 +254,7 @@ namespace OSRTT_Launcher
                 advancedSettingsToolStripMenuItem.Checked = true;
                 measurementsToolStripMenuItem.Visible = true;
                 overshootSettingsMenuItem.Visible = true;
+                extendedGammaTestToolStripMenuItem.Visible = true;
             }
             else
             {
@@ -260,6 +262,7 @@ namespace OSRTT_Launcher
                 advancedSettingsToolStripMenuItem.Checked = false;
                 measurementsToolStripMenuItem.Visible = false;
                 overshootSettingsMenuItem.Visible = false;
+                extendedGammaTestToolStripMenuItem.Visible = false;
             }
             timeBetween = Properties.Settings.Default.timeBetween;
             timeBetweenLabel.Text = timeBetween.ToString();
@@ -269,6 +272,7 @@ namespace OSRTT_Launcher
             numberOfClicksSlider.Value = numberOfClicks;
             saveRawInputLagMenuItem.Checked = Properties.Settings.Default.saveInputLagRaw;
             IgnoreErrorsMenuItem.Checked = Properties.Settings.Default.ignoreErrors;
+            extendedGammaTestToolStripMenuItem.Checked = Properties.Settings.Default.extendedGammaTest;
         }
 
         public Main()
@@ -289,7 +293,7 @@ namespace OSRTT_Launcher
             connectThread = new Thread(new ThreadStart(this.findAndConnectToBoard));
             connectThread.Start();
             changeSizeAndState("standard");
-            listMonitors();
+            listMonitors(0);
             listFramerates();
             listCaptureTimes();
             listVsyncState();
@@ -410,7 +414,7 @@ namespace OSRTT_Launcher
         [DllImport("kernel32")]
         extern static UInt64 GetTickCount64();
 
-        private void listMonitors()
+        private void listMonitors(int selected)
         {
             monitorCB.Items.Clear(); // Clear existing array and list before filling them
             displayList.Clear();
@@ -439,7 +443,7 @@ namespace OSRTT_Launcher
                     monitorCB.Items.Add(name);
                 }
             }
-            monitorCB.SelectedIndex = 0; // Pre-select the primary display
+            monitorCB.SelectedIndex = selected; // Pre-select the primary display
         }
 
         private void listFramerates()
@@ -1285,6 +1289,57 @@ namespace OSRTT_Launcher
                             }
                             processInputLagData();
                         }
+                        else if (message.Contains("TL"))
+                        {
+                            // Split result string into individual results
+                            String newMessage = message.Remove(0, 3);
+                            string[] values = newMessage.Split(',');
+                            int[] intValues = new int[values.Length - 1];
+                            for (int i = 0; i < values.Length - 1; i++)
+                            {
+                                if (values[i] == "0")
+                                {
+                                    intValues[i] = 0;
+                                }
+                                else if (values[i] != "")
+                                {
+                                    try
+                                    {
+                                        intValues[i] = int.Parse(values[i]);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine(values[i]);
+                                    }
+                                }
+                                else { continue; }
+                            }
+                            testLatency = intValues;
+                            int start = 0;
+                            for (int m = 0; m < intValues.Length; m++)
+                            {
+                                if (intValues[m] > 8000)
+                                {
+                                    start = m;
+                                    break;
+                                }
+                            }
+                            if (Properties.Settings.Default.captureTime == 0)
+                            {
+                                if (start == 0 || start > 1100)
+                                {
+                                    port.Write("S1");
+                                }
+                                else
+                                {
+                                    port.Write("S0");
+                                }
+                            }
+                            else
+                            {
+                                port.Write("S" + Properties.Settings.Default.captureTime.ToString());
+                            }
+                        }
                     }
                     else
                     {
@@ -1365,6 +1420,8 @@ namespace OSRTT_Launcher
 
         private void launchBtn_Click(object sender, EventArgs e)
         {
+            int monitor = getSelectedMonitor();
+            listMonitors(monitor);
             if (!brightnessCheck)
             {
                 launchBrightnessCal();
@@ -1695,6 +1752,7 @@ namespace OSRTT_Launcher
 
             string strSeparator = ",";
             StringBuilder csvString = new StringBuilder();
+            csvString.AppendLine(string.Join(strSeparator, testLatency));
             foreach (var res in gamma)
             {
                 csvString.AppendLine(string.Join(strSeparator, res));
@@ -1816,7 +1874,7 @@ namespace OSRTT_Launcher
 
         private void refreshMonitorListBtn_Click(object sender, EventArgs e)
         {
-            listMonitors();
+            listMonitors(0);
         }
 
         private void resultsBtn_Click(object sender, EventArgs e)
@@ -1933,7 +1991,11 @@ namespace OSRTT_Launcher
                                         }
                                     }
                                     Array.Resize(ref intLine, intLine.Length - 1);
-                                    if (intLine[0] == intLine[1])
+                                    if (intLine[0] == 1000)
+                                    {
+                                        testLatency = intLine;
+                                    }
+                                    else if (intLine[0] == intLine[1])
                                     {
                                         tempGamma.Add(intLine);
                                     }
@@ -2107,8 +2169,12 @@ namespace OSRTT_Launcher
                 };
                 int numberOfPoints = 256;
                 PointF[] partGamma = InterpolatePoints(points, numberOfPoints);*/
-
-                var interpPoints = new ScottPlot.Statistics.Interpolation.NaturalSpline(rgbVals, lightLevelVals, 51);
+                int pointsBetween = 51;
+                if (gamma.Count == 16)
+                {
+                    pointsBetween = 17;
+                }
+                var interpPoints = new ScottPlot.Statistics.Interpolation.NaturalSpline(rgbVals, lightLevelVals, pointsBetween);
                 List<int> x = new List<int>();
                 List<int> y = new List<int>();
                 foreach (var p in interpPoints.interpolatedXs)
@@ -2144,7 +2210,7 @@ namespace OSRTT_Launcher
                 if (results[currentRun].Count == 30 || results[currentRun].Count == 110)
                 {
                     // CHECK IF GAMMA TABLE IS ALREADY PROCESSED AND IF SO DON'T BOTHER PROCESSING AGAIN + DON'T SAVE MORE THAN ONE GAMMA CSV IF USING A GAMMA-RAW-OSRTT.CSV FILE AS SOURCE (or from test)
-                    if (gamma.Count == 6)
+                    if (gamma.Count == 6 || gamma.Count == 16)
                     { // if using the new test pattern (Constant step of 51)
                         fullGammaTable.AddRange(processGammaTable());
                     }
@@ -2235,6 +2301,32 @@ namespace OSRTT_Launcher
                         }
                     }
 
+                    int startDelay = 150;
+                    if (testLatency.Length != 0)
+                    {
+                        int[] tl = testLatency.Skip(5).ToArray();
+                        for (int n = 0; n < tl.Length; n++)
+                        {
+                            if (tl[n] > 8000)
+                            {
+                                if (n <= 150 && n > 30)
+                                {
+                                    startDelay = n - 30;
+                                }
+                                else if (n < 30)
+                                {
+                                    n /= 2;
+                                    startDelay = n;
+                                }
+                                else if (n > 400)
+                                {
+                                    startDelay = 250;
+                                }
+                                break;
+                            }
+                        }
+                    }
+
                     // Then process the lines
                     foreach (int[] item in this.results[currentRun])
                     {
@@ -2312,7 +2404,7 @@ namespace OSRTT_Launcher
                         int endMin = samples[samples.Length - 10]; // Initialise these variables with a real value 
 
                         // Build start min/max to compare against
-                        for (int l = 0; l < 55; l++) //CHANGE TO 180 FOR RUN 2 DATA
+                        for (int l = 0; l < startDelay; l++) //CHANGE TO 180 FOR RUN 2 DATA
                         {
                             if (samples[l] < startMin)
                             {
@@ -2563,7 +2655,7 @@ namespace OSRTT_Launcher
                         }
                         if ((samples.Length - transEnd) < 400)
                         {
-                            int t = transEnd / 5;
+                            int t = (samples.Length - transEnd) / 5;
                             avgEnd = transEnd + t;
                         }
                         for (int q = 0; q < avgStart; q++)
@@ -3670,7 +3762,11 @@ namespace OSRTT_Launcher
                                                     }
                                                 }
                                                 Array.Resize(ref intLine, intLine.Length - 1);
-                                                if (intLine[0] == intLine[1])
+                                                if (intLine[0] == 1000)
+                                                {
+                                                    testLatency = intLine;
+                                                }
+                                                else if (intLine[0] == intLine[1])
                                                 {
                                                     tempGamma.Add(intLine);
                                                 }
@@ -3684,11 +3780,24 @@ namespace OSRTT_Launcher
                                     results.AddRange(new List<List<int[]>> { tempRes });
                                     gamma.AddRange(tempGamma);
                                     //processGammaTable();
+                                    //processThread = new Thread(new ThreadStart(processResponseTimeData));
+                                    //processThread.Start();
+                                    //while (processThread.IsAlive)
+                                    //{
+                                    //Thread.Sleep(100);
+                                    //}    
                                     processResponseTimeData();
                                 }
                                 catch (IOException iex)
                                 {
-                                    MessageBox.Show("Unable to open file - it may be in use in another program. Please close it out and try again.", "Unable to open file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    if (!iex.Message.Contains(".xlsx"))
+                                    {
+                                        MessageBox.Show("Unable to open file - it may be in use in another program. Please close it out and try again.", "Unable to open file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine(iex.Message + iex.StackTrace);
+                                    }    
                                 }
                             }
                             else if (filePath.Contains("LAG-RAW"))
@@ -3904,88 +4013,83 @@ namespace OSRTT_Launcher
             }
         }
 
+        delegate void changeSizeAndStateCallback(string state);
         private void changeSizeAndState(string state)
         {
-            switch (state)
+            if (this.InvokeRequired)
             {
-                case "standard":
-                    if (progressBarActive)
-                    {
-                        progressBar1.Location = new Point(11, 435);
-                        Size = new Size(628, 498);
-                    }
-                    else { Size = new Size(628, 480); }
-                    break;
-                case "analyse":
-                    if (progressBarActive)
-                    {
-                        progressBar1.Location = new Point(11, 580);
-                        Size = new Size(628, 643);
-                    }
-                    else { Size = new Size(628, 625); }
-                    break;
-                case "brightness":
-                    if (progressBarActive)
-                    {
-                        setProgressBar(false);
-                    }
-                    mainPanel.Location = new Point(1500, 26);
-                    //deviceStatusPanel.Location = new Point(1500, 36);
-                    //monitorPanel.Location = new Point(1500, 88);
-                    //analysePanel.Location = new Point(1500, 487);
-                    //controlsPanel.Location = new Point(1500, 153);
-                    //inputLagPanel.Location = new Point(1800, 153);
-                    //resultsButtonPanel.Location = new Point(1500, 362);
-                    brightnessPanel.Location = new Point(0, 0);
-                    //aboutPanel.Location = new Point(1500, 629);
-                    Size = new Size(1000, 800);
-                    debugPanel.Location = new Point(1500, 30);
-                    menuStrip1.Visible = false;
-                    break;
-                case "close brightness":
-                    mainPanel.Location = new Point(2, 26);
-                    //deviceStatusPanel.Location = new Point(12, 36);
-                    //monitorPanel.Location = new Point(12, 88);
-                    //analysePanel.Location = new Point(12, 447);
-                    //controlsPanel.Location = new Point(12, 153);
-                    //inputLagPanel.Location = new Point(317, 153); 
-                    //resultsButtonPanel.Location = new Point(12, 362);
-                    brightnessPanel.Location = new Point(1100, 36);
-                    //aboutPanel.Location = new Point(12, 595);
-                    Size = new Size(628, 480);
-                    debugPanel.Location = new Point(619, 30);
-                    break;
-                case "about":
-                    if (progressBarActive)
-                    {
-                        progressBar1.Location = new Point(11, 701);
-                        Size = new Size(628, 764);
-                    }
-                    else
-                    { Size = new Size(628, 746); }
-                    break;
-                case "debug":
-                    Size = new Size(1120, 850);
-                    debugPanel.Location = new Point(619, 30);
-                    break;
-                case "show progress bar":
-                    Size s = Size;
-                    progressBar1.Location = new Point(11, (s.Height - 45));
-                    progressBar1.Visible = true;
-                    progressBar1.BringToFront();
-                    s.Height += 18;
-                    Size = s;
-                    break;
-                case "hide progress bar":
-                    Size s2 = Size;
-                    progressBar1.Location = new Point(11, 710);
-                    progressBar1.Visible = false;
-                    s2.Height -= 18;
-                    Size = s2;
-                    break;
-                default:
-                    Size = new Size(628, 480);
-                    break;
+                var del = new changeSizeAndStateCallback(changeSizeAndState);
+                this.Invoke(del, state);
+            }
+            else
+            {
+                switch (state)
+                {
+                    case "standard":
+                        if (progressBarActive)
+                        {
+                            progressBar1.Location = new Point(0, 435);
+                            Size = new Size(628, 498);
+                        }
+                        else { Size = new Size(628, 480); }
+                        break;
+                    case "analyse":
+                        if (progressBarActive)
+                        {
+                            progressBar1.Location = new Point(0, 580);
+                            Size = new Size(628, 643);
+                        }
+                        else { Size = new Size(628, 625); }
+                        break;
+                    case "brightness":
+                        if (progressBarActive)
+                        {
+                            setProgressBar(false);
+                        }
+                        mainPanel.Location = new Point(1500, 26);
+                        brightnessPanel.Location = new Point(0, 0);
+                        Size = new Size(1000, 800);
+                        debugPanel.Location = new Point(1500, 30);
+                        menuStrip1.Visible = false;
+                        break;
+                    case "close brightness":
+                        mainPanel.Location = new Point(2, 26);
+                        brightnessPanel.Location = new Point(1100, 36);
+                        Size = new Size(628, 480);
+                        debugPanel.Location = new Point(619, 30);
+                        break;
+                    case "about":
+                        if (progressBarActive)
+                        {
+                            progressBar1.Location = new Point(0, 701);
+                            Size = new Size(628, 764);
+                        }
+                        else
+                        { Size = new Size(628, 746); }
+                        break;
+                    case "debug":
+                        Size = new Size(1120, 850);
+                        debugPanel.Location = new Point(619, 30);
+                        break;
+                    case "show progress bar":
+                        Size s = Size;
+                        progressBar1.Location = new Point(0, (s.Height - 45));
+                        progressBar1.Visible = true;
+                        progressBar1.BringToFront();
+                        s.Height += 18;
+                        Size = s;
+                        break;
+                    case "hide progress bar":
+                        Size s2 = Size;
+                        progressBar1.Location = new Point(0, 710);
+                        progressBar1.Visible = false;
+                        s2.Height -= 18;
+                        Size = s2;
+                        break;
+                    default:
+                        Size = new Size(628, 480);
+                        break;
+                }
             }
         }
 
@@ -4403,6 +4507,7 @@ namespace OSRTT_Launcher
                 Properties.Settings.Default.advancedSettings = false;
                 measurementsToolStripMenuItem.Visible = false;
                 overshootSettingsMenuItem.Visible = false;
+                extendedGammaTestToolStripMenuItem.Visible = false;
                 Properties.Settings.Default.gammaCorrectedSetting = true;
                 gammaCorrectedToolStripMenuItem.Checked = true;
                 Properties.Settings.Default.gammaCorrRT = true;
@@ -4420,6 +4525,8 @@ namespace OSRTT_Launcher
                 threePercentMenuItem.Checked = false;
                 Properties.Settings.Default.tenPercentSetting = false;
                 tenPercentMenuItem.Checked = false;
+                Properties.Settings.Default.extendedGammaTest = true;
+                extendedGammaTestToolStripMenuItem.Checked = true;
                 Properties.Settings.Default.Save();
             }
             else
@@ -4436,6 +4543,7 @@ namespace OSRTT_Launcher
                 recommendedSettingsToolStripMenuItem.Checked = false;
                 measurementsToolStripMenuItem.Visible = true;
                 overshootSettingsMenuItem.Visible = true;
+                extendedGammaTestToolStripMenuItem.Visible = true;
             }
             else
             {
@@ -4443,6 +4551,7 @@ namespace OSRTT_Launcher
                 recommendedSettingsToolStripMenuItem.Checked = false;
                 measurementsToolStripMenuItem.Visible = true;
                 overshootSettingsMenuItem.Visible = true;
+                extendedGammaTestToolStripMenuItem.Visible = true;
                 Properties.Settings.Default.Save();
             }
         }
@@ -4958,9 +5067,11 @@ namespace OSRTT_Launcher
         {
             string filePath = data.ToString();
             resultsFolderPath = filePath.Substring(0, filePath.LastIndexOf('\\'));
-            string fileName = filePath.Substring(1, filePath.LastIndexOf('\\'));
+            string fileName = filePath.Substring(filePath.LastIndexOf('\\'));
             //int fileNumber = Int32.Parse(fileName.Split('-')[0]);
             string excelFilePath = resultsFolderPath + "\\" + fileName.Split('-')[0] + "-GRAPH-RAW-OSRTT.xlsm";
+            Console.WriteLine(excelFilePath);
+            setProgressBar(true);
             bool failed = false;
             try
             {
@@ -5013,15 +5124,15 @@ namespace OSRTT_Launcher
                         for (int m = 0; m < importedFile[p].Length; m++)
                         {
                             //Console.WriteLine("M: " + m + " P: " + p);
-                            graphTempSheet.Cells[p + 2, m + 1] = importedFile[p][m];
+                            graphTempSheet.Cells[p + 1, m + 1] = importedFile[p][m];
                         }
-
+                        Console.WriteLine(p);
                     }
                     graphTemplateWorkbook.Save();
                 }
                 catch (Exception ex)
                 {
-                    showMessageBox(ex.Message + ex.StackTrace, "Unable to Save to XLSX File", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                    showMessageBox(ex.Message + ex.StackTrace, "Unable to Save to XLSX File", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     failed = true;
                 }
                 GC.Collect();
@@ -5037,6 +5148,7 @@ namespace OSRTT_Launcher
             {
                 File.Delete(excelFilePath);
             }
+            setProgressBar(false);
             Process.Start("explorer.exe", resultsFolderPath);
         }
 
@@ -5086,10 +5198,22 @@ namespace OSRTT_Launcher
             }
         }
 
-
-
-
-
+        private void extendedGammaTestToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.extendedGammaTest = extendedGammaTestToolStripMenuItem.Checked;
+            Properties.Settings.Default.Save();
+            if (port != null)
+            {
+                if (Properties.Settings.Default.extendedGammaTest)
+                {
+                    port.Write("Q1");
+                }
+                else
+                {
+                    port.Write("Q0");
+                }
+            }
+        }
     }
 }
 

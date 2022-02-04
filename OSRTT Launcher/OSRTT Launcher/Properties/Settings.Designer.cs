@@ -334,5 +334,17 @@ namespace OSRTT_Launcher.Properties {
                 this["VSyncState"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool extendedGammaTest {
+            get {
+                return ((bool)(this["extendedGammaTest"]));
+            }
+            set {
+                this["extendedGammaTest"] = value;
+            }
+        }
     }
 }
