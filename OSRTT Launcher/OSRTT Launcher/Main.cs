@@ -20,15 +20,16 @@ using System.Resources;
 using System.Runtime.InteropServices;
 using Excel = Microsoft.Office.Interop.Excel;
 using Microsoft.Win32;
+using System.Globalization;
 
 namespace OSRTT_Launcher
 {
     public partial class Main : Form
     {
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
-        private double boardVersion = 2.1;
-        private double downloadedFirmwareVersion = 2.1;
-        private string softwareVersion = "2.2";
+        private double boardVersion = 2.2;
+        private double downloadedFirmwareVersion = 2.2;
+        private string softwareVersion = "2.3";
 
         // TODO //
         // Test new testing method (program run instead of device run)
@@ -72,6 +73,7 @@ namespace OSRTT_Launcher
         private int currentRun = 0;
 
         private int potVal = 0;
+        private int basePotVal = 0;
         private double timeBetween = 0.3;
         private int numberOfClicks = 20;
 
@@ -84,7 +86,7 @@ namespace OSRTT_Launcher
         private List<int[]> inputLagRawData = new List<int[]>();
         private List<double[]> inputLagProcessed = new List<double[]>();
         private List<int[]> importedFile = new List<int[]>();
-        private int[] testLatency;
+        private List<int> testLatency = new List<int>();
 
         private List<List<double[]>> multipleRunData = new List<List<double[]>>();
         private Excel.Application resultsTemplate;
@@ -279,6 +281,10 @@ namespace OSRTT_Launcher
         {
             InitializeComponent();
             UpdateMe();
+            CultureInfo customCulture = (CultureInfo)Thread.CurrentThread.CurrentCulture.Clone();
+            customCulture.NumberFormat.NumberDecimalSeparator = ".";
+
+            Thread.CurrentThread.CurrentCulture = customCulture;
             setupFormElements();
             ControlDeviceButtons(false);
             path = new Uri(System.IO.Path.GetDirectoryName(path)).LocalPath;
@@ -755,6 +761,15 @@ namespace OSRTT_Launcher
             }
         }
 
+        private void setVsyncState(int state)
+        {
+            if (this.vsyncStateList.InvokeRequired)
+            {
+                this.vsyncStateList.Invoke((MethodInvoker)(() => vsyncStateList.SelectedIndex = state));
+            }
+            else { this.vsyncStateList.SelectedIndex = state; }
+        }
+
         private void SetDeviceStatus(string text)
         {
             // InvokeRequired required compares the thread ID of the
@@ -1117,7 +1132,7 @@ namespace OSRTT_Launcher
                     }
                     else if (message.Contains("BRIGHTNESS CHECK"))
                     {
-                        port.Write(potVal.ToString("X"));
+                        port.Write(basePotVal.ToString("X"));
                     }
                     else if (message.Contains("USB V:"))
                     {
@@ -1188,13 +1203,13 @@ namespace OSRTT_Launcher
                         }
                         else
                         {
-                            if (voltage > 50000) { potVal = 0; }
-                            else if (voltage > 49500) { potVal = 1; }
-                            else if (voltage > 49000) { potVal = 2; }
-                            else if (voltage > 48500) { potVal = 3; }
-                            else if (voltage > 48000) { potVal = 4; }
-                            else if (voltage > 47500) { potVal = 5; }
-                            else { potVal = 6; }
+                            if (voltage > 50000) { basePotVal = 0; }
+                            else if (voltage > 49500) { basePotVal = 1; }
+                            else if (voltage > 49000) { basePotVal = 2; }
+                            else if (voltage > 48500) { basePotVal = 3; }
+                            else if (voltage > 48000) { basePotVal = 4; }
+                            else if (voltage > 47500) { basePotVal = 5; }
+                            else { basePotVal = 6; }
                         }
                     }
                     else if (message.Contains("TEST CANCELLED"))
@@ -1214,6 +1229,12 @@ namespace OSRTT_Launcher
                     else if (message.Contains("Ready to test"))
                     {
                         testMode = true;
+                    }
+                    else if (message.Contains("Handshake"))
+                    {
+                        setCaptureTime();
+                        setFPSLimit();
+                        port.Write("V" + Properties.Settings.Default.VSyncState.ToString());
                     }
                     else if (message.Contains("IL"))
                     {
@@ -1289,56 +1310,59 @@ namespace OSRTT_Launcher
                             }
                             processInputLagData();
                         }
-                        else if (message.Contains("TL"))
+                    }
+                    else if (message.Contains("TL"))
+                    {
+                        // Split result string into individual results
+                        String newMessage = message.Remove(0, 3);
+                        string[] values = newMessage.Split(',');
+                        int[] intValues = new int[values.Length - 1];
+                        for (int i = 0; i < values.Length - 1; i++)
                         {
-                            // Split result string into individual results
-                            String newMessage = message.Remove(0, 3);
-                            string[] values = newMessage.Split(',');
-                            int[] intValues = new int[values.Length - 1];
-                            for (int i = 0; i < values.Length - 1; i++)
+                            if (values[i] == "0")
                             {
-                                if (values[i] == "0")
-                                {
-                                    intValues[i] = 0;
-                                }
-                                else if (values[i] != "")
-                                {
-                                    try
-                                    {
-                                        intValues[i] = int.Parse(values[i]);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Console.WriteLine(values[i]);
-                                    }
-                                }
-                                else { continue; }
+                                intValues[i] = 0;
                             }
-                            testLatency = intValues;
-                            int start = 0;
-                            for (int m = 0; m < intValues.Length; m++)
+                            else if (values[i] != "")
                             {
-                                if (intValues[m] > 8000)
+                                try
                                 {
-                                    start = m;
-                                    break;
+                                    intValues[i] = int.Parse(values[i]);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine(values[i]);
                                 }
                             }
-                            if (Properties.Settings.Default.captureTime == 0)
+                            else { continue; }
+                        }
+                        testLatency.AddRange(intValues);
+                        int start = 0;
+                        for (int m = 0; m < intValues.Length; m++)
+                        {
+                            if (intValues[m] > 8000)
                             {
-                                if (start == 0 || start > 1100)
-                                {
-                                    port.Write("S1");
-                                }
-                                else
-                                {
-                                    port.Write("S0");
-                                }
+                                start = m;
+                                break;
+                            }
+                        }
+                        if (Properties.Settings.Default.captureTime == 0)
+                        {
+                            if (start == 0 || start > 1100)
+                            {
+                               Thread.Sleep(100);
+                               port.Write("S1");
                             }
                             else
                             {
-                                port.Write("S" + Properties.Settings.Default.captureTime.ToString());
+                                Thread.Sleep(100);
+                                port.Write("S0");
                             }
+                        }
+                        else
+                        {
+                            Thread.Sleep(100);
+                            port.Write("S" + Properties.Settings.Default.captureTime.ToString());
                         }
                     }
                     else
@@ -1450,6 +1474,11 @@ namespace OSRTT_Launcher
                 setFPSLimit();
                 Thread.Sleep(200);
                 setRepeats();
+                if (port != null)
+                {
+                    port.Write("V" + Properties.Settings.Default.VSyncState.ToString());
+                }
+                Thread.Sleep(200);
                 testRunning = true;
 
                 // Launch UE4 game
@@ -1499,6 +1528,7 @@ namespace OSRTT_Launcher
                         try
                         {
                             gamma.Clear();
+                            testLatency.Clear();
                             testStarted = false;
                             port.Write("T");
                         }
@@ -1752,7 +1782,10 @@ namespace OSRTT_Launcher
 
             string strSeparator = ",";
             StringBuilder csvString = new StringBuilder();
-            csvString.AppendLine(string.Join(strSeparator, testLatency));
+            if (testLatency.Count != 0)
+            {
+                csvString.AppendLine(string.Join(strSeparator, testLatency));
+            }
             foreach (var res in gamma)
             {
                 csvString.AppendLine(string.Join(strSeparator, res));
@@ -1993,7 +2026,7 @@ namespace OSRTT_Launcher
                                     Array.Resize(ref intLine, intLine.Length - 1);
                                     if (intLine[0] == 1000)
                                     {
-                                        testLatency = intLine;
+                                        testLatency.AddRange(intLine);
                                     }
                                     else if (intLine[0] == intLine[1])
                                     {
@@ -2302,7 +2335,7 @@ namespace OSRTT_Launcher
                     }
 
                     int startDelay = 150;
-                    if (testLatency.Length != 0)
+                    if (testLatency.Count != 0)
                     {
                         int[] tl = testLatency.Skip(5).ToArray();
                         for (int n = 0; n < tl.Length; n++)
@@ -2671,6 +2704,10 @@ namespace OSRTT_Launcher
                         endAverage /= (samples.Length - avgEnd);
                         endAverage = Math.Round(endAverage, 0);
                         int arrSize = (transEnd - transStart + 100);
+                        if (samples.Length < (transEnd + 100))
+                        {
+                            arrSize = samples.Length - transStart;
+                        }
                         if (arrSize < 110)
                         {
                             arrSize = 200;
@@ -2802,6 +2839,10 @@ namespace OSRTT_Launcher
                                 // os *= -1;
                                 os *= 100;
                                 overshootPercent = Math.Round(os, 1);
+                                if (overshootPercent != 0 && overshootPercent < 1)
+                                {
+                                    overshootPercent = 0;
+                                }
                             }
                         }
 
@@ -2902,7 +2943,7 @@ namespace OSRTT_Launcher
                             }
                             for (int j = (transEnd + 20); j > (transStart - 20); j--) // search samples for end point
                             {
-                                if (endOffsetRGB > EndRGB || overUnderRGB == -1 || (endOffsetRGB == 0 && peakValue > (endPer3 + 100))) // Including overshoot in the curve
+                                if (endOffsetRGB > EndRGB || overUnderRGB == -1 || (endOffsetRGB == 0 && endPer3 > endAverage && overshootPercent > 1)) // Including overshoot in the curve
                                 {
                                     if (samples[j] >= endPer3)  // add the same sort of more detailed check like complete for finding this
                                     {
@@ -3032,7 +3073,7 @@ namespace OSRTT_Launcher
                             }
                             for (int j = (transEnd + 20); j > (transStart - 20); j--) // search samples for end point
                             {
-                                if ((endOffsetRGB < EndRGB && endOffsetRGB != 0) || (peakValue < (endPer3 - 100) && endOffsetRGB == 0)) // Including undershoot in the curve
+                                if ((endOffsetRGB < EndRGB && endOffsetRGB != 0) || (endPer3 < endAverage && endOffsetRGB == 0 && overshootPercent > 1)) // Including undershoot in the curve
                                 {
                                     if (samples[j] <= endPer3)
                                     {
@@ -3764,7 +3805,7 @@ namespace OSRTT_Launcher
                                                 Array.Resize(ref intLine, intLine.Length - 1);
                                                 if (intLine[0] == 1000)
                                                 {
-                                                    testLatency = intLine;
+                                                    testLatency.AddRange(intLine);
                                                 }
                                                 else if (intLine[0] == intLine[1])
                                                 {
@@ -3921,9 +3962,10 @@ namespace OSRTT_Launcher
             }
             try
             {
-                port.Write("B");
+                port.Write("B" + potVal.ToString());
                 brightnessWindowOpen = true;
                 brightnessCanceled = false;
+                potVal = basePotVal;
             }
             catch (Exception e)
             {
@@ -4001,11 +4043,11 @@ namespace OSRTT_Launcher
 
         private void resetBtn_Click(object sender, EventArgs e)
         {
-            potVal = 0;
+            potVal = basePotVal;
             incPotValBtn.Enabled = true;
             try
             {
-                port.Write(potVal.ToString("X"));
+                port.Write(basePotVal.ToString("X"));
             }
             catch (Exception ex)
             {
@@ -5214,6 +5256,7 @@ namespace OSRTT_Launcher
                 }
             }
         }
+
     }
 }
 

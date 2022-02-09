@@ -35,7 +35,7 @@ SPISettings settingsA(10000000, MSBFIRST, SPI_MODE0);
 
 //Serial connection values
 bool connected = false;
-String firmware = "2.1";
+String firmware = "2.2";
 int testRuns = 4;
 bool vsync = true;
 bool extendedGamma = true;
@@ -306,11 +306,15 @@ void runInputLagTest(int timeBetween)
 }
 
 void checkLatency() {
+  delay(100);
   Keyboard.print('Q');
   delay(100);
   runADC(1000,1000,'F',"TL:");
-  while (input[0] != 'X')
+  char input[INPUT_SIZE + 1];
+  unsigned long startTime = micros();
+  while (curr_time < (startTime + 3000))
   {
+    curr_time = micros();
     for (int i = 0; i < INPUT_SIZE + 1; i++)
     {
       input[i] = ' ';
@@ -373,7 +377,8 @@ void loop() {
     {
       // Brightness Calibration screen
       Serial.setTimeout(200);
-      int potVal = 165;
+      int mod = input[1] - '0';
+      int potVal = 165 + mod;
       digitalPotWrite(potVal);
       Serial.println("BRIGHTNESS CHECK");
       delay(500);
@@ -467,6 +472,7 @@ void loop() {
         Serial.print(",");
       }
       Serial.println();
+      Serial.println("Handshake");
     }
     else if (input[0] == 'M')
     {
@@ -551,6 +557,11 @@ void loop() {
         if (buttonState == HIGH) //Run when button pressed
         {
           Serial.setTimeout(300);
+          Keyboard.print(fpsLimit);
+          if (vsync == false)
+              {
+                Keyboard.print('V');
+              }
           // Check USB voltage level
           //int voltageTest = checkUSBVoltage();
           //if (voltageTest == 0)
@@ -579,19 +590,11 @@ void loop() {
               delay(100);
               Serial.println("Test Started");
               // Set FPS limit (default 1000 FPS, key '1')
-              Keyboard.print(fpsLimit);
               delay(50);
-              if (vsync == false)
-              {
-                Keyboard.print('V');
-              }
               runGammaTest();
               delay(100);
               while (input[0] != 'X')
               {
-                Keyboard.print('Q');
-              delay(100);
-              runADC(1000,1000,'F',"TL:");
                 for (int i = 0; i < INPUT_SIZE + 1; i++)
                 {
                   input[i] = ' ';

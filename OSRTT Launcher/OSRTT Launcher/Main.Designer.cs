@@ -857,6 +857,7 @@
             this.opnResultsBtn.TabIndex = 15;
             this.opnResultsBtn.Text = "Open Results Folder";
             this.opnResultsBtn.UseVisualStyleBackColor = false;
+            this.opnResultsBtn.Click += new System.EventHandler(this.opnResultsBtn_Click);
             // 
             // importRawFolder
             // 
