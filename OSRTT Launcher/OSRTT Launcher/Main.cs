@@ -5228,16 +5228,8 @@ namespace OSRTT_Launcher
 
         private void testButtonToolStripMenuItemToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!testButtonMenuItem.Checked)
-            {
-                setProgressBar(false);
-                
-            }
-            else
-            {
-                setProgressBar(true);
-                
-            }
+            ResultsView resultsView = new ResultsView();
+            resultsView.Show();
         }
 
         private void extendedGammaTestToolStripMenuItem_Click(object sender, EventArgs e)
