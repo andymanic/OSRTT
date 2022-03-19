@@ -78,10 +78,19 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="VSyncState" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1</Value>
+      <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="extendedGammaTest" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="rtKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)">1,5,10</Value>
+    </Setting>
+    <Setting Name="osKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)">5,15,20</Value>
+    </Setting>
+    <Setting Name="vrrKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)">95, 85, 75</Value>
     </Setting>
   </Settings>
 </SettingsFile>

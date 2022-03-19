@@ -1491,6 +1491,11 @@ namespace OSRTT_Launcher
                 var display = Screen.AllScreens[selectedDisplay];
                 int WinX = 0;
                 int WinY = 0;
+                string vsync = " VSync";
+                if (Properties.Settings.Default.VSyncState == 0)
+                {
+                    vsync = " NoVSync";
+                }
                 
                 Process ue4 = new Process();
                 try
@@ -1501,11 +1506,11 @@ namespace OSRTT_Launcher
                         // Force UE4 window to selected display if selected is not primary
                         WinX = display.Bounds.Location.X;
                         WinY = display.Bounds.Location.Y;
-                        ue4.StartInfo.Arguments = ue4Path + " WinX=" + WinX + " WinY=" + WinY;
+                        ue4.StartInfo.Arguments = ue4Path + " WinX=" + WinX + " WinY=" + WinY + vsync;
                     }
                     else
                     {
-                        ue4.StartInfo.Arguments = ue4Path;
+                        ue4.StartInfo.Arguments = ue4Path + vsync;
                     }
                     ue4.Start();
                     // Process.Start(ue4Path);

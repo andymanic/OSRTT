@@ -325,7 +325,7 @@ namespace OSRTT_Launcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public int VSyncState {
             get {
                 return ((int)(this["VSyncState"]));
@@ -344,6 +344,42 @@ namespace OSRTT_Launcher.Properties {
             }
             set {
                 this["extendedGammaTest"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1,5,10")]
+        public string rtKey {
+            get {
+                return ((string)(this["rtKey"]));
+            }
+            set {
+                this["rtKey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5,15,20")]
+        public string osKey {
+            get {
+                return ((string)(this["osKey"]));
+            }
+            set {
+                this["osKey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("95, 85, 75")]
+        public string vrrKey {
+            get {
+                return ((string)(this["vrrKey"]));
+            }
+            set {
+                this["vrrKey"] = value;
             }
         }
     }
