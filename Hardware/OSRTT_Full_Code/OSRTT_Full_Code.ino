@@ -35,7 +35,7 @@ SPISettings settingsA(10000000, MSBFIRST, SPI_MODE0);
 
 //Serial connection values
 bool connected = false;
-String firmware = "2.2";
+String firmware = "2.3";
 int testRuns = 4;
 bool vsync = true;
 bool extendedGamma = true;
@@ -219,7 +219,7 @@ void digitalPotWrite(int value)
 int checkUSBVoltage() // Check USB voltage is between 4.8V and 5.2V
 {
   int counter = 0;
-  while (counter < 1000)
+  while (counter < 2000)
   {
     ADC1->SWTRIG.bit.START = 1; //Start ADC1 
     while(!ADC1->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
@@ -558,10 +558,7 @@ void loop() {
         {
           Serial.setTimeout(300);
           Keyboard.print(fpsLimit);
-          if (vsync == false)
-              {
-                Keyboard.print('V');
-              }
+          Keyboard.print(fpsLimit);
           // Check USB voltage level
           //int voltageTest = checkUSBVoltage();
           //if (voltageTest == 0)

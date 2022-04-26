@@ -29,33 +29,26 @@ namespace OSRTT_Launcher
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ResultsView));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.perceivedResponseTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.initialResponseTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.completeResponseTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.standardResultsPanel = new System.Windows.Forms.Panel();
-            this.label12 = new System.Windows.Forms.Label();
-            this.from3 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.from2 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.from1 = new System.Windows.Forms.Label();
-            this.vrrGridView = new System.Windows.Forms.DataGridView();
-            this.osGridView = new System.Windows.Forms.DataGridView();
-            this.rtGridView = new System.Windows.Forms.DataGridView();
+            this.saveHeatmapsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.asPNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.asTransparentPNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.stdResultsMenuBtn = new System.Windows.Forms.ToolStripButton();
+            this.runSelectToolStrip = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.allResultsMenuBtn = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.graphViewMenuBtn = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.importViewMenuButton = new System.Windows.Forms.ToolStripButton();
             this.graphViewPanel = new System.Windows.Forms.Panel();
+            this.saveGraphNoHSpanBtn = new System.Windows.Forms.Button();
+            this.saveAsPNGBtn = new System.Windows.Forms.Button();
             this.latencyLabel = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
@@ -74,257 +67,118 @@ namespace OSRTT_Launcher
             this.transSelect1 = new System.Windows.Forms.ComboBox();
             this.graphedData = new ScottPlot.FormsPlot();
             this.importPanel = new System.Windows.Forms.Panel();
-            this.importResultsViewBtn = new System.Windows.Forms.Button();
-            this.importRawFolder = new System.Windows.Forms.Button();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.label13 = new System.Windows.Forms.Label();
             this.importGraphBtn = new System.Windows.Forms.Button();
-            this.titleLabel = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.rtStatsGridView = new System.Windows.Forms.DataGridView();
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.importRawFolder = new System.Windows.Forms.Button();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.importRawFolderBtn = new System.Windows.Forms.Button();
+            this.label11 = new System.Windows.Forms.Label();
+            this.importRawFileBtn = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.label5 = new System.Windows.Forms.Label();
+            this.importResultsViewBtn = new System.Windows.Forms.Button();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.heatmaps1 = new OSRTT_Launcher.Heatmaps();
             this.menuStrip1.SuspendLayout();
-            this.standardResultsPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.vrrGridView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.osGridView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rtGridView)).BeginInit();
             this.toolStrip1.SuspendLayout();
             this.graphViewPanel.SuspendLayout();
             this.importPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rtStatsGridView)).BeginInit();
+            this.panel3.SuspendLayout();
+            this.panel2.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.viewToolStripMenuItem,
-            this.optionsToolStripMenuItem});
+            this.optionsToolStripMenuItem,
+            this.saveHeatmapsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(2850, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1924, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // viewToolStripMenuItem
             // 
+            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.perceivedResponseTimeToolStripMenuItem,
+            this.initialResponseTimeToolStripMenuItem,
+            this.completeResponseTimeToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "View";
+            // 
+            // perceivedResponseTimeToolStripMenuItem
+            // 
+            this.perceivedResponseTimeToolStripMenuItem.Checked = true;
+            this.perceivedResponseTimeToolStripMenuItem.CheckOnClick = true;
+            this.perceivedResponseTimeToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.perceivedResponseTimeToolStripMenuItem.Name = "perceivedResponseTimeToolStripMenuItem";
+            this.perceivedResponseTimeToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.perceivedResponseTimeToolStripMenuItem.Text = "Perceived Response Time";
+            this.perceivedResponseTimeToolStripMenuItem.Click += new System.EventHandler(this.perceivedResponseTimeToolStripMenuItem_Click);
+            // 
+            // initialResponseTimeToolStripMenuItem
+            // 
+            this.initialResponseTimeToolStripMenuItem.CheckOnClick = true;
+            this.initialResponseTimeToolStripMenuItem.Name = "initialResponseTimeToolStripMenuItem";
+            this.initialResponseTimeToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.initialResponseTimeToolStripMenuItem.Text = "Initial Response Time";
+            this.initialResponseTimeToolStripMenuItem.Click += new System.EventHandler(this.initialResponseTimeToolStripMenuItem_Click);
+            // 
+            // completeResponseTimeToolStripMenuItem
+            // 
+            this.completeResponseTimeToolStripMenuItem.CheckOnClick = true;
+            this.completeResponseTimeToolStripMenuItem.Name = "completeResponseTimeToolStripMenuItem";
+            this.completeResponseTimeToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.completeResponseTimeToolStripMenuItem.Text = "Complete Response Time";
+            this.completeResponseTimeToolStripMenuItem.Click += new System.EventHandler(this.completeResponseTimeToolStripMenuItem_Click);
             // 
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.optionsToolStripMenuItem.Text = "Options";
+            this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
             // 
-            // standardResultsPanel
+            // saveHeatmapsToolStripMenuItem
             // 
-            this.standardResultsPanel.Controls.Add(this.rtStatsGridView);
-            this.standardResultsPanel.Controls.Add(this.pictureBox1);
-            this.standardResultsPanel.Controls.Add(this.titleLabel);
-            this.standardResultsPanel.Controls.Add(this.vrrGridView);
-            this.standardResultsPanel.Controls.Add(this.osGridView);
-            this.standardResultsPanel.Controls.Add(this.rtGridView);
-            this.standardResultsPanel.Controls.Add(this.from2);
-            this.standardResultsPanel.Controls.Add(this.from3);
-            this.standardResultsPanel.Controls.Add(this.from1);
-            this.standardResultsPanel.Controls.Add(this.label12);
-            this.standardResultsPanel.Controls.Add(this.label10);
-            this.standardResultsPanel.Controls.Add(this.label9);
-            this.standardResultsPanel.Location = new System.Drawing.Point(1439, 52);
-            this.standardResultsPanel.Name = "standardResultsPanel";
-            this.standardResultsPanel.Size = new System.Drawing.Size(1384, 704);
-            this.standardResultsPanel.TabIndex = 2;
+            this.saveHeatmapsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.asPNGToolStripMenuItem,
+            this.asTransparentPNGToolStripMenuItem});
+            this.saveHeatmapsToolStripMenuItem.Name = "saveHeatmapsToolStripMenuItem";
+            this.saveHeatmapsToolStripMenuItem.Size = new System.Drawing.Size(100, 20);
+            this.saveHeatmapsToolStripMenuItem.Text = "Save Heatmaps";
             // 
-            // label12
+            // asPNGToolStripMenuItem
             // 
-            this.label12.AutoSize = true;
-            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.ForeColor = System.Drawing.Color.Black;
-            this.label12.Location = new System.Drawing.Point(1329, 99);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(38, 26);
-            this.label12.TabIndex = 27;
-            this.label12.Text = "To";
+            this.asPNGToolStripMenuItem.Name = "asPNGToolStripMenuItem";
+            this.asPNGToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.asPNGToolStripMenuItem.Text = "As PNG";
+            this.asPNGToolStripMenuItem.Click += new System.EventHandler(this.asPNGToolStripMenuItem_Click);
             // 
-            // from3
+            // asTransparentPNGToolStripMenuItem
             // 
-            this.from3.AutoSize = true;
-            this.from3.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.from3.ForeColor = System.Drawing.Color.Black;
-            this.from3.Location = new System.Drawing.Point(933, 352);
-            this.from3.Name = "from3";
-            this.from3.Size = new System.Drawing.Size(67, 26);
-            this.from3.TabIndex = 26;
-            this.from3.Text = "From";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.ForeColor = System.Drawing.Color.Black;
-            this.label10.Location = new System.Drawing.Point(885, 99);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(38, 26);
-            this.label10.TabIndex = 25;
-            this.label10.Text = "To";
-            // 
-            // from2
-            // 
-            this.from2.AutoSize = true;
-            this.from2.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.from2.ForeColor = System.Drawing.Color.Black;
-            this.from2.Location = new System.Drawing.Point(489, 352);
-            this.from2.Name = "from2";
-            this.from2.Size = new System.Drawing.Size(67, 26);
-            this.from2.TabIndex = 24;
-            this.from2.Text = "From";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.ForeColor = System.Drawing.Color.Black;
-            this.label9.Location = new System.Drawing.Point(435, 99);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(38, 26);
-            this.label9.TabIndex = 23;
-            this.label9.Text = "To";
-            // 
-            // from1
-            // 
-            this.from1.AutoSize = true;
-            this.from1.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.from1.ForeColor = System.Drawing.Color.Black;
-            this.from1.Location = new System.Drawing.Point(39, 352);
-            this.from1.Name = "from1";
-            this.from1.Size = new System.Drawing.Size(67, 26);
-            this.from1.TabIndex = 22;
-            this.from1.Text = "From";
-            // 
-            // vrrGridView
-            // 
-            this.vrrGridView.AllowUserToAddRows = false;
-            this.vrrGridView.AllowUserToDeleteRows = false;
-            this.vrrGridView.AllowUserToResizeColumns = false;
-            this.vrrGridView.AllowUserToResizeRows = false;
-            this.vrrGridView.BackgroundColor = System.Drawing.SystemColors.WindowFrame;
-            this.vrrGridView.ColumnHeadersHeight = 40;
-            this.vrrGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.vrrGridView.DefaultCellStyle = dataGridViewCellStyle2;
-            this.vrrGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.vrrGridView.EnableHeadersVisualStyles = false;
-            this.vrrGridView.GridColor = System.Drawing.Color.White;
-            this.vrrGridView.Location = new System.Drawing.Point(939, 103);
-            this.vrrGridView.MultiSelect = false;
-            this.vrrGridView.Name = "vrrGridView";
-            this.vrrGridView.ReadOnly = true;
-            this.vrrGridView.RowHeadersWidth = 65;
-            this.vrrGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            this.vrrGridView.RowTemplate.Height = 35;
-            this.vrrGridView.RowTemplate.ReadOnly = true;
-            this.vrrGridView.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.vrrGridView.ScrollBars = System.Windows.Forms.ScrollBars.None;
-            this.vrrGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.vrrGridView.ShowCellToolTips = false;
-            this.vrrGridView.ShowEditingIcon = false;
-            this.vrrGridView.Size = new System.Drawing.Size(392, 250);
-            this.vrrGridView.TabIndex = 9;
-            // 
-            // osGridView
-            // 
-            this.osGridView.AllowUserToAddRows = false;
-            this.osGridView.AllowUserToDeleteRows = false;
-            this.osGridView.AllowUserToResizeColumns = false;
-            this.osGridView.AllowUserToResizeRows = false;
-            this.osGridView.BackgroundColor = System.Drawing.SystemColors.WindowFrame;
-            this.osGridView.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
-            this.osGridView.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            this.osGridView.ColumnHeadersHeight = 40;
-            this.osGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.osGridView.DefaultCellStyle = dataGridViewCellStyle3;
-            this.osGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.osGridView.EnableHeadersVisualStyles = false;
-            this.osGridView.GridColor = System.Drawing.Color.White;
-            this.osGridView.Location = new System.Drawing.Point(494, 103);
-            this.osGridView.MultiSelect = false;
-            this.osGridView.Name = "osGridView";
-            this.osGridView.ReadOnly = true;
-            this.osGridView.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            this.osGridView.RowHeadersWidth = 65;
-            this.osGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            this.osGridView.RowTemplate.Height = 35;
-            this.osGridView.RowTemplate.ReadOnly = true;
-            this.osGridView.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.osGridView.ScrollBars = System.Windows.Forms.ScrollBars.None;
-            this.osGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.osGridView.ShowCellToolTips = false;
-            this.osGridView.ShowEditingIcon = false;
-            this.osGridView.Size = new System.Drawing.Size(392, 250);
-            this.osGridView.TabIndex = 8;
-            // 
-            // rtGridView
-            // 
-            this.rtGridView.AllowUserToAddRows = false;
-            this.rtGridView.AllowUserToDeleteRows = false;
-            this.rtGridView.AllowUserToResizeColumns = false;
-            this.rtGridView.AllowUserToResizeRows = false;
-            this.rtGridView.BackgroundColor = System.Drawing.SystemColors.WindowFrame;
-            this.rtGridView.ColumnHeadersHeight = 40;
-            this.rtGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.rtGridView.DefaultCellStyle = dataGridViewCellStyle4;
-            this.rtGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.rtGridView.EnableHeadersVisualStyles = false;
-            this.rtGridView.GridColor = System.Drawing.Color.White;
-            this.rtGridView.Location = new System.Drawing.Point(45, 103);
-            this.rtGridView.MultiSelect = false;
-            this.rtGridView.Name = "rtGridView";
-            this.rtGridView.ReadOnly = true;
-            this.rtGridView.RowHeadersWidth = 65;
-            this.rtGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            this.rtGridView.RowTemplate.Height = 35;
-            this.rtGridView.RowTemplate.ReadOnly = true;
-            this.rtGridView.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.rtGridView.ScrollBars = System.Windows.Forms.ScrollBars.None;
-            this.rtGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.rtGridView.ShowCellToolTips = false;
-            this.rtGridView.ShowEditingIcon = false;
-            this.rtGridView.Size = new System.Drawing.Size(392, 250);
-            this.rtGridView.TabIndex = 7;
+            this.asTransparentPNGToolStripMenuItem.Name = "asTransparentPNGToolStripMenuItem";
+            this.asTransparentPNGToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.asTransparentPNGToolStripMenuItem.Text = "As Transparent PNG";
+            this.asTransparentPNGToolStripMenuItem.Click += new System.EventHandler(this.asTransparentPNGToolStripMenuItem_Click);
             // 
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.stdResultsMenuBtn,
+            this.runSelectToolStrip,
             this.toolStripSeparator1,
-            this.allResultsMenuBtn,
-            this.toolStripSeparator2,
             this.graphViewMenuBtn,
             this.toolStripSeparator3,
             this.importViewMenuButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(2850, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(1924, 25);
             this.toolStrip1.TabIndex = 3;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -337,30 +191,23 @@ namespace OSRTT_Launcher
             this.stdResultsMenuBtn.Image = ((System.Drawing.Image)(resources.GetObject("stdResultsMenuBtn.Image")));
             this.stdResultsMenuBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.stdResultsMenuBtn.Name = "stdResultsMenuBtn";
-            this.stdResultsMenuBtn.Size = new System.Drawing.Size(98, 22);
-            this.stdResultsMenuBtn.Text = "Standard Results";
+            this.stdResultsMenuBtn.Size = new System.Drawing.Size(65, 22);
+            this.stdResultsMenuBtn.Text = "Heatmaps";
             this.stdResultsMenuBtn.Click += new System.EventHandler(this.stdResultsMenuBtn_Click);
+            // 
+            // runSelectToolStrip
+            // 
+            this.runSelectToolStrip.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.runSelectToolStrip.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.runSelectToolStrip.Margin = new System.Windows.Forms.Padding(5, 0, 1, 0);
+            this.runSelectToolStrip.Name = "runSelectToolStrip";
+            this.runSelectToolStrip.Size = new System.Drawing.Size(121, 25);
+            this.runSelectToolStrip.SelectedIndexChanged += new System.EventHandler(this.runSelectToolStrip_SelectedIndexChanged);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-            // 
-            // allResultsMenuBtn
-            // 
-            this.allResultsMenuBtn.CheckOnClick = true;
-            this.allResultsMenuBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.allResultsMenuBtn.Image = ((System.Drawing.Image)(resources.GetObject("allResultsMenuBtn.Image")));
-            this.allResultsMenuBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.allResultsMenuBtn.Name = "allResultsMenuBtn";
-            this.allResultsMenuBtn.Size = new System.Drawing.Size(65, 22);
-            this.allResultsMenuBtn.Text = "All Results";
-            this.allResultsMenuBtn.Click += new System.EventHandler(this.allResultsMenuBtn_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
             // graphViewMenuBtn
             // 
@@ -369,8 +216,8 @@ namespace OSRTT_Launcher
             this.graphViewMenuBtn.Image = ((System.Drawing.Image)(resources.GetObject("graphViewMenuBtn.Image")));
             this.graphViewMenuBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.graphViewMenuBtn.Name = "graphViewMenuBtn";
-            this.graphViewMenuBtn.Size = new System.Drawing.Size(128, 22);
-            this.graphViewMenuBtn.Text = "View Raw Data Graphs";
+            this.graphViewMenuBtn.Size = new System.Drawing.Size(100, 22);
+            this.graphViewMenuBtn.Text = "Raw Data Graphs";
             this.graphViewMenuBtn.Click += new System.EventHandler(this.graphViewMenuBtn_Click);
             // 
             // toolStripSeparator3
@@ -391,6 +238,8 @@ namespace OSRTT_Launcher
             // 
             // graphViewPanel
             // 
+            this.graphViewPanel.Controls.Add(this.saveGraphNoHSpanBtn);
+            this.graphViewPanel.Controls.Add(this.saveAsPNGBtn);
             this.graphViewPanel.Controls.Add(this.latencyLabel);
             this.graphViewPanel.Controls.Add(this.label8);
             this.graphViewPanel.Controls.Add(this.label7);
@@ -408,10 +257,38 @@ namespace OSRTT_Launcher
             this.graphViewPanel.Controls.Add(this.label1);
             this.graphViewPanel.Controls.Add(this.transSelect1);
             this.graphViewPanel.Controls.Add(this.graphedData);
-            this.graphViewPanel.Location = new System.Drawing.Point(1439, 762);
+            this.graphViewPanel.Location = new System.Drawing.Point(5, 442);
             this.graphViewPanel.Name = "graphViewPanel";
-            this.graphViewPanel.Size = new System.Drawing.Size(1384, 704);
+            this.graphViewPanel.Size = new System.Drawing.Size(1384, 722);
             this.graphViewPanel.TabIndex = 4;
+            // 
+            // saveGraphNoHSpanBtn
+            // 
+            this.saveGraphNoHSpanBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.saveGraphNoHSpanBtn.FlatAppearance.BorderSize = 0;
+            this.saveGraphNoHSpanBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.saveGraphNoHSpanBtn.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Bold);
+            this.saveGraphNoHSpanBtn.Location = new System.Drawing.Point(1187, 646);
+            this.saveGraphNoHSpanBtn.Name = "saveGraphNoHSpanBtn";
+            this.saveGraphNoHSpanBtn.Size = new System.Drawing.Size(182, 53);
+            this.saveGraphNoHSpanBtn.TabIndex = 25;
+            this.saveGraphNoHSpanBtn.Text = "Save as PNG\r\nWithout Block";
+            this.saveGraphNoHSpanBtn.UseVisualStyleBackColor = false;
+            this.saveGraphNoHSpanBtn.Click += new System.EventHandler(this.saveGraphNoHSpanBtn_Click);
+            // 
+            // saveAsPNGBtn
+            // 
+            this.saveAsPNGBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.saveAsPNGBtn.FlatAppearance.BorderSize = 0;
+            this.saveAsPNGBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.saveAsPNGBtn.Font = new System.Drawing.Font("Consolas", 16F, System.Drawing.FontStyle.Bold);
+            this.saveAsPNGBtn.Location = new System.Drawing.Point(1187, 606);
+            this.saveAsPNGBtn.Name = "saveAsPNGBtn";
+            this.saveAsPNGBtn.Size = new System.Drawing.Size(182, 34);
+            this.saveAsPNGBtn.TabIndex = 24;
+            this.saveAsPNGBtn.Text = "Save as PNG";
+            this.saveAsPNGBtn.UseVisualStyleBackColor = false;
+            this.saveAsPNGBtn.Click += new System.EventHandler(this.saveAsPNGBtn_Click);
             // 
             // latencyLabel
             // 
@@ -452,7 +329,7 @@ namespace OSRTT_Launcher
             this.runSelectBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.runSelectBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.runSelectBox.FormattingEnabled = true;
-            this.runSelectBox.Location = new System.Drawing.Point(180, 10);
+            this.runSelectBox.Location = new System.Drawing.Point(176, 10);
             this.runSelectBox.Name = "runSelectBox";
             this.runSelectBox.Size = new System.Drawing.Size(140, 33);
             this.runSelectBox.TabIndex = 20;
@@ -508,9 +385,9 @@ namespace OSRTT_Launcher
             this.overshootStyleListBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.overshootStyleListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.overshootStyleListBox.FormattingEnabled = true;
-            this.overshootStyleListBox.Location = new System.Drawing.Point(1187, 411);
+            this.overshootStyleListBox.Location = new System.Drawing.Point(1180, 411);
             this.overshootStyleListBox.Name = "overshootStyleListBox";
-            this.overshootStyleListBox.Size = new System.Drawing.Size(182, 24);
+            this.overshootStyleListBox.Size = new System.Drawing.Size(193, 24);
             this.overshootStyleListBox.TabIndex = 15;
             this.overshootStyleListBox.SelectedIndexChanged += new System.EventHandler(this.overshootStyleListBox_SelectedIndexChanged);
             // 
@@ -530,9 +407,9 @@ namespace OSRTT_Launcher
             this.processTypeListBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.processTypeListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.processTypeListBox.FormattingEnabled = true;
-            this.processTypeListBox.Location = new System.Drawing.Point(1187, 232);
+            this.processTypeListBox.Location = new System.Drawing.Point(1180, 232);
             this.processTypeListBox.Name = "processTypeListBox";
-            this.processTypeListBox.Size = new System.Drawing.Size(182, 24);
+            this.processTypeListBox.Size = new System.Drawing.Size(193, 24);
             this.processTypeListBox.TabIndex = 13;
             this.processTypeListBox.SelectedIndexChanged += new System.EventHandler(this.processTypeListBox_SelectedIndexChanged);
             // 
@@ -578,7 +455,7 @@ namespace OSRTT_Launcher
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.label1.Location = new System.Drawing.Point(376, 13);
+            this.label1.Location = new System.Drawing.Point(376, 14);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(217, 26);
             this.label1.TabIndex = 2;
@@ -589,56 +466,51 @@ namespace OSRTT_Launcher
             this.transSelect1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.transSelect1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.transSelect1.FormattingEnabled = true;
-            this.transSelect1.Location = new System.Drawing.Point(599, 10);
+            this.transSelect1.Location = new System.Drawing.Point(595, 10);
             this.transSelect1.Name = "transSelect1";
-            this.transSelect1.Size = new System.Drawing.Size(306, 33);
+            this.transSelect1.Size = new System.Drawing.Size(328, 33);
             this.transSelect1.TabIndex = 1;
             this.transSelect1.SelectedIndexChanged += new System.EventHandler(this.transSelect1_SelectedIndexChanged);
             // 
             // graphedData
             // 
-            this.graphedData.Location = new System.Drawing.Point(7, 51);
+            this.graphedData.Location = new System.Drawing.Point(6, 51);
             this.graphedData.Name = "graphedData";
-            this.graphedData.Size = new System.Drawing.Size(1183, 650);
+            this.graphedData.Size = new System.Drawing.Size(1184, 666);
             this.graphedData.TabIndex = 0;
             // 
             // importPanel
             // 
-            this.importPanel.Controls.Add(this.importResultsViewBtn);
-            this.importPanel.Controls.Add(this.importRawFolder);
-            this.importPanel.Controls.Add(this.importGraphBtn);
+            this.importPanel.Controls.Add(this.panel3);
+            this.importPanel.Controls.Add(this.panel2);
+            this.importPanel.Controls.Add(this.panel1);
             this.importPanel.Location = new System.Drawing.Point(5, 52);
             this.importPanel.Name = "importPanel";
-            this.importPanel.Size = new System.Drawing.Size(1384, 704);
+            this.importPanel.Size = new System.Drawing.Size(1082, 290);
             this.importPanel.TabIndex = 5;
             // 
-            // importResultsViewBtn
+            // panel3
             // 
-            this.importResultsViewBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.importResultsViewBtn.FlatAppearance.BorderSize = 0;
-            this.importResultsViewBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.importResultsViewBtn.Font = new System.Drawing.Font("Consolas", 18F, System.Drawing.FontStyle.Bold);
-            this.importResultsViewBtn.Location = new System.Drawing.Point(41, 102);
-            this.importResultsViewBtn.Name = "importResultsViewBtn";
-            this.importResultsViewBtn.Size = new System.Drawing.Size(309, 93);
-            this.importResultsViewBtn.TabIndex = 9;
-            this.importResultsViewBtn.Text = "Import Processed Data File for Heatmaps";
-            this.importResultsViewBtn.UseVisualStyleBackColor = false;
-            this.importResultsViewBtn.Click += new System.EventHandler(this.importResultsViewBtn_Click);
+            this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel3.Controls.Add(this.label13);
+            this.panel3.Controls.Add(this.importGraphBtn);
+            this.panel3.Controls.Add(this.importRawFolder);
+            this.panel3.Location = new System.Drawing.Point(755, 3);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(314, 280);
+            this.panel3.TabIndex = 25;
             // 
-            // importRawFolder
+            // label13
             // 
-            this.importRawFolder.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.importRawFolder.FlatAppearance.BorderSize = 0;
-            this.importRawFolder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.importRawFolder.Font = new System.Drawing.Font("Consolas", 18F, System.Drawing.FontStyle.Bold);
-            this.importRawFolder.Location = new System.Drawing.Point(428, 201);
-            this.importRawFolder.Name = "importRawFolder";
-            this.importRawFolder.Size = new System.Drawing.Size(231, 93);
-            this.importRawFolder.TabIndex = 8;
-            this.importRawFolder.Text = "Import Raw Data Folder to Graph";
-            this.importRawFolder.UseVisualStyleBackColor = false;
-            this.importRawFolder.Click += new System.EventHandler(this.importRawFolder_Click);
+            this.label13.AutoSize = true;
+            this.label13.BackColor = System.Drawing.Color.Transparent;
+            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label13.ForeColor = System.Drawing.Color.Black;
+            this.label13.Location = new System.Drawing.Point(23, 9);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(270, 37);
+            this.label13.TabIndex = 23;
+            this.label13.Text = "Graph Raw Data";
             // 
             // importGraphBtn
             // 
@@ -646,7 +518,7 @@ namespace OSRTT_Launcher
             this.importGraphBtn.FlatAppearance.BorderSize = 0;
             this.importGraphBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.importGraphBtn.Font = new System.Drawing.Font("Consolas", 18F, System.Drawing.FontStyle.Bold);
-            this.importGraphBtn.Location = new System.Drawing.Point(428, 102);
+            this.importGraphBtn.Location = new System.Drawing.Point(43, 59);
             this.importGraphBtn.Name = "importGraphBtn";
             this.importGraphBtn.Size = new System.Drawing.Size(231, 93);
             this.importGraphBtn.TabIndex = 7;
@@ -654,81 +526,137 @@ namespace OSRTT_Launcher
             this.importGraphBtn.UseVisualStyleBackColor = false;
             this.importGraphBtn.Click += new System.EventHandler(this.importGraphBtn_Click);
             // 
-            // titleLabel
+            // importRawFolder
             // 
-            this.titleLabel.Font = new System.Drawing.Font("Calibri", 28F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.titleLabel.ForeColor = System.Drawing.Color.Black;
-            this.titleLabel.Location = new System.Drawing.Point(45, 8);
-            this.titleLabel.Name = "titleLabel";
-            this.titleLabel.Size = new System.Drawing.Size(1295, 52);
-            this.titleLabel.TabIndex = 28;
-            this.titleLabel.Text = "Monitor Name - Freqency - FPS Limit";
-            this.titleLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.importRawFolder.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.importRawFolder.FlatAppearance.BorderSize = 0;
+            this.importRawFolder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.importRawFolder.Font = new System.Drawing.Font("Consolas", 18F, System.Drawing.FontStyle.Bold);
+            this.importRawFolder.Location = new System.Drawing.Point(43, 158);
+            this.importRawFolder.Name = "importRawFolder";
+            this.importRawFolder.Size = new System.Drawing.Size(231, 93);
+            this.importRawFolder.TabIndex = 8;
+            this.importRawFolder.Text = "Import Raw Data Folder to Graph";
+            this.importRawFolder.UseVisualStyleBackColor = false;
+            this.importRawFolder.Click += new System.EventHandler(this.importRawFolder_Click);
             // 
-            // pictureBox1
+            // panel2
             // 
-            this.pictureBox1.Image = global::OSRTT_Launcher.Properties.Resources.icon_wide;
-            this.pictureBox1.Location = new System.Drawing.Point(1237, 614);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(118, 66);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 29;
-            this.pictureBox1.TabStop = false;
+            this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel2.Controls.Add(this.importRawFolderBtn);
+            this.panel2.Controls.Add(this.label11);
+            this.panel2.Controls.Add(this.importRawFileBtn);
+            this.panel2.Location = new System.Drawing.Point(7, 3);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(359, 239);
+            this.panel2.TabIndex = 24;
             // 
-            // rtStatsGridView
+            // importRawFolderBtn
             // 
-            this.rtStatsGridView.AllowUserToAddRows = false;
-            this.rtStatsGridView.AllowUserToDeleteRows = false;
-            this.rtStatsGridView.AllowUserToResizeColumns = false;
-            this.rtStatsGridView.AllowUserToResizeRows = false;
-            this.rtStatsGridView.BackgroundColor = System.Drawing.SystemColors.WindowFrame;
-            this.rtStatsGridView.ColumnHeadersHeight = 40;
-            this.rtStatsGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            this.rtStatsGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Column1});
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.rtStatsGridView.DefaultCellStyle = dataGridViewCellStyle1;
-            this.rtStatsGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.rtStatsGridView.EnableHeadersVisualStyles = false;
-            this.rtStatsGridView.GridColor = System.Drawing.Color.White;
-            this.rtStatsGridView.Location = new System.Drawing.Point(98, 396);
-            this.rtStatsGridView.MultiSelect = false;
-            this.rtStatsGridView.Name = "rtStatsGridView";
-            this.rtStatsGridView.ReadOnly = true;
-            this.rtStatsGridView.RowHeadersWidth = 65;
-            this.rtStatsGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            this.rtStatsGridView.RowTemplate.Height = 35;
-            this.rtStatsGridView.RowTemplate.ReadOnly = true;
-            this.rtStatsGridView.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.rtStatsGridView.ScrollBars = System.Windows.Forms.ScrollBars.None;
-            this.rtStatsGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.rtStatsGridView.ShowCellToolTips = false;
-            this.rtStatsGridView.ShowEditingIcon = false;
-            this.rtStatsGridView.Size = new System.Drawing.Size(277, 250);
-            this.rtStatsGridView.TabIndex = 30;
+            this.importRawFolderBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.importRawFolderBtn.FlatAppearance.BorderSize = 0;
+            this.importRawFolderBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.importRawFolderBtn.Font = new System.Drawing.Font("Consolas", 18F, System.Drawing.FontStyle.Bold);
+            this.importRawFolderBtn.Location = new System.Drawing.Point(22, 142);
+            this.importRawFolderBtn.Name = "importRawFolderBtn";
+            this.importRawFolderBtn.Size = new System.Drawing.Size(309, 75);
+            this.importRawFolderBtn.TabIndex = 24;
+            this.importRawFolderBtn.Text = "Import Raw Data Folder to Process";
+            this.importRawFolderBtn.UseVisualStyleBackColor = false;
+            this.importRawFolderBtn.Click += new System.EventHandler(this.importRawFolderBtn_Click);
             // 
-            // Column1
+            // label11
             // 
-            this.Column1.HeaderText = "";
-            this.Column1.Name = "Column1";
-            this.Column1.ReadOnly = true;
+            this.label11.AutoSize = true;
+            this.label11.BackColor = System.Drawing.Color.Transparent;
+            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label11.ForeColor = System.Drawing.Color.Black;
+            this.label11.Location = new System.Drawing.Point(29, 9);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(297, 37);
+            this.label11.TabIndex = 23;
+            this.label11.Text = "Process Raw Data";
+            // 
+            // importRawFileBtn
+            // 
+            this.importRawFileBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.importRawFileBtn.FlatAppearance.BorderSize = 0;
+            this.importRawFileBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.importRawFileBtn.Font = new System.Drawing.Font("Consolas", 18F, System.Drawing.FontStyle.Bold);
+            this.importRawFileBtn.Location = new System.Drawing.Point(22, 59);
+            this.importRawFileBtn.Name = "importRawFileBtn";
+            this.importRawFileBtn.Size = new System.Drawing.Size(309, 75);
+            this.importRawFileBtn.TabIndex = 9;
+            this.importRawFileBtn.Text = "Import Raw Data File to Process";
+            this.importRawFileBtn.UseVisualStyleBackColor = false;
+            this.importRawFileBtn.Click += new System.EventHandler(this.importRawFileBtn_Click);
+            // 
+            // panel1
+            // 
+            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.label5);
+            this.panel1.Controls.Add(this.importResultsViewBtn);
+            this.panel1.Location = new System.Drawing.Point(381, 3);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(359, 174);
+            this.panel1.TabIndex = 10;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.BackColor = System.Drawing.Color.Transparent;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.ForeColor = System.Drawing.Color.Black;
+            this.label5.Location = new System.Drawing.Point(37, 9);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(282, 37);
+            this.label5.TabIndex = 23;
+            this.label5.Text = "Create Heatmaps";
+            // 
+            // importResultsViewBtn
+            // 
+            this.importResultsViewBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.importResultsViewBtn.FlatAppearance.BorderSize = 0;
+            this.importResultsViewBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.importResultsViewBtn.Font = new System.Drawing.Font("Consolas", 18F, System.Drawing.FontStyle.Bold);
+            this.importResultsViewBtn.Location = new System.Drawing.Point(24, 59);
+            this.importResultsViewBtn.Name = "importResultsViewBtn";
+            this.importResultsViewBtn.Size = new System.Drawing.Size(309, 93);
+            this.importResultsViewBtn.TabIndex = 9;
+            this.importResultsViewBtn.Text = "Import Processed Data File for Heatmaps";
+            this.importResultsViewBtn.UseVisualStyleBackColor = false;
+            this.importResultsViewBtn.Click += new System.EventHandler(this.importResultsViewBtn_Click);
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(0, 348);
+            this.progressBar1.MarqueeAnimationSpeed = 30;
+            this.progressBar1.Maximum = 50;
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(1087, 23);
+            this.progressBar1.Step = 50;
+            this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
+            this.progressBar1.TabIndex = 34;
+            this.progressBar1.Visible = false;
+            // 
+            // heatmaps1
+            // 
+            this.heatmaps1.Location = new System.Drawing.Point(1395, 55);
+            this.heatmaps1.Name = "heatmaps1";
+            this.heatmaps1.Size = new System.Drawing.Size(1775, 950);
+            this.heatmaps1.TabIndex = 6;
             // 
             // ResultsView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.ClientSize = new System.Drawing.Size(2850, 1689);
+            this.ClientSize = new System.Drawing.Size(1924, 1061);
+            this.Controls.Add(this.progressBar1);
+            this.Controls.Add(this.heatmaps1);
             this.Controls.Add(this.importPanel);
             this.Controls.Add(this.graphViewPanel);
             this.Controls.Add(this.toolStrip1);
-            this.Controls.Add(this.standardResultsPanel);
             this.Controls.Add(this.menuStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MainMenuStrip = this.menuStrip1;
@@ -738,18 +666,17 @@ namespace OSRTT_Launcher
             this.Load += new System.EventHandler(this.ResultsView_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.standardResultsPanel.ResumeLayout(false);
-            this.standardResultsPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.vrrGridView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.osGridView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rtGridView)).EndInit();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.graphViewPanel.ResumeLayout(false);
             this.graphViewPanel.PerformLayout();
             this.importPanel.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rtStatsGridView)).EndInit();
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -759,12 +686,9 @@ namespace OSRTT_Launcher
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
-        private System.Windows.Forms.Panel standardResultsPanel;
         private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripButton allResultsMenuBtn;
         private System.Windows.Forms.ToolStripButton stdResultsMenuBtn;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton graphViewMenuBtn;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripButton importViewMenuButton;
@@ -789,19 +713,25 @@ namespace OSRTT_Launcher
         private System.Windows.Forms.Button importRawFolder;
         private System.Windows.Forms.Label latencyLabel;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.DataGridView rtGridView;
-        private System.Windows.Forms.DataGridView vrrGridView;
-        private System.Windows.Forms.DataGridView osGridView;
         private System.Windows.Forms.Button importResultsViewBtn;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.Label from3;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label from2;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label from1;
-        private System.Windows.Forms.Label titleLabel;
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.DataGridView rtStatsGridView;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.Button saveAsPNGBtn;
+        private System.Windows.Forms.Button saveGraphNoHSpanBtn;
+        private System.Windows.Forms.ToolStripMenuItem saveHeatmapsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem asTransparentPNGToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem perceivedResponseTimeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem initialResponseTimeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem completeResponseTimeToolStripMenuItem;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Button importRawFileBtn;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button importRawFolderBtn;
+        private Heatmaps heatmaps1;
+        private System.Windows.Forms.ToolStripComboBox runSelectToolStrip;
+        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.ToolStripMenuItem asPNGToolStripMenuItem;
     }
 }

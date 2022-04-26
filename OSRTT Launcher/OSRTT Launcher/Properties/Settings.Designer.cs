@@ -62,66 +62,6 @@ namespace OSRTT_Launcher.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool threePercentSetting {
-            get {
-                return ((bool)(this["threePercentSetting"]));
-            }
-            set {
-                this["threePercentSetting"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool tenPercentSetting {
-            get {
-                return ((bool)(this["tenPercentSetting"]));
-            }
-            set {
-                this["tenPercentSetting"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool gammaCorrectedSetting {
-            get {
-                return ((bool)(this["gammaCorrectedSetting"]));
-            }
-            set {
-                this["gammaCorrectedSetting"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool gammaPercentSetting {
-            get {
-                return ((bool)(this["gammaPercentSetting"]));
-            }
-            set {
-                this["gammaPercentSetting"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool gammaCorrRT {
-            get {
-                return ((bool)(this["gammaCorrRT"]));
-            }
-            set {
-                this["gammaCorrRT"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool saveGammaTable {
             get {
                 return ((bool)(this["saveGammaTable"]));
@@ -158,30 +98,6 @@ namespace OSRTT_Launcher.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool RGB10Offset {
-            get {
-                return ((bool)(this["RGB10Offset"]));
-            }
-            set {
-                this["RGB10Offset"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool RGB5Offset {
-            get {
-                return ((bool)(this["RGB5Offset"]));
-            }
-            set {
-                this["RGB5Offset"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool MinToTray {
             get {
                 return ((bool)(this["MinToTray"]));
@@ -205,7 +121,7 @@ namespace OSRTT_Launcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool saveXLSX {
             get {
                 return ((bool)(this["saveXLSX"]));
@@ -325,10 +241,10 @@ namespace OSRTT_Launcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int VSyncState {
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool VSyncState {
             get {
-                return ((int)(this["VSyncState"]));
+                return ((bool)(this["VSyncState"]));
             }
             set {
                 this["VSyncState"] = value;
@@ -373,13 +289,133 @@ namespace OSRTT_Launcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("95, 85, 75")]
+        [global::System.Configuration.DefaultSettingValueAttribute("75, 85, 95")]
         public string vrrKey {
             get {
                 return ((string)(this["vrrKey"]));
             }
             set {
                 this["vrrKey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("RGB 5 Tolerance")]
+        public string rtName {
+            get {
+                return ((string)(this["rtName"]));
+            }
+            set {
+                this["rtName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public int rtTolerance {
+            get {
+                return ((int)(this["rtTolerance"]));
+            }
+            set {
+                this["rtTolerance"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool rtGammaCorrected {
+            get {
+                return ((bool)(this["rtGammaCorrected"]));
+            }
+            set {
+                this["rtGammaCorrected"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool rtPercentage {
+            get {
+                return ((bool)(this["rtPercentage"]));
+            }
+            set {
+                this["rtPercentage"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("RGB Values")]
+        public string osName {
+            get {
+                return ((string)(this["osName"]));
+            }
+            set {
+                this["osName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool osEndPercent {
+            get {
+                return ((bool)(this["osEndPercent"]));
+            }
+            set {
+                this["osEndPercent"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool osRangePercent {
+            get {
+                return ((bool)(this["osRangePercent"]));
+            }
+            set {
+                this["osRangePercent"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool osGammaCorrected {
+            get {
+                return ((bool)(this["osGammaCorrected"]));
+            }
+            set {
+                this["osGammaCorrected"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool shareResults {
+            get {
+                return ((bool)(this["shareResults"]));
+            }
+            set {
+                this["shareResults"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string serialNumber {
+            get {
+                return ((string)(this["serialNumber"]));
+            }
+            set {
+                this["serialNumber"] = value;
             }
         }
     }
