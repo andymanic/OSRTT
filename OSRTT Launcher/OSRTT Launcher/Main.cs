@@ -28,9 +28,9 @@ namespace OSRTT_Launcher
     public partial class Main : Form
     {
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
-        private double boardVersion = 2.2;
-        private double downloadedFirmwareVersion = 2.2;
-        private string softwareVersion = "2.3";
+        private double boardVersion = 2.3;
+        private double downloadedFirmwareVersion = 2.3;
+        private string softwareVersion = "2.5";
 
         // TODO //
         // Denoising backlight strobing (gather data from gamma test)
