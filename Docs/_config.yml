@@ -23,7 +23,8 @@ exclude: ["node_modules/", "*.gemspec", "*.gem", "Gemfile", "Gemfile.lock", "pac
 , "docs/tests/"
 ]
 
-theme: "just-the-docs"
+##theme: "just-the-docs"
+remote_theme: pmarsceill/just-the-docs
 # Regression tests
 # By default, the pages in /docs/tests are excluded when the ste is built.
 # To include them, comment-out the relevant line above.
