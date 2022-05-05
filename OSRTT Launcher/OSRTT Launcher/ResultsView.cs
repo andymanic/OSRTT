@@ -112,6 +112,11 @@ namespace OSRTT_Launcher
         {
             stdResultsMenuBtn_Click(null, null);
         }
+
+        public void setGraphView()
+        {
+            graphViewMenuBtn_Click(null, null);
+        }
         public void setRtMethod(ProcessData.rtMethods rt)
         {
             rtMethod = rt;
@@ -1006,9 +1011,9 @@ namespace OSRTT_Launcher
             }
             Color bnColor = BackColor;
             graphedData.Plot.Style(figureBackground: Color.Transparent, dataBackground: Color.Transparent);
-            graphedData.Plot.SaveFig(path + "\\" + run + "-" + result + ".png", 1920, 1080, false);
+            graphedData.Plot.SaveFig(resultsFolderPath + "\\" + run + "-" + result + ".png", 1920, 1080, false);
             graphedData.Plot.Style(figureBackground: bnColor, dataBackground: bnColor);
-            Process.Start("explorer.exe", path);
+            Process.Start("explorer.exe", resultsFolderPath);
         }
 
         private void saveGraphNoHSpanBtn_Click(object sender, EventArgs e)
@@ -1033,9 +1038,9 @@ namespace OSRTT_Launcher
             }
             Color bnColor = BackColor;
             graphedData.Plot.Style(figureBackground: Color.Transparent, dataBackground: Color.Transparent);
-            graphedData.Plot.SaveFig(path + "\\" + run + "-" + result + ".png", 1920, 1080, false);
+            graphedData.Plot.SaveFig(resultsFolderPath + "\\" + run + "-" + result + ".png", 1920, 1080, false);
             graphedData.Plot.Style(figureBackground: bnColor, dataBackground: bnColor);
-            Process.Start("explorer.exe", path);
+            Process.Start("explorer.exe", resultsFolderPath);
 
             foreach (var i in plots)
             {

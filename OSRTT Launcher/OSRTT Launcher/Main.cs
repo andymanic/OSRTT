@@ -30,7 +30,7 @@ namespace OSRTT_Launcher
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
         private double boardVersion = 2.3;
         private double downloadedFirmwareVersion = 2.3;
-        private string softwareVersion = "2.5";
+        private string softwareVersion = "2.6";
 
         // TODO //
         // Denoising backlight strobing (gather data from gamma test)
@@ -381,6 +381,7 @@ namespace OSRTT_Launcher
         }
         public static TimeSpan GetUpTime()
         {
+            
             return TimeSpan.FromMilliseconds(GetTickCount64());
         }
         [DllImport("kernel32")]
@@ -506,6 +507,11 @@ namespace OSRTT_Launcher
                     testRunning = false;
                     testStarted = false;
                     testMode = false;
+                    boardUpdate = false;
+                    portConnected = false;
+                    brightnessCheck = false;
+                    brightnessWindowOpen = false;
+                    brightnessCanceled = false;
                     if (this.firmVerLbl.IsHandleCreated)
                     {
                         this.firmVerLbl.Invoke((MethodInvoker)(() => this.firmVerLbl.Text = "N/A"));
@@ -1709,19 +1715,37 @@ namespace OSRTT_Launcher
                         {
                             Thread.Sleep(100);
                         }
-                        this.Invoke((MethodInvoker)delegate ()
+                        if (multipleRunData.Count != 0 && averageData.Count != 0)
                         {
-                            ResultsView rv = new ResultsView();
-                            rv.setRawData(results);
-                            rv.setMultiRunData(multipleRunData);
-                            rv.setAverageData(averageData);
-                            rv.setResultsFolder(resultsFolderPath);
-                            rv.setRtMethod(rtMethod);
-                            rv.setOsMethod(osMethod);
-                            rv.setRunSettings(runSettings);
-                            rv.setStandardView();
-                            rv.Show();
-                        });
+                            this.Invoke((MethodInvoker)delegate ()
+                            {
+                                ResultsView rv = new ResultsView();
+                                rv.setRawData(results);
+                                rv.setMultiRunData(multipleRunData);
+                                rv.setAverageData(averageData);
+                                rv.setResultsFolder(resultsFolderPath);
+                                rv.setRtMethod(rtMethod);
+                                rv.setOsMethod(osMethod);
+                                rv.setRunSettings(runSettings);
+                                rv.setStandardView();
+                                rv.Show();
+                            });
+                        }
+                        else
+                        {
+                            MessageBox.Show("One or more results failed to process. Take a look at the raw data in the graph view and adjust your test settings accordingly.", "Failed to Process Data", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                            this.Invoke((MethodInvoker)delegate ()
+                            {
+                                ResultsView rv = new ResultsView();
+                                rv.setRawData(results);
+                                rv.setResultsFolder(resultsFolderPath);
+                                rv.setRtMethod(rtMethod);
+                                rv.setOsMethod(osMethod);
+                                rv.setRunSettings(runSettings);
+                                rv.setGraphView();
+                                rv.Show();
+                            });
+                        }
                     }
                 }
                 catch (InvalidOperationException e)
@@ -2769,8 +2793,8 @@ namespace OSRTT_Launcher
 
         private void testButtonToolStripMenuItemToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DataUpload d = new DataUpload();
-            d.systemInfo();
+            DataUpload ds = new DataUpload();
+            ds.ShareResults(results, gamma, testLatency, runSettings);
         }
 
         private void resultsViewBtn_Click(object sender, EventArgs e)
@@ -2976,6 +3000,8 @@ namespace OSRTT_Launcher
                 rtMethod = rt
             };
             processAllRuns(rt, os);
+            DataUpload ds = new DataUpload();
+            ds.ShareResults(results, gamma, testLatency, runSettings);
         }
         private void initRtOsMethods()
         {

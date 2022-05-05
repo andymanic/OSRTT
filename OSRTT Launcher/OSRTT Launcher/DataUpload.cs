@@ -11,6 +11,15 @@ namespace OSRTT_Launcher
 {
     class DataUpload
     {
+        public class ShareData
+        {
+            public string GUID { get; set; }
+            public List<ProcessData.rawResultData> rawData { get; set; }
+            public List<int[]> gammaData { get; set; }
+            public List<int> testLatency { get; set; }
+            public ProcessData.runSettings runSettings { get; set; }
+            public SystemInfo sysInfo { get; set; }
+        }
         public class SystemInfo
         {
             public string boardSerial { get; set; }
@@ -46,10 +55,17 @@ namespace OSRTT_Launcher
             string json = JsonConvert.SerializeObject(data);
             var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
             var httpClient = new HttpClient();
-            var httpResponse = await httpClient.PostAsync(url, httpContent);
+            try
+            {
+                var httpResponse = await httpClient.PostAsync(url, httpContent);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message + ex.StackTrace);
+            }
         }
 
-        public void systemInfo()
+        public SystemInfo GetSystemInfo()
         {
             SystemInfo si = new SystemInfo
             {
@@ -95,6 +111,7 @@ namespace OSRTT_Launcher
                     si.MACAddress = nacObj["MACAddress"].ToString();
                 }
             }
+            return si;
             //UploadData(si, "https://api.osrtt.com/systemInfo");
         }
         public void UploadRawData(List<List<ProcessData.rawResultData>> rawData)
@@ -123,18 +140,32 @@ namespace OSRTT_Launcher
 
         public void ShareResults(
             List<List<ProcessData.rawResultData>> rawData, 
-            List<ProcessData.gammaResult> gamma, 
+            List<int[]> gamma, 
             List<int> testLatency,
             ProcessData.runSettings runSetting
             // PC config
             )
         {
             Guid g = Guid.NewGuid();
+            SystemInfo systemInfo = GetSystemInfo();
+            foreach (var r in rawData)
+            {
+                ShareData share = new ShareData
+                {
+                    GUID = g.ToString(),
+                    rawData =  r ,
+                    gammaData = gamma,
+                    testLatency = testLatency,
+                    runSettings = runSetting,
+                    sysInfo = systemInfo
+                };
+                UploadData(share, "https://api.locally.link/osrtt");
+            }
             // put guid in request _somewhere_
-            UploadRawData(rawData);
-            UploadGammaData(gamma);
-            UploadTestLatency(testLatency);
-            UploadRunSettings(runSetting);
+            //UploadRawData(rawData);
+            //UploadGammaData(gamma);
+            //UploadTestLatency(testLatency);
+            //UploadRunSettings(runSetting);
         }
     }
 }
