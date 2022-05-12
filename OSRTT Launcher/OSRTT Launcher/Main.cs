@@ -1,36 +1,30 @@
-﻿using System;
+﻿using AutoUpdaterDotNET;
+using Microsoft.Win32;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Diagnostics;
-using System.IO.Ports;
-using Microsoft.Management.Infrastructure;
-using System.Management;
-using System.Threading;
+using System.Diagnostics.Eventing.Reader;
+using System.Drawing;
+using System.Globalization;
 using System.IO;
-using WindowsDisplayAPI.DisplayConfig;
-using AutoUpdaterDotNET;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Linq;
 using System.Resources;
 using System.Runtime.InteropServices;
-using Excel = Microsoft.Office.Interop.Excel;
-using Microsoft.Win32;
-using System.Globalization;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace OSRTT_Launcher
 {
     public partial class Main : Form
     {
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
-        private double boardVersion = 2.3;
-        private double downloadedFirmwareVersion = 2.3;
-        private string softwareVersion = "2.6";
+        private double boardVersion = 2.4;
+        private double downloadedFirmwareVersion = 2.4;
+        private string softwareVersion = "2.7";
 
         // TODO //
         // Denoising backlight strobing (gather data from gamma test)
@@ -49,6 +43,7 @@ namespace OSRTT_Launcher
         public static System.IO.Ports.SerialPort port;
         delegate void SetTextCallback(string text);
         private bool boardUpdate = false;
+        private bool forceUpdate = false;
         private bool portConnected = false;
         private bool brightnessCheck = false;
         public bool brightnessWindowOpen = false;
@@ -313,7 +308,7 @@ namespace OSRTT_Launcher
                     process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe core update-index && .\\arduinoCLI\\arduino-cli.exe core install arduino:samd && .\\arduinoCLI\\arduino-cli.exe core install adafruit:samd";
                     process.Start();
                     process.WaitForExit();
-                    process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe lib install Keyboard && .\\arduinoCLI\\arduino-cli.exe lib install Mouse";
+                    process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe lib install Keyboard && .\\arduinoCLI\\arduino-cli.exe lib install Mouse && .\\arduinoCLI\\arduino-cli.exe lib install ArduinoUniqueID";
                     process.Start();
                     process.WaitForExit();
                 }
@@ -379,9 +374,30 @@ namespace OSRTT_Launcher
                 }
             }
         }
+        private static IEnumerable<EventRecord> ReadEventsReverse(string logName)
+        {
+            using (
+                var reader = new EventLogReader(
+                    new EventLogQuery(logName, PathType.LogName) { ReverseDirection = true }
+                )
+            )
+            {
+                EventRecord eventRecord;
+                while ((eventRecord = reader.ReadEvent()) != null)
+                {
+                    yield return eventRecord;
+                }
+            }
+        }
+       
         public static TimeSpan GetUpTime()
         {
-            
+            /*var reverseEvents = Main.ReadEventsReverse("Microsoft-Windows-Kernel-PnP*");
+            var reverseEventsToday = reverseEvents.TakeWhile(e => e.TimeCreated >= DateTime.Now.Date);
+            foreach (var eventRecord in reverseEventsToday)
+            {
+                Console.WriteLine("{0:s} {1}", eventRecord.TimeCreated, eventRecord.FormatDescription());
+            }*/
             return TimeSpan.FromMilliseconds(GetTickCount64());
         }
         [DllImport("kernel32")]
@@ -406,7 +422,10 @@ namespace OSRTT_Launcher
                     {
                         con = "HDMI";
                     }
-                    int refresh = ((int)item.FrequencyInMillihertz) / 1000;
+                    double refreshRate = item.FrequencyInMillihertz;
+                    refreshRate /= 1000;
+                    refreshRate = Math.Round(refreshRate, 0);
+                    int refresh = (int)refreshRate;
                     string name = item.DisplayTarget.ToString();
                     string manCode = "";
                     if (name == "")
@@ -567,7 +586,7 @@ namespace OSRTT_Launcher
                             Thread.Sleep(1000);
                             SetDeviceStatus(1);
                             ControlDeviceButtons(true);
-                            getBoardSerial();
+                            setBoardSerial();
                         }
                         catch (Exception e)
                         {
@@ -577,7 +596,7 @@ namespace OSRTT_Launcher
                 }
                 else if (boardUpdate)
                 {
-                    if (boardVersion < downloadedFirmwareVersion)
+                    if (boardVersion < downloadedFirmwareVersion || forceUpdate)
                     {
                         string p = ""; 
                         p = port.PortName;
@@ -586,9 +605,7 @@ namespace OSRTT_Launcher
                             ControlDeviceButtons(false);
                             // readThread.Abort();
                             port.Close();
-                        }
-                        Console.WriteLine("Outside the port close");
-                        
+                        }                        
                         if (p == "")
                         {
                             MessageBox.Show("Please connect to the device first!", "Update Device", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -634,6 +651,7 @@ namespace OSRTT_Launcher
                             setProgressBar(false);
                         }
                         this.firmVerLbl.Invoke((MethodInvoker)(() => this.firmVerLbl.Text = "V" + boardVersion));
+                        forceUpdate = false;
                     }
                     else
                     {
@@ -704,47 +722,28 @@ namespace OSRTT_Launcher
                     boardUpdate = true;
                 }
             }
-        }
-
-        private void getBoardSerial()
-        {
-            System.Diagnostics.Process process = new System.Diagnostics.Process();
-            process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-            process.StartInfo.FileName = "cmd.exe";
-            process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe board list --format json";
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.CreateNoWindow = true;
-            process.Start();
-            string output = process.StandardOutput.ReadToEnd();
-            process.WaitForExit();
-            Console.WriteLine(output);
-            var outputPreSplit = output.Replace("},", "#");
-            var array = outputPreSplit.Split('#');
-            for (int i = 0; i < array.Length; i++)
+            else
             {
-                if (array[i].Contains("itsybitsy"))
+                DialogResult dialogResult = MessageBox.Show("There isn't a newer version of the firmware available right now. Would you like to force it to re-flash anyway? (Not recommended)", "No New Updates Available", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (dialogResult == DialogResult.Yes)
                 {
-                    var ports = array[i].Split(',');
-                    foreach (var p in ports)
-                    {
-                        if (p.Contains("serialNumber"))
-                        {
-                            var sn = p.Split('\"');
-                            foreach (var s in sn)
-                            {
-                                if (s.Length > 15)
-                                {
-                                    Properties.Settings.Default.serialNumber = s;
-                                    Properties.Settings.Default.Save();
-                                    this.boardSerialLbl.Invoke((MethodInvoker)(() => this.boardSerialLbl.Text = s));
-                                }
-                            }
-                        }
-                    }
+                    //updateFirmware();
+                    forceUpdate = true;
+                    boardUpdate = true;
                 }
             }
+        }
 
+        private void setBoardSerial()
+        {
+            if (boardSerialLbl.InvokeRequired)
+            {
+                this.boardSerialLbl.Invoke((MethodInvoker)(() => this.boardSerialLbl.Text = Properties.Settings.Default.serialNumber));
+            }
+            else
+            {
+                boardSerialLbl.Text = Properties.Settings.Default.serialNumber;
+            }
         }
         
         private void ControlDeviceButtons(bool state)
@@ -834,7 +833,12 @@ namespace OSRTT_Launcher
                 this.devStat.Invoke((MethodInvoker)(() => this.devStat.Text = text));
                 this.checkImg.Invoke((MethodInvoker)(() => this.checkImg.Visible = check));
                 this.deviceStatusPanel.Invoke((MethodInvoker)(() => this.deviceStatusPanel.BackColor = bg));
-                this.controlsPanel.Invoke((MethodInvoker)(() => this.controlsPanel.Enabled = active));
+                //this.controlsPanel.Invoke((MethodInvoker)(() => this.controlsPanel.Enabled = active));
+                this.launchBtn.Invoke((MethodInvoker)(() => this.launchBtn.Enabled = active));
+                this.fpsLimitList.Invoke((MethodInvoker)(() => this.fpsLimitList.Enabled = active));
+                this.testCount.Invoke((MethodInvoker)(() => this.testCount.Enabled = active));
+                this.captureTimeBox.Invoke((MethodInvoker)(() => this.captureTimeBox.Enabled = active));
+                this.vsyncStateList.Invoke((MethodInvoker)(() => this.vsyncStateList.Enabled = active));
                 this.inputLagPanel.Invoke((MethodInvoker)(() => this.inputLagPanel.Enabled = active));
                 this.launchBtn.Invoke((MethodInvoker)(() => this.launchBtn.BackColor = btnBg));
                 this.inputLagButton.Invoke((MethodInvoker)(() => this.inputLagButton.BackColor = btnBg));
@@ -844,7 +848,12 @@ namespace OSRTT_Launcher
                 this.devStat.Text = text;
                 this.checkImg.Visible = check;
                 this.deviceStatusPanel.BackColor = bg;
-                this.controlsPanel.Enabled = active;
+                //this.controlsPanel.Enabled = active;
+                this.launchBtn.Enabled = active;
+                this.fpsLimitList.Enabled = active;
+                this.testCount.Enabled = active;
+                this.captureTimeBox.Enabled = active;
+                this.vsyncStateList.Enabled = active;
                 this.inputLagPanel.Enabled = active;
                 this.launchBtn.BackColor = btnBg;
                 this.inputLagButton.BackColor = btnBg;
@@ -1230,7 +1239,7 @@ namespace OSRTT_Launcher
                     else if (message.Contains("USB V:"))
                     {
                         String newMessage = message.Remove(0, 6);
-                        if (Properties.Settings.Default.USBOutput)
+                        if (Properties.Settings.Default.USBOutput && newMessage.Length < 4999)
                         {
                             // search /Results folder for existing file names, pick new name
                             string[] existingUSBFile = Directory.GetFiles(path, "USB-Voltage-Output.csv");
@@ -1245,6 +1254,10 @@ namespace OSRTT_Launcher
                             StringBuilder USBOutputString = new StringBuilder();
                             USBOutputString.AppendLine(newMessage);
                             File.WriteAllText(USBOutputPath, USBOutputString.ToString());
+                        }
+                        else
+                        {
+                            port.Write("U");
                         }
                         string[] values = newMessage.Split(',');
                         List<int> intValues = new List<int>();
@@ -1322,6 +1335,13 @@ namespace OSRTT_Launcher
                     else if (message.Contains("Ready to test"))
                     {
                         testMode = true;
+                    }
+                    else if (message.Contains("UniqueID"))
+                    {
+                        string s = message.Remove(0,9);
+                        Regex.Replace(s, @"\s+", "");
+                        Properties.Settings.Default.serialNumber = s;
+                        Properties.Settings.Default.Save();
                     }
                     else if (message.Contains("Handshake"))
                     {
@@ -2009,16 +2029,10 @@ namespace OSRTT_Launcher
             compareFirmware();
         }
 
-        private void analyseResultsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void heatmapsMenuItem_Click(object sender, EventArgs e)
         {
-            if (analyseResultsToolStripMenuItem.Checked)
-            {
-                changeSizeAndState("analyse");
-            }
-            else
-            {
-                changeSizeAndState("standard");
-            }
+            ResultsView rs = new ResultsView();
+            rs.Show();
         }
 
         private void debugModeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2394,6 +2408,10 @@ namespace OSRTT_Launcher
         {
             Properties.Settings.Default.USBOutput = saveUSBOutputToolStripMenuItem.Checked;
             Properties.Settings.Default.Save();
+            if (port != null)
+            {
+                port.Write("U");
+            }
         }
 
         private void minimiseToTrayToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2805,12 +2823,38 @@ namespace OSRTT_Launcher
 
         private void settingsMenuItem_Click(object sender, EventArgs e)
         {
+            int resSet = -1;
+            FormCollection fc = Application.OpenForms;
+            for (int i = 0; i < fc.Count; i++)
+            {
+                if (fc[i].Name == "ResultsSettings")
+                {
+                    resSet = i;
+                }
+            }
+            if (resSet != -1)
+            {
+                fc[resSet].Close();
+            }
             ResultsSettings rs = new ResultsSettings();
             rs.Show();
         }
 
         private void testSettingsBtn_Click(object sender, EventArgs e)
         {
+            int resSet = -1;
+            FormCollection fc = Application.OpenForms;
+            for (int i = 0; i < fc.Count; i++)
+            {
+                if (fc[i].Name == "ResultsSettings")
+                {
+                    resSet = i;
+                }
+            }
+            if (resSet != -1)
+            {
+                fc[resSet].Close();
+            }
             ResultsSettings rs = new ResultsSettings();
             rs.Show();
         }

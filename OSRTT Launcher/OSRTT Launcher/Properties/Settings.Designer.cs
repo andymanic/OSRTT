@@ -418,5 +418,17 @@ namespace OSRTT_Launcher.Properties {
                 this["serialNumber"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool smoothGraph {
+            get {
+                return ((bool)(this["smoothGraph"]));
+            }
+            set {
+                this["smoothGraph"] = value;
+            }
+        }
     }
 }

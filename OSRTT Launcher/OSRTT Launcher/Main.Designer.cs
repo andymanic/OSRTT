@@ -32,7 +32,7 @@
             this.launchBtn = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.analyseResultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.heatmapsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.programSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutProgramToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,6 +77,8 @@
             this.label11 = new System.Windows.Forms.Label();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.aboutPanel = new System.Windows.Forms.Panel();
+            this.boardSerialLbl = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.firmVerLbl = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
@@ -102,8 +104,6 @@
             this.resultsViewBtn = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.toolTipController = new System.Windows.Forms.ToolTip(this.components);
-            this.boardSerialLbl = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.controlsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.testCount)).BeginInit();
@@ -148,7 +148,7 @@
             this.menuStrip1.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.menuStrip1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.analyseResultsToolStripMenuItem,
+            this.heatmapsMenuItem,
             this.settingsMenuItem,
             this.programSettingsToolStripMenuItem,
             this.BrightnessCalBtn,
@@ -160,14 +160,13 @@
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
-            // analyseResultsToolStripMenuItem
+            // heatmapsMenuItem
             // 
-            this.analyseResultsToolStripMenuItem.CheckOnClick = true;
-            this.analyseResultsToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.analyseResultsToolStripMenuItem.Name = "analyseResultsToolStripMenuItem";
-            this.analyseResultsToolStripMenuItem.Size = new System.Drawing.Size(126, 20);
-            this.analyseResultsToolStripMenuItem.Text = "Heatmaps && Graphs";
-            this.analyseResultsToolStripMenuItem.Click += new System.EventHandler(this.analyseResultsToolStripMenuItem_Click);
+            this.heatmapsMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.heatmapsMenuItem.Name = "heatmapsMenuItem";
+            this.heatmapsMenuItem.Size = new System.Drawing.Size(126, 20);
+            this.heatmapsMenuItem.Text = "Heatmaps && Graphs";
+            this.heatmapsMenuItem.Click += new System.EventHandler(this.heatmapsMenuItem_Click);
             // 
             // settingsMenuItem
             // 
@@ -690,6 +689,25 @@
             this.aboutPanel.Size = new System.Drawing.Size(645, 109);
             this.aboutPanel.TabIndex = 29;
             // 
+            // boardSerialLbl
+            // 
+            this.boardSerialLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.boardSerialLbl.Location = new System.Drawing.Point(290, 75);
+            this.boardSerialLbl.Name = "boardSerialLbl";
+            this.boardSerialLbl.Size = new System.Drawing.Size(271, 24);
+            this.boardSerialLbl.TabIndex = 28;
+            this.boardSerialLbl.Text = "Not Connected";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label13.Location = new System.Drawing.Point(99, 75);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(191, 24);
+            this.label13.TabIndex = 27;
+            this.label13.Text = "Board Serial Number:";
+            // 
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
@@ -974,25 +992,6 @@
             this.progressBar1.TabIndex = 33;
             this.progressBar1.Visible = false;
             // 
-            // boardSerialLbl
-            // 
-            this.boardSerialLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.boardSerialLbl.Location = new System.Drawing.Point(290, 75);
-            this.boardSerialLbl.Name = "boardSerialLbl";
-            this.boardSerialLbl.Size = new System.Drawing.Size(271, 24);
-            this.boardSerialLbl.TabIndex = 28;
-            this.boardSerialLbl.Text = "Not Connected";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label13.Location = new System.Drawing.Point(99, 75);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(191, 24);
-            this.label13.TabIndex = 27;
-            this.label13.Text = "Board Serial Number:";
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1045,7 +1044,7 @@
         private System.Windows.Forms.ToolStripMenuItem deviceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem updateDeviceToolStripMenuItem;
         private System.Windows.Forms.Label devStat;
-        private System.Windows.Forms.ToolStripMenuItem analyseResultsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem heatmapsMenuItem;
         private System.Windows.Forms.Panel controlsPanel;
         private System.Windows.Forms.ComboBox monitorCB;
         private System.Windows.Forms.Label label1;

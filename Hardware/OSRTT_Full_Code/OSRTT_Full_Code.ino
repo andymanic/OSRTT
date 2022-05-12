@@ -1,6 +1,7 @@
 #include "Keyboard.h"
 #include "Mouse.h"
 #include <SPI.h>
+#include <ArduinoUniqueID.h>
 #define INPUT_SIZE 2
 
 //Test values
@@ -35,7 +36,7 @@ SPISettings settingsA(10000000, MSBFIRST, SPI_MODE0);
 
 //Serial connection values
 bool connected = false;
-String firmware = "2.3";
+String firmware = "2.4";
 int testRuns = 4;
 bool vsync = true;
 bool extendedGamma = true;
@@ -216,10 +217,10 @@ void digitalPotWrite(int value)
   SPI.endTransaction();  
 }
 
-int checkUSBVoltage() // Check USB voltage is between 4.8V and 5.2V
+int checkUSBVoltage(int l) // Check USB voltage is between 4.8V and 5.2V
 {
   int counter = 0;
-  while (counter < 2000)
+  while (counter < l)
   {
     ADC1->SWTRIG.bit.START = 1; //Start ADC1 
     while(!ADC1->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
@@ -463,7 +464,7 @@ void loop() {
       Serial.print("FPS Key:");
       Serial.println(fpsLimit);
       delay(100);
-      int voltageTest = checkUSBVoltage();
+      int voltageTest = checkUSBVoltage(2000);
       int arrSize = sizeof(RGBArr) / sizeof(int);
       Serial.print("RGB Array:");
       for(int i = 0; i < arrSize; i++)
@@ -471,8 +472,14 @@ void loop() {
         Serial.print(RGBArr[i]);
         Serial.print(",");
       }
+      
       Serial.println();
+      UniqueIDdump(Serial);
       Serial.println("Handshake");
+    }
+    else if (input[0] == 'U')
+    {
+      checkUSBVoltage(10000);
     }
     else if (input[0] == 'M')
     {

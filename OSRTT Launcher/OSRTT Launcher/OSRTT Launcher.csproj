@@ -66,13 +66,19 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>5995BAD7207929E8C09C3FCBAAE27B31B58ECE87</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>15B3F83EC07532CE2A5C4F085A479E96EF1109E1</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>OSRTT Launcher_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>OSRTT Launcher_1_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestTimestampUrl>http://timestamp.comodoca.com</ManifestTimestampUrl>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>OSRTT Launcher_1_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AutoUpdater.NET, Version=1.7.0.0, Culture=neutral, PublicKeyToken=501435c91b35f4bc, processorArchitecture=MSIL">
@@ -197,6 +203,7 @@
     <EmbeddedResource Include="ResultsView.resx">
       <DependentUpon>ResultsView.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="OSRTT Launcher_1_TemporaryKey.pfx" />
     <None Include="OSRTT Launcher_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

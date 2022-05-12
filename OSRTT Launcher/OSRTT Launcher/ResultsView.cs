@@ -31,7 +31,7 @@ namespace OSRTT_Launcher
         // Raw sensor data, list of lists to hold multiple runs worth of results at once
         public List<List<ProcessData.rawResultData>> rawData = new List<List<ProcessData.rawResultData>>();
         // Moving average smoothed sensor data, list of lists to hold multiple runs worth of results at once
-        public List<ProcessData.rawResultData> smoothedData = new List<ProcessData.rawResultData>();
+        public List<List<ProcessData.rawResultData>> smoothedData = new List<List<ProcessData.rawResultData>>();
         // Processed results, list of lists to hold multiple runs worth of results at once
         public List<List<ProcessData.processedResult>> multipleRunsData = new List<List<ProcessData.processedResult>>();
         // Single averaged results list from multiple run data
@@ -171,6 +171,8 @@ namespace OSRTT_Launcher
             {
                 graphViewMenuBtn.Visible = true;
                 toolStripSeparator3.Visible = true;
+                handleRunsList();
+                handleResultsList(runSelectBox.SelectedIndex);
                 if (graph)
                 {
                     graphViewMenuBtn_Click(null, null);
@@ -297,6 +299,45 @@ namespace OSRTT_Launcher
                                     gammaCsv.AppendLine(g.RGB.ToString() + "," + g.LightLevel.ToString());
                                 }
                                 File.WriteAllText(resultsFolderPath + "\\" + gammaName, gammaCsv.ToString());
+                            }
+                            smoothedData.Clear();
+                            foreach (List<ProcessData.rawResultData> res in rawData)
+                            {
+                                List<ProcessData.rawResultData> tempSmoothed = new List<ProcessData.rawResultData>();
+                                foreach (ProcessData.rawResultData raw in res)
+                                {
+                                    int[] samples = raw.Samples.ToArray();
+                                    int period = 10;
+                                    int noise = raw.noiseLevel;
+                                    if (noise < 250)
+                                    {
+                                        period = 20;
+                                    }
+                                    else if (noise < 500)
+                                    {
+                                        period = 30;
+                                    }
+                                    else if (noise < 750)
+                                    {
+                                        period = 40;
+                                    }
+                                    else
+                                    {
+                                        period = 50;
+                                    }
+                                    int[] smoothedSamples = pd.smoothData(samples, period);
+                                    ProcessData.rawResultData d = new ProcessData.rawResultData
+                                    {
+                                        StartingRGB = raw.StartingRGB,
+                                        EndRGB = raw.EndRGB,
+                                        SampleCount = raw.SampleCount,
+                                        TimeTaken = raw.TimeTaken,
+                                        SampleTime = raw.SampleTime,
+                                        Samples = smoothedSamples.ToList()
+                                    };
+                                    tempSmoothed.Add(d);
+                                }
+                                smoothedData.Add(tempSmoothed);
                             }
                             //processTestLatency();
                             Console.WriteLine(rawData.Count);
@@ -428,7 +469,15 @@ namespace OSRTT_Launcher
             int sampleTime = rawData[arrayIndex][resultIndex].TimeTaken;
             int sampleCount = rawData[arrayIndex][resultIndex].SampleCount;
             double averageTime = rawData[arrayIndex][resultIndex].SampleTime;
-            double[] resultData = rawData[arrayIndex][resultIndex].Samples.Select(x => (double)x).ToArray();
+            double[] resultData;
+            if (Properties.Settings.Default.smoothGraph)
+            {
+                resultData = smoothedData[arrayIndex][resultIndex].Samples.Select(x => (double)x).ToArray();
+            }
+            else
+            {
+                resultData = rawData[arrayIndex][resultIndex].Samples.Select(x => (double)x).ToArray();
+            }
             double[] timeData = new double[resultData.Length];
             for (int i = 0; i < timeData.Length; i++)
             {
@@ -539,6 +588,8 @@ namespace OSRTT_Launcher
             graphViewMenuBtn.Checked = false;
             importViewMenuButton.Checked = false;
             viewToolStripMenuItem.Visible = true;
+            deNoisedRawDataToolStripMenuItem.Visible = false;
+            toolStripSeparator2.Visible = false;
             toolStripSeparator1.Visible = true;
             try
             {
@@ -575,6 +626,8 @@ namespace OSRTT_Launcher
             graphViewMenuBtn.Visible = true;
             importViewMenuButton.Checked = false;
             viewToolStripMenuItem.Visible = true;
+            deNoisedRawDataToolStripMenuItem.Visible = true;
+            toolStripSeparator2.Visible = true;
             runSelectToolStrip.Visible = false;
             toolStripSeparator3.Visible = true;
         }
@@ -685,9 +738,14 @@ namespace OSRTT_Launcher
                     double sampleCount = Convert.ToDouble(testLatency[3]);
                     double sampleTime = resTime / sampleCount;
                     double start = ((proc.startIndex + proc.offset) * sampleTime);
+                    double end = ((proc.endIndex + proc.offset) * sampleTime);
+                    if (Properties.Settings.Default.smoothGraph)
+                    {
+                        start = (proc.startIndex * sampleTime);
+                        end = (proc.endIndex * sampleTime);
+                    }
                     start /= 1000;
                     start = Math.Round(start, 2);
-                    double end = ((proc.endIndex + proc.offset) * sampleTime);
                     end /= 1000;
                     end = Math.Round(end, 2);
                     var hSpan = graphedData.Plot.AddHorizontalSpan(start, end);
@@ -871,6 +929,45 @@ namespace OSRTT_Launcher
                                     gammaCsv.AppendLine(g.RGB.ToString() + "," + g.LightLevel.ToString());
                                 }
                                 File.WriteAllText(resultsFolderPath + "\\" + gammaName, gammaCsv.ToString());
+                            }
+                            smoothedData.Clear();
+                            foreach (List<ProcessData.rawResultData> res in rawData)
+                            {
+                                List<ProcessData.rawResultData> tempSmoothed = new List<ProcessData.rawResultData>();
+                                foreach (ProcessData.rawResultData raw in res)
+                                {
+                                    int[] samples = raw.Samples.ToArray();
+                                    int period = 10;
+                                    int noise = raw.noiseLevel;
+                                    if (noise < 250)
+                                    {
+                                        period = 20;
+                                    }
+                                    else if (noise < 500)
+                                    {
+                                        period = 30;
+                                    }
+                                    else if (noise < 750)
+                                    {
+                                        period = 40;
+                                    }
+                                    else
+                                    {
+                                        period = 50;
+                                    }
+                                    int[] smoothedSamples = pd.smoothData(samples, period);
+                                    ProcessData.rawResultData d = new ProcessData.rawResultData
+                                    {
+                                        StartingRGB = raw.StartingRGB,
+                                        EndRGB = raw.EndRGB,
+                                        SampleCount = raw.SampleCount,
+                                        TimeTaken = raw.TimeTaken,
+                                        SampleTime = raw.SampleTime,
+                                        Samples = smoothedSamples.ToList()
+                                    };
+                                    tempSmoothed.Add(d);
+                                }
+                                smoothedData.Add(tempSmoothed);
                             }
                         }
                         else
@@ -1057,6 +1154,17 @@ namespace OSRTT_Launcher
             string monitorInfo = "";
             if (resultsFolderPath != "")
             {
+                string[] existingFiles = Directory.GetFiles(resultsFolderPath, "*.png");
+                int fileNumber = 0;
+                //search files for number
+                foreach (var s in existingFiles)
+                {
+                    int num = int.Parse(Path.GetFileNameWithoutExtension(s).Remove(3));
+                    if (num >= fileNumber)
+                    {
+                        fileNumber = num + 1;
+                    }
+                }
                 string[] folders = resultsFolderPath.Split('\\');
                 monitorInfo = folders.Last();
                 fileName = monitorInfo + ".png";
@@ -1194,11 +1302,23 @@ namespace OSRTT_Launcher
         {
             string fileName = "OSRTT Heatmaps.png";
             string monitorInfo = "";
+            
             if (resultsFolderPath != "")
             {
+                string[] existingFiles = Directory.GetFiles(resultsFolderPath, "*.png");
+                int fileNumber = 0;
+                //search files for number
+                foreach (var s in existingFiles)
+                {
+                    int num = int.Parse(Path.GetFileNameWithoutExtension(s).Remove(3));
+                    if (num >= fileNumber)
+                    {
+                        fileNumber = num + 1;
+                    }
+                }
                 string[] folders = resultsFolderPath.Split('\\');
                 monitorInfo = folders.Last();
-                fileName = monitorInfo + ".png";
+                fileName = fileNumber.ToString() + monitorInfo + ".png";
             }
             else
             {
@@ -1432,15 +1552,20 @@ namespace OSRTT_Launcher
             {
                 runSettings = new ProcessData.runSettings       // REMOVE THIS 
                 {
-                    RunName = "078-XG270QG-165-DP",
+                    RunName = "001-DISPLAY-165-DP",
                     RefreshRate = 165,
                     FPSLimit = 1000,
                     DateAndTime = DateTime.Now.ToString(),
-                    MonitorName = "XG270QG",
+                    MonitorName = "DISPLAY",
                     Vsync = true,
                     osMethod = os,
                     rtMethod = rt
                 };
+            }
+            else
+            {
+                runSettings.rtMethod = rt;
+                runSettings.osMethod = os;
             }
             if (success)
             {
@@ -1496,15 +1621,20 @@ namespace OSRTT_Launcher
             {
                 runSettings = new ProcessData.runSettings       // REMOVE THIS 
                 {
-                    RunName = "078-XG270QG-165-DP",
+                    RunName = "001-DISPLAY-165-DP",
                     RefreshRate = 165,
                     FPSLimit = 1000,
                     DateAndTime = DateTime.Now.ToString(),
-                    MonitorName = "XG270QG",
+                    MonitorName = "DISPLAY",
                     Vsync = true,
                     osMethod = os,
                     rtMethod = rt
                 };
+            }
+            else
+            {
+                runSettings.rtMethod = rt;
+                runSettings.osMethod = os;
             }
             if (success)
             {
@@ -1530,6 +1660,19 @@ namespace OSRTT_Launcher
 
         private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            int resSet = -1;
+            FormCollection fc = Application.OpenForms;
+            for (int i = 0; i < fc.Count; i++)
+            {
+                if (fc[i].Name == "ResultsSettings")
+                {
+                    resSet = i;
+                }
+            }
+            if (resSet != -1)
+            {
+                fc[resSet].Close();
+            }
             ResultsSettings rs = new ResultsSettings();
             rs.Show();
         }
@@ -1598,6 +1741,21 @@ namespace OSRTT_Launcher
             }
         }
 
-        
+        private void deNoisedRawDataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.smoothGraph = deNoisedRawDataToolStripMenuItem.Checked;
+            Properties.Settings.Default.Save();
+
+            try
+            {
+                drawGraph(runSelectBox.SelectedIndex, transSelect1.SelectedIndex);
+                showProcessedData();
+            }
+            catch (Exception ex)
+            {
+                CFuncs cf = new CFuncs();
+                cf.showMessageBox(ex.Message + ex.StackTrace, "Error Drawing graph", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }

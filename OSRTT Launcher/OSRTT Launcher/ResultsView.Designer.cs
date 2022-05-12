@@ -80,6 +80,8 @@ namespace OSRTT_Launcher
             this.importResultsViewBtn = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.heatmaps1 = new OSRTT_Launcher.Heatmaps();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.deNoisedRawDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.graphViewPanel.SuspendLayout();
@@ -106,7 +108,9 @@ namespace OSRTT_Launcher
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.perceivedResponseTimeToolStripMenuItem,
             this.initialResponseTimeToolStripMenuItem,
-            this.completeResponseTimeToolStripMenuItem});
+            this.completeResponseTimeToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.deNoisedRawDataToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "View";
@@ -646,6 +650,19 @@ namespace OSRTT_Launcher
             this.heatmaps1.Size = new System.Drawing.Size(1775, 950);
             this.heatmaps1.TabIndex = 6;
             // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(205, 6);
+            // 
+            // deNoisedRawDataToolStripMenuItem
+            // 
+            this.deNoisedRawDataToolStripMenuItem.CheckOnClick = true;
+            this.deNoisedRawDataToolStripMenuItem.Name = "deNoisedRawDataToolStripMenuItem";
+            this.deNoisedRawDataToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.deNoisedRawDataToolStripMenuItem.Text = "De-Noised Raw Data";
+            this.deNoisedRawDataToolStripMenuItem.Click += new System.EventHandler(this.deNoisedRawDataToolStripMenuItem_Click);
+            // 
             // ResultsView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -733,5 +750,7 @@ namespace OSRTT_Launcher
         private System.Windows.Forms.ToolStripComboBox runSelectToolStrip;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.ToolStripMenuItem asPNGToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem deNoisedRawDataToolStripMenuItem;
     }
 }
