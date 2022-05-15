@@ -930,7 +930,7 @@ namespace OSRTT_Launcher
                                     }
                                 }
                             }
-                            else if (f.Contains("data.json"))
+                            /*else if (f.Contains("data.json"))
                             {
                                 valid = true;
                                 gamma.Clear();
@@ -965,7 +965,7 @@ namespace OSRTT_Launcher
                                         }
                                     }
                                 }
-                            }
+                            }*/
                         }
                         if (valid)
                         {
