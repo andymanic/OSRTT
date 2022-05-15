@@ -132,6 +132,18 @@
   <ItemGroup>
     <Compile Include="CFuncs.cs" />
     <Compile Include="DataUpload.cs" />
+    <Compile Include="Gamma.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gamma.Designer.cs">
+      <DependentUpon>Gamma.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GammaView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GammaView.Designer.cs">
+      <DependentUpon>GammaView.cs</DependentUpon>
+    </Compile>
     <Compile Include="ProcessData.cs" />
     <Compile Include="DisplayInitCheck.cs" />
     <Compile Include="FocusedWindow.cs" />
@@ -175,6 +187,12 @@
     <Compile Include="Heatmaps.Designer.cs">
       <DependentUpon>Heatmaps.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Gamma.resx">
+      <DependentUpon>Gamma.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GammaView.resx">
+      <DependentUpon>GammaView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Heatmaps.resx">
       <DependentUpon>Heatmaps.cs</DependentUpon>
     </EmbeddedResource>

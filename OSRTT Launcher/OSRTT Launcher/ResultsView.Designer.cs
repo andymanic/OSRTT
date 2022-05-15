@@ -35,6 +35,8 @@ namespace OSRTT_Launcher
             this.perceivedResponseTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.initialResponseTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.completeResponseTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.deNoisedRawDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveHeatmapsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.asPNGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -47,6 +49,7 @@ namespace OSRTT_Launcher
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.importViewMenuButton = new System.Windows.Forms.ToolStripButton();
             this.graphViewPanel = new System.Windows.Forms.Panel();
+            this.viewGammaBtn = new System.Windows.Forms.Button();
             this.saveGraphNoHSpanBtn = new System.Windows.Forms.Button();
             this.saveAsPNGBtn = new System.Windows.Forms.Button();
             this.latencyLabel = new System.Windows.Forms.Label();
@@ -79,9 +82,9 @@ namespace OSRTT_Launcher
             this.label5 = new System.Windows.Forms.Label();
             this.importResultsViewBtn = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.rtViewMenuList = new System.Windows.Forms.ToolStripComboBox();
+            this.denoiseToolStripBtn = new System.Windows.Forms.ToolStripButton();
             this.heatmaps1 = new OSRTT_Launcher.Heatmaps();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.deNoisedRawDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.graphViewPanel.SuspendLayout();
@@ -141,6 +144,19 @@ namespace OSRTT_Launcher
             this.completeResponseTimeToolStripMenuItem.Text = "Complete Response Time";
             this.completeResponseTimeToolStripMenuItem.Click += new System.EventHandler(this.completeResponseTimeToolStripMenuItem_Click);
             // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(205, 6);
+            // 
+            // deNoisedRawDataToolStripMenuItem
+            // 
+            this.deNoisedRawDataToolStripMenuItem.CheckOnClick = true;
+            this.deNoisedRawDataToolStripMenuItem.Name = "deNoisedRawDataToolStripMenuItem";
+            this.deNoisedRawDataToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
+            this.deNoisedRawDataToolStripMenuItem.Text = "De-Noised Raw Data";
+            this.deNoisedRawDataToolStripMenuItem.Click += new System.EventHandler(this.deNoisedRawDataToolStripMenuItem_Click);
+            // 
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
@@ -178,6 +194,8 @@ namespace OSRTT_Launcher
             this.runSelectToolStrip,
             this.toolStripSeparator1,
             this.graphViewMenuBtn,
+            this.rtViewMenuList,
+            this.denoiseToolStripBtn,
             this.toolStripSeparator3,
             this.importViewMenuButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
@@ -242,6 +260,7 @@ namespace OSRTT_Launcher
             // 
             // graphViewPanel
             // 
+            this.graphViewPanel.Controls.Add(this.viewGammaBtn);
             this.graphViewPanel.Controls.Add(this.saveGraphNoHSpanBtn);
             this.graphViewPanel.Controls.Add(this.saveAsPNGBtn);
             this.graphViewPanel.Controls.Add(this.latencyLabel);
@@ -263,8 +282,22 @@ namespace OSRTT_Launcher
             this.graphViewPanel.Controls.Add(this.graphedData);
             this.graphViewPanel.Location = new System.Drawing.Point(5, 442);
             this.graphViewPanel.Name = "graphViewPanel";
-            this.graphViewPanel.Size = new System.Drawing.Size(1384, 722);
+            this.graphViewPanel.Size = new System.Drawing.Size(1384, 719);
             this.graphViewPanel.TabIndex = 4;
+            // 
+            // viewGammaBtn
+            // 
+            this.viewGammaBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.viewGammaBtn.FlatAppearance.BorderSize = 0;
+            this.viewGammaBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.viewGammaBtn.Font = new System.Drawing.Font("Consolas", 16F, System.Drawing.FontStyle.Bold);
+            this.viewGammaBtn.Location = new System.Drawing.Point(1180, 9);
+            this.viewGammaBtn.Name = "viewGammaBtn";
+            this.viewGammaBtn.Size = new System.Drawing.Size(193, 36);
+            this.viewGammaBtn.TabIndex = 28;
+            this.viewGammaBtn.Text = "Gamma Curve";
+            this.viewGammaBtn.UseVisualStyleBackColor = false;
+            this.viewGammaBtn.Click += new System.EventHandler(this.viewGammaBtn_Click);
             // 
             // saveGraphNoHSpanBtn
             // 
@@ -643,25 +676,34 @@ namespace OSRTT_Launcher
             this.progressBar1.TabIndex = 34;
             this.progressBar1.Visible = false;
             // 
+            // rtViewMenuList
+            // 
+            this.rtViewMenuList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.rtViewMenuList.DropDownWidth = 175;
+            this.rtViewMenuList.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.rtViewMenuList.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rtViewMenuList.Margin = new System.Windows.Forms.Padding(5, 0, 1, 0);
+            this.rtViewMenuList.Name = "rtViewMenuList";
+            this.rtViewMenuList.Size = new System.Drawing.Size(175, 25);
+            this.rtViewMenuList.SelectedIndexChanged += new System.EventHandler(this.rtViewMenuList_SelectedIndexChanged);
+            // 
+            // denoiseToolStripBtn
+            // 
+            this.denoiseToolStripBtn.CheckOnClick = true;
+            this.denoiseToolStripBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.denoiseToolStripBtn.Image = ((System.Drawing.Image)(resources.GetObject("denoiseToolStripBtn.Image")));
+            this.denoiseToolStripBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.denoiseToolStripBtn.Name = "denoiseToolStripBtn";
+            this.denoiseToolStripBtn.Size = new System.Drawing.Size(88, 22);
+            this.denoiseToolStripBtn.Text = "Denoise Graph";
+            this.denoiseToolStripBtn.Click += new System.EventHandler(this.denoiseToolStripBtn_Click);
+            // 
             // heatmaps1
             // 
             this.heatmaps1.Location = new System.Drawing.Point(1395, 55);
             this.heatmaps1.Name = "heatmaps1";
             this.heatmaps1.Size = new System.Drawing.Size(1775, 950);
             this.heatmaps1.TabIndex = 6;
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(205, 6);
-            // 
-            // deNoisedRawDataToolStripMenuItem
-            // 
-            this.deNoisedRawDataToolStripMenuItem.CheckOnClick = true;
-            this.deNoisedRawDataToolStripMenuItem.Name = "deNoisedRawDataToolStripMenuItem";
-            this.deNoisedRawDataToolStripMenuItem.Size = new System.Drawing.Size(208, 22);
-            this.deNoisedRawDataToolStripMenuItem.Text = "De-Noised Raw Data";
-            this.deNoisedRawDataToolStripMenuItem.Click += new System.EventHandler(this.deNoisedRawDataToolStripMenuItem_Click);
             // 
             // ResultsView
             // 
@@ -752,5 +794,8 @@ namespace OSRTT_Launcher
         private System.Windows.Forms.ToolStripMenuItem asPNGToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem deNoisedRawDataToolStripMenuItem;
+        private System.Windows.Forms.Button viewGammaBtn;
+        private System.Windows.Forms.ToolStripComboBox rtViewMenuList;
+        private System.Windows.Forms.ToolStripButton denoiseToolStripBtn;
     }
 }

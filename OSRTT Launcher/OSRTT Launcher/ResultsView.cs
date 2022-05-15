@@ -146,8 +146,12 @@ namespace OSRTT_Launcher
             runSelectToolStrip.Visible = false;
             toolStripSeparator1.Visible = false;
             toolStripSeparator3.Visible = false;
+            rtViewMenuList.Visible = false;
+            denoiseToolStripBtn.Visible = false;
+            deNoisedRawDataToolStripMenuItem.Checked = Properties.Settings.Default.smoothGraph;
             initResultsMethodList();
             initOvershootStyleList();
+            initRtStyleList();
         }
         private void ResultsView_Load(object sender, EventArgs e)
         {
@@ -171,6 +175,8 @@ namespace OSRTT_Launcher
             {
                 graphViewMenuBtn.Visible = true;
                 toolStripSeparator3.Visible = true;
+                rtViewMenuList.Visible = true;
+                denoiseToolStripBtn.Visible = true;
                 handleRunsList();
                 handleResultsList(runSelectBox.SelectedIndex);
                 if (graph)
@@ -197,6 +203,15 @@ namespace OSRTT_Launcher
                 overshootStyleListBox.Items.Add(item.Name);
             }
             overshootStyleListBox.SelectedIndex = 0;
+        }
+
+        private void initRtStyleList()
+        {
+            rtViewMenuList.Items.Clear();
+            rtViewMenuList.Items.Add("Perceived Response Time");
+            rtViewMenuList.Items.Add("Initial Response Time");
+            rtViewMenuList.Items.Add("Complete Response Time");
+            rtViewMenuList.SelectedIndex = 0;
         }
         private void importRawData()
         {
@@ -425,7 +440,7 @@ namespace OSRTT_Launcher
             {
                 Size = new Size(Size.Width, (Size.Height + 20));
                 graphViewPanel.Location = new Point(5, 52);
-                drawGraph(0, 0);
+                drawGraph();
                 showProcessedData();
             }
             else
@@ -458,7 +473,7 @@ namespace OSRTT_Launcher
             e.Graphics.DrawString(text, ((Control)sender).Font, brush, e.Bounds.X, e.Bounds.Y);
         }*/
 
-        private void drawGraph(int arrayIndex, int resultIndex)
+        private void drawGraph(int arrayIndex = 0, int resultIndex = 0)
         {
             if (resultIndex < 0)
             {
@@ -488,6 +503,12 @@ namespace OSRTT_Launcher
             graphedData.Plot.Clear();
             graphedData.Plot.Palette = ScottPlot.Palette.OneHalfDark;
             graphedData.Plot.AxisAuto(0, 0.1);
+            double xMax = timeData.Max();
+            double yMin = resultData.Min();
+            yMin *= 0.75;
+            double yMax = resultData.Max();
+            yMax *= 1.04;
+            graphedData.Plot.SetOuterViewLimits(0, xMax, yMin, yMax);
             graphedData.Plot.Style(ScottPlot.Style.Gray1);
             var bnColor = System.Drawing.ColorTranslator.FromHtml("#2e3440");
             graphedData.Plot.Style(figureBackground: bnColor, dataBackground: bnColor);
@@ -591,6 +612,8 @@ namespace OSRTT_Launcher
             deNoisedRawDataToolStripMenuItem.Visible = false;
             toolStripSeparator2.Visible = false;
             toolStripSeparator1.Visible = true;
+            rtViewMenuList.Visible = false;
+            denoiseToolStripBtn.Visible = false;
             try
             {
                 standardView();
@@ -618,7 +641,7 @@ namespace OSRTT_Launcher
             graphViewPanel.Visible = true;
             importPanel.Visible = false;
             saveHeatmapsToolStripMenuItem.Visible = false;
-            Size = new Size(1400, 800);
+            Size = new Size(1400, 820);
             //Size = new Size(Size.Width, (Size.Height + 15));
             BackColor = System.Drawing.ColorTranslator.FromHtml("#2e3440");
             stdResultsMenuBtn.Checked = false;
@@ -630,6 +653,8 @@ namespace OSRTT_Launcher
             toolStripSeparator2.Visible = true;
             runSelectToolStrip.Visible = false;
             toolStripSeparator3.Visible = true;
+            rtViewMenuList.Visible = true;
+            denoiseToolStripBtn.Visible = true;
         }
 
         private void importViewMenuButton_Click(object sender, EventArgs e)
@@ -902,6 +927,42 @@ namespace OSRTT_Launcher
                                     else
                                     {
                                         MessageBox.Show(iex.Message + iex.StackTrace, "Unable to open file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    }
+                                }
+                            }
+                            else if (f.Contains("data.json"))
+                            {
+                                valid = true;
+                                gamma.Clear();
+                                testLatency.Clear();
+                                string json = "";
+                                using (System.Windows.Forms.OpenFileDialog OFD = new System.Windows.Forms.OpenFileDialog())
+                                {
+                                    OFD.FileName = f;
+                                    //Read the contents of the file into a stream
+
+                                    var fileStream = OFD.OpenFile();
+                                    using (StreamReader reader = new StreamReader(fileStream))
+                                    {
+                                        while (!reader.EndOfStream)
+                                        {
+                                            // This can probably be done better
+                                            json = reader.ReadToEnd();
+                                            
+                                        }
+                                        DataUpload.ShareData[] results = JsonConvert.DeserializeObject<DataUpload.ShareData[]>(json);
+                                        if (results != null)
+                                        {
+                                            List<DataUpload.ShareData> resultsList = results.ToList();
+                                            foreach (DataUpload.ShareData share in resultsList)
+                                            {
+                                                gamma.Clear();
+                                                rawData.Add(share.rawData);
+                                                gamma.AddRange(share.gammaData);
+                                                testLatency.AddRange(share.testLatency);
+                                                runSettings = share.runSettings;
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -1344,6 +1405,7 @@ namespace OSRTT_Launcher
             perceivedResponseTimeToolStripMenuItem.Checked = true;
             initialResponseTimeToolStripMenuItem.Checked = false;
             completeResponseTimeToolStripMenuItem.Checked = false;
+            rtViewMenuList.SelectedIndex = 0;
             if (stdResultsMenuBtn.Checked)
             {
                 standardView();
@@ -1360,6 +1422,7 @@ namespace OSRTT_Launcher
             perceivedResponseTimeToolStripMenuItem.Checked = false;
             initialResponseTimeToolStripMenuItem.Checked = true;
             completeResponseTimeToolStripMenuItem.Checked = false;
+            rtViewMenuList.SelectedIndex = 1;
             if (stdResultsMenuBtn.Checked)
             {
                 standardView();
@@ -1376,6 +1439,7 @@ namespace OSRTT_Launcher
             perceivedResponseTimeToolStripMenuItem.Checked = false;
             initialResponseTimeToolStripMenuItem.Checked = false;
             completeResponseTimeToolStripMenuItem.Checked = true;
+            rtViewMenuList.SelectedIndex = 2;
             if (stdResultsMenuBtn.Checked)
             {
                 standardView();
@@ -1583,6 +1647,8 @@ namespace OSRTT_Launcher
             }
             if (success)
             {
+                handleRunsList();
+                handleResultsList(runSelectBox.SelectedIndex);
                 stdResultsMenuBtn_Click(null, null);
                 Process.Start("explorer.exe", resultsFolderPath);
             }
@@ -1652,6 +1718,8 @@ namespace OSRTT_Launcher
             }
             if (success)
             {
+                handleRunsList();
+                handleResultsList(runSelectBox.SelectedIndex);
                 stdResultsMenuBtn_Click(null, null);
                 Process.Start("explorer.exe", resultsFolderPath);
             }
@@ -1744,6 +1812,71 @@ namespace OSRTT_Launcher
         private void deNoisedRawDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Properties.Settings.Default.smoothGraph = deNoisedRawDataToolStripMenuItem.Checked;
+            denoiseToolStripBtn.Checked = deNoisedRawDataToolStripMenuItem.Checked;
+            Properties.Settings.Default.Save();
+
+            try
+            {
+                drawGraph(runSelectBox.SelectedIndex, transSelect1.SelectedIndex);
+                showProcessedData();
+            }
+            catch (Exception ex)
+            {
+                CFuncs cf = new CFuncs();
+                cf.showMessageBox(ex.Message + ex.StackTrace, "Error Drawing graph", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void viewGammaBtn_Click(object sender, EventArgs e)
+        {
+            if (processedGamma.Count != 0)
+            {
+                GammaView gv = new GammaView();
+                gv.setGammaData(processedGamma);
+                gv.Show();
+            }
+            else
+            {
+                MessageBox.Show("No Gamma Data!");
+            }    
+        }
+
+        private void rtViewMenuList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var ctrl = sender as ToolStripComboBox;
+            if (ctrl.Focused)
+            {
+                if (rtViewMenuList.SelectedItem.ToString().Contains("Perceived"))
+                {
+                    perceivedResponseTimeToolStripMenuItem.Checked = true;
+                    initialResponseTimeToolStripMenuItem.Checked = false;
+                    completeResponseTimeToolStripMenuItem.Checked = false;
+                    drawGraph(runSelectBox.SelectedIndex, transSelect1.SelectedIndex);
+                    showProcessedData();
+                }
+                else if (rtViewMenuList.SelectedItem.ToString().Contains("Initial"))
+                {
+                    perceivedResponseTimeToolStripMenuItem.Checked = false;
+                    initialResponseTimeToolStripMenuItem.Checked = true;
+                    completeResponseTimeToolStripMenuItem.Checked = false;
+                    drawGraph(runSelectBox.SelectedIndex, transSelect1.SelectedIndex);
+                    showProcessedData();
+                }
+                else if (rtViewMenuList.SelectedItem.ToString().Contains("Complete"))
+                {
+                    perceivedResponseTimeToolStripMenuItem.Checked = false;
+                    initialResponseTimeToolStripMenuItem.Checked = false;
+                    completeResponseTimeToolStripMenuItem.Checked = true;
+                    drawGraph(runSelectBox.SelectedIndex, transSelect1.SelectedIndex);
+                    showProcessedData();
+                }
+            }
+        }
+
+        private void denoiseToolStripBtn_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.smoothGraph = denoiseToolStripBtn.Checked;
+            deNoisedRawDataToolStripMenuItem.Checked = denoiseToolStripBtn.Checked;
             Properties.Settings.Default.Save();
 
             try
