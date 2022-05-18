@@ -24,17 +24,9 @@ namespace OSRTT_Launcher
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
         private double boardVersion = 2.4;
         private double downloadedFirmwareVersion = 2.4;
-        private string softwareVersion = "2.7";
+        private string softwareVersion = "2.8";
 
         // TODO //
-        // Denoising backlight strobing (gather data from gamma test)
-        //
-        // CANCEL TEST IF GAME CLOSED!!! (serial buffer still full of multiple results?? use checkfocusedwindow to also check if program is open? Although launchgame func should handle that and close..)
-        // 
-        // Add check if keyboard folder exists/when update happens catch error say thats Keyboard isn't installed, offer user an option to retry and install keyboard then (separately) run update again...
-        // or download the zip file I'll upload to the github and extract to documents folder.
-        //
-        // Add better error messages to say results weren't processed
         //
         //
         // Current known issues //
@@ -517,6 +509,7 @@ namespace OSRTT_Launcher
         private void findAndConnectToBoard()
         {
             Thread.Sleep(1000);
+            bool checkedRunning = false;
             while (true)
             {
                 if (!portConnected)
@@ -542,7 +535,11 @@ namespace OSRTT_Launcher
                     testRunning = false;
                     if (!Properties.Settings.Default.updateInProgress)
                     {
-                        appRunning();
+                        if (!checkedRunning)
+                        {
+                            appRunning();
+                            checkedRunning = true;
+                        }
                     }
                     else
                     {
@@ -719,16 +716,6 @@ namespace OSRTT_Launcher
                 if (dialogResult == DialogResult.Yes)
                 {
                     //updateFirmware();
-                    boardUpdate = true;
-                }
-            }
-            else
-            {
-                DialogResult dialogResult = MessageBox.Show("There isn't a newer version of the firmware available right now. Would you like to force it to re-flash anyway? (Not recommended)", "No New Updates Available", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (dialogResult == DialogResult.Yes)
-                {
-                    //updateFirmware();
-                    forceUpdate = true;
                     boardUpdate = true;
                 }
             }
@@ -2026,7 +2013,25 @@ namespace OSRTT_Launcher
         }
         private void updateDeviceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            compareFirmware();
+            if (boardVersion < downloadedFirmwareVersion && !Properties.Settings.Default.SuppressDiagBox)
+            {
+                DialogResult dialogResult = MessageBox.Show("A newer version of the board's firmware is available, do you want to update now? \n Current version: " + boardVersion + "\n New version: " + downloadedFirmwareVersion, "Board Firmware Update Available!", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    //updateFirmware();
+                    boardUpdate = true;
+                }
+            }
+            else
+            {
+                DialogResult dialogResult = MessageBox.Show("There isn't a newer version of the firmware available right now. Would you like to force it to re-flash anyway? (Not recommended)", "No New Updates Available", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    //updateFirmware();
+                    forceUpdate = true;
+                    boardUpdate = true;
+                }
+            }
         }
 
         private void heatmapsMenuItem_Click(object sender, EventArgs e)
