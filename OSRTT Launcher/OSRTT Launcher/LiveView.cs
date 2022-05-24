@@ -254,7 +254,7 @@ namespace OSRTT_Launcher
             graphedData.Plot.Style(figureBackground: Color.Transparent, dataBackground: Color.Transparent);
             graphedData.Plot.SaveFig(path + "\\" + d.ToString("yyMMdd-HHmmss") + "-Live-OSRTT.png", 1920, 1080, false);
             graphedData.Plot.Style(figureBackground: bnColor, dataBackground: bnColor);
-            Process.Start("explorer.exe", resultsFolderPath);
+            Process.Start("explorer.exe", path);
         }
 
         private void saveGraphNoHSpanBtn_Click(object sender, EventArgs e)
@@ -280,7 +280,7 @@ namespace OSRTT_Launcher
             graphedData.Plot.Style(figureBackground: Color.Transparent, dataBackground: Color.Transparent);
             graphedData.Plot.SaveFig(path + "\\" + d.ToString("yyMMdd-HHmmss") + "-Live-OSRTT.png", 1920, 1080, false);
             graphedData.Plot.Style(figureBackground: bnColor, dataBackground: bnColor);
-            Process.Start("explorer.exe", resultsFolderPath);
+            Process.Start("explorer.exe", path);
 
             foreach (var i in plots)
             {
