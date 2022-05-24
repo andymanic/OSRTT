@@ -429,6 +429,8 @@ namespace OSRTT_Launcher
                 heatmaps1.setRunSettings(runSettings);
             }
             heatmaps1.standardView();
+            rtViewMenuList.Visible = false;
+            denoiseToolStripBtn.Visible = false;
         }
         private void graphView()
         {
@@ -628,6 +630,8 @@ namespace OSRTT_Launcher
         {
             try
             {
+                handleRunsList();
+                handleResultsList(0);
                 graphView();
             }
             catch (Exception ex)
@@ -1235,7 +1239,7 @@ namespace OSRTT_Launcher
                 resultsFolderPath = path;
             }
             Bitmap heatmaps = new Bitmap(this.Width, this.Height);
-            //BackColor = Color.FromArgb(255,240,240,240);
+            BackColor = Color.FromArgb(255,240,240,240);
             heatmaps1.hideText(false);
             this.DrawToBitmap(heatmaps, new Rectangle(0, 0, heatmaps.Width, heatmaps.Height));
             
@@ -1308,6 +1312,7 @@ namespace OSRTT_Launcher
                 FontFamily ff = new FontFamily("Calibri");
                 Font f = new Font(ff, 20f, FontStyle.Bold);
                 Font fi = new Font(ff, 16f, FontStyle.Italic);
+                Font fk = new Font(ff, 16f, FontStyle.Bold);
                 g.DrawString(rtTitle, f, Brushes.Black, rt, sf);
                 g.DrawString(rtSubTitle, fi, Brushes.Black, rtSub, sf);
                 g.DrawString(osTitle, f, Brushes.Black, os, sf);
@@ -1320,6 +1325,10 @@ namespace OSRTT_Launcher
                 g.DrawString("To", fi, Brushes.Black, new Point(556, 106));
                 g.DrawString("To", fi, Brushes.Black, new Point(1132, 106));
                 g.DrawString("To", fi, Brushes.Black, new Point(1717, 106));
+                // DRAW key text too
+                g.DrawString("Response Time Key", fk, Brushes.Black, new Point(642, 818));
+                g.DrawString("Overshoot Key", fk, Brushes.Black, new Point(978, 819));
+                g.DrawString("Response Rating Key", fk, Brushes.Black, new Point(1258, 817));
             }
              
             finalHeatmaps.Save(resultsFolderPath + "\\" + fileName);

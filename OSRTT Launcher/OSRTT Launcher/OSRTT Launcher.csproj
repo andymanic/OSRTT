@@ -69,7 +69,8 @@
     <ManifestCertificateThumbprint>15B3F83EC07532CE2A5C4F085A479E96EF1109E1</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>OSRTT Launcher_1_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>
+    </ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -83,6 +84,9 @@
   <ItemGroup>
     <Reference Include="AutoUpdater.NET, Version=1.7.0.0, Culture=neutral, PublicKeyToken=501435c91b35f4bc, processorArchitecture=MSIL">
       <HintPath>..\packages\Autoupdater.NET.Official.1.7.0\lib\net45\AutoUpdater.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="GlobalHotKey, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\GlobalHotKey.1.1.0\lib\GlobalHotKey.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Management.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -173,6 +177,12 @@
     <Compile Include="ResultsSettings.Designer.cs">
       <DependentUpon>ResultsSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="LiveView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LiveView.Designer.cs">
+      <DependentUpon>LiveView.cs</DependentUpon>
+    </Compile>
     <Compile Include="ResultsView.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -218,10 +228,14 @@
     <EmbeddedResource Include="ResultsSettings.resx">
       <DependentUpon>ResultsSettings.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="LiveView.resx">
+      <DependentUpon>LiveView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ResultsView.resx">
       <DependentUpon>ResultsView.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="OSRTT Launcher_1_TemporaryKey.pfx" />
+    <None Include="OSRTT Launcher_2_TemporaryKey.pfx" />
     <None Include="OSRTT Launcher_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

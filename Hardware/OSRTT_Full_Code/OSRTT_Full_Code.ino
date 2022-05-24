@@ -1,5 +1,5 @@
-#include "Keyboard.h"
-#include "Mouse.h"
+#include <Keyboard.h>
+#include <Mouse.h>
 #include <SPI.h>
 #include <ArduinoUniqueID.h>
 #define INPUT_SIZE 2
@@ -36,7 +36,7 @@ SPISettings settingsA(10000000, MSBFIRST, SPI_MODE0);
 
 //Serial connection values
 bool connected = false;
-String firmware = "2.4";
+String firmware = "2.5";
 int testRuns = 4;
 bool vsync = true;
 bool extendedGamma = true;
@@ -233,6 +233,7 @@ int checkUSBVoltage(int l) // Check USB voltage is between 4.8V and 5.2V
         Serial.print(adcBuff[i]);
         Serial.print(",");
       }
+  Serial.println();
   Serial.println();
   ADC1->SWTRIG.bit.START = 0; //Stop ADC 
   return 1;
@@ -789,6 +790,79 @@ void loop() {
           delay(10);
         }
         digitalPotWrite(0x80);
+      }
+    }
+    else if (input[0] == 'O')
+    {
+      // Brightness Calibration screen
+      Serial.setTimeout(200);
+      int mod = input[1] - '0';
+      int potVal = 165 + mod;
+      digitalPotWrite(potVal);
+      Serial.println("LIVE VIEW");
+      delay(200);      
+      while (input[0] != 'X')
+      {
+        for (int i = 0; i < INPUT_SIZE + 1; i++)
+        {
+          input[i] = ' ';
+        }
+        byte sized = Serial.readBytes(input, INPUT_SIZE);
+        input[sized] = 0;
+        if (input[0] == 'P')
+        {
+          
+          long startTime = micros();
+          long currentTime = micros();
+          long times[16000]; 
+          int count = 0;
+          while (currentTime < (startTime + 3000000))
+          {
+              ADC0->SWTRIG.bit.START = 1; //Start ADC 
+              while(!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
+              currentTime = micros();
+              times[count] = currentTime - startTime;
+              adcBuff[count] = ADC0->RESULT.reg;
+              delayMicroseconds(250);
+              count++;
+          }
+          Serial.print("LiveData:");
+          for (int i = 0; i < count; i++)
+          {
+            Serial.print(times[i]);
+            Serial.print(":");
+            Serial.print(adcBuff[i]);
+            Serial.print(",");
+          }
+          Serial.println();
+          Serial.println("End");
+        }
+        int in = 0;
+        if (input[0] <= 57)
+        {
+          in = input[0] - '0'; // Convert char to int  
+        }
+        else
+        {
+          in = input[0] - 55;
+        }
+          
+        if (in >= 1 && in <= 15)
+        {
+          // Increment potentiometer value by multiples of 10 up to 220
+          int add = 3 * in;
+          potVal = 165 + add;
+          digitalPotWrite(potVal); 
+          Serial.print("pot val:");
+          Serial.println(potVal); 
+        }
+        else if (in == 0)
+        {
+          potVal = 165;
+          digitalPotWrite(potVal);
+          Serial.print("pot val:");
+          Serial.println(potVal);
+        }  
       }
     }
   delay(100); 

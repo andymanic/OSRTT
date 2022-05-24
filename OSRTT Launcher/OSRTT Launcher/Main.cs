@@ -22,9 +22,9 @@ namespace OSRTT_Launcher
     public partial class Main : Form
     {
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
-        private double boardVersion = 2.4;
-        private double downloadedFirmwareVersion = 2.4;
-        private string softwareVersion = "2.8";
+        private double boardVersion = 2.5;
+        private double downloadedFirmwareVersion = 2.5;
+        private string softwareVersion = "2.9";
 
         // TODO //
         //
@@ -53,6 +53,7 @@ namespace OSRTT_Launcher
         private bool testStarted = false;
         private bool triggerNextResult = false;
         private bool vsyncTrigger = false;
+        private bool liveView = false;
 
         private List<int> RGBArr = new List<int>{0, 51, 102, 153, 204, 255};
         private int currentStart = 0;
@@ -112,6 +113,8 @@ namespace OSRTT_Launcher
         private MenuItem statusTrayBtn = new MenuItem();
         private MenuItem openTrayBtn = new MenuItem();
         private MenuItem closeTrayBtn = new MenuItem();
+
+        LiveView LiveViewObject;
 
         public void UpdateMe()
         {
@@ -305,39 +308,6 @@ namespace OSRTT_Launcher
                     process.WaitForExit();
                 }
             }
-            /*
-            string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            var keyLib = documents + "\\Arduino\\libraries\\Keyboard";
-            var mouseLib = documents + "\\Arduino\\libraries\\Mouse";
-            if (!Directory.Exists(keyLib) || !Directory.Exists(mouseLib))
-            {
-                DialogResult d = MessageBox.Show("Some libraries appear to be missing or not installed. Would you like to try and install them now?", "Missing Libraries", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (d == DialogResult.Yes)
-                {
-                    System.Diagnostics.Process process = new System.Diagnostics.Process();
-                    //process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                    process.StartInfo.FileName = "cmd.exe";
-                    process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe lib install Keyboard && .\\arduinoCLI\\arduino-cli.exe lib install Mouse";
-                    //process.StartInfo.UseShellExecute = false;
-                    //process.StartInfo.RedirectStandardOutput = true;
-                    //process.StartInfo.CreateNoWindow = true;
-                    process.Start();
-                    //string output = process.StandardOutput.ReadToEnd();
-                    process.WaitForExit();
-                    //Console.WriteLine(output);
-                }
-                if (!Directory.Exists(keyLib) || !Directory.Exists(mouseLib))
-                {
-                    DialogResult diag = MessageBox.Show("It looks like the libraries still aren't installed. You can install them manually by downloading and extracting the folder to \\Documents. " +
-                        "Would you like to open the download page?", "Missing Libraries", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                    if (diag == DialogResult.Yes)
-                    {
-                        Process.Start("https://github.com/andymanic/OSRTT/raw/main/Arduino.zip");
-                        //Process.Start("https://downloads.arduino.cc/libraries/github.com/arduino-libraries/Mouse-1.0.1.zip");
-                        //Process.Start("https://downloads.arduino.cc/libraries/github.com/arduino-libraries/Keyboard-1.0.3.zip");
-                    }
-                }
-            }*/
             RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\excel.exe");
             if (key != null)
             {
@@ -663,7 +633,7 @@ namespace OSRTT_Launcher
         }
 
         private void connectToBoard(string comPort)
-        {
+        {  
             System.ComponentModel.IContainer components =
                 new System.ComponentModel.Container();
             port = new System.IO.Ports.SerialPort(components);
@@ -672,7 +642,7 @@ namespace OSRTT_Launcher
             port.DtrEnable = true;
             port.ReadTimeout = 5000;
             port.WriteTimeout = 5000;
-            port.ReadBufferSize = 512000;
+            port.ReadBufferSize = 1048576;
             Console.WriteLine("Port details set");
             try
             { port.Open(); }
@@ -740,12 +710,14 @@ namespace OSRTT_Launcher
                 this.launchBtn.Invoke((MethodInvoker)(() => launchBtn.Enabled = state));
                 this.menuStrip1.Invoke((MethodInvoker)(() => BrightnessCalBtn.Visible = state));
                 this.inputLagButton.Invoke((MethodInvoker)(() => inputLagButton.Enabled = state));
+                this.LiveViewBtn.Invoke((MethodInvoker)(() => LiveViewBtn.Enabled = state));
             }
             else
             {
                 this.launchBtn.Enabled = state;
                 this.BrightnessCalBtn.Visible = state;
                 this.inputLagButton.Enabled = state;
+                this.LiveViewBtn.Enabled = state;
             }
         }
 
@@ -829,6 +801,8 @@ namespace OSRTT_Launcher
                 this.inputLagPanel.Invoke((MethodInvoker)(() => this.inputLagPanel.Enabled = active));
                 this.launchBtn.Invoke((MethodInvoker)(() => this.launchBtn.BackColor = btnBg));
                 this.inputLagButton.Invoke((MethodInvoker)(() => this.inputLagButton.BackColor = btnBg));
+                this.LiveViewBtn.Invoke((MethodInvoker)(() => LiveViewBtn.Enabled = active));
+                this.LiveViewBtn.Invoke((MethodInvoker)(() => LiveViewBtn.BackColor = btnBg));
             }
             else 
             {
@@ -844,6 +818,8 @@ namespace OSRTT_Launcher
                 this.inputLagPanel.Enabled = active;
                 this.launchBtn.BackColor = btnBg;
                 this.inputLagButton.BackColor = btnBg;
+                this.LiveViewBtn.Enabled = active;
+                this.LiveViewBtn.BackColor = btnBg;
             }
             this.statusTrayBtn.Text = text;
             this.notifyIcon.Text = text;
@@ -942,6 +918,47 @@ namespace OSRTT_Launcher
                 try
                 {
                     string message = port.ReadLine();
+                    if (liveView)
+                    {
+                        if (message.Contains("pot"))
+                        {
+                            // update sensitivity
+                        }  
+                        else if (message.Contains("LIVE VIEW"))
+                        {
+                            // catch this so it doesn't wreck the rest
+                        }
+                        else if (message.Contains("End"))
+                        {
+                            
+                        }
+                        else if (message.Contains("LiveData:"))
+                        {
+                            string newMessage = message.Remove(0, 9);
+                            // send to live view window
+                            string[] splitMessage = newMessage.Split(',');
+                            List<LiveView.LiveData> dataList = new List<LiveView.LiveData>();
+                            foreach (string s in splitMessage)
+                            {
+                                if (s.Contains(":"))
+                                {
+                                    string[] stringArr = s.Split(':');
+                                    double t = double.Parse(stringArr[0]);
+                                    LiveView.LiveData d = new LiveView.LiveData
+                                    {
+                                        time = t / 1000,
+                                        result = double.Parse(stringArr[1])
+                                    };
+                                    LiveViewObject.addData(d);
+                                }
+                            }
+                            Thread.Sleep(5);
+                            LiveViewObject.copyListToArray();
+                            LiveViewObject.renderGraph();
+                            LiveViewObject.startStopBtn_Click(null, null);
+
+                        }
+                    }
                     Console.WriteLine(message);
                     if (debugMode)
                     {
@@ -1226,7 +1243,8 @@ namespace OSRTT_Launcher
                     else if (message.Contains("USB V:"))
                     {
                         String newMessage = message.Remove(0, 6);
-                        if (Properties.Settings.Default.USBOutput && newMessage.Length < 4999)
+                        Console.WriteLine("USB Output: " + Properties.Settings.Default.USBOutput);
+                        if (Properties.Settings.Default.USBOutput && newMessage.Length > 49999)
                         {
                             // search /Results folder for existing file names, pick new name
                             string[] existingUSBFile = Directory.GetFiles(path, "USB-Voltage-Output.csv");
@@ -1242,7 +1260,7 @@ namespace OSRTT_Launcher
                             USBOutputString.AppendLine(newMessage);
                             File.WriteAllText(USBOutputPath, USBOutputString.ToString());
                         }
-                        else
+                        else if (Properties.Settings.Default.USBOutput)
                         {
                             port.Write("U");
                         }
@@ -2411,11 +2429,19 @@ namespace OSRTT_Launcher
         }
         private void saveUSBOutputToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.USBOutput = saveUSBOutputToolStripMenuItem.Checked;
-            Properties.Settings.Default.Save();
-            if (port != null)
+            if (Properties.Settings.Default.USBOutput)
             {
-                port.Write("U");
+                Properties.Settings.Default.USBOutput = false; 
+                Properties.Settings.Default.Save();
+            }
+            else
+            {
+                Properties.Settings.Default.USBOutput = true;
+                Properties.Settings.Default.Save();
+                if (port != null)
+                {
+                    port.Write("U");
+                }
             }
         }
 
@@ -2816,8 +2842,11 @@ namespace OSRTT_Launcher
 
         private void testButtonToolStripMenuItemToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DataUpload ds = new DataUpload();
-            ds.ShareResults(results, gamma, testLatency, runSettings);
+            liveView = true;
+            LiveViewObject = new LiveView();
+            port.Write("O");
+            LiveViewObject.m = this;
+            LiveViewObject.Show();
         }
 
         private void resultsViewBtn_Click(object sender, EventArgs e)
@@ -3068,6 +3097,23 @@ namespace OSRTT_Launcher
                 endPercent = Properties.Settings.Default.osEndPercent,
                 rangePercent = Properties.Settings.Default.osRangePercent
             };
+        }
+
+        private void LiveViewBtn_Click(object sender, EventArgs e)
+        {
+            liveView = true;
+            ControlDeviceButtons(false);
+            LiveViewObject = new LiveView();
+            port.Write("O");
+            LiveViewObject.m = this;
+            LiveViewObject.Show();
+
+        }
+
+        public void exitLiveView()
+        {
+            liveView = false;
+            ControlDeviceButtons(true);
         }
     }
 }

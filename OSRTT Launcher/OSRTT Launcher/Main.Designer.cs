@@ -44,7 +44,6 @@
             this.saveUSBOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateDeviceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.testButtonMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.devStat = new System.Windows.Forms.Label();
             this.controlsPanel = new System.Windows.Forms.Panel();
             this.testSettingsBtn = new System.Windows.Forms.Button();
@@ -100,6 +99,7 @@
             this.checkImg = new System.Windows.Forms.PictureBox();
             this.monitorPanel = new System.Windows.Forms.Panel();
             this.mainPanel = new System.Windows.Forms.Panel();
+            this.LiveViewBtn = new System.Windows.Forms.Button();
             this.resultsFolderBtn = new System.Windows.Forms.Button();
             this.resultsViewBtn = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
@@ -152,11 +152,10 @@
             this.settingsMenuItem,
             this.programSettingsToolStripMenuItem,
             this.BrightnessCalBtn,
-            this.deviceToolStripMenuItem,
-            this.toolStripMenuItem1});
+            this.deviceToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(5, 5);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(2093, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1914, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -275,11 +274,6 @@
             this.testButtonMenuItem.Size = new System.Drawing.Size(211, 22);
             this.testButtonMenuItem.Text = "Test Button";
             this.testButtonMenuItem.Click += new System.EventHandler(this.testButtonToolStripMenuItemToolStripMenuItem_Click);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(12, 20);
             // 
             // devStat
             // 
@@ -813,21 +807,20 @@
             this.inputLagPanel.Controls.Add(this.numberOfClicksSlider);
             this.inputLagPanel.Controls.Add(this.label16);
             this.inputLagPanel.Controls.Add(this.timeBetweenSlider);
-            this.inputLagPanel.Location = new System.Drawing.Point(303, 118);
+            this.inputLagPanel.Location = new System.Drawing.Point(303, 154);
             this.inputLagPanel.Name = "inputLagPanel";
-            this.inputLagPanel.Size = new System.Drawing.Size(350, 235);
+            this.inputLagPanel.Size = new System.Drawing.Size(350, 199);
             this.inputLagPanel.TabIndex = 30;
             // 
             // inputLagButton
             // 
             this.inputLagButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(105)))), ((int)(((byte)(180)))), ((int)(((byte)(76)))));
             this.inputLagButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.inputLagButton.Font = new System.Drawing.Font("Consolas", 20F, System.Drawing.FontStyle.Bold);
+            this.inputLagButton.Font = new System.Drawing.Font("Consolas", 15F, System.Drawing.FontStyle.Bold);
             this.inputLagButton.ForeColor = System.Drawing.Color.White;
             this.inputLagButton.Location = new System.Drawing.Point(-1, -1);
             this.inputLagButton.Name = "inputLagButton";
-            this.inputLagButton.Padding = new System.Windows.Forms.Padding(20, 0, 10, 0);
-            this.inputLagButton.Size = new System.Drawing.Size(350, 74);
+            this.inputLagButton.Size = new System.Drawing.Size(350, 45);
             this.inputLagButton.TabIndex = 1;
             this.inputLagButton.Text = "Start System Latency Testing";
             this.toolTipController.SetToolTip(this.inputLagButton, "Start Total System Latency Testing");
@@ -838,7 +831,7 @@
             // 
             this.numberOfClicksLabel.AutoSize = true;
             this.numberOfClicksLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.numberOfClicksLabel.Location = new System.Drawing.Point(240, 163);
+            this.numberOfClicksLabel.Location = new System.Drawing.Point(240, 125);
             this.numberOfClicksLabel.Name = "numberOfClicksLabel";
             this.numberOfClicksLabel.Size = new System.Drawing.Size(20, 24);
             this.numberOfClicksLabel.TabIndex = 31;
@@ -848,7 +841,7 @@
             // 
             this.label20.AutoSize = true;
             this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label20.Location = new System.Drawing.Point(77, 163);
+            this.label20.Location = new System.Drawing.Point(77, 125);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(158, 24);
             this.label20.TabIndex = 30;
@@ -858,7 +851,7 @@
             // 
             this.timeBetweenLabel.AutoSize = true;
             this.timeBetweenLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.timeBetweenLabel.Location = new System.Drawing.Point(248, 88);
+            this.timeBetweenLabel.Location = new System.Drawing.Point(248, 50);
             this.timeBetweenLabel.Name = "timeBetweenLabel";
             this.timeBetweenLabel.Size = new System.Drawing.Size(44, 24);
             this.timeBetweenLabel.TabIndex = 28;
@@ -869,7 +862,7 @@
             this.numberOfClicksSlider.BackColor = System.Drawing.Color.White;
             this.numberOfClicksSlider.Cursor = System.Windows.Forms.Cursors.SizeWE;
             this.numberOfClicksSlider.LargeChange = 1;
-            this.numberOfClicksSlider.Location = new System.Drawing.Point(17, 185);
+            this.numberOfClicksSlider.Location = new System.Drawing.Point(17, 147);
             this.numberOfClicksSlider.Maximum = 50;
             this.numberOfClicksSlider.Minimum = 1;
             this.numberOfClicksSlider.Name = "numberOfClicksSlider";
@@ -884,7 +877,7 @@
             // 
             this.label16.AutoSize = true;
             this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label16.Location = new System.Drawing.Point(44, 88);
+            this.label16.Location = new System.Drawing.Point(44, 50);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(191, 24);
             this.label16.TabIndex = 27;
@@ -893,7 +886,7 @@
             // timeBetweenSlider
             // 
             this.timeBetweenSlider.Cursor = System.Windows.Forms.Cursors.SizeWE;
-            this.timeBetweenSlider.Location = new System.Drawing.Point(17, 110);
+            this.timeBetweenSlider.Location = new System.Drawing.Point(17, 72);
             this.timeBetweenSlider.Minimum = 1;
             this.timeBetweenSlider.Name = "timeBetweenSlider";
             this.timeBetweenSlider.Size = new System.Drawing.Size(310, 45);
@@ -938,6 +931,7 @@
             // 
             // mainPanel
             // 
+            this.mainPanel.Controls.Add(this.LiveViewBtn);
             this.mainPanel.Controls.Add(this.resultsFolderBtn);
             this.mainPanel.Controls.Add(this.resultsViewBtn);
             this.mainPanel.Controls.Add(this.inputLagPanel);
@@ -949,6 +943,21 @@
             this.mainPanel.Name = "mainPanel";
             this.mainPanel.Size = new System.Drawing.Size(662, 364);
             this.mainPanel.TabIndex = 32;
+            // 
+            // LiveViewBtn
+            // 
+            this.LiveViewBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(105)))), ((int)(((byte)(180)))), ((int)(((byte)(76)))));
+            this.LiveViewBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.LiveViewBtn.Font = new System.Drawing.Font("Consolas", 15F, System.Drawing.FontStyle.Bold);
+            this.LiveViewBtn.ForeColor = System.Drawing.Color.White;
+            this.LiveViewBtn.Location = new System.Drawing.Point(303, 118);
+            this.LiveViewBtn.Name = "LiveViewBtn";
+            this.LiveViewBtn.Size = new System.Drawing.Size(350, 30);
+            this.LiveViewBtn.TabIndex = 34;
+            this.LiveViewBtn.Text = "Launch Live View Mode";
+            this.toolTipController.SetToolTip(this.LiveViewBtn, "Launch the live view mode");
+            this.LiveViewBtn.UseVisualStyleBackColor = false;
+            this.LiveViewBtn.Click += new System.EventHandler(this.LiveViewBtn_Click);
             // 
             // resultsFolderBtn
             // 
@@ -997,7 +1006,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.ClientSize = new System.Drawing.Size(2103, 808);
+            this.ClientSize = new System.Drawing.Size(1924, 808);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.debugPanel);
@@ -1053,7 +1062,6 @@
         private System.Windows.Forms.NumericUpDown testCount;
         private System.Windows.Forms.ComboBox fpsLimitList;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem BrightnessCalBtn;
         private System.Windows.Forms.Label rawValText;
         private System.Windows.Forms.Label label5;
@@ -1113,6 +1121,7 @@
         private System.Windows.Forms.ToolTip toolTipController;
         private System.Windows.Forms.Label boardSerialLbl;
         private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Button LiveViewBtn;
     }
 }
 
