@@ -340,7 +340,7 @@ namespace OSRTT_Launcher
                 }
 
                 // Build end min/max to compare against
-                for (int m = samples.Length - 5; m > samples.Length - 150; m--)
+                for (int m = samples.Length - 5; m > samples.Length - 300; m--)
                 {
                     if (samples[m] < endMin)
                     {
