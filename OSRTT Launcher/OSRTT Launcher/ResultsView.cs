@@ -1312,7 +1312,7 @@ namespace OSRTT_Launcher
                 FontFamily ff = new FontFamily("Calibri");
                 Font f = new Font(ff, 20f, FontStyle.Bold);
                 Font fi = new Font(ff, 16f, FontStyle.Italic);
-                Font fk = new Font(ff, 16f, FontStyle.Bold);
+                Font fk = new Font(ff, 17f, FontStyle.Bold);
                 g.DrawString(rtTitle, f, Brushes.Black, rt, sf);
                 g.DrawString(rtSubTitle, fi, Brushes.Black, rtSub, sf);
                 g.DrawString(osTitle, f, Brushes.Black, os, sf);
@@ -1326,9 +1326,9 @@ namespace OSRTT_Launcher
                 g.DrawString("To", fi, Brushes.Black, new Point(1132, 106));
                 g.DrawString("To", fi, Brushes.Black, new Point(1717, 106));
                 // DRAW key text too
-                g.DrawString("Response Time Key", fk, Brushes.Black, new Point(642, 818));
-                g.DrawString("Overshoot Key", fk, Brushes.Black, new Point(978, 819));
-                g.DrawString("Response Rating Key", fk, Brushes.Black, new Point(1258, 817));
+                g.DrawString("Response Time Key", fk, Brushes.Black, new Point(644, 820));
+                g.DrawString("Overshoot Key", fk, Brushes.Black, new Point(980, 821));
+                g.DrawString("Response Rating Key", fk, Brushes.Black, new Point(1260, 819));
             }
              
             finalHeatmaps.Save(resultsFolderPath + "\\" + fileName);
