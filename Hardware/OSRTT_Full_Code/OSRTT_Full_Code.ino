@@ -564,7 +564,7 @@ void loop() {
         buttonState = digitalRead(buttonPin);
         if (buttonState == HIGH) //Run when button pressed
         {
-          Serial.setTimeout(300);
+          Serial.setTimeout(500);
           Keyboard.print(fpsLimit);
           Keyboard.print(fpsLimit);
           // Check USB voltage level

@@ -129,49 +129,56 @@ namespace OSRTT_Launcher
 
         public List<gammaResult> processGammaTable(List<int[]> gamma, List<rawResultData> data)
         {
-            double[] rgbVals = new double[gamma.Count];
-            double[] lightLevelVals = new double[gamma.Count];
-            for (int i = 0; i < gamma.Count; i++)
-            { 
-                int[] dataLine = gamma[i].Skip(300).ToArray();
-                int lineAverage = 0;
-                for (int j = 0; j < (dataLine.Length - 100); j++)
-                {
-                    lineAverage += dataLine[j];
-                }
-                foreach (var result in data)
-                {
-                    if (result.StartingRGB == gamma[i][0])
+            if (gamma.Count != 0)
+            {
+                double[] rgbVals = new double[gamma.Count];
+                double[] lightLevelVals = new double[gamma.Count];
+                for (int i = 0; i < gamma.Count; i++)
+                { 
+                    int[] dataLine = gamma[i].Skip(300).ToArray();
+                    int lineAverage = 0;
+                    for (int j = 0; j < (dataLine.Length - 100); j++)
                     {
-                        result.noiseLevel = (dataLine.Max() - dataLine.Min());
+                        lineAverage += dataLine[j];
                     }
+                    foreach (var result in data)
+                    {
+                        if (result.StartingRGB == gamma[i][0])
+                        {
+                            result.noiseLevel = (dataLine.Max() - dataLine.Min());
+                        }
+                    }
+                    lineAverage /= (dataLine.Length - 100);
+                    rgbVals[i] = gamma[i][0];
+                    lightLevelVals[i] = lineAverage;
                 }
-                lineAverage /= (dataLine.Length - 100);
-                rgbVals[i] = gamma[i][0];
-                lightLevelVals[i] = lineAverage;
+                int pointsBetween = 51;
+                if (gamma.Count == 16)
+                {
+                    pointsBetween = 17;
+                }
+                var interpPoints = new ScottPlot.Statistics.Interpolation.NaturalSpline(rgbVals, lightLevelVals, pointsBetween);
+                List<int> x = new List<int>();
+                List<int> y = new List<int>();
+                foreach (var p in interpPoints.interpolatedXs)
+                {
+                    x.Add(Convert.ToInt32(p));
+                }
+                foreach (var p in interpPoints.interpolatedYs)
+                {
+                    y.Add(Convert.ToInt32(p));
+                }
+                List<gammaResult> xy = new List<gammaResult>();
+                for (int k = 0; k < x.Count; k++)
+                {
+                    xy.Add(new gammaResult { RGB = x[k], LightLevel = y[k] });
+                }
+                return xy;    
             }
-            int pointsBetween = 51;
-            if (gamma.Count == 16)
+            else
             {
-                pointsBetween = 17;
+                return null;
             }
-            var interpPoints = new ScottPlot.Statistics.Interpolation.NaturalSpline(rgbVals, lightLevelVals, pointsBetween);
-            List<int> x = new List<int>();
-            List<int> y = new List<int>();
-            foreach (var p in interpPoints.interpolatedXs)
-            {
-                x.Add(Convert.ToInt32(p));
-            }
-            foreach (var p in interpPoints.interpolatedYs)
-            {
-                y.Add(Convert.ToInt32(p));
-            }
-            List<gammaResult> xy = new List<gammaResult>();
-            for (int k = 0; k < x.Count; k++)
-            {
-                xy.Add(new gammaResult { RGB = x[k], LightLevel = y[k] });
-            }
-            return xy;    
         }
 
         PointF[] InterpolatePoints(PointF[] original, int numberRequired)
@@ -1177,7 +1184,31 @@ namespace OSRTT_Launcher
                         rtStyle = res.rtStyle,
                         osStyle = res.osStyle,
                     };
-                    processedResults.Add(ProcessResponseTimeData(data, resSel, startDelay, processedGamma));
+                    processedResult procRes = ProcessResponseTimeData(data, resSel, startDelay, processedGamma);
+                    if (procRes == null)
+                    {
+                        procRes = new processedResult
+                        {
+                            StartingRGB = data[k][i].StartingRGB,
+                            EndRGB = data[k][i].EndRGB,
+                            SampleTime = 0,
+                            perTime = 0,
+                            perStartIndex = 0,
+                            perEndIndex = 0,
+                            compTime = 0,
+                            compStartIndex = 0,
+                            compEndIndex = 0,
+                            initTime = 0,
+                            initStartIndex = 0,
+                            initEndIndex = 0,
+                            Overshoot = 0,
+                            overshootRGB = 0,
+                            visualResponseRating = 0,
+                            inputLag = 0,
+                            offset = 0
+                        };
+                    }
+                    processedResults.Add(procRes);
                 }
                 multipleProcessedResults.Add(processedResults);
             }
@@ -1238,32 +1269,32 @@ namespace OSRTT_Launcher
                 int validILResults = 0;
                 foreach (var o in multipleRunData)
                 {
-                    if (o[k].compTime < (rtMedian * 1.2) && o[k].compTime > (rtMedian * 0.8))
+                    if ((o[k].compTime < (rtMedian * 1.2) && o[k].compTime > (rtMedian * 0.8)) || multipleRunData.Count < 3)
                     {
                         res.compTime += o[k].compTime;
                         validTimeResults++;
                     }
-                    if (o[k].initTime < (initRtMedian * 1.2) && o[k].initTime > (initRtMedian * 0.8))
+                    if ((o[k].initTime < (initRtMedian * 1.2) && o[k].initTime > (initRtMedian * 0.8)) || multipleRunData.Count < 3)
                     {
                         res.initTime += o[k].initTime;
                         validInitialTimeResults++;
                     }
-                    if (o[k].perTime < (perRtMedian * 1.2) && o[k].perTime > (perRtMedian * 0.8))
+                    if ((o[k].perTime < (perRtMedian * 1.2) && o[k].perTime > (perRtMedian * 0.8)) || multipleRunData.Count < 3)
                     {
                         res.perTime += o[k].perTime;
                         validPerceivedTimeResults++;
                     }
-                    if (o[k].Overshoot < (osMedian * 1.2) && o[k].Overshoot > (osMedian * 0.8) && o[k].Overshoot != 0)
+                    if ((o[k].Overshoot < (osMedian * 1.2) && o[k].Overshoot > (osMedian * 0.8) && o[k].Overshoot != 0) || multipleRunData.Count < 3)
                     {
                         res.Overshoot += o[k].Overshoot;
                         validOvershootResults++;
                     }
-                    if (o[k].visualResponseRating < (vrrMedian * 1.2) && o[k].visualResponseRating > (vrrMedian * 0.8))
+                    if ((o[k].visualResponseRating < (vrrMedian * 1.2) && o[k].visualResponseRating > (vrrMedian * 0.8)) || multipleRunData.Count < 3)
                     {
                         res.visualResponseRating += o[k].visualResponseRating;
                         validVRRResults++;
                     }
-                    if (o[k].inputLag < (ilMedian * 1.2) && o[k].inputLag > (ilMedian * 0.8))
+                    if ((o[k].inputLag < (ilMedian * 1.2) && o[k].inputLag > (ilMedian * 0.8)) || multipleRunData.Count < 3)
                     {
                         res.inputLag += o[k].inputLag;
                         validILResults++;
@@ -1298,10 +1329,56 @@ namespace OSRTT_Launcher
             return averageData;
         }
 
-        /////////////////////////////////////////////////////////////////////////////
-        //              Input Lag
-        ////////////////////////////////////////////////////////////////////////////
-        
+        public List<List<rawResultData>> SmoothAllData(List<List<rawResultData>> rawData)
+        {
+            List<List<rawResultData>> smoothedData = new List<List<rawResultData>>();
+            foreach (List<ProcessData.rawResultData> res in rawData)
+            {
+                List<ProcessData.rawResultData> tempSmoothed = new List<ProcessData.rawResultData>();
+                foreach (ProcessData.rawResultData raw in res)
+                {
+                    int[] samples = raw.Samples.ToArray();
+                    int period = 10;
+                    int noise = raw.noiseLevel;
+                    if (noise < 250)
+                    {
+                        period = 20;
+                    }
+                    else if (noise < 500)
+                    {
+                        period = 30;
+                    }
+                    else if (noise < 750)
+                    {
+                        period = 40;
+                    }
+                    else
+                    {
+                        period = 50;
+                    }
+                    int[] smoothedSamples = smoothData(samples, period);
+                    ProcessData.rawResultData d = new ProcessData.rawResultData
+                    {
+                        StartingRGB = raw.StartingRGB,
+                        EndRGB = raw.EndRGB,
+                        SampleCount = raw.SampleCount,
+                        TimeTaken = raw.TimeTaken,
+                        SampleTime = raw.SampleTime,
+                        Samples = smoothedSamples.ToList()
+                    };
+                    tempSmoothed.Add(d);
+                }
+                smoothedData.Add(tempSmoothed);
+
+            }
+            return smoothedData;
+        }
+
+
+/////////////////////////////////////////////////////////////////////////////
+//              Input Lag
+////////////////////////////////////////////////////////////////////////////
+
 
         public class rawInputLagResult
         {

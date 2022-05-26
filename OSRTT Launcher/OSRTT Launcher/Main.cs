@@ -22,9 +22,9 @@ namespace OSRTT_Launcher
     public partial class Main : Form
     {
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
-        private double boardVersion = 2.5;
-        private double downloadedFirmwareVersion = 2.5;
-        private string softwareVersion = "2.9";
+        private double boardVersion = 2.6;
+        private double downloadedFirmwareVersion = 2.6;
+        private string softwareVersion = "3.0";
 
         // TODO //
         //
@@ -558,6 +558,7 @@ namespace OSRTT_Launcher
                         catch (Exception e)
                         {
                             Console.WriteLine(e);
+                            SetText(e.Message + e.StackTrace);
                         }
                     }
                 }
@@ -596,6 +597,7 @@ namespace OSRTT_Launcher
                                 process.Start();
                                 string output = process.StandardOutput.ReadToEnd();
                                 Console.WriteLine(output);
+                                SetText(output);
                                 process.WaitForExit();
                                 //MessageBox.Show(output);
                                 if (output.Contains("Error"))
@@ -614,6 +616,7 @@ namespace OSRTT_Launcher
                             {
                                 MessageBox.Show("Unable to write to device, check it's connected via USB.", "Update Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 Console.WriteLine(ex);
+                                SetText(ex.Message + ex.StackTrace);
                             }
                             setProgressBar(false);
                         }
@@ -1645,18 +1648,18 @@ namespace OSRTT_Launcher
                         // Force UE4 window to selected display if selected is not primary
                         WinX = display.Bounds.Location.X;
                         WinY = display.Bounds.Location.Y;
-                        ue4.StartInfo.Arguments = ue4Path + " WinX=" + WinX + " WinY=" + WinY + vsync;
+                        ue4.StartInfo.Arguments = ue4Path + " WinX=" + WinX + " WinY=" + WinY;
                     }
                     else
                     {
-                        ue4.StartInfo.Arguments = ue4Path + vsync;
+                        ue4.StartInfo.Arguments = ue4Path;
                     }
                     ue4.Start();
                     // Process.Start(ue4Path);
                 }
                 catch (Exception strE)
                 {
-                    Console.WriteLine(strE);
+                    Console.WriteLine(strE.Message + strE.StackTrace);
                     SetText(strE.Message + strE.StackTrace);
                 }
                 try
@@ -1666,32 +1669,37 @@ namespace OSRTT_Launcher
                     {
                         // Added in case game hasn't finished launching yet
                         p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
+                        Thread.Sleep(100);
                     }
-                    while (!testMode) // hacky and I don't like it but for some reason it's not detecting this
+                    
+                    try
                     {
-                        try
+                        gamma.Clear();
+                        processedGamma.Clear();
+                        results.Clear();
+                        multipleRunData.Clear();
+                        singleResults.Clear();
+                        testLatency.Clear();
+                        int runCount = getRunCount();
+                        for (int r = 0; r < runCount; r++)
                         {
-                            gamma.Clear();
-                            processedGamma.Clear();
-                            results.Clear();
-                            multipleRunData.Clear();
-                            singleResults.Clear();
-                            testLatency.Clear();
-                            int runCount = getRunCount();
-                            for (int r = 0; r < runCount; r++)
-                            {
-                                results.Add(new List<ProcessData.rawResultData>());
-                            }
-                            testStarted = false;
+                            results.Add(new List<ProcessData.rawResultData>());
+                        }
+                        testStarted = false;
+                        port.Write("T");
+                        while (!testMode)
+                        {
+                            Thread.Sleep(200);
                             port.Write("T");
                         }
-                        catch (Exception exc)
-                        {
-                            SetText(exc.Message + exc.StackTrace);
-                            Console.WriteLine(exc);
-                        }
-                        Thread.Sleep(200);
                     }
+                    catch (Exception exc)
+                    {
+                        SetText(exc.Message + exc.StackTrace);
+                        Console.WriteLine(exc.Message + exc.StackTrace);
+                    }
+                    Thread.Sleep(200);
+                    
                     checkWindowThread = new Thread(new ThreadStart(this.checkFocusedWindow));
                     checkWindowThread.Start();
                     if (boardVersion > 1.5)
@@ -1746,6 +1754,8 @@ namespace OSRTT_Launcher
                             {
                                 ResultsView rv = new ResultsView();
                                 rv.setRawData(results);
+                                rv.setGammaData(processedGamma);
+                                rv.setTestLatency(testLatency);
                                 rv.setMultiRunData(multipleRunData);
                                 rv.setAverageData(averageData);
                                 rv.setResultsFolder(resultsFolderPath);
@@ -1768,6 +1778,8 @@ namespace OSRTT_Launcher
                                 rv.setOsMethod(osMethod);
                                 rv.setRunSettings(runSettings);
                                 rv.setGraphView();
+                                rv.setGammaData(processedGamma);
+                                rv.setTestLatency(testLatency);
                                 rv.Show();
                             });
                         }
@@ -1776,6 +1788,7 @@ namespace OSRTT_Launcher
                 catch (InvalidOperationException e)
                 {
                     Console.WriteLine(e);
+                    SetText(e.Message + e.StackTrace);
                 }
                 catch (IOException ioex)
                 {
@@ -1814,6 +1827,8 @@ namespace OSRTT_Launcher
                 { 
                     if (!vsyncTrigger)
                     {
+                        paused = true;
+                        Thread.Sleep(300);
                         var item = fpsList.Find(x => x.FPSValue == getSelectedFps());
                         SendKeys.SendWait(item.Key);
                         Thread.Sleep(100);
@@ -1825,6 +1840,7 @@ namespace OSRTT_Launcher
                         {
                             SendKeys.SendWait("{PGDN}");
                         }
+                        Thread.Sleep(100);
                         vsyncTrigger = true;
                     }
                     if (paused)
@@ -1892,7 +1908,7 @@ namespace OSRTT_Launcher
                             Thread.Sleep(10);
                             try
                             { port.Write(i.ToString() + k.ToString()); }
-                            catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); }
+                            catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); SetText(ex.Message + ex.StackTrace); }
                             Stopwatch sw = new Stopwatch();
                             sw.Reset();
                             sw.Start();
@@ -1911,7 +1927,7 @@ namespace OSRTT_Launcher
                                 {
                                     try
                                     { port.Write(i.ToString() + k.ToString()); }
-                                    catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); }
+                                    catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); SetText(ex.Message + ex.StackTrace); }
                                 }
                                 else
                                 {
@@ -1928,7 +1944,7 @@ namespace OSRTT_Launcher
                             }
                             try
                             { port.Write(k.ToString() + i.ToString()); }
-                            catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); }
+                            catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); SetText(ex.Message + ex.StackTrace); }
                             sw.Reset();
                             sw.Start();
                             while (sw.ElapsedMilliseconds < 5000)
@@ -1946,7 +1962,7 @@ namespace OSRTT_Launcher
                                 {
                                     try
                                     { port.Write(k.ToString() + i.ToString()); }
-                                    catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); }
+                                    catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); SetText(ex.Message + ex.StackTrace); }
                                 }
                                 else
                                 {
@@ -2961,19 +2977,31 @@ namespace OSRTT_Launcher
                 }
                 string fullFileName = cf.createFileName(resultsFolderPath, "-FULL-OSRTT.csv");
                 csvString.AppendLine("Starting RGB,End RGB,Complete Response Time (ms)," + rtType + "," + perType + "," + osType + " " + osSign + ",Visual Response Rating,Input Lag (ms)");
+                bool failed = false;
                 foreach (ProcessData.processedResult i in res)
                 {
-                    // save each run to file
-                    csvString.AppendLine(
-                        i.StartingRGB.ToString() + "," +
-                        i.EndRGB.ToString() + "," +
-                        i.compTime.ToString() + "," +
-                        i.initTime.ToString() + "," +
-                        i.perTime.ToString() + "," +
-                        i.Overshoot.ToString() + "," +
-                        i.visualResponseRating.ToString() + "," +
-                        i.inputLag.ToString()
-                        );
+                    if (i != null)
+                    {
+                        // save each run to file
+                        csvString.AppendLine(
+                            i.StartingRGB.ToString() + "," +
+                            i.EndRGB.ToString() + "," +
+                            i.compTime.ToString() + "," +
+                            i.initTime.ToString() + "," +
+                            i.perTime.ToString() + "," +
+                            i.Overshoot.ToString() + "," +
+                            i.visualResponseRating.ToString() + "," +
+                            i.inputLag.ToString()
+                            );
+                    }
+                    else
+                    {
+                        failed = true;
+                    }
+                }
+                if (failed)
+                {
+                    cf.showMessageBox("Failed to Process", "One or more of the results failed to process and has been left blank.",MessageBoxButtons.OK,MessageBoxIcon.Warning);
                 }
                 if (runSettings != null)
                 {
@@ -2983,8 +3011,10 @@ namespace OSRTT_Launcher
                 File.WriteAllText(fullFilePath, csvString.ToString());
                 multipleRunData.Add(res);
             }
-
-            averageData.AddRange(pd.AverageMultipleRuns(processedData, osMethod));
+            if (multipleRunData.Count != 0)
+            {
+                averageData.AddRange(pd.AverageMultipleRuns(processedData, osMethod));
+            }
             // save averaged data to file
             string[] folders = resultsFolderPath.Split('\\');
             string monitorInfo = folders.Last();
@@ -3077,7 +3107,15 @@ namespace OSRTT_Launcher
                 osMethod = os,
                 rtMethod = rt
             };
-            processAllRuns(rt, os);
+            try
+            {
+                processAllRuns(rt, os);
+            }
+            catch (Exception ex)
+            {
+                SetText(ex.Message + ex.StackTrace);
+                Console.WriteLine(ex.Message + ex.StackTrace);
+            }
             DataUpload ds = new DataUpload();
             ds.ShareResults(results, gamma, testLatency, runSettings);
         }

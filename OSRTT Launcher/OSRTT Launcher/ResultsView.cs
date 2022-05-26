@@ -78,6 +78,21 @@ namespace OSRTT_Launcher
                 rawData.AddRange(rd);
             }
         }
+        public void setGammaData(List<ProcessData.gammaResult> gd)
+        {
+            if (gd != null)
+            {
+                processedGamma.AddRange(gd);
+            }
+        }
+
+        public void setTestLatency(List<int> tl)
+        {
+            if (tl != null)
+            {
+                testLatency.AddRange(tl);
+            }
+        }
 
         public void setMultiRunData(List<List<ProcessData.processedResult>> mrd)
         {
@@ -149,6 +164,7 @@ namespace OSRTT_Launcher
             rtViewMenuList.Visible = false;
             denoiseToolStripBtn.Visible = false;
             deNoisedRawDataToolStripMenuItem.Checked = Properties.Settings.Default.smoothGraph;
+            denoiseToolStripBtn.Checked = Properties.Settings.Default.smoothGraph;
             initResultsMethodList();
             initOvershootStyleList();
             initRtStyleList();
@@ -174,11 +190,11 @@ namespace OSRTT_Launcher
             else
             {
                 graphViewMenuBtn.Visible = true;
-                toolStripSeparator3.Visible = true;
-                rtViewMenuList.Visible = true;
-                denoiseToolStripBtn.Visible = true;
+                
                 handleRunsList();
                 handleResultsList(runSelectBox.SelectedIndex);
+                Thread smoothDataThread = new Thread(new ThreadStart(this.smoothDataThreaded));
+                smoothDataThread.Start();
                 if (graph)
                 {
                     graphViewMenuBtn_Click(null, null);
@@ -315,45 +331,9 @@ namespace OSRTT_Launcher
                                 }
                                 File.WriteAllText(resultsFolderPath + "\\" + gammaName, gammaCsv.ToString());
                             }
-                            smoothedData.Clear();
-                            foreach (List<ProcessData.rawResultData> res in rawData)
-                            {
-                                List<ProcessData.rawResultData> tempSmoothed = new List<ProcessData.rawResultData>();
-                                foreach (ProcessData.rawResultData raw in res)
-                                {
-                                    int[] samples = raw.Samples.ToArray();
-                                    int period = 10;
-                                    int noise = raw.noiseLevel;
-                                    if (noise < 250)
-                                    {
-                                        period = 20;
-                                    }
-                                    else if (noise < 500)
-                                    {
-                                        period = 30;
-                                    }
-                                    else if (noise < 750)
-                                    {
-                                        period = 40;
-                                    }
-                                    else
-                                    {
-                                        period = 50;
-                                    }
-                                    int[] smoothedSamples = pd.smoothData(samples, period);
-                                    ProcessData.rawResultData d = new ProcessData.rawResultData
-                                    {
-                                        StartingRGB = raw.StartingRGB,
-                                        EndRGB = raw.EndRGB,
-                                        SampleCount = raw.SampleCount,
-                                        TimeTaken = raw.TimeTaken,
-                                        SampleTime = raw.SampleTime,
-                                        Samples = smoothedSamples.ToList()
-                                    };
-                                    tempSmoothed.Add(d);
-                                }
-                                smoothedData.Add(tempSmoothed);
-                            }
+                            Thread smoothDataThread = new Thread(new ThreadStart(this.smoothDataThreaded));
+                            smoothDataThread.Start();
+                            
                             //processTestLatency();
                             Console.WriteLine(rawData.Count);
                             // Draw graph
@@ -372,6 +352,13 @@ namespace OSRTT_Launcher
                     }
                 }
             }
+        }
+
+        private void smoothDataThreaded()
+        {
+            ProcessData pd = new ProcessData();
+            smoothedData.Clear();
+            smoothedData.AddRange(pd.SmoothAllData(rawData));
         }
 
         private void standardView()
@@ -995,45 +982,8 @@ namespace OSRTT_Launcher
                                 }
                                 File.WriteAllText(resultsFolderPath + "\\" + gammaName, gammaCsv.ToString());
                             }
-                            smoothedData.Clear();
-                            foreach (List<ProcessData.rawResultData> res in rawData)
-                            {
-                                List<ProcessData.rawResultData> tempSmoothed = new List<ProcessData.rawResultData>();
-                                foreach (ProcessData.rawResultData raw in res)
-                                {
-                                    int[] samples = raw.Samples.ToArray();
-                                    int period = 10;
-                                    int noise = raw.noiseLevel;
-                                    if (noise < 250)
-                                    {
-                                        period = 20;
-                                    }
-                                    else if (noise < 500)
-                                    {
-                                        period = 30;
-                                    }
-                                    else if (noise < 750)
-                                    {
-                                        period = 40;
-                                    }
-                                    else
-                                    {
-                                        period = 50;
-                                    }
-                                    int[] smoothedSamples = pd.smoothData(samples, period);
-                                    ProcessData.rawResultData d = new ProcessData.rawResultData
-                                    {
-                                        StartingRGB = raw.StartingRGB,
-                                        EndRGB = raw.EndRGB,
-                                        SampleCount = raw.SampleCount,
-                                        TimeTaken = raw.TimeTaken,
-                                        SampleTime = raw.SampleTime,
-                                        Samples = smoothedSamples.ToList()
-                                    };
-                                    tempSmoothed.Add(d);
-                                }
-                                smoothedData.Add(tempSmoothed);
-                            }
+                            Thread smoothDataThread = new Thread(new ThreadStart(this.smoothDataThreaded));
+                            smoothDataThread.Start();
                         }
                         else
                         {
@@ -1506,19 +1456,31 @@ namespace OSRTT_Launcher
                 }
                 string fullFileName = cf.createFileName(resultsFolderPath, "-FULL-OSRTT.csv");
                 csvString.AppendLine("Starting RGB,End RGB,Complete Response Time (ms)," + rtType + "," + perType + "," + osType + " " + osSign + ",Visual Response Rating,Input Lag (ms)");
+                bool failed = false;
                 foreach (ProcessData.processedResult i in res)
                 {
-                    // save each run to file
-                    csvString.AppendLine(
-                        i.StartingRGB.ToString() + "," +
-                        i.EndRGB.ToString() + "," +
-                        i.compTime.ToString() + "," +
-                        i.initTime.ToString() + "," +
-                        i.perTime.ToString() + "," +
-                        i.Overshoot.ToString() + "," +
-                        i.visualResponseRating.ToString() + "," +
-                        i.inputLag.ToString()
-                        );
+                    if (i != null)
+                    {
+                        // save each run to file
+                        csvString.AppendLine(
+                            i.StartingRGB.ToString() + "," +
+                            i.EndRGB.ToString() + "," +
+                            i.compTime.ToString() + "," +
+                            i.initTime.ToString() + "," +
+                            i.perTime.ToString() + "," +
+                            i.Overshoot.ToString() + "," +
+                            i.visualResponseRating.ToString() + "," +
+                            i.inputLag.ToString()
+                            );
+                    }
+                    else
+                    {
+                        failed = true;
+                    }
+                }
+                if (failed)
+                {
+                    cf.showMessageBox("Failed to Process", "One or more of the results failed to process and has been left blank.", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
                 if (runSettings != null)
                 {
