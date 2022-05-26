@@ -36,7 +36,7 @@ SPISettings settingsA(10000000, MSBFIRST, SPI_MODE0);
 
 //Serial connection values
 bool connected = false;
-String firmware = "2.5";
+String firmware = "2.6";
 int testRuns = 4;
 bool vsync = true;
 bool extendedGamma = true;
