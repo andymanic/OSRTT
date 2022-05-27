@@ -362,8 +362,17 @@ namespace OSRTT_Launcher
                     string[] line = new string[2];
                     data.Add(line);
                 }
+                string monitorName = runSettings.MonitorName;
+                if (runSettings.MonitorName[3] == ' ')
+                {
+                    monitorName = runSettings.MonitorName.Remove(0, 4);
+                }
+                else if (runSettings.MonitorName[0] == ' ')
+                {
+                    monitorName = runSettings.MonitorName.Remove(0, 1);
+                }
                 data[0][0] = "Monitor Name";
-                data[0][1] = runSettings.MonitorName.Remove(0,4);
+                data[0][1] = monitorName;
                 data[1][0] = "FPS Limit";
                 data[1][1] = runSettings.FPSLimit.ToString();
                 data[2][0] = "V-Sync";

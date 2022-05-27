@@ -21,7 +21,9 @@ namespace OSRTT_Launcher
         public ResultsSettings()
         {
             InitializeComponent();
+            this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
             this.Icon = (Icon)rm.GetObject("osrttIcon");
+            
             initSettingsPreset();
             initIgnoreErrors();
             initSupressErrors();

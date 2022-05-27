@@ -1174,10 +1174,17 @@ namespace OSRTT_Launcher
                 //search files for number
                 foreach (var s in existingFiles)
                 {
-                    int num = int.Parse(Path.GetFileNameWithoutExtension(s).Remove(3));
-                    if (num >= fileNumber)
+                    try
                     {
-                        fileNumber = num + 1;
+                        int num = int.Parse(Path.GetFileNameWithoutExtension(s).Remove(3));
+                        if (num >= fileNumber)
+                        {
+                            fileNumber = num + 1;
+                        }
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Input string error");
                     }
                 }
                 string[] folders = resultsFolderPath.Split('\\');
