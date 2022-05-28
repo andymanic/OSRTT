@@ -271,6 +271,10 @@ namespace OSRTT_Launcher
                 showMessageBox("It is HIGHLY RECOMMENDED you allow the display to warm up BEFORE testing - it looks like your system hasn't been running for more than 30 minutes." +
                     "\n You are welcome to continue, but it's recommended you allow the display to run for around 30 minutes before testing.","Monitor Warm Up",MessageBoxButtons.OK,MessageBoxIcon.Information);
             }
+            Stopwatch sw = Stopwatch.StartNew();
+            float ticksPerMs = (float)(Stopwatch.Frequency / 1000.0f);
+            Console.WriteLine("Ticks per ms: " + ticksPerMs);
+            sw.Stop();
         }
 
         private void initialSetup()

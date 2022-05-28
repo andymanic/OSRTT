@@ -102,6 +102,30 @@
     <Reference Include="ScottPlot.WinForms, Version=4.1.41.0, Culture=neutral, PublicKeyToken=5df1dfa5321e734b, processorArchitecture=MSIL">
       <HintPath>..\packages\ScottPlot.WinForms.4.1.41\lib\net461\ScottPlot.WinForms.dll</HintPath>
     </Reference>
+    <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.D3DCompiler, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.D3DCompiler.4.2.0\lib\net45\SharpDX.D3DCompiler.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Desktop, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Desktop.4.2.0\lib\net45\SharpDX.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct2D1, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Direct2D1.4.2.0\lib\net45\SharpDX.Direct2D1.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Direct3D11.4.2.0\lib\net45\SharpDX.Direct3D11.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.DirectInput, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.DirectInput.4.2.0\lib\net45\SharpDX.DirectInput.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.DXGI, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.DXGI.4.2.0\lib\net45\SharpDX.DXGI.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Mathematics, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Mathematics.4.2.0\lib\net45\SharpDX.Mathematics.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -136,6 +160,20 @@
   <ItemGroup>
     <Compile Include="CFuncs.cs" />
     <Compile Include="DataUpload.cs" />
+    <Compile Include="DirectX\DPerformanceTester.cs" />
+    <Compile Include="DirectX\Graphics\DCameraClass1.cs" />
+    <Compile Include="DirectX\Graphics\DDX11Class4.cs" />
+    <Compile Include="DirectX\Graphics\DGraphicsClass11.cs" />
+    <Compile Include="DirectX\Graphics\DTextureClass1.cs" />
+    <Compile Include="DirectX\Graphics\TextFont\DFontClass1.cs" />
+    <Compile Include="DirectX\Graphics\TextFont\DFontShaderClass1.cs" />
+    <Compile Include="DirectX\Graphics\TextFont\DTextClass2.cs" />
+    <Compile Include="DirectX\Input\DInputClass2.cs" />
+    <Compile Include="DirectX\System\DCPUClass1.cs" />
+    <Compile Include="DirectX\System\DFPSClass1.cs" />
+    <Compile Include="DirectX\System\DSystemClass3.cs" />
+    <Compile Include="DirectX\System\DSystemConfigurationClass5.cs" />
+    <Compile Include="DirectX\System\DTimerClass1.cs" />
     <Compile Include="Gamma.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -197,6 +235,7 @@
     <Compile Include="Heatmaps.Designer.cs">
       <DependentUpon>Heatmaps.cs</DependentUpon>
     </Compile>
+    <Compile Include="Test.cs" />
     <EmbeddedResource Include="Gamma.resx">
       <DependentUpon>Gamma.cs</DependentUpon>
     </EmbeddedResource>
@@ -234,6 +273,8 @@
     <EmbeddedResource Include="ResultsView.resx">
       <DependentUpon>ResultsView.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="DirectX\Font\Font.ps" />
+    <None Include="DirectX\Font\Font.vs" />
     <None Include="OSRTT Launcher_1_TemporaryKey.pfx" />
     <None Include="OSRTT Launcher_2_TemporaryKey.pfx" />
     <None Include="OSRTT Launcher_TemporaryKey.pfx" />
@@ -267,6 +308,10 @@
     <None Include="Properties\osrttIcon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="DirectX\Font\font.bmp" />
+    <Content Include="DirectX\Font\font01.bmp" />
+    <Content Include="DirectX\Font\font01.txt" />
+    <Content Include="DirectX\Font\fontdata.txt" />
     <Content Include="osrttIcon.ico" />
     <None Include="Resources\arrow-rotate-right.png" />
     <None Include="Resources\check.png" />
