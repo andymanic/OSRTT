@@ -1,6 +1,7 @@
 ﻿using OSRTT_Launcher.DirectX.Graphics;
 using OSRTT_Launcher.DirectX.Input;
 using SharpDX.Windows;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
@@ -18,6 +19,7 @@ namespace OSRTT_Launcher.DirectX.System
         public DFPS FPS { get; private set; }
         public DCPU CPU { get; private set; }
         public DTimer Timer { get; private set; }
+        public List<float> FrameTimeList { get; private set; }
 
         // Statuc Properties
         public static bool IsMouseOffScreen { get; set; }
@@ -73,6 +75,8 @@ namespace OSRTT_Launcher.DirectX.System
                 return false;
             }
 
+            FrameTimeList = new List<float>();
+
             return result;
         }
         private void InitializeWindows(string title, int display = 0)
@@ -123,11 +127,13 @@ namespace OSRTT_Launcher.DirectX.System
 
             // Performance Logging.
             Timer.Frame2();
-            if (DPerfLogger.IsTimedTest)
+            if (true)
             {
-                DPerfLogger.Frame(Graphics.Timer.FrameTime);
-                if (Graphics.Timer.CumulativeFrameTime >= DPerfLogger.TestTimeInSeconds * 1000)
-                    return false;
+                //DPerfLogger.Frame(Timer.FrameTime);
+                FrameTimeList.Add(Timer.FrameTime);
+
+                //if (Timer.CumulativeFrameTime >= DPerfLogger.TestTimeInSeconds * 1000)
+                  //  return false;
             }
 
             // Do the frame processing for the graphics object.
@@ -155,7 +161,8 @@ namespace OSRTT_Launcher.DirectX.System
         {
             ShutdownWindows();
             DPerfLogger.ShutDown();
-
+            OSRTT_Launcher.Main m = new OSRTT_Launcher.Main();
+            m.getTestFPS(FrameTimeList);
             // Release graphics and related objects.
             Graphics?.Shutdown();
             Graphics = null;

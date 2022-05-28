@@ -11,7 +11,7 @@ namespace OSRTT_Launcher.DirectX.Graphics
     {
         // Properties.
         private bool VerticalSyncEnabled { get; set; }
-        public int VideoCardMemory { get; private set; }
+        public long VideoCardMemory { get; private set; }
         public string VideoCardDescription { get; private set; }
         private SwapChain SwapChain { get; set; }
         public SharpDX.Direct3D11.Device Device { get; private set; }
@@ -71,7 +71,8 @@ namespace OSRTT_Launcher.DirectX.Graphics
                 var adapterDescription = adapter.Description;
 
                 // Store the dedicated video card memory in megabytes.
-                VideoCardMemory = adapterDescription.DedicatedVideoMemory >> 10 >> 10;
+                long VRAM = adapterDescription.DedicatedVideoMemory;
+                VideoCardMemory = VRAM >> 10 >> 10;
 
                 // Convert the name of the video card to a character array and store it.
                 VideoCardDescription = adapterDescription.Description.Trim('\0');

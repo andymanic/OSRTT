@@ -48,7 +48,7 @@ namespace OSRTT_Launcher.DirectX.System
             ScreenNear = 0.1f;
             BorderStyle = FormBorderStyle.None;
 
-            FontFilePath = @"Externals\Font\";
+            FontFilePath = @"DirectX\Font\";
         }
     }
 }

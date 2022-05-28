@@ -1,6 +1,4 @@
-﻿using OSRTT_Launcher.DirectX.Graphics.Data;
-using OSRTT_Launcher.DirectX.Graphics.Shaders;
-using SharpDX;
+﻿using SharpDX;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;

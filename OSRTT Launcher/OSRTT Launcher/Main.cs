@@ -2862,11 +2862,17 @@ namespace OSRTT_Launcher
 
         private void testButtonToolStripMenuItemToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            liveView = true;
-            LiveViewObject = new LiveView();
-            port.Write("O");
-            LiveViewObject.m = this;
-            LiveViewObject.Show();
+            Thread directXThread = new Thread(new ThreadStart(runDirectXWindow));
+            directXThread.Start();
+        }
+
+        private void runDirectXWindow()
+        {
+            OSRTT_Launcher.DirectX.System.DSystem.StartRenderForm("Tutorial 13: Direct Input", 800, 600, false, true, 0, 1);
+        }
+        public void getTestFPS(List<float> fpsList)
+        {
+            Console.WriteLine(fpsList.Average().ToString());
         }
 
         private void resultsViewBtn_Click(object sender, EventArgs e)

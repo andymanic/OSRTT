@@ -121,7 +121,6 @@ namespace OSRTT_Launcher.DirectX.Input
                     // This will only output a single key (i.e no rollover support.)
                     PressedKeys = k.ToString() + ":"; // Added colon as multi-key delimiter. 
                 }
-                Console.WriteLine();
             }
             catch (SharpDX.SharpDXException ex)
             {
