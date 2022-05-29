@@ -207,13 +207,16 @@ namespace OSRTT_Launcher.DirectX.System
                     case "D":  // RGB 238
                         RGB = 238f / 255f;
                         break;
+                    case "RightMouseButton": // Set to black
+                        RGB = 0f;
+                        break;
                 }
             }
-            if (eventTimer.IsRunning && eventTimer.ElapsedMilliseconds >= 100)
+            /*if (eventTimer.IsRunning && eventTimer.ElapsedMilliseconds >= 100)
             {
                 eventTimer.Restart();
                 RGB = 0f;
-            }
+            }*/
             // Finally render the graphics to the screen.
             if (!Graphics.Render(RGB))
                 return false;
