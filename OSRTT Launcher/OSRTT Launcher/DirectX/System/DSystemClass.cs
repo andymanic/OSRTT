@@ -20,6 +20,9 @@ namespace OSRTT_Launcher.DirectX.System
         public DCPU CPU { get; private set; }
         public DTimer Timer { get; private set; }
         public List<float> FrameTimeList { get; private set; }
+        public static float RGB { get; set; }
+        private Stopwatch eventTimer { get; set; }
+        public static Main mainWindow { get; set; }
 
         // Statuc Properties
         public static bool IsMouseOffScreen { get; set; }
@@ -57,7 +60,7 @@ namespace OSRTT_Launcher.DirectX.System
                 result = Graphics.Initialize(Configuration, RenderForm.Handle);
             }
 
-            DPerfLogger.Initialize("RenderForm C# SharpDX: " + Configuration.Width + "x" + Configuration.Height + " VSync:" + DSystemConfiguration.VerticalSyncEnabled + " FullScreen:" + DSystemConfiguration.FullScreen + "   " + RenderForm.Text, testTimeSeconds, Configuration.Width, Configuration.Height);;
+            DPerfLogger.Initialize("RenderForm C# SharpDX: " + Configuration.Width + "x" + Configuration.Height + " VSync:" + DSystemConfiguration.VerticalSyncEnabled + " FullScreen:" + DSystemConfiguration.FullScreen + "   " + RenderForm.Text, testTimeSeconds, Configuration.Width, Configuration.Height); ;
 
             // Create and initialize the FpsClass. 
             FPS = new DFPS();
@@ -76,9 +79,16 @@ namespace OSRTT_Launcher.DirectX.System
             }
 
             FrameTimeList = new List<float>();
+            eventTimer = new Stopwatch();
 
             return result;
         }
+
+        public void InjectRGB(float rgbVal)
+        {
+            RGB = rgbVal;
+        }
+
         private void InitializeWindows(string title, int display = 0)
         {
             Screen[] screens = Screen.AllScreens;
@@ -104,6 +114,7 @@ namespace OSRTT_Launcher.DirectX.System
             int wasteTime = 0;
             // Calc fps limit based on ticks per ms 
             // float frameTickLimit = (float)fpsLimit * ticksPerMs;
+            // frameTickLimit -= 2; // += ?
             RenderLoop.Run(RenderForm, () =>
             {
                 sw.Restart();
@@ -115,7 +126,7 @@ namespace OSRTT_Launcher.DirectX.System
                 }
             });
         }
-        public bool Frame(float RGB = 0f)
+        public bool Frame()
         {
             // Check if the user pressed escape and wants to exit the application.
             if (!Input.Frame() || Input.IsEscapePressed())
@@ -142,14 +153,66 @@ namespace OSRTT_Launcher.DirectX.System
 
             if (Input.PressedKeys != null)
             {
-                if (Input.PressedKeys.Contains("G:"))
+                switch (Input.PressedKeys)
                 {
-                    RGB = 0.5f;
+                    case "LeftMouseButton":
+                        RGB = 1f;
+                        //eventTimer.Start();
+                        break;
+                    case "D1":  // RGB 0
+                        RGB = 0f;
+                        break;
+                    case "D2":  // RGB 51
+                        RGB = 0.2f;
+                        break;
+                    case "D3":  // RGB 102
+                        RGB = 0.4f;
+                        break;
+                    case "D4":  // RGB 153
+                        RGB = 0.6f;
+                        break;
+                    case "D5":  // RGB 204
+                        RGB = 0.8f;
+                        break;
+                    case "D6":  // RGB 255
+                        RGB = 1f;
+                        break;
+                    case "D7":  // RGB 17
+                        RGB = 17f / 255f;
+                        break;
+                    case "D8":  // RGB 34
+                        RGB = 34f / 255f;
+                        break;
+                    case "D9":  // RGB 68
+                        RGB = 68f / 255f;
+                        break;
+                    case "D0":  // RGB 85 
+                        RGB = 85f / 255f;
+                        break; 
+                    case "Q":  // RGB 119
+                        RGB = 119f / 255f;
+                        break;
+                    case "W":  // RGB 136
+                        RGB = 136f / 255f;
+                        break;
+                    case "E":  // RGB 170
+                        RGB = 170f / 255f;
+                        break;
+                    case "A":  // RGB 187
+                        RGB = 187f / 255f;
+                        break;
+                    case "S":  // RGB 221
+                        RGB = 221f / 255f;
+                        break;
+                    case "D":  // RGB 238
+                        RGB = 238f / 255f;
+                        break;
                 }
-                else if (Input.PressedKeys.Contains("LeftMouseButton"))
-                {
-                    RGB = 0.2f;
-                }
+            }
+            if (eventTimer.IsRunning && eventTimer.ElapsedMilliseconds >= 100)
+            {
+                eventTimer.Restart();
+                RGB = 0f;
             }
             // Finally render the graphics to the screen.
             if (!Graphics.Render(RGB))
@@ -161,8 +224,7 @@ namespace OSRTT_Launcher.DirectX.System
         {
             ShutdownWindows();
             DPerfLogger.ShutDown();
-            OSRTT_Launcher.Main m = new OSRTT_Launcher.Main();
-            m.getTestFPS(FrameTimeList);
+            mainWindow.getTestFPS(FrameTimeList);
             // Release graphics and related objects.
             Graphics?.Shutdown();
             Graphics = null;

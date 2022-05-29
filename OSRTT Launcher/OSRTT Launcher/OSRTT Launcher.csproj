@@ -161,19 +161,19 @@
     <Compile Include="CFuncs.cs" />
     <Compile Include="DataUpload.cs" />
     <Compile Include="DirectX\DPerformanceTester.cs" />
-    <Compile Include="DirectX\Graphics\DCameraClass1.cs" />
-    <Compile Include="DirectX\Graphics\DDX11Class4.cs" />
-    <Compile Include="DirectX\Graphics\DGraphicsClass11.cs" />
-    <Compile Include="DirectX\Graphics\DTextureClass1.cs" />
-    <Compile Include="DirectX\Graphics\TextFont\DFontClass1.cs" />
-    <Compile Include="DirectX\Graphics\TextFont\DFontShaderClass1.cs" />
-    <Compile Include="DirectX\Graphics\TextFont\DTextClass2.cs" />
-    <Compile Include="DirectX\Input\DInputClass2.cs" />
-    <Compile Include="DirectX\System\DCPUClass1.cs" />
-    <Compile Include="DirectX\System\DFPSClass1.cs" />
-    <Compile Include="DirectX\System\DSystemClass3.cs" />
-    <Compile Include="DirectX\System\DSystemConfigurationClass5.cs" />
-    <Compile Include="DirectX\System\DTimerClass1.cs" />
+    <Compile Include="DirectX\Graphics\DCameraClass.cs" />
+    <Compile Include="DirectX\Graphics\DDX11Class.cs" />
+    <Compile Include="DirectX\Graphics\DGraphicsClass.cs" />
+    <Compile Include="DirectX\Graphics\DTextureClass.cs" />
+    <Compile Include="DirectX\Graphics\TextFont\DFontClass.cs" />
+    <Compile Include="DirectX\Graphics\TextFont\DFontShaderClass.cs" />
+    <Compile Include="DirectX\Graphics\TextFont\DTextClass.cs" />
+    <Compile Include="DirectX\Input\DInputClass.cs" />
+    <Compile Include="DirectX\System\DCPUClass.cs" />
+    <Compile Include="DirectX\System\DFPSClass.cs" />
+    <Compile Include="DirectX\System\DSystemClass.cs" />
+    <Compile Include="DirectX\System\DSystemConfigurationClass.cs" />
+    <Compile Include="DirectX\System\DTimerClass.cs" />
     <Compile Include="Gamma.cs">
       <SubType>UserControl</SubType>
     </Compile>

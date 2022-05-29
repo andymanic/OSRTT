@@ -93,6 +93,7 @@ namespace OSRTT_Launcher.DirectX.Input
         }
         public bool Frame()
         {
+            PressedKeys = "";
             // Read the current state of the keyboard.
             if (!ReadKeyboard())
                 return false;
@@ -119,7 +120,8 @@ namespace OSRTT_Launcher.DirectX.Input
                 {
                     // Pressed Keys should be reset per frame in theory. In practice this is better.
                     // This will only output a single key (i.e no rollover support.)
-                    PressedKeys = k.ToString() + ":"; // Added colon as multi-key delimiter. 
+                    PressedKeys = k.ToString();
+                    Console.WriteLine(k);
                 }
             }
             catch (SharpDX.SharpDXException ex)
@@ -155,11 +157,11 @@ namespace OSRTT_Launcher.DirectX.Input
                 _Mouse.GetCurrentState(ref _MouseState);
                 if (_MouseState.Buttons[0])
                 {
-                    PressedKeys = "LeftMouseButton:";
+                    PressedKeys = "LeftMouseButton";
                 }
                 /*if (_MouseState.Buttons[2])
                 {
-                    PressedKeys = "RightMouseButton:";
+                    PressedKeys = "RightMouseButton";
                 }*/
             }
             catch (SharpDX.SharpDXException ex)
@@ -223,5 +225,6 @@ namespace OSRTT_Launcher.DirectX.Input
             mouseX = _MouseX;
             mouseY = _MouseY;
         }
+
     }
 }

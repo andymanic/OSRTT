@@ -85,6 +85,9 @@ namespace OSRTT_Launcher
         private List<ProcessData.processedResult> averageData = new List<ProcessData.processedResult>();
         private List<ProcessData.gammaResult> processedGamma = new List<ProcessData.gammaResult>();
         private bool excelInstalled = false;
+
+        private DirectX.System.DSystem testProgram;
+
         public class Displays
         {
             public string Name { get; set; }
@@ -2864,10 +2867,26 @@ namespace OSRTT_Launcher
         {
             Thread directXThread = new Thread(new ThreadStart(runDirectXWindow));
             directXThread.Start();
+            Thread testThread = new Thread(new ThreadStart(fuckabout));
+            testThread.Start();
+        }
+        private void fuckabout()
+        {
+            Thread.Sleep(10000);
+            OSRTT_Launcher.DirectX.System.DSystem.RGB = 1f;
+            Thread.Sleep(3000);
+            OSRTT_Launcher.DirectX.System.DSystem.RGB = 0.5f;
+            Thread.Sleep(3000);
+            OSRTT_Launcher.DirectX.System.DSystem.RGB = 0f;
+            Thread.Sleep(3000);
+            OSRTT_Launcher.DirectX.System.DSystem.RGB = 0.5f;
+            Thread.Sleep(3000);
+            OSRTT_Launcher.DirectX.System.DSystem.RGB = 1f;
         }
 
         private void runDirectXWindow()
         {
+            OSRTT_Launcher.DirectX.System.DSystem.mainWindow = this;
             OSRTT_Launcher.DirectX.System.DSystem.StartRenderForm("Tutorial 13: Direct Input", 800, 600, false, true, 0, 1);
         }
         public void getTestFPS(List<float> fpsList)
