@@ -103,7 +103,7 @@ namespace OSRTT_Launcher.DirectX.Input
                 return false;
 
             // Process the changes in the mouse and keyboard.
-            ProcessInput();
+            //ProcessInput();
 
             return true;
         }

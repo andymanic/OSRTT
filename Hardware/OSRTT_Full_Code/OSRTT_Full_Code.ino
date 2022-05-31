@@ -8,7 +8,7 @@
 // These are the RGB values it tests with
 int RGBArr[] = {0,51,102,153,204,255};
 // These are the keys that correspond with the above values
-char Keys[] = {'q','z','s','e','c','f'};
+char Keys[] = {'1','2','3','4','5','6'};
 // Ideally I'd pair these together in an array of key/value pairs but this works for now. 
 // These are the RGB values it tests with
 int OldRGBArr[] = {0,26,51,77,102,128,153,179,204,230,255};
@@ -16,7 +16,7 @@ int OldRGBArr[] = {0,26,51,77,102,128,153,179,204,230,255};
 char OldKeys[] = {'q','a','z','w','s','x','e','d','c','r','f'};
 // Ideally I'd pair these together in an array of key/value pairs but this works for now. 
 int extGammaArr[] = {0,17,34,51,68,85,102,119,136,153,170,187,204,221,238,255};
-char extGammaKeys[] = {'q','y','h','z','n','u','s','j','m','e','i','k','c','o','l','f',};
+char extGammaKeys[] = {'1','7','8','2','9','0','3','q','w','4','e','a','5','s','d','6',};
 
 //ADC values
 unsigned long curr_time = micros();
@@ -36,7 +36,7 @@ SPISettings settingsA(10000000, MSBFIRST, SPI_MODE0);
 
 //Serial connection values
 bool connected = false;
-String firmware = "2.6";
+String firmware = "BETA 3.0";
 int testRuns = 4;
 bool vsync = true;
 bool extendedGamma = true;
@@ -101,8 +101,8 @@ void ADC_Init(Adc *ADCx)
 
 int checkLightLevel() // Check light level & modulate potentiometer value 
 {
-  Keyboard.write('f');
-  delay(400);
+  //Keyboard.write('f');
+  //delay(400);
   int potValue = 160;
   digitalPotWrite(potValue);
   delay(200);
@@ -156,7 +156,7 @@ int checkLightLevel() // Check light level & modulate potentiometer value
 void runADC(int curr, int nxt, char key, String type) // Run test, press key and print results
 {
     // Set next colour
-    Keyboard.print(key);
+    //Keyboard.print(key);
 
     curr_time = micros(); //need to run this in case board is left connected for long period as first run won't read any samples
     unsigned long start_time = micros();
@@ -305,6 +305,7 @@ void runInputLagTest(int timeBetween)
   sample_count = 0; //reset sample count
     
   curr_time = micros();
+  Mouse.click(MOUSE_RIGHT);
 }
 
 void checkLatency() {
@@ -565,39 +566,15 @@ void loop() {
         if (buttonState == HIGH) //Run when button pressed
         {
           Serial.setTimeout(500);
-          Keyboard.print(fpsLimit);
-          Keyboard.print(fpsLimit);
-          // Check USB voltage level
-          //int voltageTest = checkUSBVoltage();
-          //if (voltageTest == 0)
-          //{
-            // If brightness too low or high, don't run the test
-          //  Serial.println("TEST CANCELLED - USB VOLTAGE");
-          //  digitalWrite(13, HIGH); 
-          //  digitalPotWrite(0x80);
-          //  break;
-          //} 
-          //else 
-          //{
-            // Check monitor brightness level
-            int brightnessTest = checkLightLevel();
-            if (brightnessTest == 0)
-            {
-              // If brightness too low or high, don't run the test
-              Serial.println("Cancelling test");
-              digitalWrite(13, HIGH); 
-              digitalPotWrite(0x80);
-              break;
-            }
-            else
-            {
-              checkLatency();
+          
+            
+              //checkLatency();
               delay(100);
               Serial.println("Test Started");
               // Set FPS limit (default 1000 FPS, key '1')
-              delay(50);
-              runGammaTest();
-              delay(100);
+              //delay(50);
+              //runGammaTest();
+              //delay(100);
               while (input[0] != 'X')
               {
                 for (int i = 0; i < INPUT_SIZE + 1; i++)
@@ -615,6 +592,35 @@ void loop() {
                   int t = input[1] - '0';
                   t++;
                   samplingTime = 50000 * t;
+                }
+                else if (input[0] == 'G')
+                {
+                  int rgb = 0;
+                  if (input[0] <= 57)
+                  {
+                    rgb = input[0] - '0'; // Convert char to int  
+                  }
+                  else
+                  {
+                    rgb = input[0] - 55;
+                  }
+                  runADC(rgb, rgb, ' ', "Gamma: ");
+                }
+                else if (input[0] == 'L')
+                {
+                  runADC(1000,1000,' ',"TL:");
+                }
+                else if (input[0] == 'R')
+                {
+                  int brightnessTest = checkLightLevel();
+                  if (brightnessTest == 0)
+                  {
+                    // If brightness too low or high, don't run the test
+                    Serial.println("Cancelling test");
+                    digitalWrite(13, HIGH); 
+                    digitalPotWrite(0x80);
+                    break;
+                  }
                 }
                 else
                 {
@@ -641,8 +647,8 @@ void loop() {
                   {
                     int current = RGBArr[currentIndex];
                     int next = RGBArr[nextIndex];
-                    Keyboard.print(Keys[currentIndex]);
-                    delay(300);
+                    //Keyboard.print(Keys[currentIndex]);
+                    //delay(300);
                     runADC(current, next, Keys[nextIndex], "Results: ");
                     delay(50);
                     Serial.println("NEXT");
@@ -650,9 +656,8 @@ void loop() {
                 }
                 delay(50);  
               }
-            }
+            
             digitalPotWrite(0x80);
-          //}
         }
         else 
         {

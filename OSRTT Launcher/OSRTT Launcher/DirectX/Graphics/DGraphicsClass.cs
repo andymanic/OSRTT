@@ -68,7 +68,7 @@ namespace OSRTT_Launcher.DirectX.Graphics
             D3D?.ShutDown();
             D3D = null;
         }
-        public bool Frame(int fps, int cpu, float frameTime)
+        public bool Frame(int fps, int cpu)
         {
             // Set the frames per second.
             if (!Text.SetFps(fps, D3D.DeviceContext))

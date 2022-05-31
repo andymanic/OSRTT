@@ -54,8 +54,12 @@ namespace OSRTT_Launcher
         private bool triggerNextResult = false;
         private bool vsyncTrigger = false;
         private bool liveView = false;
+        private bool boardCalibration = false;
+        private bool latencyTest = false;
 
         private List<int> RGBArr = new List<int>{0, 51, 102, 153, 204, 255};
+        private List<float> RGBKeys = new List<float> { 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f };
+        private List<int> GammaArr = new List<int> {0,17,34,51,68,85,102,119,136,153,170,187,204,221,238,225 };
         private int currentStart = 0;
         private int currentEnd = 0;
         private int currentRun = 0;
@@ -1149,6 +1153,7 @@ namespace OSRTT_Launcher
                             else { continue; }
                         }
                         gamma.Add(intValues);
+                        currentStart = intValues[0];
                     }
                     else if (message.Contains("Stability"))
                     {
@@ -1500,6 +1505,7 @@ namespace OSRTT_Launcher
                             Thread.Sleep(100);
                             port.Write("S" + Properties.Settings.Default.captureTime.ToString());
                         }
+                        latencyTest = true;
                     }
                     else
                     {
@@ -1882,9 +1888,30 @@ namespace OSRTT_Launcher
             }
             testStarted = false;
             Thread.Sleep(100);
-            while (gammaTest)
+            DirectX.System.DSystem.RGB = 1f;
+            Thread.Sleep(100);
+            port.Write("R");
+            while (!boardCalibration)
             {
-                Thread.Sleep(100);
+                Thread.Sleep(10);
+            }
+            DirectX.System.DSystem.RGB = 0f;
+            Thread.Sleep(50);
+            port.Write("L");
+            Thread.Sleep(5);
+            DirectX.System.DSystem.RGB = 1f;
+            while (!latencyTest)
+            {
+                Thread.Sleep(10);
+            }
+            // run gamma test 
+            for (int p = 0; p < GammaArr.Count; p++) 
+            {     
+                port.Write("G" + p.ToString("X")); 
+                while (currentStart != GammaArr[p]) 
+                {     
+                    Thread.Sleep(10);
+                }
             }
             while(!testRunning)
             {
@@ -1912,9 +1939,14 @@ namespace OSRTT_Launcher
                             { // check if test should be paused first, if so sleep for 100ms.
                                 Thread.Sleep(100);
                             }
-                            Thread.Sleep(10);
+                            DirectX.System.DSystem.RGB = RGBKeys[i];
+                            Thread.Sleep(100);
                             try
-                            { port.Write(i.ToString() + k.ToString()); }
+                            { 
+                                port.Write(i.ToString() + k.ToString());
+                                Thread.Sleep(5);
+                                DirectX.System.DSystem.RGB = RGBKeys[k];
+                            }
                             catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); SetText(ex.Message + ex.StackTrace); }
                             Stopwatch sw = new Stopwatch();
                             sw.Reset();
@@ -1923,24 +1955,14 @@ namespace OSRTT_Launcher
                             { // wait for CORRECT result to come back
                                 if (currentStart == RGBArr[i] && currentEnd == RGBArr[k] && triggerNextResult)
                                 {
+                                    sw.Stop();
                                     break;
                                 }
                                 Thread.Sleep(10);
                             }
                             if (sw.ElapsedMilliseconds > 5000)
                             {
-                                DialogResult d = showMessageBox("Error: The test was unable to run the last transition, try again?", "Test Timed Out", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
-                                if (d == DialogResult.Retry)
-                                {
-                                    try
-                                    { port.Write(i.ToString() + k.ToString()); }
-                                    catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); SetText(ex.Message + ex.StackTrace); }
-                                }
-                                else
-                                {
-                                    testRunning = false;
-                                    break;
-                                }
+                                // Result failed. Possibly automatically try again? 
                             }
                             triggerNextResult = false;
                             Thread.Sleep(100);
@@ -1950,7 +1972,11 @@ namespace OSRTT_Launcher
                                 break;
                             }
                             try
-                            { port.Write(k.ToString() + i.ToString()); }
+                            { 
+                                port.Write(k.ToString() + i.ToString());
+                                Thread.Sleep(5);
+                                DirectX.System.DSystem.RGB = RGBKeys[i];
+                            }
                             catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); SetText(ex.Message + ex.StackTrace); }
                             sw.Reset();
                             sw.Start();
@@ -1964,18 +1990,7 @@ namespace OSRTT_Launcher
                             }
                             if (sw.ElapsedMilliseconds > 5000)
                             {
-                                DialogResult d = showMessageBox("Error: The test was unable to run the last transition, try again?", "Test Timed Out", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
-                                if (d == DialogResult.Retry)
-                                {
-                                    try
-                                    { port.Write(k.ToString() + i.ToString()); }
-                                    catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); SetText(ex.Message + ex.StackTrace); }
-                                }
-                                else
-                                {
-                                    testRunning = false;
-                                    break;
-                                }
+                                // Result failed. Possibly automatically try again? 
                             }
                             triggerNextResult = false;
                             if (!testRunning) { break; }
@@ -2867,27 +2882,13 @@ namespace OSRTT_Launcher
         {
             Thread directXThread = new Thread(new ThreadStart(runDirectXWindow));
             directXThread.Start();
-            Thread testThread = new Thread(new ThreadStart(fuckabout));
-            testThread.Start();
         }
-        private void fuckabout()
-        {
-            Thread.Sleep(10000);
-            OSRTT_Launcher.DirectX.System.DSystem.RGB = 1f;
-            Thread.Sleep(3000);
-            OSRTT_Launcher.DirectX.System.DSystem.RGB = 0.5f;
-            Thread.Sleep(3000);
-            OSRTT_Launcher.DirectX.System.DSystem.RGB = 0f;
-            Thread.Sleep(3000);
-            OSRTT_Launcher.DirectX.System.DSystem.RGB = 0.5f;
-            Thread.Sleep(3000);
-            OSRTT_Launcher.DirectX.System.DSystem.RGB = 1f;
-        }
+        
 
         private void runDirectXWindow()
         {
             OSRTT_Launcher.DirectX.System.DSystem.mainWindow = this;
-            OSRTT_Launcher.DirectX.System.DSystem.StartRenderForm("Tutorial 13: Direct Input", 800, 600, false, true, 0, 1);
+            OSRTT_Launcher.DirectX.System.DSystem.StartRenderForm("OSRTT Test Window (DirectX 11)", 800, 600, false, true, 1, 2.77777777778);
         }
         public void getTestFPS(List<float> fpsList)
         {

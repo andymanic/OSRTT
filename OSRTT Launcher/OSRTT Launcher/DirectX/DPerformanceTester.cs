@@ -90,10 +90,6 @@ namespace TestConsole
                 standardDeviation2 = Math.Sqrt(sumOfSquaresOfDifferences2 / sampleFloatSet.Count);
             }
 
-            //OSRTT_Launcher.Main m = new OSRTT_Launcher.Main();
-            //m.getTestFPS(fPSAverage);
-            Console.WriteLine("FPS AVERAGE: " + fPSAverage.ToString());
-
             if (writeToFile)
                 sb.AppendLine(string.Format("FPS Stats: # Samples: {0}\tTime: {8}\tAve: {1}\tMin: {2}\tMax: {3}\tStdDev: {4}/{5:p2}\tDirtyData: {6}/{7:p2}", sampleFloatSet.Count, newfPSAverage2.ToString("f4"), (FPSMinimum < 100) ? FPSMinimum.ToString("f0") + "  " : FPSMinimum.ToString("f0"), FPSMaximum.ToString("f0"), ((standardDeviation2 / newfPSAverage2) * newfPSAverage2).ToString("f2"), standardDeviation2 / newfPSAverage2, (TotalSamples == 0) ? " - " : (TotalSamples - sampleFloatSet.Count).ToString(), (TotalSamples == 0) ? " - " : ((double)(TotalSamples - sampleFloatSet.Count) / (double)TotalSamples).ToString("p2"), (timeInBeforeDirtyDataRemoved < 10.0) ? timeInBeforeDirtyDataRemoved.ToString("f3") : timeInBeforeDirtyDataRemoved.ToString("f2")));
 

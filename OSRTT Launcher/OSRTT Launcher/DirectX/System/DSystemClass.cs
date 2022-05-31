@@ -21,7 +21,7 @@ namespace OSRTT_Launcher.DirectX.System
         public DTimer Timer { get; private set; }
         public List<float> FrameTimeList { get; private set; }
         public static float RGB { get; set; }
-        private Stopwatch eventTimer { get; set; }
+        //private Stopwatch eventTimer { get; set; }
         public static Main mainWindow { get; set; }
 
         // Statuc Properties
@@ -30,15 +30,15 @@ namespace OSRTT_Launcher.DirectX.System
         // Constructor
         public DSystem() { }
 
-        public static void StartRenderForm(string title, int width, int height, bool vSync, bool fullScreen = true, int testTimeSeconds = 0, int display = 0, double fpsLimit = 1)
+        public static void StartRenderForm(string title, int width, int height, bool vSync, bool fullScreen = true, int display = 0, double fpsLimit = 1)
         {
             DSystem system = new DSystem();
-            system.Initialize(title, width, height, vSync, fullScreen, testTimeSeconds, display);
+            system.Initialize(title, width, height, vSync, fullScreen, display);
             system.RunRenderForm(fpsLimit);
         }
 
         // Methods
-        public virtual bool Initialize(string title, int width, int height, bool vSync, bool fullScreen, int testTimeSeconds, int display = 0)
+        public virtual bool Initialize(string title, int width, int height, bool vSync, bool fullScreen, int display = 0)
         {
             bool result = false;
 
@@ -60,7 +60,7 @@ namespace OSRTT_Launcher.DirectX.System
                 result = Graphics.Initialize(Configuration, RenderForm.Handle);
             }
 
-            DPerfLogger.Initialize("RenderForm C# SharpDX: " + Configuration.Width + "x" + Configuration.Height + " VSync:" + DSystemConfiguration.VerticalSyncEnabled + " FullScreen:" + DSystemConfiguration.FullScreen + "   " + RenderForm.Text, testTimeSeconds, Configuration.Width, Configuration.Height); ;
+            DPerfLogger.Initialize("RenderForm C# SharpDX: " + Configuration.Width + "x" + Configuration.Height + " VSync:" + DSystemConfiguration.VerticalSyncEnabled + " FullScreen:" + DSystemConfiguration.FullScreen + "   " + RenderForm.Text, 0, Configuration.Width, Configuration.Height); ;
 
             // Create and initialize the FpsClass. 
             FPS = new DFPS();
@@ -79,14 +79,9 @@ namespace OSRTT_Launcher.DirectX.System
             }
 
             FrameTimeList = new List<float>();
-            eventTimer = new Stopwatch();
+            //eventTimer = new Stopwatch();
 
             return result;
-        }
-
-        public void InjectRGB(float rgbVal)
-        {
-            RGB = rgbVal;
         }
 
         private void InitializeWindows(string title, int display = 0)
@@ -113,14 +108,14 @@ namespace OSRTT_Launcher.DirectX.System
             float ticksPerMs = (float)(Stopwatch.Frequency / 1000.0f);
             int wasteTime = 0;
             // Calc fps limit based on ticks per ms 
-            // float frameTickLimit = (float)fpsLimit * ticksPerMs;
-            // frameTickLimit -= 2; // += ?
+            float frameTickLimit = (float)fpsLimit * ticksPerMs;
+            frameTickLimit -= 2; // += ?
             RenderLoop.Run(RenderForm, () =>
             {
                 sw.Restart();
                 if (!Frame())
                     ShutDown();
-                while (sw.ElapsedTicks < 10002) // ticks - 2
+                while (sw.ElapsedTicks < frameTickLimit) // ticks - 2
                 {
                     wasteTime = 0;
                 }
@@ -148,7 +143,7 @@ namespace OSRTT_Launcher.DirectX.System
             }
 
             // Do the frame processing for the graphics object.
-            if (!Graphics.Frame(FPS.Value, CPU.Value, Timer.FrameTime))
+            if (!Graphics.Frame(FPS.Value, CPU.Value))
                 return false;
 
             if (Input.PressedKeys != null)
