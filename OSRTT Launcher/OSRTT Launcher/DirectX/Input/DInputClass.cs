@@ -97,7 +97,8 @@ namespace OSRTT_Launcher.DirectX.Input
             // Read the current state of the keyboard.
             if (!ReadKeyboard())
                 return false;
-
+            //ReadKeyboard();
+            //ReadMouse();
             // Read the current state of the mouse.
             if (!ReadMouse())
                 return false;
@@ -155,14 +156,14 @@ namespace OSRTT_Launcher.DirectX.Input
             {
                 // Read the mouse device.
                 _Mouse.GetCurrentState(ref _MouseState);
+                if (_MouseState.Buttons[1])
+                {
+                    PressedKeys = "RightMouseButton";
+                }
                 if (_MouseState.Buttons[0])
                 {
                     PressedKeys = "LeftMouseButton";
                 }
-                /*if (_MouseState.Buttons[2])
-                {
-                    PressedKeys = "RightMouseButton";
-                }*/
             }
             catch (SharpDX.SharpDXException ex)
             {
@@ -177,7 +178,14 @@ namespace OSRTT_Launcher.DirectX.Input
                     if (ex.ResultCode == ResultCode.InputLost || ex.ResultCode == ResultCode.NotAcquired)
                     {
                         // If the mouse lost focus or was not acquired then try to get control back.
-                        _Mouse.Acquire();
+                        try
+                        {
+                            _Mouse.Acquire();
+                        }
+                        catch (SharpDX.SharpDXException exc)
+                        { 
+                            
+                        }
                     }
                     else
                         return false;
@@ -189,10 +197,10 @@ namespace OSRTT_Launcher.DirectX.Input
             }
 
             // If the keyboard lost focus or was not acquired then try to get control back.
-            if (resultCode == ResultCode.InputLost || resultCode == ResultCode.NotAcquired)
+            /*if (resultCode == ResultCode.InputLost || resultCode == ResultCode.NotAcquired)
                 _Mouse.Acquire();
             else if (resultCode != ResultCode.Ok)
-                return false;
+                return false;*/
 
             return true;
         }

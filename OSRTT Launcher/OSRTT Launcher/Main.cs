@@ -598,10 +598,12 @@ namespace OSRTT_Launcher
                             process.StartInfo.FileName = "cmd.exe";
 
                             Console.WriteLine("ready to start");
-                            process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe compile --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code && .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code";
+                            process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe lib install Keyboard && .\\arduinoCLI\\arduino-cli.exe lib install Mouse && .\\arduinoCLI\\arduino-cli.exe lib install ArduinoUniqueID";
                             process.StartInfo.UseShellExecute = false;
                             process.StartInfo.RedirectStandardOutput = true;
                             process.StartInfo.CreateNoWindow = true;
+                            process.Start();
+                            process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe compile --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code && .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code";
                             try
                             {
                                 Console.WriteLine("starting");
@@ -1218,6 +1220,7 @@ namespace OSRTT_Launcher
                     else if (message.Contains("FW:"))
                     {
                         string[] sp = message.Split(':');
+
                         boardVersion = double.Parse(sp[1]);
                         compareFirmware();
                         this.firmVerLbl.Invoke((MethodInvoker)(() => this.firmVerLbl.Text = "V" + boardVersion));
@@ -1626,65 +1629,17 @@ namespace OSRTT_Launcher
                 setProgressBar(true);
                 // Save current & FPS to hardware on run
                 Thread.Sleep(200);
-                setFPSLimit();
-                Thread.Sleep(200);
-                setRepeats();
-                if (port != null)
-                {
-                    port.Write("V" + Properties.Settings.Default.VSyncState.ToString());
-                }
-                Thread.Sleep(200);
+                
                 testRunning = true;
                 vsyncTrigger = false;
                 // Launch UE4 game
                 // thinking about it you can probably just bundle this into one process instead of launching, then finding it again...
-                string ue4Path = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
-                ue4Path = new Uri(System.IO.Path.GetDirectoryName(ue4Path)).LocalPath;
-                ue4Path += @"\OSRTT UE4\ResponseTimeTest.exe";
-                // Move UE4 window to selected monitor if that isn't the primary (will open by default there).
+                
                 int selectedDisplay = getSelectedMonitor();
                 var display = Screen.AllScreens[selectedDisplay];
-                int WinX = 0;
-                int WinY = 0;
-                string vsync = " VSync";
-                if (!Properties.Settings.Default.VSyncState)
-                {
-                    vsync = " NoVSync";
-                }
                 
-                Process ue4 = new Process();
                 try
                 {
-                    ue4.StartInfo.FileName = ue4Path;
-                    if (display.Primary == false)
-                    {
-                        // Force UE4 window to selected display if selected is not primary
-                        WinX = display.Bounds.Location.X;
-                        WinY = display.Bounds.Location.Y;
-                        ue4.StartInfo.Arguments = ue4Path + " WinX=" + WinX + " WinY=" + WinY;
-                    }
-                    else
-                    {
-                        ue4.StartInfo.Arguments = ue4Path;
-                    }
-                    ue4.Start();
-                    // Process.Start(ue4Path);
-                }
-                catch (Exception strE)
-                {
-                    Console.WriteLine(strE.Message + strE.StackTrace);
-                    SetText(strE.Message + strE.StackTrace);
-                }
-                try
-                {
-                    Process[] p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
-                    while (p.Length == 0)
-                    {
-                        // Added in case game hasn't finished launching yet
-                        p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
-                        Thread.Sleep(100);
-                    }
-                    
                     try
                     {
                         gamma.Clear();
@@ -1715,20 +1670,18 @@ namespace OSRTT_Launcher
                     
                     checkWindowThread = new Thread(new ThreadStart(this.checkFocusedWindow));
                     checkWindowThread.Start();
-                    if (boardVersion > 1.5)
-                    {
-                        testRunning = true;
-                        initRtOsMethods();
-                        makeResultsFolder();
-                        runTestThread = new Thread(new ThreadStart(this.runTest));
-                        runTestThread.Start();
-                    }
-                    // Wait for game to close then send cancel command to board
-                    p[0].WaitForExit();
-                    /*if (runTestThread != null)
-                    {
-                        runTestThread.Abort();
-                    }*/
+                    
+                    testRunning = true;
+                    initRtOsMethods();
+                    makeResultsFolder();
+                    runTestThread = new Thread(new ThreadStart(this.runTest));
+                    runTestThread.Start();
+                    
+                    bool vsync = Properties.Settings.Default.VSyncState;
+                    int fpsLimit = Int32.Parse(getSelectedFps());
+                    double frameTime = 1000 / fpsLimit;
+                    OSRTT_Launcher.DirectX.System.DSystem.mainWindow = this;
+                    OSRTT_Launcher.DirectX.System.DSystem.StartRenderForm("OSRTT Test Window (DirectX 11)", 800, 600, vsync, true, selectedDisplay, frameTime);
                     if (!testRunning)
                     {
                         if (runTestThread != null)
@@ -1821,15 +1774,15 @@ namespace OSRTT_Launcher
 
         private void checkFocusedWindow()
         {
-            FocusedWindow fw = new FocusedWindow();
-            string pName = fw.GetForegroundProcessName();
+            //FocusedWindow fw = new FocusedWindow();
+            //string pName = fw.GetForegroundProcessName();
             while (true)
             {
                 Thread.Sleep(300);
-                pName = fw.GetForegroundProcessName();
-                if (pName != "ResponseTimeTest-Win64-Shipping")
+                //pName = fw.GetForegroundProcessName();
+                if (false)  // make it so directX window does close 
                 {
-                    Console.WriteLine("Process not selected");
+                    //Console.WriteLine("Process not selected");
                     if (!paused)
                     {
                         //port.Write("P");
@@ -1838,24 +1791,8 @@ namespace OSRTT_Launcher
                 }
                 else 
                 { 
-                    if (!vsyncTrigger)
-                    {
                         paused = true;
-                        Thread.Sleep(300);
-                        var item = fpsList.Find(x => x.FPSValue == getSelectedFps());
-                        SendKeys.SendWait(item.Key);
-                        Thread.Sleep(100);
-                        if (Properties.Settings.Default.VSyncState)
-                        {
-                            SendKeys.SendWait("{PGUP}");
-                        }
-                        else
-                        {
-                            SendKeys.SendWait("{PGDN}");
-                        }
-                        Thread.Sleep(100);
-                        vsyncTrigger = true;
-                    }
+                        Thread.Sleep(100);                    
                     if (paused)
                     {
                         //port.Write("S");
@@ -1864,10 +1801,10 @@ namespace OSRTT_Launcher
                 }
                 if (testRunning == false)
                 {
-                    Process[] p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
-                    if (p.Length != 0)
-                    {
-                        p[0].Kill();
+                    //Process[] p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
+                    //if (p.Length != 0)
+                    //{
+                      //  p[0].Kill();
                         port.Write("X");
                         testStarted = false;
                         if (runTestThread != null)
@@ -1875,7 +1812,7 @@ namespace OSRTT_Launcher
                             runTestThread.Abort();
                         }
                         break;
-                    }
+                    //}
                 }
             }
         }
