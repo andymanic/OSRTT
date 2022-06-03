@@ -596,15 +596,15 @@ void loop() {
                 else if (input[0] == 'G')
                 {
                   int rgb = 0;
-                  if (input[0] <= 57)
+                  if (input[1] <= 57)
                   {
-                    rgb = input[0] - '0'; // Convert char to int  
+                    rgb = input[1] - '0'; // Convert char to int  
                   }
                   else
                   {
-                    rgb = input[0] - 55;
+                    rgb = input[1] - 55;
                   }
-                  runADC(rgb, rgb, ' ', "Gamma: ");
+                  runADC(extGammaArr[rgb], extGammaArr[rgb], ' ', "Gamma: ");
                 }
                 else if (input[0] == 'L')
                 {
@@ -620,6 +620,10 @@ void loop() {
                     digitalWrite(13, HIGH); 
                     digitalPotWrite(0x80);
                     break;
+                  }
+                  else
+                  {
+                    Serial.println("Board Calibrated");
                   }
                 }
                 else

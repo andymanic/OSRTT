@@ -59,7 +59,7 @@ namespace OSRTT_Launcher
 
         private List<int> RGBArr = new List<int>{0, 51, 102, 153, 204, 255};
         private List<float> RGBKeys = new List<float> { 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f };
-        private List<int> GammaArr = new List<int> {0,17,34,51,68,85,102,119,136,153,170,187,204,221,238,225 };
+        private List<int> GammaArr = new List<int> {0,17,34,51,68,85,102,119,136,153,170,187,204,221,238,255 };
         private int currentStart = 0;
         private int currentEnd = 0;
         private int currentRun = 0;
@@ -1007,6 +1007,10 @@ namespace OSRTT_Launcher
                         }
                         RGBArr.AddRange(intValues);
                     }
+                    else if (message.Contains("Board Calibrated"))
+                    {
+                        boardCalibration = true;
+                    }
                     else if (message.Contains("Results"))
                     {
                         // Split result string into individual results
@@ -1631,10 +1635,11 @@ namespace OSRTT_Launcher
                 Thread.Sleep(200);
                 
                 testRunning = true;
-                vsyncTrigger = false;
+                testMode = false;
+                
                 // Launch UE4 game
                 // thinking about it you can probably just bundle this into one process instead of launching, then finding it again...
-                
+
                 int selectedDisplay = getSelectedMonitor();
                 var display = Screen.AllScreens[selectedDisplay];
                 
@@ -1654,6 +1659,8 @@ namespace OSRTT_Launcher
                             results.Add(new List<ProcessData.rawResultData>());
                         }
                         testStarted = false;
+                        boardCalibration = false;
+                        latencyTest = false;
                         port.Write("T");
                         while (!testMode)
                         {
@@ -1668,8 +1675,8 @@ namespace OSRTT_Launcher
                     }
                     Thread.Sleep(200);
                     
-                    checkWindowThread = new Thread(new ThreadStart(this.checkFocusedWindow));
-                    checkWindowThread.Start();
+                    //checkWindowThread = new Thread(new ThreadStart(this.checkFocusedWindow));
+                    //checkWindowThread.Start();
                     
                     testRunning = true;
                     initRtOsMethods();
@@ -1689,11 +1696,12 @@ namespace OSRTT_Launcher
                             runTestThread.Abort();
                         }
                     }
-                    checkWindowThread.Abort();
+                    //checkWindowThread.Abort();
                     Console.WriteLine("Game closed");
                     SetText("Game closed");
                     port.Write("X");
-                    
+                    port.Write("X");
+
                     ControlDeviceButtons(true);
                     setProgressBar(false);
                     testRunning = false;
@@ -1705,7 +1713,7 @@ namespace OSRTT_Launcher
                         Thread uploadThread = new Thread(() => du.ShareResults(results,processedGamma,testLatency,runSettings));
                         uploadThread.Start();
                     }*/
-                    if (results.Count != 0)
+                    if (results.Count != 0 && results[0].Count != 0)
                     {
                         processThread = new Thread(new ThreadStart(runProcessing));
                         processThread.Start();
@@ -1732,7 +1740,7 @@ namespace OSRTT_Launcher
                                 rv.Show();
                             });
                         }
-                        else
+                        else if (results.Count != 0 && results[0].Count != 0)
                         {
                             MessageBox.Show("One or more results failed to process. Take a look at the raw data in the graph view and adjust your test settings accordingly.", "Failed to Process Data", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                             this.Invoke((MethodInvoker)delegate ()
@@ -1833,27 +1841,32 @@ namespace OSRTT_Launcher
                 Thread.Sleep(10);
             }
             DirectX.System.DSystem.RGB = 0f;
-            Thread.Sleep(50);
+            Thread.Sleep(100);
             port.Write("L");
-            Thread.Sleep(5);
+            Thread.Sleep(10);
             DirectX.System.DSystem.RGB = 1f;
             while (!latencyTest)
             {
                 Thread.Sleep(10);
             }
             // run gamma test 
+            currentStart = 1000;
             for (int p = 0; p < GammaArr.Count; p++) 
-            {     
+            {
+                float rgb = (float)GammaArr[p] / 255f;
+                DirectX.System.DSystem.RGB = rgb;
+                Thread.Sleep(50);
+                Console.WriteLine("G" + p.ToString("X") + ", " + rgb.ToString());
                 port.Write("G" + p.ToString("X")); 
                 while (currentStart != GammaArr[p]) 
                 {     
                     Thread.Sleep(10);
                 }
             }
-            while(!testRunning)
-            {
-                Thread.Sleep(10);
-            }
+            //while(!testRunning)
+            //{
+                //Thread.Sleep(10);
+            //}
             while(testRunning)
             {
                 currentRun = 0;
@@ -2543,7 +2556,7 @@ namespace OSRTT_Launcher
             {
                 // Then process the lines
                 ProcessData pd = new ProcessData();
-                inputLagProcessed.AddRange(pd.processInputLagData(inputLagRawData));
+                inputLagProcessed.AddRange(ProcessData.processInputLagData(inputLagRawData));
                 if (inputLagProcessed.Count == 0)
                 {
                     throw new Exception("Processing Failed");
@@ -2696,29 +2709,13 @@ namespace OSRTT_Launcher
 
         private void launchInputLagTest()
         {
-            string ue4Path = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
-            ue4Path = new Uri(System.IO.Path.GetDirectoryName(ue4Path)).LocalPath;
-            ue4Path += @"\OSRTT UE4\ResponseTimeTest.exe";
             // Move UE4 window to selected monitor if that isn't the primary (will open by default there).
             int selectedDisplay = getSelectedMonitor();
-            var display = Screen.AllScreens[selectedDisplay];
-            int WinX = 0;
-            int WinY = 0;
-            if (display.Primary == false)
-            {
-                // Force UE4 window to selected display if selected is not primary
-                WinX = display.Bounds.Location.X;
-                WinY = display.Bounds.Location.Y;
-            }
-            Process ue4 = new Process();
             try
             {
                 ControlDeviceButtons(false);
-                ue4.StartInfo.FileName = ue4Path;
-                ue4.StartInfo.Arguments = ue4Path + " WinX=" + WinX + " WinY=" + WinY + " NoVSync";
-                ue4.Start();
-                // Process.Start(ue4Path);
-                ue4.WaitForExit();
+                OSRTT_Launcher.DirectX.System.DSystem.mainWindow = this;
+                OSRTT_Launcher.DirectX.System.DSystem.StartRenderForm("OSRTT Test Window (DirectX 11)", 800, 600, false, true, selectedDisplay, 1f);
                 port.Write("X");
                 ControlDeviceButtons(true);
             }
@@ -2888,6 +2885,10 @@ namespace OSRTT_Launcher
             CFuncs cf = new CFuncs();
             ProcessData pd = new ProcessData();
             int startDelay = pd.processTestLatency(testLatency);
+            if (startDelay == 0)
+            {
+                startDelay = 400;
+            }
             foreach (var i in results)
             {
                 processedGamma.Clear();

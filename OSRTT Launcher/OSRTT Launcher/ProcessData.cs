@@ -1396,7 +1396,7 @@ namespace OSRTT_Launcher
             public double totalInputLag { get; set; }
         }
 
-        public List<inputLagResult> processInputLagData(List<rawInputLagResult> inputLagRawData)
+        public static List<inputLagResult> processInputLagData(List<rawInputLagResult> inputLagRawData)
         {
             List<inputLagResult> inputLagProcessed = new List<inputLagResult>();
 
