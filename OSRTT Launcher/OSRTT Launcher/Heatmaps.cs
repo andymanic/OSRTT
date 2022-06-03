@@ -81,9 +81,9 @@ namespace OSRTT_Launcher
             osSubTitle.Visible = state;
             vrrTitle.Visible = state;
             vrrSubTitle.Visible = state;
-            label1.Visible = state;
-            label5.Visible = state;
-            label11.Visible = state;
+            //label1.Visible = state;
+            //label5.Visible = state;
+            //label11.Visible = state;
         }
         public Heatmaps()
         {

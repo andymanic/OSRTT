@@ -29,6 +29,7 @@ namespace OSRTT_Launcher
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ResultsSettings));
             this.panel2 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -71,52 +72,47 @@ namespace OSRTT_Launcher
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.testSettingsTab = new System.Windows.Forms.TabPage();
             this.resultSettingsTab = new System.Windows.Forms.TabPage();
-            this.Per10Btn = new OSRTT_Launcher.RoundButton();
-            this.Per3Btn = new OSRTT_Launcher.RoundButton();
-            this.RGB10Btn = new OSRTT_Launcher.RoundButton();
-            this.RGB5Btn = new OSRTT_Launcher.RoundButton();
+            this.vrrKeyPanel = new System.Windows.Forms.Panel();
+            this.vrrHighNum = new System.Windows.Forms.NumericUpDown();
+            this.vrrMidNum = new System.Windows.Forms.NumericUpDown();
+            this.vrrLowNum = new System.Windows.Forms.NumericUpDown();
+            this.label37 = new System.Windows.Forms.Label();
+            this.osKeyPanel = new System.Windows.Forms.Panel();
+            this.osHighNum = new System.Windows.Forms.NumericUpDown();
+            this.osMidNum = new System.Windows.Forms.NumericUpDown();
+            this.osLowNum = new System.Windows.Forms.NumericUpDown();
+            this.label27 = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
-            this.panel5 = new System.Windows.Forms.Panel();
-            this.label18 = new System.Windows.Forms.Label();
-            this.panel6 = new System.Windows.Forms.Panel();
-            this.label19 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.label20 = new System.Windows.Forms.Label();
-            this.panel7 = new System.Windows.Forms.Panel();
-            this.label21 = new System.Windows.Forms.Label();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.panel8 = new System.Windows.Forms.Panel();
-            this.label22 = new System.Windows.Forms.Label();
-            this.comboBox3 = new System.Windows.Forms.ComboBox();
-            this.panel9 = new System.Windows.Forms.Panel();
-            this.label23 = new System.Windows.Forms.Label();
-            this.comboBox4 = new System.Windows.Forms.ComboBox();
             this.panel11 = new System.Windows.Forms.Panel();
             this.label24 = new System.Windows.Forms.Label();
-            this.comboBox5 = new System.Windows.Forms.ComboBox();
+            this.textColourSelect = new System.Windows.Forms.ComboBox();
             this.label25 = new System.Windows.Forms.Label();
             this.panel12 = new System.Windows.Forms.Panel();
             this.label26 = new System.Windows.Forms.Label();
             this.heatmapPresetSelect = new System.Windows.Forms.ComboBox();
-            this.panel13 = new System.Windows.Forms.Panel();
-            this.label27 = new System.Windows.Forms.Label();
-            this.comboBox7 = new System.Windows.Forms.ComboBox();
-            this.panel14 = new System.Windows.Forms.Panel();
-            this.label28 = new System.Windows.Forms.Label();
-            this.comboBox8 = new System.Windows.Forms.ComboBox();
-            this.panel15 = new System.Windows.Forms.Panel();
-            this.roundButton1 = new OSRTT_Launcher.RoundButton();
-            this.roundButton2 = new OSRTT_Launcher.RoundButton();
+            this.rtKeyPanel = new System.Windows.Forms.Panel();
+            this.rtHighNum = new System.Windows.Forms.NumericUpDown();
+            this.rtMidNum = new System.Windows.Forms.NumericUpDown();
+            this.rtLowNum = new System.Windows.Forms.NumericUpDown();
+            this.label29 = new System.Windows.Forms.Label();
+            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
+            this.label33 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
+            this.Per10Btn = new OSRTT_Launcher.RoundButton();
+            this.Per3Btn = new OSRTT_Launcher.RoundButton();
+            this.RGB10Btn = new OSRTT_Launcher.RoundButton();
+            this.RGB5Btn = new OSRTT_Launcher.RoundButton();
+            this.roundButton6 = new OSRTT_Launcher.RoundButton();
+            this.roundButton7 = new OSRTT_Launcher.RoundButton();
+            this.roundButton8 = new OSRTT_Launcher.RoundButton();
             this.roundButton3 = new OSRTT_Launcher.RoundButton();
             this.roundButton4 = new OSRTT_Launcher.RoundButton();
-            this.label29 = new System.Windows.Forms.Label();
-            this.panel16 = new System.Windows.Forms.Panel();
-            this.label30 = new System.Windows.Forms.Label();
-            this.comboBox9 = new System.Windows.Forms.ComboBox();
-            this.panel17 = new System.Windows.Forms.Panel();
-            this.label31 = new System.Windows.Forms.Label();
-            this.label32 = new System.Windows.Forms.Label();
+            this.roundButton5 = new OSRTT_Launcher.RoundButton();
+            this.openColourPickerBtn = new OSRTT_Launcher.RoundButton();
+            this.roundButton1 = new OSRTT_Launcher.RoundButton();
+            this.roundButton2 = new OSRTT_Launcher.RoundButton();
             this.panel2.SuspendLayout();
             this.tolerancePanel.SuspendLayout();
             this.testSettingsPanel.SuspendLayout();
@@ -133,19 +129,21 @@ namespace OSRTT_Launcher
             this.tabControl1.SuspendLayout();
             this.testSettingsTab.SuspendLayout();
             this.resultSettingsTab.SuspendLayout();
+            this.vrrKeyPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.vrrHighNum)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.vrrMidNum)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.vrrLowNum)).BeginInit();
+            this.osKeyPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.osHighNum)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.osMidNum)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.osLowNum)).BeginInit();
             this.panel4.SuspendLayout();
-            this.panel5.SuspendLayout();
-            this.panel6.SuspendLayout();
-            this.panel7.SuspendLayout();
-            this.panel8.SuspendLayout();
-            this.panel9.SuspendLayout();
             this.panel11.SuspendLayout();
             this.panel12.SuspendLayout();
-            this.panel13.SuspendLayout();
-            this.panel14.SuspendLayout();
-            this.panel15.SuspendLayout();
-            this.panel16.SuspendLayout();
-            this.panel17.SuspendLayout();
+            this.rtKeyPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.rtHighNum)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.rtMidNum)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.rtLowNum)).BeginInit();
             this.SuspendLayout();
             // 
             // panel2
@@ -608,28 +606,297 @@ namespace OSRTT_Launcher
             // resultSettingsTab
             // 
             this.resultSettingsTab.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.resultSettingsTab.Controls.Add(this.vrrKeyPanel);
+            this.resultSettingsTab.Controls.Add(this.osKeyPanel);
             this.resultSettingsTab.Controls.Add(this.panel4);
-            this.resultSettingsTab.Controls.Add(this.panel5);
-            this.resultSettingsTab.Controls.Add(this.panel6);
-            this.resultSettingsTab.Controls.Add(this.label20);
-            this.resultSettingsTab.Controls.Add(this.panel7);
-            this.resultSettingsTab.Controls.Add(this.panel8);
-            this.resultSettingsTab.Controls.Add(this.panel9);
             this.resultSettingsTab.Controls.Add(this.panel11);
             this.resultSettingsTab.Controls.Add(this.label25);
             this.resultSettingsTab.Controls.Add(this.panel12);
-            this.resultSettingsTab.Controls.Add(this.panel13);
-            this.resultSettingsTab.Controls.Add(this.panel14);
-            this.resultSettingsTab.Controls.Add(this.panel15);
-            this.resultSettingsTab.Controls.Add(this.panel16);
-            this.resultSettingsTab.Controls.Add(this.panel17);
-            this.resultSettingsTab.Controls.Add(this.label32);
+            this.resultSettingsTab.Controls.Add(this.rtKeyPanel);
             this.resultSettingsTab.Location = new System.Drawing.Point(4, 42);
             this.resultSettingsTab.Name = "resultSettingsTab";
             this.resultSettingsTab.Padding = new System.Windows.Forms.Padding(3);
             this.resultSettingsTab.Size = new System.Drawing.Size(1019, 746);
             this.resultSettingsTab.TabIndex = 1;
             this.resultSettingsTab.Text = "Results Settings";
+            // 
+            // vrrKeyPanel
+            // 
+            this.vrrKeyPanel.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.vrrKeyPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.vrrKeyPanel.Controls.Add(this.label21);
+            this.vrrKeyPanel.Controls.Add(this.vrrHighNum);
+            this.vrrKeyPanel.Controls.Add(this.vrrMidNum);
+            this.vrrKeyPanel.Controls.Add(this.vrrLowNum);
+            this.vrrKeyPanel.Controls.Add(this.label37);
+            this.vrrKeyPanel.Controls.Add(this.roundButton6);
+            this.vrrKeyPanel.Controls.Add(this.roundButton7);
+            this.vrrKeyPanel.Controls.Add(this.roundButton8);
+            this.vrrKeyPanel.Location = new System.Drawing.Point(387, 287);
+            this.vrrKeyPanel.Name = "vrrKeyPanel";
+            this.vrrKeyPanel.Size = new System.Drawing.Size(615, 97);
+            this.vrrKeyPanel.TabIndex = 48;
+            // 
+            // vrrHighNum
+            // 
+            this.vrrHighNum.Location = new System.Drawing.Point(515, 26);
+            this.vrrHighNum.Name = "vrrHighNum";
+            this.vrrHighNum.Size = new System.Drawing.Size(65, 40);
+            this.vrrHighNum.TabIndex = 28;
+            this.vrrHighNum.ValueChanged += new System.EventHandler(this.vrrHighNum_ValueChanged);
+            // 
+            // vrrMidNum
+            // 
+            this.vrrMidNum.Location = new System.Drawing.Point(395, 26);
+            this.vrrMidNum.Name = "vrrMidNum";
+            this.vrrMidNum.Size = new System.Drawing.Size(65, 40);
+            this.vrrMidNum.TabIndex = 26;
+            this.vrrMidNum.ValueChanged += new System.EventHandler(this.vrrMidNum_ValueChanged);
+            // 
+            // vrrLowNum
+            // 
+            this.vrrLowNum.Location = new System.Drawing.Point(272, 26);
+            this.vrrLowNum.Name = "vrrLowNum";
+            this.vrrLowNum.Size = new System.Drawing.Size(65, 40);
+            this.vrrLowNum.TabIndex = 24;
+            this.vrrLowNum.ValueChanged += new System.EventHandler(this.vrrLowNum_ValueChanged);
+            // 
+            // label37
+            // 
+            this.label37.AutoSize = true;
+            this.label37.Font = new System.Drawing.Font("Arial", 16F);
+            this.label37.Location = new System.Drawing.Point(10, 19);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(228, 25);
+            this.label37.TabIndex = 23;
+            this.label37.Text = "Response Rating Key:";
+            // 
+            // osKeyPanel
+            // 
+            this.osKeyPanel.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.osKeyPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.osKeyPanel.Controls.Add(this.label19);
+            this.osKeyPanel.Controls.Add(this.osHighNum);
+            this.osKeyPanel.Controls.Add(this.osMidNum);
+            this.osKeyPanel.Controls.Add(this.osLowNum);
+            this.osKeyPanel.Controls.Add(this.label27);
+            this.osKeyPanel.Controls.Add(this.roundButton3);
+            this.osKeyPanel.Controls.Add(this.roundButton4);
+            this.osKeyPanel.Controls.Add(this.roundButton5);
+            this.osKeyPanel.Location = new System.Drawing.Point(387, 189);
+            this.osKeyPanel.Name = "osKeyPanel";
+            this.osKeyPanel.Size = new System.Drawing.Size(615, 100);
+            this.osKeyPanel.TabIndex = 47;
+            // 
+            // osHighNum
+            // 
+            this.osHighNum.Location = new System.Drawing.Point(515, 28);
+            this.osHighNum.Name = "osHighNum";
+            this.osHighNum.Size = new System.Drawing.Size(65, 40);
+            this.osHighNum.TabIndex = 28;
+            this.osHighNum.ValueChanged += new System.EventHandler(this.osHighNum_ValueChanged);
+            // 
+            // osMidNum
+            // 
+            this.osMidNum.Location = new System.Drawing.Point(395, 28);
+            this.osMidNum.Name = "osMidNum";
+            this.osMidNum.Size = new System.Drawing.Size(65, 40);
+            this.osMidNum.TabIndex = 26;
+            this.osMidNum.ValueChanged += new System.EventHandler(this.osMidNum_ValueChanged);
+            // 
+            // osLowNum
+            // 
+            this.osLowNum.Location = new System.Drawing.Point(272, 28);
+            this.osLowNum.Name = "osLowNum";
+            this.osLowNum.Size = new System.Drawing.Size(65, 40);
+            this.osLowNum.TabIndex = 24;
+            this.osLowNum.ValueChanged += new System.EventHandler(this.osLowNum_ValueChanged);
+            // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Font = new System.Drawing.Font("Arial", 18F);
+            this.label27.Location = new System.Drawing.Point(12, 25);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(177, 27);
+            this.label27.TabIndex = 23;
+            this.label27.Text = "Overshoot Key:";
+            // 
+            // panel4
+            // 
+            this.panel4.BackColor = System.Drawing.Color.Khaki;
+            this.panel4.Controls.Add(this.label2);
+            this.panel4.Location = new System.Drawing.Point(13, 17);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(356, 54);
+            this.panel4.TabIndex = 45;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Arial", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.ForeColor = System.Drawing.Color.Black;
+            this.label2.Location = new System.Drawing.Point(4, 11);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(248, 32);
+            this.label2.TabIndex = 11;
+            this.label2.Text = "Heatmap Settings";
+            // 
+            // panel11
+            // 
+            this.panel11.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.panel11.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel11.Controls.Add(this.label24);
+            this.panel11.Controls.Add(this.textColourSelect);
+            this.panel11.Location = new System.Drawing.Point(387, 407);
+            this.panel11.Name = "panel11";
+            this.panel11.Size = new System.Drawing.Size(615, 50);
+            this.panel11.TabIndex = 41;
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Font = new System.Drawing.Font("Arial", 18F);
+            this.label24.Location = new System.Drawing.Point(10, 11);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(295, 27);
+            this.label24.TabIndex = 23;
+            this.label24.Text = "PNG Heading Text Colour:";
+            // 
+            // textColourSelect
+            // 
+            this.textColourSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.textColourSelect.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textColourSelect.FormattingEnabled = true;
+            this.textColourSelect.Location = new System.Drawing.Point(311, 8);
+            this.textColourSelect.Name = "textColourSelect";
+            this.textColourSelect.Size = new System.Drawing.Size(289, 32);
+            this.textColourSelect.TabIndex = 21;
+            this.textColourSelect.SelectedIndexChanged += new System.EventHandler(this.textColourSelect_SelectedIndexChanged);
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label25.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.label25.Location = new System.Drawing.Point(15, 74);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(366, 198);
+            this.label25.TabIndex = 46;
+            this.label25.Text = resources.GetString("label25.Text");
+            // 
+            // panel12
+            // 
+            this.panel12.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.panel12.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel12.Controls.Add(this.label26);
+            this.panel12.Controls.Add(this.heatmapPresetSelect);
+            this.panel12.Location = new System.Drawing.Point(387, 17);
+            this.panel12.Name = "panel12";
+            this.panel12.Size = new System.Drawing.Size(615, 54);
+            this.panel12.TabIndex = 39;
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Font = new System.Drawing.Font("Arial", 18F);
+            this.label26.Location = new System.Drawing.Point(10, 12);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(287, 27);
+            this.label26.TabIndex = 23;
+            this.label26.Text = "Heatmap Settings Preset:";
+            // 
+            // heatmapPresetSelect
+            // 
+            this.heatmapPresetSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.heatmapPresetSelect.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.heatmapPresetSelect.FormattingEnabled = true;
+            this.heatmapPresetSelect.Location = new System.Drawing.Point(303, 9);
+            this.heatmapPresetSelect.Name = "heatmapPresetSelect";
+            this.heatmapPresetSelect.Size = new System.Drawing.Size(297, 33);
+            this.heatmapPresetSelect.TabIndex = 21;
+            this.heatmapPresetSelect.SelectedIndexChanged += new System.EventHandler(this.heatmapPresetSelect_SelectedIndexChanged);
+            // 
+            // rtKeyPanel
+            // 
+            this.rtKeyPanel.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.rtKeyPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.rtKeyPanel.Controls.Add(this.label33);
+            this.rtKeyPanel.Controls.Add(this.rtHighNum);
+            this.rtKeyPanel.Controls.Add(this.rtMidNum);
+            this.rtKeyPanel.Controls.Add(this.rtLowNum);
+            this.rtKeyPanel.Controls.Add(this.label29);
+            this.rtKeyPanel.Controls.Add(this.openColourPickerBtn);
+            this.rtKeyPanel.Controls.Add(this.roundButton1);
+            this.rtKeyPanel.Controls.Add(this.roundButton2);
+            this.rtKeyPanel.Location = new System.Drawing.Point(387, 91);
+            this.rtKeyPanel.Name = "rtKeyPanel";
+            this.rtKeyPanel.Size = new System.Drawing.Size(615, 100);
+            this.rtKeyPanel.TabIndex = 42;
+            // 
+            // rtHighNum
+            // 
+            this.rtHighNum.Location = new System.Drawing.Point(515, 28);
+            this.rtHighNum.Name = "rtHighNum";
+            this.rtHighNum.Size = new System.Drawing.Size(65, 40);
+            this.rtHighNum.TabIndex = 28;
+            this.rtHighNum.ValueChanged += new System.EventHandler(this.rtHighNum_ValueChanged);
+            // 
+            // rtMidNum
+            // 
+            this.rtMidNum.Location = new System.Drawing.Point(395, 28);
+            this.rtMidNum.Name = "rtMidNum";
+            this.rtMidNum.Size = new System.Drawing.Size(65, 40);
+            this.rtMidNum.TabIndex = 26;
+            this.rtMidNum.ValueChanged += new System.EventHandler(this.rtMidNum_ValueChanged);
+            // 
+            // rtLowNum
+            // 
+            this.rtLowNum.Location = new System.Drawing.Point(272, 28);
+            this.rtLowNum.Name = "rtLowNum";
+            this.rtLowNum.Size = new System.Drawing.Size(65, 40);
+            this.rtLowNum.TabIndex = 24;
+            this.rtLowNum.ValueChanged += new System.EventHandler(this.rtLowNum_ValueChanged);
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Font = new System.Drawing.Font("Arial", 18F);
+            this.label29.Location = new System.Drawing.Point(12, 25);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(233, 27);
+            this.label29.TabIndex = 23;
+            this.label29.Text = "Response Time Key:";
+            // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.Font = new System.Drawing.Font("Arial", 12F);
+            this.label33.Location = new System.Drawing.Point(13, 50);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(210, 18);
+            this.label33.TabIndex = 35;
+            this.label33.Text = "Milliseconds - Lower is better";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Font = new System.Drawing.Font("Arial", 12F);
+            this.label19.Location = new System.Drawing.Point(13, 49);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(209, 18);
+            this.label19.TabIndex = 38;
+            this.label19.Text = "RGB Values - Lower is better";
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Font = new System.Drawing.Font("Arial", 12F);
+            this.label21.Location = new System.Drawing.Point(11, 46);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(208, 18);
+            this.label21.TabIndex = 39;
+            this.label21.Text = "Percentage - Higher is better";
             // 
             // Per10Btn
             // 
@@ -683,460 +950,121 @@ namespace OSRTT_Launcher
             this.RGB5Btn.UseVisualStyleBackColor = false;
             this.RGB5Btn.Click += new System.EventHandler(this.RGB5Btn_Click);
             // 
-            // panel4
-            // 
-            this.panel4.BackColor = System.Drawing.Color.Khaki;
-            this.panel4.Controls.Add(this.label2);
-            this.panel4.Location = new System.Drawing.Point(13, 17);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(356, 54);
-            this.panel4.TabIndex = 45;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Arial", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.ForeColor = System.Drawing.Color.Black;
-            this.label2.Location = new System.Drawing.Point(4, 11);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(248, 32);
-            this.label2.TabIndex = 11;
-            this.label2.Text = "Heatmap Settings";
-            // 
-            // panel5
-            // 
-            this.panel5.BackColor = System.Drawing.Color.Khaki;
-            this.panel5.Controls.Add(this.label18);
-            this.panel5.Location = new System.Drawing.Point(13, 300);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(356, 54);
-            this.panel5.TabIndex = 34;
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Font = new System.Drawing.Font("Arial", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label18.ForeColor = System.Drawing.Color.Black;
-            this.label18.Location = new System.Drawing.Point(4, 11);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(337, 32);
-            this.label18.TabIndex = 11;
-            this.label18.Text = "Response Time Settings";
-            // 
-            // panel6
-            // 
-            this.panel6.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.panel6.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel6.Controls.Add(this.label19);
-            this.panel6.Controls.Add(this.comboBox1);
-            this.panel6.Location = new System.Drawing.Point(387, 82);
-            this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(615, 50);
-            this.panel6.TabIndex = 49;
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Font = new System.Drawing.Font("Arial", 18F);
-            this.label19.Location = new System.Drawing.Point(9, 11);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(270, 27);
-            this.label19.TabIndex = 22;
-            this.label19.Text = "Share Raw Result Data:";
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(285, 8);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(315, 33);
-            this.comboBox1.TabIndex = 21;
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label20.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.label20.Location = new System.Drawing.Point(17, 363);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(348, 130);
-            this.label20.TabIndex = 35;
-            this.label20.Text = "Adjust how you would like data\r\nfrom the Response Time Test to\r\nbe processed. Gam" +
-    "ma Correction\r\nis required for measurements to\r\nuse RGB values as their toleranc" +
-    "e.";
-            // 
-            // panel7
-            // 
-            this.panel7.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.panel7.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel7.Controls.Add(this.label21);
-            this.panel7.Controls.Add(this.comboBox2);
-            this.panel7.Location = new System.Drawing.Point(387, 229);
-            this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(615, 50);
-            this.panel7.TabIndex = 48;
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Font = new System.Drawing.Font("Arial", 18F);
-            this.label21.Location = new System.Drawing.Point(9, 10);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(280, 27);
-            this.label21.TabIndex = 22;
-            this.label21.Text = "Save to Excel Heatmaps:";
-            // 
-            // comboBox2
-            // 
-            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(293, 7);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(307, 33);
-            this.comboBox2.TabIndex = 21;
-            // 
-            // panel8
-            // 
-            this.panel8.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.panel8.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel8.Controls.Add(this.label22);
-            this.panel8.Controls.Add(this.comboBox3);
-            this.panel8.Location = new System.Drawing.Point(387, 576);
-            this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(615, 50);
-            this.panel8.TabIndex = 40;
-            // 
-            // label22
-            // 
-            this.label22.AutoSize = true;
-            this.label22.Font = new System.Drawing.Font("Arial", 18F);
-            this.label22.Location = new System.Drawing.Point(10, 11);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(190, 27);
-            this.label22.TabIndex = 24;
-            this.label22.Text = "Overshoot Style:";
-            // 
-            // comboBox3
-            // 
-            this.comboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox3.FormattingEnabled = true;
-            this.comboBox3.Location = new System.Drawing.Point(206, 8);
-            this.comboBox3.Name = "comboBox3";
-            this.comboBox3.Size = new System.Drawing.Size(394, 32);
-            this.comboBox3.TabIndex = 21;
-            // 
-            // panel9
-            // 
-            this.panel9.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.panel9.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel9.Controls.Add(this.label23);
-            this.panel9.Controls.Add(this.comboBox4);
-            this.panel9.Location = new System.Drawing.Point(387, 180);
-            this.panel9.Name = "panel9";
-            this.panel9.Size = new System.Drawing.Size(615, 50);
-            this.panel9.TabIndex = 47;
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Font = new System.Drawing.Font("Arial", 18F);
-            this.label23.Location = new System.Drawing.Point(10, 10);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(297, 27);
-            this.label23.TabIndex = 22;
-            this.label23.Text = "Suppress Message Boxes:";
-            // 
-            // comboBox4
-            // 
-            this.comboBox4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox4.FormattingEnabled = true;
-            this.comboBox4.Location = new System.Drawing.Point(312, 7);
-            this.comboBox4.Name = "comboBox4";
-            this.comboBox4.Size = new System.Drawing.Size(288, 33);
-            this.comboBox4.TabIndex = 21;
-            // 
-            // panel11
-            // 
-            this.panel11.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.panel11.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel11.Controls.Add(this.label24);
-            this.panel11.Controls.Add(this.comboBox5);
-            this.panel11.Location = new System.Drawing.Point(387, 527);
-            this.panel11.Name = "panel11";
-            this.panel11.Size = new System.Drawing.Size(615, 50);
-            this.panel11.TabIndex = 41;
-            // 
-            // label24
-            // 
-            this.label24.AutoSize = true;
-            this.label24.Font = new System.Drawing.Font("Arial", 18F);
-            this.label24.Location = new System.Drawing.Point(10, 11);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(212, 27);
-            this.label24.TabIndex = 23;
-            this.label24.Text = "Overshoot Source:";
-            // 
-            // comboBox5
-            // 
-            this.comboBox5.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox5.FormattingEnabled = true;
-            this.comboBox5.Location = new System.Drawing.Point(228, 8);
-            this.comboBox5.Name = "comboBox5";
-            this.comboBox5.Size = new System.Drawing.Size(372, 32);
-            this.comboBox5.TabIndex = 21;
-            // 
-            // label25
-            // 
-            this.label25.AutoSize = true;
-            this.label25.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label25.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.label25.Location = new System.Drawing.Point(15, 74);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(364, 88);
-            this.label25.TabIndex = 46;
-            this.label25.Text = "Recommended Settings include a fixed \r\nRGB 5 tolerance and RGB value overshoot. \r" +
-    "\nRunning into errors? Try enabling the\r\nignore mid run errors setting!";
-            // 
-            // panel12
-            // 
-            this.panel12.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.panel12.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel12.Controls.Add(this.label26);
-            this.panel12.Controls.Add(this.heatmapPresetSelect);
-            this.panel12.Location = new System.Drawing.Point(387, 17);
-            this.panel12.Name = "panel12";
-            this.panel12.Size = new System.Drawing.Size(615, 54);
-            this.panel12.TabIndex = 39;
-            // 
-            // label26
-            // 
-            this.label26.AutoSize = true;
-            this.label26.Font = new System.Drawing.Font("Arial", 18F);
-            this.label26.Location = new System.Drawing.Point(10, 12);
-            this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(287, 27);
-            this.label26.TabIndex = 23;
-            this.label26.Text = "Heatmap Settings Preset:";
-            // 
-            // heatmapPresetSelect
-            // 
-            this.heatmapPresetSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.heatmapPresetSelect.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.heatmapPresetSelect.FormattingEnabled = true;
-            this.heatmapPresetSelect.Location = new System.Drawing.Point(303, 9);
-            this.heatmapPresetSelect.Name = "heatmapPresetSelect";
-            this.heatmapPresetSelect.Size = new System.Drawing.Size(297, 33);
-            this.heatmapPresetSelect.TabIndex = 21;
-            // 
-            // panel13
-            // 
-            this.panel13.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.panel13.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel13.Controls.Add(this.label27);
-            this.panel13.Controls.Add(this.comboBox7);
-            this.panel13.Location = new System.Drawing.Point(387, 300);
-            this.panel13.Name = "panel13";
-            this.panel13.Size = new System.Drawing.Size(615, 50);
-            this.panel13.TabIndex = 38;
-            // 
-            // label27
-            // 
-            this.label27.AutoSize = true;
-            this.label27.Font = new System.Drawing.Font("Arial", 18F);
-            this.label27.Location = new System.Drawing.Point(9, 11);
-            this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(183, 27);
-            this.label27.TabIndex = 22;
-            this.label27.Text = "Tolerance Style:";
-            // 
-            // comboBox7
-            // 
-            this.comboBox7.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox7.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox7.FormattingEnabled = true;
-            this.comboBox7.Location = new System.Drawing.Point(198, 8);
-            this.comboBox7.Name = "comboBox7";
-            this.comboBox7.Size = new System.Drawing.Size(402, 33);
-            this.comboBox7.TabIndex = 21;
-            // 
-            // panel14
-            // 
-            this.panel14.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.panel14.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel14.Controls.Add(this.label28);
-            this.panel14.Controls.Add(this.comboBox8);
-            this.panel14.Location = new System.Drawing.Point(387, 131);
-            this.panel14.Name = "panel14";
-            this.panel14.Size = new System.Drawing.Size(615, 50);
-            this.panel14.TabIndex = 44;
-            // 
-            // label28
-            // 
-            this.label28.AutoSize = true;
-            this.label28.Font = new System.Drawing.Font("Arial", 18F);
-            this.label28.Location = new System.Drawing.Point(9, 11);
-            this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(256, 27);
-            this.label28.TabIndex = 22;
-            this.label28.Text = "Ignore Mid Run Errors:";
-            // 
-            // comboBox8
-            // 
-            this.comboBox8.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox8.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox8.FormattingEnabled = true;
-            this.comboBox8.Location = new System.Drawing.Point(271, 8);
-            this.comboBox8.Name = "comboBox8";
-            this.comboBox8.Size = new System.Drawing.Size(329, 33);
-            this.comboBox8.TabIndex = 21;
-            // 
-            // panel15
-            // 
-            this.panel15.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.panel15.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel15.Controls.Add(this.roundButton1);
-            this.panel15.Controls.Add(this.roundButton2);
-            this.panel15.Controls.Add(this.roundButton3);
-            this.panel15.Controls.Add(this.roundButton4);
-            this.panel15.Controls.Add(this.label29);
-            this.panel15.Location = new System.Drawing.Point(387, 349);
-            this.panel15.Name = "panel15";
-            this.panel15.Size = new System.Drawing.Size(615, 100);
-            this.panel15.TabIndex = 42;
-            // 
-            // roundButton1
-            // 
-            this.roundButton1.BackColor = System.Drawing.Color.SteelBlue;
-            this.roundButton1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.roundButton1.ForeColor = System.Drawing.Color.White;
-            this.roundButton1.Location = new System.Drawing.Point(465, 43);
-            this.roundButton1.Name = "roundButton1";
-            this.roundButton1.Size = new System.Drawing.Size(135, 45);
-            this.roundButton1.TabIndex = 34;
-            this.roundButton1.Text = "10% Light Level";
-            this.roundButton1.UseVisualStyleBackColor = false;
-            // 
-            // roundButton2
-            // 
-            this.roundButton2.BackColor = System.Drawing.Color.SteelBlue;
-            this.roundButton2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.roundButton2.ForeColor = System.Drawing.Color.White;
-            this.roundButton2.Location = new System.Drawing.Point(315, 43);
-            this.roundButton2.Name = "roundButton2";
-            this.roundButton2.Size = new System.Drawing.Size(135, 45);
-            this.roundButton2.TabIndex = 33;
-            this.roundButton2.Text = "3% RGB Value";
-            this.roundButton2.UseVisualStyleBackColor = false;
+            // roundButton6
+            // 
+            this.roundButton6.BackColor = System.Drawing.Color.LimeGreen;
+            this.roundButton6.Enabled = false;
+            this.roundButton6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.roundButton6.ForeColor = System.Drawing.Color.White;
+            this.roundButton6.Location = new System.Drawing.Point(246, 7);
+            this.roundButton6.Name = "roundButton6";
+            this.roundButton6.Size = new System.Drawing.Size(115, 79);
+            this.roundButton6.TabIndex = 39;
+            this.roundButton6.UseVisualStyleBackColor = false;
+            // 
+            // roundButton7
+            // 
+            this.roundButton7.BackColor = System.Drawing.Color.DarkOrange;
+            this.roundButton7.Enabled = false;
+            this.roundButton7.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.roundButton7.ForeColor = System.Drawing.Color.White;
+            this.roundButton7.Location = new System.Drawing.Point(368, 7);
+            this.roundButton7.Name = "roundButton7";
+            this.roundButton7.Size = new System.Drawing.Size(115, 79);
+            this.roundButton7.TabIndex = 40;
+            this.roundButton7.UseVisualStyleBackColor = false;
+            // 
+            // roundButton8
+            // 
+            this.roundButton8.BackColor = System.Drawing.Color.Tomato;
+            this.roundButton8.Enabled = false;
+            this.roundButton8.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.roundButton8.ForeColor = System.Drawing.Color.White;
+            this.roundButton8.Location = new System.Drawing.Point(490, 7);
+            this.roundButton8.Name = "roundButton8";
+            this.roundButton8.Size = new System.Drawing.Size(115, 79);
+            this.roundButton8.TabIndex = 41;
+            this.roundButton8.UseVisualStyleBackColor = false;
             // 
             // roundButton3
             // 
-            this.roundButton3.BackColor = System.Drawing.Color.SteelBlue;
+            this.roundButton3.BackColor = System.Drawing.Color.LimeGreen;
+            this.roundButton3.Enabled = false;
             this.roundButton3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.roundButton3.ForeColor = System.Drawing.Color.White;
-            this.roundButton3.Location = new System.Drawing.Point(165, 43);
+            this.roundButton3.Location = new System.Drawing.Point(246, 9);
             this.roundButton3.Name = "roundButton3";
-            this.roundButton3.Size = new System.Drawing.Size(135, 45);
-            this.roundButton3.TabIndex = 32;
-            this.roundButton3.Text = "Fixed RGB 10";
+            this.roundButton3.Size = new System.Drawing.Size(115, 79);
+            this.roundButton3.TabIndex = 35;
             this.roundButton3.UseVisualStyleBackColor = false;
             // 
             // roundButton4
             // 
-            this.roundButton4.BackColor = System.Drawing.Color.LimeGreen;
+            this.roundButton4.BackColor = System.Drawing.Color.DarkOrange;
+            this.roundButton4.Enabled = false;
             this.roundButton4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.roundButton4.ForeColor = System.Drawing.Color.White;
-            this.roundButton4.Location = new System.Drawing.Point(15, 43);
+            this.roundButton4.Location = new System.Drawing.Point(368, 9);
             this.roundButton4.Name = "roundButton4";
-            this.roundButton4.Size = new System.Drawing.Size(135, 45);
-            this.roundButton4.TabIndex = 31;
-            this.roundButton4.Text = "Fixed RGB 5";
+            this.roundButton4.Size = new System.Drawing.Size(115, 79);
+            this.roundButton4.TabIndex = 36;
             this.roundButton4.UseVisualStyleBackColor = false;
             // 
-            // label29
+            // roundButton5
             // 
-            this.label29.AutoSize = true;
-            this.label29.Font = new System.Drawing.Font("Arial", 18F);
-            this.label29.Location = new System.Drawing.Point(9, 9);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(185, 27);
-            this.label29.TabIndex = 23;
-            this.label29.Text = "Tolerance Level:";
+            this.roundButton5.BackColor = System.Drawing.Color.Tomato;
+            this.roundButton5.Enabled = false;
+            this.roundButton5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.roundButton5.ForeColor = System.Drawing.Color.White;
+            this.roundButton5.Location = new System.Drawing.Point(490, 9);
+            this.roundButton5.Name = "roundButton5";
+            this.roundButton5.Size = new System.Drawing.Size(115, 79);
+            this.roundButton5.TabIndex = 37;
+            this.roundButton5.UseVisualStyleBackColor = false;
             // 
-            // panel16
+            // openColourPickerBtn
             // 
-            this.panel16.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.panel16.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel16.Controls.Add(this.label30);
-            this.panel16.Controls.Add(this.comboBox9);
-            this.panel16.Location = new System.Drawing.Point(387, 448);
-            this.panel16.Name = "panel16";
-            this.panel16.Size = new System.Drawing.Size(615, 50);
-            this.panel16.TabIndex = 43;
+            this.openColourPickerBtn.BackColor = System.Drawing.Color.LimeGreen;
+            this.openColourPickerBtn.Enabled = false;
+            this.openColourPickerBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.openColourPickerBtn.ForeColor = System.Drawing.Color.White;
+            this.openColourPickerBtn.Location = new System.Drawing.Point(246, 9);
+            this.openColourPickerBtn.Name = "openColourPickerBtn";
+            this.openColourPickerBtn.Size = new System.Drawing.Size(115, 79);
+            this.openColourPickerBtn.TabIndex = 32;
+            this.openColourPickerBtn.UseVisualStyleBackColor = false;
+            this.openColourPickerBtn.Click += new System.EventHandler(this.openColourPickerBtn_Click);
             // 
-            // label30
+            // roundButton1
             // 
-            this.label30.AutoSize = true;
-            this.label30.Font = new System.Drawing.Font("Arial", 18F);
-            this.label30.Location = new System.Drawing.Point(9, 10);
-            this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(228, 27);
-            this.label30.TabIndex = 22;
-            this.label30.Text = "Save Gamma Table:";
+            this.roundButton1.BackColor = System.Drawing.Color.DarkOrange;
+            this.roundButton1.Enabled = false;
+            this.roundButton1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.roundButton1.ForeColor = System.Drawing.Color.White;
+            this.roundButton1.Location = new System.Drawing.Point(368, 9);
+            this.roundButton1.Name = "roundButton1";
+            this.roundButton1.Size = new System.Drawing.Size(115, 79);
+            this.roundButton1.TabIndex = 33;
+            this.roundButton1.UseVisualStyleBackColor = false;
             // 
-            // comboBox9
+            // roundButton2
             // 
-            this.comboBox9.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox9.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox9.FormattingEnabled = true;
-            this.comboBox9.Location = new System.Drawing.Point(249, 7);
-            this.comboBox9.Name = "comboBox9";
-            this.comboBox9.Size = new System.Drawing.Size(351, 33);
-            this.comboBox9.TabIndex = 21;
-            // 
-            // panel17
-            // 
-            this.panel17.BackColor = System.Drawing.Color.Khaki;
-            this.panel17.Controls.Add(this.label31);
-            this.panel17.Location = new System.Drawing.Point(13, 527);
-            this.panel17.Name = "panel17";
-            this.panel17.Size = new System.Drawing.Size(356, 54);
-            this.panel17.TabIndex = 36;
-            // 
-            // label31
-            // 
-            this.label31.AutoSize = true;
-            this.label31.Font = new System.Drawing.Font("Arial", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label31.ForeColor = System.Drawing.Color.Black;
-            this.label31.Location = new System.Drawing.Point(4, 10);
-            this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(268, 32);
-            this.label31.TabIndex = 11;
-            this.label31.Text = "Overshoot Settings";
-            // 
-            // label32
-            // 
-            this.label32.AutoSize = true;
-            this.label32.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label32.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.label32.Location = new System.Drawing.Point(17, 590);
-            this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(335, 130);
-            this.label32.TabIndex = 37;
-            this.label32.Text = "Adjust how you would like the\r\nOvershoot data to be calculated\r\nand reported. Gam" +
-    "ma corrected\r\nmeans using RGB values instead\r\nof raw light level.";
+            this.roundButton2.BackColor = System.Drawing.Color.Tomato;
+            this.roundButton2.Enabled = false;
+            this.roundButton2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.roundButton2.ForeColor = System.Drawing.Color.White;
+            this.roundButton2.Location = new System.Drawing.Point(490, 9);
+            this.roundButton2.Name = "roundButton2";
+            this.roundButton2.Size = new System.Drawing.Size(115, 79);
+            this.roundButton2.TabIndex = 34;
+            this.roundButton2.UseVisualStyleBackColor = false;
             // 
             // ResultsSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.ClientSize = new System.Drawing.Size(1044, 811);
+            this.ClientSize = new System.Drawing.Size(1043, 811);
             this.Controls.Add(this.saveLabel);
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -1176,32 +1104,27 @@ namespace OSRTT_Launcher
             this.testSettingsTab.PerformLayout();
             this.resultSettingsTab.ResumeLayout(false);
             this.resultSettingsTab.PerformLayout();
+            this.vrrKeyPanel.ResumeLayout(false);
+            this.vrrKeyPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.vrrHighNum)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.vrrMidNum)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.vrrLowNum)).EndInit();
+            this.osKeyPanel.ResumeLayout(false);
+            this.osKeyPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.osHighNum)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.osMidNum)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.osLowNum)).EndInit();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
-            this.panel5.ResumeLayout(false);
-            this.panel5.PerformLayout();
-            this.panel6.ResumeLayout(false);
-            this.panel6.PerformLayout();
-            this.panel7.ResumeLayout(false);
-            this.panel7.PerformLayout();
-            this.panel8.ResumeLayout(false);
-            this.panel8.PerformLayout();
-            this.panel9.ResumeLayout(false);
-            this.panel9.PerformLayout();
             this.panel11.ResumeLayout(false);
             this.panel11.PerformLayout();
             this.panel12.ResumeLayout(false);
             this.panel12.PerformLayout();
-            this.panel13.ResumeLayout(false);
-            this.panel13.PerformLayout();
-            this.panel14.ResumeLayout(false);
-            this.panel14.PerformLayout();
-            this.panel15.ResumeLayout(false);
-            this.panel15.PerformLayout();
-            this.panel16.ResumeLayout(false);
-            this.panel16.PerformLayout();
-            this.panel17.ResumeLayout(false);
-            this.panel17.PerformLayout();
+            this.rtKeyPanel.ResumeLayout(false);
+            this.rtKeyPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.rtHighNum)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.rtMidNum)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.rtLowNum)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1256,45 +1179,40 @@ namespace OSRTT_Launcher
         private System.Windows.Forms.TabPage resultSettingsTab;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Panel panel5;
-        private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.Panel panel6;
-        private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.Panel panel7;
-        private System.Windows.Forms.Label label21;
-        private System.Windows.Forms.ComboBox comboBox2;
-        private System.Windows.Forms.Panel panel8;
-        private System.Windows.Forms.Label label22;
-        private System.Windows.Forms.ComboBox comboBox3;
-        private System.Windows.Forms.Panel panel9;
-        private System.Windows.Forms.Label label23;
-        private System.Windows.Forms.ComboBox comboBox4;
         private System.Windows.Forms.Panel panel11;
         private System.Windows.Forms.Label label24;
-        private System.Windows.Forms.ComboBox comboBox5;
+        private System.Windows.Forms.ComboBox textColourSelect;
         private System.Windows.Forms.Label label25;
         private System.Windows.Forms.Panel panel12;
         private System.Windows.Forms.Label label26;
         private System.Windows.Forms.ComboBox heatmapPresetSelect;
-        private System.Windows.Forms.Panel panel13;
+        private System.Windows.Forms.Panel rtKeyPanel;
+        private System.Windows.Forms.Label label29;
+        private System.Windows.Forms.NumericUpDown rtHighNum;
+        private System.Windows.Forms.NumericUpDown rtMidNum;
+        private System.Windows.Forms.NumericUpDown rtLowNum;
+        private RoundButton openColourPickerBtn;
+        private System.Windows.Forms.ColorDialog colorDialog1;
+        private System.Windows.Forms.Panel vrrKeyPanel;
+        private System.Windows.Forms.NumericUpDown vrrHighNum;
+        private System.Windows.Forms.NumericUpDown vrrMidNum;
+        private System.Windows.Forms.NumericUpDown vrrLowNum;
+        private System.Windows.Forms.Label label37;
+        private System.Windows.Forms.Panel osKeyPanel;
+        private System.Windows.Forms.NumericUpDown osHighNum;
+        private System.Windows.Forms.NumericUpDown osMidNum;
+        private System.Windows.Forms.NumericUpDown osLowNum;
         private System.Windows.Forms.Label label27;
-        private System.Windows.Forms.ComboBox comboBox7;
-        private System.Windows.Forms.Panel panel14;
-        private System.Windows.Forms.Label label28;
-        private System.Windows.Forms.ComboBox comboBox8;
-        private System.Windows.Forms.Panel panel15;
-        private RoundButton roundButton1;
         private RoundButton roundButton2;
+        private RoundButton roundButton1;
+        private System.Windows.Forms.Label label21;
+        private RoundButton roundButton6;
+        private RoundButton roundButton7;
+        private RoundButton roundButton8;
+        private System.Windows.Forms.Label label19;
         private RoundButton roundButton3;
         private RoundButton roundButton4;
-        private System.Windows.Forms.Label label29;
-        private System.Windows.Forms.Panel panel16;
-        private System.Windows.Forms.Label label30;
-        private System.Windows.Forms.ComboBox comboBox9;
-        private System.Windows.Forms.Panel panel17;
-        private System.Windows.Forms.Label label31;
-        private System.Windows.Forms.Label label32;
+        private RoundButton roundButton5;
+        private System.Windows.Forms.Label label33;
     }
 }
