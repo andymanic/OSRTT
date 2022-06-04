@@ -35,6 +35,7 @@ namespace OSRTT_Launcher
             initHeatmapsPreset();
             initKeys();
             initTextColour();
+            initDenoiseSelect();
             saveLabel.Visible = false;
         }
 
@@ -299,6 +300,20 @@ namespace OSRTT_Launcher
             textColourSelect.Items.Add("Black");
             textColourSelect.Items.Add("White");
             if (Properties.Settings.Default.heatmapTextColour == Color.Black)
+            {
+                textColourSelect.SelectedIndex = 0;
+            }
+            else
+            {
+                textColourSelect.SelectedIndex = 1;
+            }
+        }
+        private void initDenoiseSelect()
+        {
+            textColourSelect.Items.Clear();
+            textColourSelect.Items.Add("Disabled - Raw");
+            textColourSelect.Items.Add("Enabled - Denoised");
+            if (!Properties.Settings.Default.smoothGraph)
             {
                 textColourSelect.SelectedIndex = 0;
             }
@@ -956,6 +971,28 @@ namespace OSRTT_Launcher
                 else
                 {
                     Properties.Settings.Default.heatmapTextColour = Color.White;
+                }
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        private void denoiseSelect_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var ctrl = sender as ComboBox;
+            if (ctrl.Focused)
+            {
+                if (saveThread == null || !saveThread.IsAlive)
+                {
+                    saveThread = new Thread(new ThreadStart(this.SavingLabel));
+                    saveThread.Start();
+                }
+                if (ctrl.SelectedIndex == 0)
+                {
+                    Properties.Settings.Default.smoothGraph = false;
+                }
+                else
+                {
+                    Properties.Settings.Default.smoothGraph = true;
                 }
                 Properties.Settings.Default.Save();
             }

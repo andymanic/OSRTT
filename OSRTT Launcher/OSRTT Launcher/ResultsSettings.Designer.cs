@@ -113,6 +113,12 @@ namespace OSRTT_Launcher
             this.openColourPickerBtn = new OSRTT_Launcher.RoundButton();
             this.roundButton1 = new OSRTT_Launcher.RoundButton();
             this.roundButton2 = new OSRTT_Launcher.RoundButton();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label20 = new System.Windows.Forms.Label();
+            this.panel7 = new System.Windows.Forms.Panel();
+            this.label23 = new System.Windows.Forms.Label();
+            this.denoiseSelect = new System.Windows.Forms.ComboBox();
             this.panel2.SuspendLayout();
             this.tolerancePanel.SuspendLayout();
             this.testSettingsPanel.SuspendLayout();
@@ -144,6 +150,8 @@ namespace OSRTT_Launcher
             ((System.ComponentModel.ISupportInitialize)(this.rtHighNum)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtMidNum)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtLowNum)).BeginInit();
+            this.panel5.SuspendLayout();
+            this.panel7.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel2
@@ -606,6 +614,9 @@ namespace OSRTT_Launcher
             // resultSettingsTab
             // 
             this.resultSettingsTab.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.resultSettingsTab.Controls.Add(this.panel7);
+            this.resultSettingsTab.Controls.Add(this.panel5);
+            this.resultSettingsTab.Controls.Add(this.label20);
             this.resultSettingsTab.Controls.Add(this.vrrKeyPanel);
             this.resultSettingsTab.Controls.Add(this.osKeyPanel);
             this.resultSettingsTab.Controls.Add(this.panel4);
@@ -632,7 +643,7 @@ namespace OSRTT_Launcher
             this.vrrKeyPanel.Controls.Add(this.roundButton6);
             this.vrrKeyPanel.Controls.Add(this.roundButton7);
             this.vrrKeyPanel.Controls.Add(this.roundButton8);
-            this.vrrKeyPanel.Location = new System.Drawing.Point(387, 287);
+            this.vrrKeyPanel.Location = new System.Drawing.Point(387, 288);
             this.vrrKeyPanel.Name = "vrrKeyPanel";
             this.vrrKeyPanel.Size = new System.Drawing.Size(615, 97);
             this.vrrKeyPanel.TabIndex = 48;
@@ -683,7 +694,7 @@ namespace OSRTT_Launcher
             this.osKeyPanel.Controls.Add(this.roundButton3);
             this.osKeyPanel.Controls.Add(this.roundButton4);
             this.osKeyPanel.Controls.Add(this.roundButton5);
-            this.osKeyPanel.Location = new System.Drawing.Point(387, 189);
+            this.osKeyPanel.Location = new System.Drawing.Point(387, 190);
             this.osKeyPanel.Name = "osKeyPanel";
             this.osKeyPanel.Size = new System.Drawing.Size(615, 100);
             this.osKeyPanel.TabIndex = 47;
@@ -748,7 +759,7 @@ namespace OSRTT_Launcher
             this.panel11.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel11.Controls.Add(this.label24);
             this.panel11.Controls.Add(this.textColourSelect);
-            this.panel11.Location = new System.Drawing.Point(387, 407);
+            this.panel11.Location = new System.Drawing.Point(387, 395);
             this.panel11.Name = "panel11";
             this.panel11.Size = new System.Drawing.Size(615, 50);
             this.panel11.TabIndex = 41;
@@ -829,7 +840,7 @@ namespace OSRTT_Launcher
             this.rtKeyPanel.Controls.Add(this.openColourPickerBtn);
             this.rtKeyPanel.Controls.Add(this.roundButton1);
             this.rtKeyPanel.Controls.Add(this.roundButton2);
-            this.rtKeyPanel.Location = new System.Drawing.Point(387, 91);
+            this.rtKeyPanel.Location = new System.Drawing.Point(387, 92);
             this.rtKeyPanel.Name = "rtKeyPanel";
             this.rtKeyPanel.Size = new System.Drawing.Size(615, 100);
             this.rtKeyPanel.TabIndex = 42;
@@ -1059,6 +1070,70 @@ namespace OSRTT_Launcher
             this.roundButton2.TabIndex = 34;
             this.roundButton2.UseVisualStyleBackColor = false;
             // 
+            // panel5
+            // 
+            this.panel5.BackColor = System.Drawing.Color.Khaki;
+            this.panel5.Controls.Add(this.label18);
+            this.panel5.Location = new System.Drawing.Point(7, 485);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(356, 54);
+            this.panel5.TabIndex = 49;
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Font = new System.Drawing.Font("Arial", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label18.ForeColor = System.Drawing.Color.Black;
+            this.label18.Location = new System.Drawing.Point(4, 11);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(254, 32);
+            this.label18.TabIndex = 11;
+            this.label18.Text = "Raw Data Settings";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label20.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.label20.Location = new System.Drawing.Point(9, 542);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(333, 66);
+            this.label20.TabIndex = 50;
+            this.label20.Text = "If you\'d like to configure the raw data\r\nsettings externally, you can do that her" +
+    "e!\r\n\r\n";
+            // 
+            // panel7
+            // 
+            this.panel7.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.panel7.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel7.Controls.Add(this.label23);
+            this.panel7.Controls.Add(this.denoiseSelect);
+            this.panel7.Location = new System.Drawing.Point(387, 485);
+            this.panel7.Name = "panel7";
+            this.panel7.Size = new System.Drawing.Size(615, 50);
+            this.panel7.TabIndex = 52;
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Font = new System.Drawing.Font("Arial", 18F);
+            this.label23.Location = new System.Drawing.Point(10, 11);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(210, 27);
+            this.label23.TabIndex = 23;
+            this.label23.Text = "Denoise Raw Data";
+            // 
+            // denoiseSelect
+            // 
+            this.denoiseSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.denoiseSelect.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.denoiseSelect.FormattingEnabled = true;
+            this.denoiseSelect.Location = new System.Drawing.Point(246, 8);
+            this.denoiseSelect.Name = "denoiseSelect";
+            this.denoiseSelect.Size = new System.Drawing.Size(354, 32);
+            this.denoiseSelect.TabIndex = 21;
+            this.denoiseSelect.SelectedIndexChanged += new System.EventHandler(this.denoiseSelect_SelectedIndexChanged);
+            // 
             // ResultsSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1125,6 +1200,10 @@ namespace OSRTT_Launcher
             ((System.ComponentModel.ISupportInitialize)(this.rtHighNum)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtMidNum)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtLowNum)).EndInit();
+            this.panel5.ResumeLayout(false);
+            this.panel5.PerformLayout();
+            this.panel7.ResumeLayout(false);
+            this.panel7.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1214,5 +1293,11 @@ namespace OSRTT_Launcher
         private RoundButton roundButton4;
         private RoundButton roundButton5;
         private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.Panel panel7;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.ComboBox denoiseSelect;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label20;
     }
 }
