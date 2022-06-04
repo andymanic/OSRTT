@@ -289,7 +289,7 @@ namespace OSRTT_Launcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("75, 85, 95")]
+        [global::System.Configuration.DefaultSettingValueAttribute("75,85,95")]
         public string vrrKey {
             get {
                 return ((string)(this["vrrKey"]));
@@ -428,6 +428,30 @@ namespace OSRTT_Launcher.Properties {
             }
             set {
                 this["smoothGraph"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool advancedHeatmaps {
+            get {
+                return ((bool)(this["advancedHeatmaps"]));
+            }
+            set {
+                this["advancedHeatmaps"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Black")]
+        public global::System.Drawing.Color heatmapTextColour {
+            get {
+                return ((global::System.Drawing.Color)(this["heatmapTextColour"]));
+            }
+            set {
+                this["heatmapTextColour"] = value;
             }
         }
     }

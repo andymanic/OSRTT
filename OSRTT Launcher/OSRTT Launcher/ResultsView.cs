@@ -1174,10 +1174,17 @@ namespace OSRTT_Launcher
                 //search files for number
                 foreach (var s in existingFiles)
                 {
-                    int num = int.Parse(Path.GetFileNameWithoutExtension(s).Remove(3));
-                    if (num >= fileNumber)
+                    try
                     {
-                        fileNumber = num + 1;
+                        int num = int.Parse(Path.GetFileNameWithoutExtension(s).Remove(3));
+                        if (num >= fileNumber)
+                        {
+                            fileNumber = num + 1;
+                        }
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Input string error");
                     }
                 }
                 string[] folders = resultsFolderPath.Split('\\');
@@ -1247,6 +1254,7 @@ namespace OSRTT_Launcher
             }
             using (Graphics g = Graphics.FromImage(finalHeatmaps))
             {
+                Brush b = new SolidBrush(Properties.Settings.Default.heatmapTextColour);
                 g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
                 g.SmoothingMode = SmoothingMode.AntiAlias;
                 g.InterpolationMode = InterpolationMode.HighQualityBicubic;
@@ -1263,22 +1271,22 @@ namespace OSRTT_Launcher
                 Font f = new Font(ff, 20f, FontStyle.Bold);
                 Font fi = new Font(ff, 16f, FontStyle.Italic);
                 Font fk = new Font(ff, 17f, FontStyle.Bold);
-                g.DrawString(rtTitle, f, Brushes.Black, rt, sf);
-                g.DrawString(rtSubTitle, fi, Brushes.Black, rtSub, sf);
-                g.DrawString(osTitle, f, Brushes.Black, os, sf);
-                g.DrawString(osSubTitle, fi, Brushes.Black, osSub, sf);
-                g.DrawString(vrrTitle, f, Brushes.Black, vrr, sf);
-                g.DrawString(vrrSubTitle, fi, Brushes.Black, vrrSub, sf);
-                g.DrawString("From", fi, Brushes.Black, new Point(29, 393));
-                g.DrawString("From", fi, Brushes.Black, new Point(606, 393));
-                g.DrawString("From", fi, Brushes.Black, new Point(1190, 393));
-                g.DrawString("To", fi, Brushes.Black, new Point(556, 106));
-                g.DrawString("To", fi, Brushes.Black, new Point(1132, 106));
-                g.DrawString("To", fi, Brushes.Black, new Point(1717, 106));
+                g.DrawString(rtTitle, f, b, rt, sf);
+                g.DrawString(rtSubTitle, fi, b, rtSub, sf);
+                g.DrawString(osTitle, f, b, os, sf);
+                g.DrawString(osSubTitle, fi, b, osSub, sf);
+                g.DrawString(vrrTitle, f, b, vrr, sf);
+                g.DrawString(vrrSubTitle, fi, b, vrrSub, sf);
+                g.DrawString("From", fi, b, new Point(29, 393));
+                g.DrawString("From", fi, b, new Point(606, 393));
+                g.DrawString("From", fi, b, new Point(1190, 393));
+                g.DrawString("To", fi, b, new Point(556, 106));
+                g.DrawString("To", fi, b, new Point(1132, 106));
+                g.DrawString("To", fi, b, new Point(1717, 106));
                 // DRAW key text too
-                g.DrawString("Response Time Key", fk, Brushes.Black, new Point(644, 820));
-                g.DrawString("Overshoot Key", fk, Brushes.Black, new Point(980, 821));
-                g.DrawString("Response Rating Key", fk, Brushes.Black, new Point(1260, 819));
+                //g.DrawString("Response Time Key", fk, Brushes.Black, new Point(644, 820));
+                //g.DrawString("Overshoot Key", fk, Brushes.Black, new Point(980, 821));
+                //g.DrawString("Response Rating Key", fk, Brushes.Black, new Point(1260, 819));
             }
              
             finalHeatmaps.Save(resultsFolderPath + "\\" + fileName);

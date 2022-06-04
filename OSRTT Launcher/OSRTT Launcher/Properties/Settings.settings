@@ -69,7 +69,7 @@
       <Value Profile="(Default)">5,15,20</Value>
     </Setting>
     <Setting Name="vrrKey" Type="System.String" Scope="User">
-      <Value Profile="(Default)">75, 85, 95</Value>
+      <Value Profile="(Default)">75,85,95</Value>
     </Setting>
     <Setting Name="rtName" Type="System.String" Scope="User">
       <Value Profile="(Default)">RGB 5 Tolerance</Value>
@@ -103,6 +103,12 @@
     </Setting>
     <Setting Name="smoothGraph" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="advancedHeatmaps" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="heatmapTextColour" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Black</Value>
     </Setting>
   </Settings>
 </SettingsFile>

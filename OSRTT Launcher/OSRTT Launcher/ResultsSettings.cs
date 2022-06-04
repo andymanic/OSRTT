@@ -21,7 +21,9 @@ namespace OSRTT_Launcher
         public ResultsSettings()
         {
             InitializeComponent();
+            this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
             this.Icon = (Icon)rm.GetObject("osrttIcon");
+            
             initSettingsPreset();
             initIgnoreErrors();
             initSupressErrors();
@@ -30,6 +32,10 @@ namespace OSRTT_Launcher
             initGammaTable();
             initSavetoExcelTable();
             initOvershootStyle();
+            initHeatmapsPreset();
+            initKeys();
+            initTextColour();
+            initDenoiseSelect();
             saveLabel.Visible = false;
         }
 
@@ -243,7 +249,78 @@ namespace OSRTT_Launcher
                     osPercentSelect.SelectedIndex = 1;
                 }
             }
-            
+        }
+        private void initHeatmapsPreset()
+        {
+            heatmapPresetSelect.Items.Clear();
+            heatmapPresetSelect.Items.Add("Recommended");
+            heatmapPresetSelect.Items.Add("Custom");
+            if (Properties.Settings.Default.advancedHeatmaps)
+            {
+                heatmapPresetSelect.SelectedIndex = 1;
+                rtKeyPanel.Enabled = true;
+                osKeyPanel.Enabled = true;
+                vrrKeyPanel.Enabled = true;
+            }
+            else
+            {
+                heatmapPresetSelect.SelectedIndex = 0;
+                rtKeyPanel.Enabled = false;
+                osKeyPanel.Enabled = false;
+                vrrKeyPanel.Enabled = false;
+            }
+        }
+        private void initKeys()
+        {
+            string[] rtKey = Properties.Settings.Default.rtKey.Split(',');
+            if (rtKey.Length == 3)
+            {
+                rtLowNum.Value = decimal.Parse(rtKey[0]);
+                rtMidNum.Value = decimal.Parse(rtKey[1]);
+                rtHighNum.Value = decimal.Parse(rtKey[2]);
+            }
+            string[] osKey = Properties.Settings.Default.osKey.Split(',');
+            if (osKey.Length == 3)
+            {
+                osLowNum.Value = decimal.Parse(osKey[0]);
+                osMidNum.Value = decimal.Parse(osKey[1]);
+                osHighNum.Value = decimal.Parse(osKey[2]);
+            }
+            string[] vrrKey = Properties.Settings.Default.vrrKey.Split(',');
+            if (vrrKey.Length == 3)
+            {
+                vrrLowNum.Value = decimal.Parse(vrrKey[2]);
+                vrrMidNum.Value = decimal.Parse(vrrKey[1]);
+                vrrHighNum.Value = decimal.Parse(vrrKey[0]);
+            }
+        }
+        private void initTextColour()
+        {
+            textColourSelect.Items.Clear();
+            textColourSelect.Items.Add("Black");
+            textColourSelect.Items.Add("White");
+            if (Properties.Settings.Default.heatmapTextColour == Color.Black)
+            {
+                textColourSelect.SelectedIndex = 0;
+            }
+            else
+            {
+                textColourSelect.SelectedIndex = 1;
+            }
+        }
+        private void initDenoiseSelect()
+        {
+            textColourSelect.Items.Clear();
+            textColourSelect.Items.Add("Disabled - Raw");
+            textColourSelect.Items.Add("Enabled - Denoised");
+            if (!Properties.Settings.Default.smoothGraph)
+            {
+                textColourSelect.SelectedIndex = 0;
+            }
+            else
+            {
+                textColourSelect.SelectedIndex = 1;
+            }
         }
         private void settingsPresetSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -612,6 +689,310 @@ namespace OSRTT_Launcher
                 else
                 {
                     Properties.Settings.Default.shareResults = false;
+                }
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        private void openColourPickerBtn_Click(object sender, EventArgs e)
+        {
+            DialogResult d = colorDialog1.ShowDialog();
+            if (d == DialogResult.OK)
+            {
+                Color newColour = colorDialog1.Color;
+                float brightness = newColour.GetBrightness();
+                if (brightness > 0.5)
+                {
+                    openColourPickerBtn.ForeColor = Color.Black;
+                }
+                else
+                {
+                    openColourPickerBtn.ForeColor = Color.White;
+                }
+                Console.WriteLine(newColour.GetBrightness());
+                openColourPickerBtn.BackColor = newColour;
+            }
+        }
+
+        private void rtLowNum_ValueChanged(object sender, EventArgs e)
+        {
+            NumericUpDown n = sender as NumericUpDown;
+            if (n.Focused)
+            {
+                if (saveThread == null || !saveThread.IsAlive)
+                {
+                    saveThread = new Thread(new ThreadStart(this.SavingLabel));
+                    saveThread.Start();
+                }
+                if (n.Value >= rtMidNum.Value)
+                {
+                    rtMidNum.Value = n.Value + 1;
+                }
+                if (n.Value >= rtHighNum.Value)
+                {
+                    rtHighNum.Value = n.Value + 2;
+                }
+                Properties.Settings.Default.rtKey = rtLowNum.Value.ToString() + "," + rtMidNum.Value.ToString() + "," + rtHighNum.Value.ToString();
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        private void rtMidNum_ValueChanged(object sender, EventArgs e)
+        {
+            NumericUpDown n = sender as NumericUpDown;
+            if (n.Focused)
+            {
+                if (saveThread == null || !saveThread.IsAlive)
+                {
+                    saveThread = new Thread(new ThreadStart(this.SavingLabel));
+                    saveThread.Start();
+                }
+                if (n.Value <= rtLowNum.Value)
+                {
+                    rtLowNum.Value = n.Value - 1;
+                }
+                if (n.Value >= rtHighNum.Value)
+                {
+                    rtHighNum.Value = n.Value + 1;
+                }
+                Properties.Settings.Default.rtKey = rtLowNum.Value.ToString() + "," + rtMidNum.Value.ToString() + "," + rtHighNum.Value.ToString();
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        private void rtHighNum_ValueChanged(object sender, EventArgs e)
+        {
+            NumericUpDown n = sender as NumericUpDown;
+            if (n.Focused)
+            {
+                if (saveThread == null || !saveThread.IsAlive)
+                {
+                    saveThread = new Thread(new ThreadStart(this.SavingLabel));
+                    saveThread.Start();
+                }
+                if (n.Value <= rtMidNum.Value)
+                {
+                    rtMidNum.Value = n.Value - 1;
+                }
+                if (n.Value <= rtLowNum.Value)
+                {
+                    rtLowNum.Value = n.Value - 2;
+                }
+                Properties.Settings.Default.rtKey = rtLowNum.Value.ToString() + "," + rtMidNum.Value.ToString() + "," + rtHighNum.Value.ToString();
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        private void osLowNum_ValueChanged(object sender, EventArgs e)
+        {
+            NumericUpDown n = sender as NumericUpDown;
+            if (n.Focused)
+            {
+                if (saveThread == null || !saveThread.IsAlive)
+                {
+                    saveThread = new Thread(new ThreadStart(this.SavingLabel));
+                    saveThread.Start();
+                }
+                if (n.Value >= osMidNum.Value)
+                {
+                    osMidNum.Value = n.Value + 1;
+                }
+                if (n.Value >= osHighNum.Value)
+                {
+                    osHighNum.Value = n.Value + 2;
+                }
+                Properties.Settings.Default.osKey = osLowNum.Value.ToString() + "," + osMidNum.Value.ToString() + "," + osHighNum.Value.ToString();
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        private void osMidNum_ValueChanged(object sender, EventArgs e)
+        {
+            NumericUpDown n = sender as NumericUpDown;
+            if (n.Focused)
+            {
+                if (saveThread == null || !saveThread.IsAlive)
+                {
+                    saveThread = new Thread(new ThreadStart(this.SavingLabel));
+                    saveThread.Start();
+                }
+                if (n.Value <= osLowNum.Value)
+                {
+                    osLowNum.Value = n.Value - 1;
+                }
+                if (n.Value >= osHighNum.Value)
+                {
+                    osHighNum.Value = n.Value + 1;
+                }
+                Properties.Settings.Default.osKey = osLowNum.Value.ToString() + "," + osMidNum.Value.ToString() + "," + osHighNum.Value.ToString();
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        private void osHighNum_ValueChanged(object sender, EventArgs e)
+        {
+            NumericUpDown n = sender as NumericUpDown;
+            if (n.Focused)
+            {
+                if (saveThread == null || !saveThread.IsAlive)
+                {
+                    saveThread = new Thread(new ThreadStart(this.SavingLabel));
+                    saveThread.Start();
+                }
+                if (n.Value <= osMidNum.Value)
+                {
+                    osMidNum.Value = n.Value - 1;
+                }
+                if (n.Value <= osLowNum.Value)
+                {
+                    osLowNum.Value = n.Value - 2;
+                }
+                Properties.Settings.Default.osKey = osLowNum.Value.ToString() + "," + osMidNum.Value.ToString() + "," + osHighNum.Value.ToString();
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        private void vrrLowNum_ValueChanged(object sender, EventArgs e)
+        {
+            NumericUpDown n = sender as NumericUpDown;
+            if (n.Focused)
+            {
+                if (saveThread == null || !saveThread.IsAlive)
+                {
+                    saveThread = new Thread(new ThreadStart(this.SavingLabel));
+                    saveThread.Start();
+                }
+                if (n.Value >= vrrMidNum.Value)
+                {
+                    vrrMidNum.Value = n.Value + 1;
+                }
+                if (n.Value >= vrrHighNum.Value)
+                {
+                    vrrHighNum.Value = n.Value + 2;
+                }
+                Properties.Settings.Default.vrrKey = vrrLowNum.Value.ToString() + "," + vrrMidNum.Value.ToString() + "," + vrrHighNum.Value.ToString();
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        private void vrrMidNum_ValueChanged(object sender, EventArgs e)
+        {
+            NumericUpDown n = sender as NumericUpDown;
+            if (n.Focused)
+            {
+                if (saveThread == null || !saveThread.IsAlive)
+                {
+                    saveThread = new Thread(new ThreadStart(this.SavingLabel));
+                    saveThread.Start();
+                }
+                if (n.Value <= vrrLowNum.Value)
+                {
+                    vrrLowNum.Value = n.Value - 1;
+                }
+                if (n.Value >= vrrHighNum.Value)
+                {
+                    vrrHighNum.Value = n.Value + 1;
+                }
+                Properties.Settings.Default.vrrKey = vrrLowNum.Value.ToString() + "," + vrrMidNum.Value.ToString() + "," + vrrHighNum.Value.ToString();
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        private void vrrHighNum_ValueChanged(object sender, EventArgs e)
+        {
+            NumericUpDown n = sender as NumericUpDown;
+            if (n.Focused)
+            {
+                if (saveThread == null || !saveThread.IsAlive)
+                {
+                    saveThread = new Thread(new ThreadStart(this.SavingLabel));
+                    saveThread.Start();
+                }
+                if (n.Value <= vrrMidNum.Value)
+                {
+                    vrrMidNum.Value = n.Value - 1;
+                }
+                if (n.Value <= vrrLowNum.Value)
+                {
+                    vrrLowNum.Value = n.Value - 2;
+                }
+                Properties.Settings.Default.vrrKey = vrrLowNum.Value.ToString() + "," + vrrMidNum.Value.ToString() + "," + vrrHighNum.Value.ToString();
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        private void heatmapPresetSelect_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var ctrl = sender as ComboBox;
+            if (ctrl.Focused)
+            {
+                if (saveThread == null || !saveThread.IsAlive)
+                {
+                    saveThread = new Thread(new ThreadStart(this.SavingLabel));
+                    saveThread.Start();
+                }
+                if (ctrl.SelectedIndex == 0)
+                {
+                    Properties.Settings.Default.advancedHeatmaps = false;
+                    Properties.Settings.Default.rtKey = "1,5,10";
+                    Properties.Settings.Default.osKey = "5,15,20";
+                    Properties.Settings.Default.vrrKey = "75,85,95";
+                    rtKeyPanel.Enabled = false;
+                    osKeyPanel.Enabled = false;
+                    vrrKeyPanel.Enabled = false;
+                    Properties.Settings.Default.Save();
+                    initKeys();
+                }
+                else
+                {
+                    rtKeyPanel.Enabled = true;
+                    osKeyPanel.Enabled = true;
+                    vrrKeyPanel.Enabled = true;
+                    Properties.Settings.Default.advancedHeatmaps = true;
+                    Properties.Settings.Default.Save();
+                }
+            }
+        }
+
+        private void textColourSelect_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var ctrl = sender as ComboBox;
+            if (ctrl.Focused)
+            {
+                if (saveThread == null || !saveThread.IsAlive)
+                {
+                    saveThread = new Thread(new ThreadStart(this.SavingLabel));
+                    saveThread.Start();
+                }
+                if (ctrl.SelectedIndex == 0)
+                {
+                    Properties.Settings.Default.heatmapTextColour = Color.Black;
+                }
+                else
+                {
+                    Properties.Settings.Default.heatmapTextColour = Color.White;
+                }
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        private void denoiseSelect_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var ctrl = sender as ComboBox;
+            if (ctrl.Focused)
+            {
+                if (saveThread == null || !saveThread.IsAlive)
+                {
+                    saveThread = new Thread(new ThreadStart(this.SavingLabel));
+                    saveThread.Start();
+                }
+                if (ctrl.SelectedIndex == 0)
+                {
+                    Properties.Settings.Default.smoothGraph = false;
+                }
+                else
+                {
+                    Properties.Settings.Default.smoothGraph = true;
                 }
                 Properties.Settings.Default.Save();
             }
