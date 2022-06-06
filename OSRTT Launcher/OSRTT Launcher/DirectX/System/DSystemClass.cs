@@ -20,6 +20,8 @@ namespace OSRTT_Launcher.DirectX.System
         public DCPU CPU { get; private set; }
         public DTimer Timer { get; private set; }
         public List<float> FrameTimeList { get; private set; }
+        public List<float> EventList { get; private set; }
+        public static bool inputLagMode { get; set; }
         public static float RGB { get; set; }
         //private Stopwatch eventTimer { get; set; }
         public static Main mainWindow { get; set; }
@@ -79,6 +81,7 @@ namespace OSRTT_Launcher.DirectX.System
             }
 
             FrameTimeList = new List<float>();
+            EventList = new List<float>();
             //eventTimer = new Stopwatch();
 
             return result;
@@ -152,7 +155,10 @@ namespace OSRTT_Launcher.DirectX.System
                 {
                     case "LeftMouseButton":
                         RGB = 1f;
-                        //eventTimer.Start();
+                        if (inputLagMode)
+                        {
+                            EventList.Add(Timer.FrameTime);
+                        }
                         break;
                     case "D1":  // RGB 0
                         RGB = 0f;
@@ -223,6 +229,7 @@ namespace OSRTT_Launcher.DirectX.System
             ShutdownWindows();
             DPerfLogger.ShutDown();
             mainWindow.getTestFPS(FrameTimeList);
+            mainWindow.getInputLagEvents(EventList);
             // Release graphics and related objects.
             Graphics?.Shutdown();
             Graphics = null;

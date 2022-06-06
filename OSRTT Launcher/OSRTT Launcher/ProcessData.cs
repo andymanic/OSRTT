@@ -1386,12 +1386,14 @@ namespace OSRTT_Launcher
             public int TimeTaken { get; set; }
             public int SampleCount { get; set; }
             public double SampleTime { get; set; }
+            public double RenderTime { get; set; }
             public List<int> Samples { get; set; }
         }
         public class inputLagResult
         {
             public int shotNumber { get; set; }
             public double clickTimeMs { get; set; }
+            public double RenderTime { get; set; }
             public double inputLag { get; set; }
             public double totalInputLag { get; set; }
         }

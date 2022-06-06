@@ -63,6 +63,7 @@ namespace OSRTT_Launcher
         private int currentStart = 0;
         private int currentEnd = 0;
         private int currentRun = 0;
+        private List<float> inputLagEvents = new List<float>();
 
         private int potVal = 0;
         private int basePotVal = 0;
@@ -1456,7 +1457,9 @@ namespace OSRTT_Launcher
                                 }
                                 File.WriteAllText(filePath, csvString.ToString());
                             }
-                            processInputLagData();
+                            Thread inputLagThread = new Thread(new ThreadStart(processInputLagData));
+                            inputLagThread.Start();
+                            //processInputLagData();
                         }
                     }
                     else if (message.Contains("TL"))
@@ -2551,6 +2554,15 @@ namespace OSRTT_Launcher
         private void processInputLagData()
         {
             inputLagProcessed.Clear();
+            Stopwatch sw = Stopwatch.StartNew();
+            while (inputLagEvents.Count == 0)
+            {
+                Thread.Sleep(10);
+                if (sw.ElapsedMilliseconds > 3000)
+                {
+                    break;
+                }
+            }
 
             try //Wrapped whole thing in try just in case
             {
@@ -2709,14 +2721,15 @@ namespace OSRTT_Launcher
 
         private void launchInputLagTest()
         {
-            // Move UE4 window to selected monitor if that isn't the primary (will open by default there).
             int selectedDisplay = getSelectedMonitor();
             try
             {
                 ControlDeviceButtons(false);
                 OSRTT_Launcher.DirectX.System.DSystem.mainWindow = this;
-                OSRTT_Launcher.DirectX.System.DSystem.StartRenderForm("OSRTT Test Window (DirectX 11)", 800, 600, false, true, selectedDisplay, 1f);
+                OSRTT_Launcher.DirectX.System.DSystem.inputLagMode = true;
+                OSRTT_Launcher.DirectX.System.DSystem.StartRenderForm("OSRTT Test Window (DirectX 11)", 800, 600, false, true, selectedDisplay, 1);
                 port.Write("X");
+                OSRTT_Launcher.DirectX.System.DSystem.inputLagMode = false;
                 ControlDeviceButtons(true);
             }
             catch (Exception strE)
@@ -2827,6 +2840,11 @@ namespace OSRTT_Launcher
         public void getTestFPS(List<float> fpsList)
         {
             Console.WriteLine(fpsList.Average().ToString());
+        }
+        public void getInputLagEvents(List<float> fpsList)
+        {
+            inputLagEvents = fpsList;
+            //Console.WriteLine(fpsList.Average().ToString());
         }
 
         private void resultsViewBtn_Click(object sender, EventArgs e)
