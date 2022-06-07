@@ -592,6 +592,7 @@ namespace OSRTT_Launcher
                             process.StartInfo.RedirectStandardOutput = true;
                             process.StartInfo.CreateNoWindow = true;
                             process.Start();
+                            process.WaitForExit();
                             process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe compile --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code && .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code";
                             try
                             {
