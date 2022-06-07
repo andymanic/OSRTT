@@ -24,7 +24,7 @@ namespace OSRTT_Launcher
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
         private double boardVersion = 2.6;
         private double downloadedFirmwareVersion = 2.6;
-        private string softwareVersion = "3.0";
+        private string softwareVersion = "3.1";
 
         // TODO //
         //
