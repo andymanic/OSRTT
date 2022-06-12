@@ -310,16 +310,16 @@ namespace OSRTT_Launcher
         }
         private void initDenoiseSelect()
         {
-            textColourSelect.Items.Clear();
-            textColourSelect.Items.Add("Disabled - Raw");
-            textColourSelect.Items.Add("Enabled - Denoised");
+            denoiseSelect.Items.Clear();
+            denoiseSelect.Items.Add("Disabled - Raw");
+            denoiseSelect.Items.Add("Enabled - Denoised");
             if (!Properties.Settings.Default.smoothGraph)
             {
-                textColourSelect.SelectedIndex = 0;
+                denoiseSelect.SelectedIndex = 0;
             }
             else
             {
-                textColourSelect.SelectedIndex = 1;
+                denoiseSelect.SelectedIndex = 1;
             }
         }
         private void settingsPresetSelect_SelectedIndexChanged(object sender, EventArgs e)
