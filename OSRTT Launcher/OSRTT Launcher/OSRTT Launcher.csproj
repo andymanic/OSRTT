@@ -148,6 +148,18 @@
     <Compile Include="GammaView.Designer.cs">
       <DependentUpon>GammaView.cs</DependentUpon>
     </Compile>
+    <Compile Include="OverdriveModes.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="OverdriveModes.Designer.cs">
+      <DependentUpon>OverdriveModes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Popup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Popup.Designer.cs">
+      <DependentUpon>Popup.cs</DependentUpon>
+    </Compile>
     <Compile Include="ProcessData.cs" />
     <Compile Include="DisplayInitCheck.cs" />
     <Compile Include="FocusedWindow.cs" />
@@ -212,6 +224,12 @@
     <EmbeddedResource Include="MeasurementsExplained.resx">
       <DependentUpon>MeasurementsExplained.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="OverdriveModes.resx">
+      <DependentUpon>OverdriveModes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Popup.resx">
+      <DependentUpon>Popup.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -234,6 +252,9 @@
     <EmbeddedResource Include="ResultsView.resx">
       <DependentUpon>ResultsView.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="odmodes.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="OSRTT Launcher_1_TemporaryKey.pfx" />
     <None Include="OSRTT Launcher_2_TemporaryKey.pfx" />
     <None Include="OSRTT Launcher_TemporaryKey.pfx" />

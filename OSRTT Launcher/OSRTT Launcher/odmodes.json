@@ -1,0 +1,27 @@
+{
+	"OverdriveModes": [
+		{"Name": "AUS","Modes": ["TF0","TF20","TF40","TF60","TF80","TF100","Off","Normal","Esports","Extreme","Level 0","Level 1","Level 2","Level 3","Level 4","Level 5"]},
+		{"Name": "AOC","Modes": ["Off","Weak","Medium","Strong"]},
+		{"Name": "ACR","Modes": ["Off","Normal","Extreme"]},
+		{"Name": "DEL", "Modes": ["Normal","Fast","Super Fast"]},
+		{"Name": "GBT", "Modes": ["Off","Smart OD","Picture Quality","Balance","Speed"]},
+		{"Name": "CMT", "Modes": ["Standard","Advanced","Ultra Fast","Dynamic"]},
+		{"Name": "BNQ", "Modes": ["Off","High","Premium"]},
+		{"Name": "LGD", "Modes": ["Off","Normal","Fast","Faster"]},
+		{"Name": "IVM", "Modes": ["-2","-1","0","+1","+2"]},
+		{"Name": "MSI", "Modes": ["Normal","Fast","Faster"]},
+		{"Name" :"DEL", "Modes": ["Fast","Super Fast","Extreme"]},
+		{"Name": "SAM", "Modes": ["Standard","Faster","Fastest"]},
+		{"Name": "LEN", "Modes":  ["Off","Normal","Extreme"]},
+		{"Name": "HWP", "Modes": ["Level 1","Level 2","Level 3","Level 4","Level 5"]},
+		{"Name": "VSC", "Modes": ["Standard","Advanced","Ultra Fast"]},
+		{"Name": "CRM", "Modes": ["Normal","Fast","Fastest"]},
+		{"Name": "X=", "Modes": ["Off","High","Middle","Low"]},
+		{"Name": "EVE", "Modes": ["Off","Normal","High"]},
+		{"Name": "RZR", "Modes": ["Off","Weak","Strong"]},
+		{"Name": "PNS", "Modes": ["Off","High","Middle","Low"]},
+		{"Name": "NTI", "Modes": ["Off","High","Middle","Low"]},
+		{"Name": "SPT", "Modes": ["Off","On","Low","Medium","High"]}
+	]
+}
+

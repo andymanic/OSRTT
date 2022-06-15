@@ -1624,6 +1624,18 @@ namespace OSRTT_Launcher
                     port.Write("V" + Properties.Settings.Default.VSyncState.ToString());
                 }
                 Thread.Sleep(200);
+                
+                //Popup pp = new Popup();
+                //pp.OverdriveModeWindow(this, runSettings);
+                //pp.Show();
+                //while (!pp.IsDisposed)
+                //{
+                //    Thread.Sleep(100);
+                //}
+                //if (runSettings.OverdriveMode == null)
+                //{
+                    // OD Mode not entered - cause validation?
+                //}
                 testRunning = true;
                 vsyncTrigger = false;
                 // Launch UE4 game
@@ -1742,7 +1754,7 @@ namespace OSRTT_Launcher
                         Thread uploadThread = new Thread(() => du.ShareResults(results,processedGamma,testLatency,runSettings));
                         uploadThread.Start();
                     }*/
-                    if (results.Count != 0)
+                    if (results.Count != 0 && results[0].Count != 0)
                     {
                         processThread = new Thread(new ThreadStart(runProcessing));
                         processThread.Start();
@@ -2110,6 +2122,7 @@ namespace OSRTT_Launcher
         {
             int monitor = getSelectedMonitor();
             string monitorName = displayList[monitor].Name;
+            monitorName = Regex.Replace(monitorName, "[^\\w\\d\\s -]", "");
             string monitorInfo = monitorName.Replace(" ", "-") + "-" + displayList[monitor].Freq.ToString() + "-" + displayList[monitor].Connection;
 
             decimal fileNumber = 001;
@@ -2861,11 +2874,9 @@ namespace OSRTT_Launcher
 
         private void testButtonToolStripMenuItemToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            liveView = true;
-            LiveViewObject = new LiveView();
-            port.Write("O");
-            LiveViewObject.m = this;
-            LiveViewObject.Show();
+            Popup p = new Popup();
+            p.OverdriveModeWindow(this, runSettings);
+            p.Show();
         }
 
         private void resultsViewBtn_Click(object sender, EventArgs e)
