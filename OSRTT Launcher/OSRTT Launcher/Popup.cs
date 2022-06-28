@@ -33,6 +33,8 @@ namespace OSRTT_Launcher
             };
             Size = new Size(522, 291);
             Text = "Overdrive Mode";
+            od.runSetting = rs;
+            od.initialiseList("");
             od.Show();
             this.Controls.Add(od);
             this.Activate();

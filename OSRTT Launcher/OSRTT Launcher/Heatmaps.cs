@@ -356,27 +356,59 @@ namespace OSRTT_Launcher
             else if (dgv.Name.Contains("Settings"))
             {
                 List<string[]> data = new List<string[]>();
-                for (int i = 0; i < 3; i++)
+                if (runSettings.OverdriveMode == null)
                 {
-                    // Fill list with sized empty string arrays to address later
-                    string[] line = new string[2];
-                    data.Add(line);
+                    runSettingsView.Size = new Size(450, 105);
+                    for (int i = 0; i < 3; i++)
+                    {
+                        // Fill list with sized empty string arrays to address later
+                        string[] line = new string[2];
+                        data.Add(line);
+                    }
+                    string monitorName = runSettings.MonitorName;
+                    if (runSettings.MonitorName[3] == ' ')
+                    {
+                        monitorName = runSettings.MonitorName.Remove(0, 4);
+                    }
+                    else if (runSettings.MonitorName[0] == ' ')
+                    {
+                        monitorName = runSettings.MonitorName.Remove(0, 1);
+                    }
+                    data[0][0] = "Monitor Name";
+                    data[0][1] = monitorName;
+                    data[1][0] = "FPS Limit";
+                    data[1][1] = runSettings.FPSLimit.ToString();
+                    data[2][0] = "V-Sync";
+                    data[2][1] = runSettings.Vsync.ToString();
                 }
-                string monitorName = runSettings.MonitorName;
-                if (runSettings.MonitorName[3] == ' ')
+                else
                 {
-                    monitorName = runSettings.MonitorName.Remove(0, 4);
+                    runSettingsView.Size = new Size(450, 140);
+                    for (int i = 0; i < 4; i++)
+                    {
+                        // Fill list with sized empty string arrays to address later
+                        string[] line = new string[2];
+                        data.Add(line);
+                    }
+                    string monitorName = runSettings.MonitorName;
+                    if (runSettings.MonitorName[3] == ' ')
+                    {
+                        monitorName = runSettings.MonitorName.Remove(0, 4);
+                    }
+                    else if (runSettings.MonitorName[0] == ' ')
+                    {
+                        monitorName = runSettings.MonitorName.Remove(0, 1);
+                    }
+                    data[0][0] = "Monitor Name";
+                    data[0][1] = monitorName;
+                    data[1][0] = "Overdrive";
+                    data[1][1] = runSettings.OverdriveMode;
+                    data[2][0] = "FPS Limit";
+                    data[2][1] = runSettings.FPSLimit.ToString();
+                    data[3][0] = "V-Sync";
+                    data[3][1] = runSettings.Vsync.ToString();
                 }
-                else if (runSettings.MonitorName[0] == ' ')
-                {
-                    monitorName = runSettings.MonitorName.Remove(0, 1);
-                }
-                data[0][0] = "Monitor Name";
-                data[0][1] = monitorName;
-                data[1][0] = "FPS Limit";
-                data[1][1] = runSettings.FPSLimit.ToString();
-                data[2][0] = "V-Sync";
-                data[2][1] = runSettings.Vsync.ToString();
+                
                 foreach (var item in data)
                 {
                     dgv.Rows.Add(item);
@@ -556,7 +588,7 @@ namespace OSRTT_Launcher
                     }
                     else if (e.ColumnIndex == 0)
                     {
-                        cellColour = Color.LightGray;
+                        cellColour = Color.Gray;
                     }
                     else
                     {
@@ -586,11 +618,11 @@ namespace OSRTT_Launcher
                 }
                 else if (dgv.Name.Contains("Stats") && e.ColumnIndex == 0 )
                 {
-                    cellColour = Color.LightGray;
+                    cellColour = Color.Gray;
                 }
                 else if (dgv.Name.Contains("Settings"))
                 {
-                    cellColour = Color.LightGray;
+                    cellColour = Color.Gray;
                     e.CellStyle.ForeColor = Color.White;
                 }
                 else
@@ -671,7 +703,7 @@ namespace OSRTT_Launcher
             {
                 if (dgv.Name.Contains("Stats") && e.ColumnIndex == 0)
                 {
-                    cellColour = Color.LightGray;
+                    cellColour = Color.Gray;
                 }
                 else
                 {

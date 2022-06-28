@@ -104,6 +104,7 @@
             this.resultsViewBtn = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.toolTipController = new System.Windows.Forms.ToolTip(this.components);
+            this.overdriveModes1 = new OSRTT_Launcher.OverdriveModes();
             this.menuStrip1.SuspendLayout();
             this.controlsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.testCount)).BeginInit();
@@ -155,7 +156,7 @@
             this.deviceToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(5, 5);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1914, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(2094, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -1001,12 +1002,21 @@
             this.progressBar1.TabIndex = 33;
             this.progressBar1.Visible = false;
             // 
+            // overdriveModes1
+            // 
+            this.overdriveModes1.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.overdriveModes1.Location = new System.Drawing.Point(10, 559);
+            this.overdriveModes1.Name = "overdriveModes1";
+            this.overdriveModes1.Size = new System.Drawing.Size(511, 258);
+            this.overdriveModes1.TabIndex = 34;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.ClientSize = new System.Drawing.Size(1924, 808);
+            this.ClientSize = new System.Drawing.Size(2104, 1024);
+            this.Controls.Add(this.overdriveModes1);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.mainPanel);
             this.Controls.Add(this.debugPanel);
@@ -1122,6 +1132,7 @@
         private System.Windows.Forms.Label boardSerialLbl;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Button LiveViewBtn;
+        private OverdriveModes overdriveModes1;
     }
 }
 

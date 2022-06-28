@@ -10,6 +10,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Resources;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -24,7 +25,7 @@ namespace OSRTT_Launcher
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
         private double boardVersion = 2.6;
         private double downloadedFirmwareVersion = 2.6;
-        private string softwareVersion = "3.2";
+        private string softwareVersion = "3.3";
 
         // TODO //
         //
@@ -186,6 +187,23 @@ namespace OSRTT_Launcher
             Application.Exit();
         }
 
+        private void getODModesJson()
+        {
+            /*using (var client = new WebClient())
+            {
+                string jsonPath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
+                jsonPath = new Uri(System.IO.Path.GetDirectoryName(jsonPath)).LocalPath + @"\lib\odmodes.json";
+                try
+                {
+                    client.DownloadFile("https://raw.githubusercontent.com/andymanic/OSRTT/main/OSRTT%20Launcher/OSRTT%20Launcher/odmodes.json", jsonPath);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message + ex.StackTrace);
+                }
+            }*/
+        }
+
         private void appRunning()
         {
             Process[] p = Process.GetProcessesByName("OSRTT Launcher");
@@ -271,6 +289,8 @@ namespace OSRTT_Launcher
                 showMessageBox("It is HIGHLY RECOMMENDED you allow the display to warm up BEFORE testing - it looks like your system hasn't been running for more than 30 minutes." +
                     "\n You are welcome to continue, but it's recommended you allow the display to run for around 30 minutes before testing.","Monitor Warm Up",MessageBoxButtons.OK,MessageBoxIcon.Information);
             }
+            Thread jsonThread = new Thread(new ThreadStart(getODModesJson));
+            jsonThread.Start();
         }
 
         private void initialSetup()
@@ -1585,7 +1605,9 @@ namespace OSRTT_Launcher
             Properties.Settings.Default.FPS = fpsLimitList.SelectedIndex;
             Properties.Settings.Default.Runs = Decimal.ToInt32(testCount.Value);
             Properties.Settings.Default.Save();
-            
+            string manCode = displayList[monitor].ManufacturerCode;
+            overdriveModes1.initialiseList(manCode);
+
             if (launchGameThread == null || !launchGameThread.IsAlive)
             {
                 launchGameThread = new Thread(new ThreadStart(this.launchGameAndWaitForExit));
@@ -1612,6 +1634,15 @@ namespace OSRTT_Launcher
             }
             if (!brightnessCanceled)
             {
+                initRtOsMethods();
+                makeResultsFolder();
+                overdriveModes1.runSetting = runSettings;
+                changeSizeAndState("overdrive");
+                while (runSettings.OverdriveMode == null)
+                {
+                    Thread.Sleep(100);
+                }
+                changeSizeAndState("close brightness");
                 ControlDeviceButtons(false);
                 setProgressBar(true);
                 // Save current & FPS to hardware on run
@@ -1624,18 +1655,10 @@ namespace OSRTT_Launcher
                     port.Write("V" + Properties.Settings.Default.VSyncState.ToString());
                 }
                 Thread.Sleep(200);
-                
-                //Popup pp = new Popup();
-                //pp.OverdriveModeWindow(this, runSettings);
-                //pp.Show();
-                //while (!pp.IsDisposed)
-                //{
-                //    Thread.Sleep(100);
-                //}
-                //if (runSettings.OverdriveMode == null)
-                //{
+                if (runSettings.OverdriveMode == null)
+                {
                     // OD Mode not entered - cause validation?
-                //}
+                }
                 testRunning = true;
                 vsyncTrigger = false;
                 // Launch UE4 game
@@ -1720,8 +1743,7 @@ namespace OSRTT_Launcher
                     if (boardVersion > 1.5)
                     {
                         testRunning = true;
-                        initRtOsMethods();
-                        makeResultsFolder();
+                        
                         runTestThread = new Thread(new ThreadStart(this.runTest));
                         runTestThread.Start();
                     }
@@ -2347,6 +2369,7 @@ namespace OSRTT_Launcher
                         Size = new Size(1000, 800);
                         debugPanel.Location = new Point(1500, 30);
                         menuStrip1.Visible = false;
+                        overdriveModes1.Location = new Point(1500, 559);
                         break;
                     case "close brightness":
                         mainPanel.Location = new Point(2, 29);
@@ -2354,6 +2377,8 @@ namespace OSRTT_Launcher
                         aboutPanel.Location = new Point(10, 412);
                         Size = new Size(679, 429);
                         debugPanel.Location = new Point(619, 30);
+                        menuStrip1.Visible = true;
+                        overdriveModes1.Location = new Point(10, 559);
                         break;
                     case "about":
                         aboutPanel.Location = new Point(10, 395);
@@ -2368,6 +2393,20 @@ namespace OSRTT_Launcher
                     case "debug":
                         Size = new Size(1089, 436);
                         debugPanel.Location = new Point(673, 32);
+                        break;
+                    case "overdrive":
+                        if (progressBarActive)
+                        {
+                            setProgressBar(false);
+                        }
+                        overdriveModes1.mainWindow = this;
+                        mainPanel.Location = new Point(1500, 26);
+                        brightnessPanel.Location = new Point(0, 0);
+                        aboutPanel.Location = new Point(1500, 402);
+                        Size = new Size(525, 280);
+                        debugPanel.Location = new Point(1500, 30);
+                        menuStrip1.Visible = false;
+                        overdriveModes1.Location = new Point(0, 0);
                         break;
                     case "show progress bar":
                         Size s = Size;
@@ -3109,18 +3148,23 @@ namespace OSRTT_Launcher
             int monitor = getSelectedMonitor();
             int fps = Convert.ToInt32(getSelectedFps());
             bool vsync = getVsyncState();
-            string runName = resultsFolderPath.Substring(0, resultsFolderPath.LastIndexOf('\\'));
-            runSettings = new ProcessData.runSettings
+            string[] folderSplit = resultsFolderPath.Split('\\');
+            string runName = folderSplit.Last();
+            if (runSettings == null)
             {
-                RunName = runName,
-                RefreshRate = displayList[monitor].Freq,
-                FPSLimit = fps,
-                DateAndTime = DateTime.Now.ToString(),
-                MonitorName = displayList[monitor].ManufacturerCode + " " + displayList[monitor].Name,
-                Vsync = vsync,
-                osMethod = os,
-                rtMethod = rt
-            };
+                runSettings = new ProcessData.runSettings
+                {
+                    RunName = runName,
+                    RefreshRate = displayList[monitor].Freq,
+                    FPSLimit = fps,
+                    DateAndTime = DateTime.Now.ToString(),
+                    MonitorName = displayList[monitor].ManufacturerCode + " " + displayList[monitor].Name,
+                    Vsync = vsync,
+                    osMethod = os,
+                    rtMethod = rt,
+
+                };
+            }
             try
             {
                 processAllRuns(rt, os);

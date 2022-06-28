@@ -30,28 +30,28 @@ namespace OSRTT_Launcher
         {
             InitializeComponent();
             controlState(false);
-            initialiseList();
+            //initialiseList();
         }
         private void controlState(bool state)
         {
             label2.Enabled = state;
             odModeBox.Enabled = state;
             continueBtn.Enabled = state;
-            if (!state)
+            if (state)
             {
                 odModeBox.BackColor = Color.White;
-                odModeBox.Location = new Point(221, 31);
+                //odModeBox.Location = new Point(221, 31);
                 odModeBox.BorderStyle = BorderStyle.Fixed3D;
             }
             else
             {
                 odModeBox.BackColor = Color.LightGray;
-                odModeBox.Location = new Point(odModeBox.Location.X, odModeBox.Location.Y + 5);
+                //odModeBox.Location = new Point(odModeBox.Location.X, odModeBox.Location.Y + 5);
                 odModeBox.BorderStyle = BorderStyle.None;
             }
         }
 
-        private void initialiseList()
+        public void initialiseList(string monitorManufacturer)
         {
             string path = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
             string path2 = path;
@@ -73,30 +73,44 @@ namespace OSRTT_Launcher
                 // Can't find file
             }
 
-            odList = JsonConvert.DeserializeObject<ODModes>(jsonData);
-            string monitorManufacturer = runSetting.MonitorName.Remove(3);
-            manufacturerSelect.Items.Clear();
-            foreach (ODMode o in odList.OverdriveModes)
+            bool found = false;
+            try
             {
-                if (o.Name == monitorManufacturer)
+                odList = JsonConvert.DeserializeObject<ODModes>(jsonData);
+                //string monitorManufacturer = runSetting.MonitorName.Remove(3);
+                manufacturerSelect.Items.Clear();
+                foreach (ODMode o in odList.OverdriveModes)
                 {
-                    foreach (string i in o.Modes)
+                    if (o.Name == monitorManufacturer)
                     {
-                        manufacturerSelect.Items.Add(i);
+                        foreach (string i in o.Modes)
+                        {
+                            manufacturerSelect.Items.Add(i);
+                        }
+                        found = true;
                     }
                 }
-                else
-                {
-                    manufacturerSelect.Items.Add("Unknown Monitor");
-                }
+                
             }
+            catch { }
+            if (!found)
+            {
+                manufacturerSelect.Items.Add("Enter Manually");
+            }
+            else
+            {
+                manufacturerSelect.Items.Add("Other");
+            }
+            odModeBox.Text = "";
+            manufacturerSelect.SelectedIndex = 0;
+            
         }
         private void manufacturerSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
             ComboBox box = sender as ComboBox;
-            if (box.Focused)
-            {
-                if (box.Items[box.SelectedIndex].ToString().Contains("Other") || box.Items[box.SelectedIndex].ToString().Contains("Unknown"))
+            //if (box.Focused)
+            //{
+                if (box.Items[box.SelectedIndex].ToString().Contains("Other") || box.Items[box.SelectedIndex].ToString().Contains("Manually"))
                 {
                     controlState(true);
                     continueBtn.Enabled = false;
@@ -106,7 +120,7 @@ namespace OSRTT_Launcher
                     odModeBox.Text = box.Items[box.SelectedIndex].ToString();
                     continueBtn.Enabled = true;
                 }
-            }
+            //}
         }
 
         private void continueBtn_Click(object sender, EventArgs e)

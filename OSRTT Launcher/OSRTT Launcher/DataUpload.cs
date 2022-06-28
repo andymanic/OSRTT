@@ -6,6 +6,9 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Management;
+using System.IO;
+using System.IO.Compression;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace OSRTT_Launcher
 {
@@ -54,6 +57,19 @@ namespace OSRTT_Launcher
         {
             string json = JsonConvert.SerializeObject(data);
             var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+            var httpClient = new HttpClient();
+            try
+            {
+                var httpResponse = await httpClient.PostAsync(url, httpContent);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message + ex.StackTrace);
+            }
+        }
+        public async void UploadBlobData(byte[] data, string url)
+        {
+            var httpContent = new ByteArrayContent(data);
             var httpClient = new HttpClient();
             try
             {
@@ -148,6 +164,7 @@ namespace OSRTT_Launcher
         {
             Guid g = Guid.NewGuid();
             SystemInfo systemInfo = GetSystemInfo();
+            List<ShareData> allRuns = new List<ShareData>();
             foreach (var r in rawData)
             {
                 ShareData share = new ShareData
@@ -159,13 +176,36 @@ namespace OSRTT_Launcher
                     runSettings = runSetting,
                     sysInfo = systemInfo
                 };
-                UploadData(share, "https://api.locally.link/osrtt");
+                allRuns.Add(share);
+                Thread shareThread = new Thread(()=> UploadData(share, "https://api.locally.link/osrtt"));
+                shareThread.Start();
+                //UploadData(share, "https://api.locally.link/osrtt");
             }
-            // put guid in request _somewhere_
+            //var binFormatter = new BinaryFormatter();
+            //var mStream = new MemoryStream();
+            //binFormatter.Serialize(mStream, allRuns);
+
+            //byte[] blob = Compress(mStream.ToArray());
+            //string base64Blob = Convert.ToBase64String(blob);
+            //Thread shareThreadV2 = new Thread(() => UploadData(base64Blob, "https://api.locally.link/osrtt"));
+            //shareThreadV2.Start();
+
             //UploadRawData(rawData);
             //UploadGammaData(gamma);
             //UploadTestLatency(testLatency);
             //UploadRunSettings(runSetting);
+        }
+        public static byte[] Compress(byte[] raw)
+        {
+            using (MemoryStream memory = new MemoryStream())
+            {
+                using (GZipStream gzip = new GZipStream(memory,
+                    CompressionMode.Compress, true))
+                {
+                    gzip.Write(raw, 0, raw.Length);
+                }
+                return memory.ToArray();
+            }
         }
     }
 }
