@@ -60,6 +60,7 @@ namespace OSRTT_Launcher
         private int currentEnd = 0;
         private int currentRun = 0;
 
+        public int boardType = 0;
         private int potVal = 0;
         private int basePotVal = 0;
         private double timeBetween = 0.3;
@@ -1497,6 +1498,18 @@ namespace OSRTT_Launcher
                             port.Write("S" + Properties.Settings.Default.captureTime.ToString());
                         }
                     }
+                    else if (message.Contains("boardType"))
+                    {
+                        string newMessage = message.Remove(0, 10);
+                        try
+                        {
+                            boardType = Int32.Parse(newMessage);
+                        }
+                        catch (Exception parseEx)
+                        {
+                            Console.WriteLine(parseEx.Message + parseEx.StackTrace);
+                        }
+                    }
                     else
                     {
                         this.SetText(message);
@@ -1578,9 +1591,12 @@ namespace OSRTT_Launcher
         {
             int monitor = getSelectedMonitor();
             listMonitors(monitor);
-            if (!brightnessCheck)
+            if (boardType == 0)
             {
-                launchBrightnessCal();
+                if (!brightnessCheck)
+                {
+                    launchBrightnessCal();
+                }
             }
             Properties.Settings.Default.FPS = fpsLimitList.SelectedIndex;
             Properties.Settings.Default.Runs = Decimal.ToInt32(testCount.Value);
