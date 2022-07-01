@@ -1498,7 +1498,7 @@ namespace OSRTT_Launcher
                             port.Write("S" + Properties.Settings.Default.captureTime.ToString());
                         }
                     }
-                    else if (message.Contains("boardType"))
+                    else if (message.Contains("BoardType"))
                     {
                         string newMessage = message.Remove(0, 10);
                         try
