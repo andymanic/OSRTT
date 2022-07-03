@@ -1869,5 +1869,13 @@ namespace OSRTT_Launcher
                 cf.showMessageBox(ex.Message + ex.StackTrace, "Error Drawing graph", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            ProcessData pd = new ProcessData();
+            ProcessData.rawResultData test = pd.InterpolateClippedGraph(rawData[runSelectBox.SelectedIndex][transSelect1.SelectedIndex]);
+            rawData[runSelectBox.SelectedIndex][transSelect1.SelectedIndex] = test;
+            drawGraph(runSelectBox.SelectedIndex, transSelect1.SelectedIndex);
+        }
     }
 }

@@ -1459,6 +1459,41 @@ namespace OSRTT_Launcher
         }
 
 
+        public rawResultData InterpolateClippedGraph(rawResultData data)
+        {
+            List<int> Samples = data.Samples;
+            List<double> doubleSamples = new List<double>();
+            int counter = 0;
+            for (int c = 0; c < Samples.Count; c++)
+            {
+                if (Samples[c] < 64500)
+                {
+                    doubleSamples.Add((double)Samples[c]);
+                }
+                else
+                {
+                    counter++;
+                }
+            }
+
+            double[] rawX = new double[doubleSamples.Count];
+            double[] rawY = doubleSamples.ToArray();
+            for (int i = 0; i < rawX.Length; i++)
+            {
+                rawX[i] = data.SampleTime * 1;
+            }
+            var line = ScottPlot.Statistics.Interpolation.Cubic.InterpolateXY(rawX, rawY, counter);
+            List<int> newLine = new List<int>();
+            for (int p = 0; p < line.ys.Length; p++)
+            {
+                newLine.Add((int)line.ys[p]);
+            }
+            data.Samples = newLine;
+
+            return data;
+        }
+
+
 /////////////////////////////////////////////////////////////////////////////
 //              Input Lag
 ////////////////////////////////////////////////////////////////////////////

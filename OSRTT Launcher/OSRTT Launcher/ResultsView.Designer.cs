@@ -46,6 +46,8 @@ namespace OSRTT_Launcher
             this.runSelectToolStrip = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.graphViewMenuBtn = new System.Windows.Forms.ToolStripButton();
+            this.rtViewMenuList = new System.Windows.Forms.ToolStripComboBox();
+            this.denoiseToolStripBtn = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.importViewMenuButton = new System.Windows.Forms.ToolStripButton();
             this.graphViewPanel = new System.Windows.Forms.Panel();
@@ -82,9 +84,8 @@ namespace OSRTT_Launcher
             this.label5 = new System.Windows.Forms.Label();
             this.importResultsViewBtn = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.rtViewMenuList = new System.Windows.Forms.ToolStripComboBox();
-            this.denoiseToolStripBtn = new System.Windows.Forms.ToolStripButton();
             this.heatmaps1 = new OSRTT_Launcher.Heatmaps();
+            this.button1 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.graphViewPanel.SuspendLayout();
@@ -242,6 +243,28 @@ namespace OSRTT_Launcher
             this.graphViewMenuBtn.Text = "Raw Data Graphs";
             this.graphViewMenuBtn.Click += new System.EventHandler(this.graphViewMenuBtn_Click);
             // 
+            // rtViewMenuList
+            // 
+            this.rtViewMenuList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.rtViewMenuList.DropDownWidth = 175;
+            this.rtViewMenuList.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.rtViewMenuList.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rtViewMenuList.Margin = new System.Windows.Forms.Padding(5, 0, 1, 0);
+            this.rtViewMenuList.Name = "rtViewMenuList";
+            this.rtViewMenuList.Size = new System.Drawing.Size(175, 25);
+            this.rtViewMenuList.SelectedIndexChanged += new System.EventHandler(this.rtViewMenuList_SelectedIndexChanged);
+            // 
+            // denoiseToolStripBtn
+            // 
+            this.denoiseToolStripBtn.CheckOnClick = true;
+            this.denoiseToolStripBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.denoiseToolStripBtn.Image = ((System.Drawing.Image)(resources.GetObject("denoiseToolStripBtn.Image")));
+            this.denoiseToolStripBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.denoiseToolStripBtn.Name = "denoiseToolStripBtn";
+            this.denoiseToolStripBtn.Size = new System.Drawing.Size(88, 22);
+            this.denoiseToolStripBtn.Text = "Denoise Graph";
+            this.denoiseToolStripBtn.Click += new System.EventHandler(this.denoiseToolStripBtn_Click);
+            // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
@@ -260,6 +283,7 @@ namespace OSRTT_Launcher
             // 
             // graphViewPanel
             // 
+            this.graphViewPanel.Controls.Add(this.button1);
             this.graphViewPanel.Controls.Add(this.viewGammaBtn);
             this.graphViewPanel.Controls.Add(this.saveGraphNoHSpanBtn);
             this.graphViewPanel.Controls.Add(this.saveAsPNGBtn);
@@ -676,34 +700,26 @@ namespace OSRTT_Launcher
             this.progressBar1.TabIndex = 34;
             this.progressBar1.Visible = false;
             // 
-            // rtViewMenuList
-            // 
-            this.rtViewMenuList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.rtViewMenuList.DropDownWidth = 175;
-            this.rtViewMenuList.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.rtViewMenuList.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rtViewMenuList.Margin = new System.Windows.Forms.Padding(5, 0, 1, 0);
-            this.rtViewMenuList.Name = "rtViewMenuList";
-            this.rtViewMenuList.Size = new System.Drawing.Size(175, 25);
-            this.rtViewMenuList.SelectedIndexChanged += new System.EventHandler(this.rtViewMenuList_SelectedIndexChanged);
-            // 
-            // denoiseToolStripBtn
-            // 
-            this.denoiseToolStripBtn.CheckOnClick = true;
-            this.denoiseToolStripBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.denoiseToolStripBtn.Image = ((System.Drawing.Image)(resources.GetObject("denoiseToolStripBtn.Image")));
-            this.denoiseToolStripBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.denoiseToolStripBtn.Name = "denoiseToolStripBtn";
-            this.denoiseToolStripBtn.Size = new System.Drawing.Size(88, 22);
-            this.denoiseToolStripBtn.Text = "Denoise Graph";
-            this.denoiseToolStripBtn.Click += new System.EventHandler(this.denoiseToolStripBtn_Click);
-            // 
             // heatmaps1
             // 
             this.heatmaps1.Location = new System.Drawing.Point(1395, 55);
             this.heatmaps1.Name = "heatmaps1";
             this.heatmaps1.Size = new System.Drawing.Size(1775, 950);
             this.heatmaps1.TabIndex = 6;
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.button1.FlatAppearance.BorderSize = 0;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.button1.Font = new System.Drawing.Font("Consolas", 16F, System.Drawing.FontStyle.Bold);
+            this.button1.Location = new System.Drawing.Point(1180, 48);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(193, 36);
+            this.button1.TabIndex = 29;
+            this.button1.Text = "Test";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // ResultsView
             // 
@@ -797,5 +813,6 @@ namespace OSRTT_Launcher
         private System.Windows.Forms.Button viewGammaBtn;
         private System.Windows.Forms.ToolStripComboBox rtViewMenuList;
         private System.Windows.Forms.ToolStripButton denoiseToolStripBtn;
+        private System.Windows.Forms.Button button1;
     }
 }
