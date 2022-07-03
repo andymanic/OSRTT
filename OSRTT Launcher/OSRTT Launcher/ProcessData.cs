@@ -92,6 +92,46 @@ namespace OSRTT_Launcher
             public osMethods osMethod { get; set; }
         }
 
+        public class normalisedGamma
+        {
+            public double gammaTitle { get; set; }
+            public List<double> normalisedData { get; set; }
+        }
+
+        public static List<normalisedGamma> NormalGamma = new List<normalisedGamma>
+        {
+            new normalisedGamma
+            {
+                gammaTitle = 1.6,
+                normalisedData = new List<double> {0,0.013,0.040,0.076,0.121,0.172,0.231,0.295,0.366,0.442,0.523,0.609,0.700,0.795,0.895,1,1.109,1.222,1.339}
+            },
+            new normalisedGamma
+            {
+                gammaTitle = 1.8,
+                normalisedData = new List<double> {0,0.008,0.027,0.055,0.093,0.138,0.192,0.254,0.323,0.399,0.482,0.572,0.669,0.773,0.883,1,1.123,1.253,1.388}
+            },
+            new normalisedGamma
+            {
+                gammaTitle = 2.0,
+                normalisedData = new List<double> {0,0.004,0.018,0.040,0.071,0.111,0.160,0.218,0.284,0.360,0.444,0.538,0.640,0.751,0.871,1,1.138,1.284,1.440}
+            },
+            new normalisedGamma
+            {
+                gammaTitle = 2.2,
+                normalisedData = new List<double> {0,0.003,0.012,0.029,0.055,0.089,0.133,0.187,0.251,0.325,0.410,0.505,0.612,0.730,0.859,1,1.153,1.317,1.493}
+            },
+            new normalisedGamma
+            {
+                gammaTitle = 2.4,
+                normalisedData = new List<double> {0,0.002,0.008,0.021,0.042,0.072,0.111,0.161,0.221,0.293,0.378,0.475,0.585,0.709,0.847,1,1.168,1.350,1.549}
+            },
+            new normalisedGamma
+            {
+                gammaTitle = 2.6,
+                normalisedData = new List<double> {0,0.001,0.005,0.015,0.032,0.057,0.092,0.138,0.195,0.265,0.348,0.446,0.560,0.689,0.836,1,1.183,1.385,1.606}
+            }
+        };
+
         public graphResult processGraphResult(List<List<rawResultData>> data, resultSelection res, int startDelay, List<gammaResult> processedGamma, string rtType)
         {
             try
@@ -131,8 +171,8 @@ namespace OSRTT_Launcher
         {
             if (gamma.Count != 0)
             {
-                double[] rgbVals = new double[gamma.Count];
-                double[] lightLevelVals = new double[gamma.Count];
+                double[] rgbVals = new double[gamma.Count + 3];
+                double[] lightLevelVals = new double[gamma.Count + 3];
                 for (int i = 0; i < gamma.Count; i++)
                 { 
                     int[] dataLine = gamma[i].Skip(300).ToArray();
@@ -152,6 +192,50 @@ namespace OSRTT_Launcher
                     rgbVals[i] = gamma[i][0];
                     lightLevelVals[i] = lineAverage;
                 }
+                // Extrapolate upwards to catch overshoot above RGB 255
+                double[] normalRGB = new double[rgbVals.Length];
+                double[] normalLight = new double[lightLevelVals.Length];
+                double peakLight = lightLevelVals[gamma.Count - 1];
+                for (int i = 0; i < normalLight.Length - 3; i++)
+                {
+                    normalRGB[i] = 17 * i;
+                    normalRGB[i] /= 255;
+                    normalLight[i] = lightLevelVals[i];
+                    normalLight[i] = normalLight[i] / peakLight;
+                }
+                List<double> closestMatchGamma = NormalGamma[0].normalisedData;
+                double gammaDifference = 100;
+                foreach (var g in NormalGamma)
+                {
+                    double diff = 0;
+                    for (int a = 0; a < normalLight.Length; a++)
+                    {
+                        double big = normalLight[a];
+                        double little = g.normalisedData[a];
+                        if (big < little)
+                        {
+                            little = normalLight[a];
+                            big = g.normalisedData[a];
+                        }
+                        diff += big - little;
+                    }
+                    if (diff < gammaDifference)
+                    {
+                        gammaDifference = diff;
+                        closestMatchGamma = g.normalisedData;
+                    }
+                }
+                for (int k = gamma.Count; k < normalLight.Length; k++)
+                {
+                    double val = closestMatchGamma[k] * peakLight;
+                    double rgb = 17 * k;
+                    rgbVals[k] = rgb;
+                    lightLevelVals[k] = Math.Round(val,0);
+                }
+                Console.WriteLine();
+
+
+
                 int pointsBetween = 51;
                 if (gamma.Count == 16)
                 {
