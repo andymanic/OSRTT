@@ -23,6 +23,12 @@ namespace OSRTT_Launcher
             public ProcessData.runSettings runSettings { get; set; }
             public SystemInfo sysInfo { get; set; }
         }
+
+        public class allRuns
+        {
+            public Guid GUID { get; set; }
+            public List<ShareData> allData { get; set; }
+        }
         public class SystemInfo
         {
             public string boardSerial { get; set; }
@@ -164,7 +170,9 @@ namespace OSRTT_Launcher
         {
             Guid g = Guid.NewGuid();
             SystemInfo systemInfo = GetSystemInfo();
-            List<ShareData> allRuns = new List<ShareData>();
+            allRuns multiRuns = new allRuns();
+            multiRuns.GUID = g;
+            multiRuns.allData = new List<ShareData>();
             foreach (var r in rawData)
             {
                 ShareData share = new ShareData
@@ -176,11 +184,12 @@ namespace OSRTT_Launcher
                     runSettings = runSetting,
                     sysInfo = systemInfo
                 };
-                allRuns.Add(share);
-                Thread shareThread = new Thread(()=> UploadData(share, "https://api.locally.link/osrtt"));
-                shareThread.Start();
+                multiRuns.allData.Add(share);
+                
                 //UploadData(share, "https://api.locally.link/osrtt");
             }
+            Thread shareThread = new Thread(() => UploadData(multiRuns, "https://api.locally.link/osrtt"));
+            shareThread.Start();
             //var binFormatter = new BinaryFormatter();
             //var mStream = new MemoryStream();
             //binFormatter.Serialize(mStream, allRuns);
