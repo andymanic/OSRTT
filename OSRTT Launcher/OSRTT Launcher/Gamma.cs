@@ -55,7 +55,7 @@ namespace OSRTT_Launcher
                 double[] rgbData = new double[gamma.Count];
                 if (!normalise)
                 {
-                    for (int i = 0; i < gamma.Count; i++)
+                    for (int i = 0; i < 256; i++)
                     {
                         lightData[i] = gamma[i].LightLevel;
                         rgbData[i] = gamma[i].RGB;
@@ -63,7 +63,7 @@ namespace OSRTT_Launcher
                 }
                 else
                 {
-                    for (int i = 0; i < normalisedGamma.Count; i++)
+                    for (int i = 0; i < 256; i++)
                     {
                         rgbData[i] = normalisedGamma[i][0];
                         lightData[i] = normalisedGamma[i][1];
@@ -154,7 +154,7 @@ namespace OSRTT_Launcher
                 data.Add(line);    
             }
             int count = 0;
-            for (int l = 0; l < gamma.Count; l += 17)    
+            for (int l = 0; l < 256; l += 17)    
             {
                 data[count][0] = gamma[l].RGB.ToString();
                 data[count][1] = gamma[l].LightLevel.ToString();
