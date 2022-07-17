@@ -2,6 +2,7 @@
 Open Source Response Time Tool - LCD response time tool, includes hardware, firmware and software!
 
 <a href="https://andymanic.github.io/OSRTTDocs/" target="_blank">![View the docs](view-the-docs.png)</a>
+<a href="https://osrtt.com" target="_blank">![Buy a kit](buy-a-kit.png)</a>
 
 # Project Aim
 The goal of this project is to offer an open source, cost effective solution to testing LCD monitor's input lag. The hardware as described in the circuit diagrams is required, as is a copy of the Windows Forms app. The hardware isn't too difficult to build if you'd like to do it yourself, and the software is fully open source so you are welcome to make alterations to suit your testing needs.
