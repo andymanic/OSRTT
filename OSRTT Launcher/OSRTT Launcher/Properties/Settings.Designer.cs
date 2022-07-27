@@ -289,7 +289,7 @@ namespace OSRTT_Launcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("75,85,95")]
+        [global::System.Configuration.DefaultSettingValueAttribute("50,70,90")]
         public string vrrKey {
             get {
                 return ((string)(this["vrrKey"]));

@@ -731,7 +731,7 @@ namespace OSRTT_Launcher
                         resultIndex = resInd,
                         rtStyle = rtMethodologies[processTypeListBox.SelectedIndex],
                         osStyle = osMethodologies[overshootStyleListBox.SelectedIndex]
-                    }, startDelay, processedGamma, rtType);
+                    }, startDelay, processedGamma, rtType, runSettings);
                     try
                     {
                         rtLabel.Text = proc.Time.ToString() + " ms";
@@ -1346,7 +1346,7 @@ namespace OSRTT_Launcher
                 }
                 string[] folders = resultsFolderPath.Split('\\');
                 monitorInfo = folders.Last();
-                fileName = fileNumber.ToString() + monitorInfo + ".png";
+                fileName = fileNumber.ToString() + "-" + monitorInfo + ".png";
             }
             else
             {
@@ -1429,7 +1429,7 @@ namespace OSRTT_Launcher
             {
                 rtStyle = rtMethod,
                 osStyle = osMethod
-            }, startDelay, processedGamma));
+            }, startDelay, processedGamma, runSettings));
             CFuncs cf = new CFuncs();
             
             foreach (var res in processedData)

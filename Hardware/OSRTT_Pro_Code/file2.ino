@@ -23,25 +23,27 @@ unsigned long curr_time = micros();
 uint32_t sample_count = 0;
 //50ms sample time default
 unsigned long samplingTime = 50000;
-uint16_t adcBuff[16000];
+uint16_t adcBuff[32000];
 
 //Button values
 int buttonState = 0;
-const int buttonPin = 2;
+const int buttonPin = 10;
 
 //Digital Potentiometer values (SPI)
-byte address = 0x02;
-int CS = 10;
-SPISettings settingsA(10000000, MSBFIRST, SPI_MODE0);
+byte address = 0x00;
+int CS = 2;
+SPISettings settingsA(1000000, MSBFIRST, SPI_MODE0);
 
 //Serial connection values
-bool connected = false;
-String firmware = "2.6";
+int boardType = 1;
+String firmware = "3.0";
 int testRuns = 4;
 bool vsync = true;
 bool extendedGamma = true;
 char fpsLimit = '1';
-int USBV = 0;
+bool highspeed = false;
+
+unsigned long loopTimer = millis();
 
 void ADC_Clocks() // Turns out to be superfluous as Adafruit wiring.c already sets these clocks. Keeping for now to guarantee settings are set.
 {
@@ -99,16 +101,21 @@ void ADC_Init(Adc *ADCx)
   while(ADCx->SYNCBUSY.bit.ENABLE);
 }
 
-void ADCHighSpeedMode(int highSpeed)
+void ADCHighSpeedMode(int highSpeedNumber)
 {
-  if (highSpeed == 1)
+  Serial.println(highSpeedNumber);
+  if (highSpeedNumber == 1)
   {
     // Swap to just 4 sample average for 250KSPS instead of 62,500
     ADC0->AVGCTRL.reg = ADC_AVGCTRL_SAMPLENUM_4_Val; 
+    Serial.println("HighSpeed:on");
+    highspeed = true;
   }
   else
   {
     ADC0->AVGCTRL.reg = ADC_AVGCTRL_SAMPLENUM_16_Val;
+    Serial.println("HighSpeed:off");
+    highspeed=false;
   }
   //Wait for synchronisation
   while(ADC0->SYNCBUSY.reg & ADC_SYNCBUSY_AVGCTRL);
@@ -118,31 +125,54 @@ int checkLightLevel() // Check light level & modulate potentiometer value
 {
   Keyboard.write('f');
   delay(400);
-  int potValue = 160;
+  int potValue = 254;
   digitalPotWrite(potValue);
   delay(200);
   ADC0->SWTRIG.bit.START = 1; //Start ADC 
   while(!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
   int value = ADC0->RESULT.reg;
-  while(value <= 63000 || value >= 64000)
+  int upperBound = 56000;
+  int lowerBound = 54000;
+  if (highspeed)
+  {
+    upperBound = 15000;
+    lowerBound = 14000;
+  }
+  while(value <= lowerBound || value >= upperBound)
   {
     ADC0->SWTRIG.bit.START = 1; //Start ADC 
     while(!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
     value = ADC0->RESULT.reg;
-    if (value >= 64000)
+    if (value >= upperBound)
     {
       //Set digital pot to decrease voltage
-      potValue -= 1; //or the other way...
+      potValue += 1; //or the other way...
       digitalPotWrite(potValue);
       Serial.print("Value: ");
       Serial.print(value);
       Serial.print(", Pot Value: ");
       Serial.println(potValue);
     }
-    else if (value <= 63000)
+    else if (value <= lowerBound)
     {
       //Set digital pot to increase volt
-      potValue += 1; //or the other way...
+      potValue -= 1; //or the other way...
+      if (potValue <= 32 && potValue >=24)
+      {
+        potValue = 23;
+      }
+      else if (potValue <= 128 && potValue >=83)
+      {
+        potValue = 81;
+      }
+      else if (potValue <= 160 && potValue >=153)
+      {
+        potValue = 152;
+      }
+      else if (potValue <= 224 && potValue >=217)
+      {
+        potValue = 216;
+      }
       digitalPotWrite(potValue);
       Serial.print("Value: ");
       Serial.print(value);
@@ -153,7 +183,7 @@ int checkLightLevel() // Check light level & modulate potentiometer value
     {
       break;  
     }
-    if (potValue <= 159 || potValue == 255)
+    if (potValue <= 1 || potValue == 255)
     {
       Serial.print("TEST CANCELLED - LIGHT LEVEL:");
       Serial.println(value);
@@ -164,12 +194,14 @@ int checkLightLevel() // Check light level & modulate potentiometer value
     delay(20);
   }
   Keyboard.write('q');
+  oledFourLines("POT VAL:", String(potValue), "","");
   delay(400);
   return 1;
 }
 
 void runADC(int curr, int nxt, char key, String type) // Run test, press key and print results
 {
+  digitalWrite(3, HIGH);
     // Set next colour
     Keyboard.print(key);
 
@@ -178,7 +210,7 @@ void runADC(int curr, int nxt, char key, String type) // Run test, press key and
     
     //50ms worth of samples @100ksps= 5000 samples
     //50ms worth of samples @129ksps = 6451 samples
-    digitalWrite(3, HIGH);
+    
     /////////////////////////////////////////////////////////////
     //                    Take ADC Readings                    //
     /////////////////////////////////////////////////////////////
@@ -224,34 +256,17 @@ void runADC(int curr, int nxt, char key, String type) // Run test, press key and
 
 void digitalPotWrite(int value)
 {
-  SPI.beginTransaction(settingsA);
-  digitalWrite(CS,LOW);
-  SPI.transfer(address);
-  SPI.transfer(value);
-  digitalWrite(CS,HIGH);
-  SPI.endTransaction();  
-}
-
-int checkUSBVoltage(int l) // Check USB voltage is between 4.8V and 5.2V
-{
-  int counter = 0;
-  while (counter < l)
+  if (value == 0)
   {
-    ADC1->SWTRIG.bit.START = 1; //Start ADC1 
-    while(!ADC1->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
-    adcBuff[counter] = ADC1->RESULT.reg;
-    counter++; 
+    value = 1;
   }
-  Serial.print("USB V:");
-  for (int i = 0; i < counter; i++)
-      {
-        Serial.print(adcBuff[i]);
-        Serial.print(",");
-      }
-  Serial.println();
-  Serial.println();
-  ADC1->SWTRIG.bit.START = 0; //Stop ADC 
-  return 1;
+  SPI.beginTransaction(settingsA);
+  digitalWrite(2,LOW);
+  delay(1);
+  SPI.transfer(value);
+  //SPI.transfer(0);
+  digitalWrite(2,HIGH);
+  SPI.endTransaction();  
 }
 
 void runGammaTest()
@@ -354,15 +369,33 @@ void checkLatency() {
 
 void setup() {
   pinMode (CS, OUTPUT);
-  pinMode (3, OUTPUT);
+  digitalWrite(CS, HIGH);
   SPI.begin();
+  pinMode(buttonPin, INPUT_PULLUP); //Button input on pin 2
+  if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;); 
+  }
+  drawSplashScreen();
   
-  digitalPotWrite(0x80);
+  digitalPotWrite(0x00);
   ADC_Clocks();
   ADC_Init(ADC0); //Initialise ADC0
   ADC_Init(ADC1); //Initialise ADC1
   Serial.begin(115200); //Open Serial connection at 115200 baud
-  while(!Serial); //Wait for Serial to be connected
+  long timer = millis();
+  while(!Serial)
+  {
+    if (millis() > (timer + 180000))
+    {
+      clearDisplayBuffer();
+    }
+    buttonState = digitalRead(buttonPin);
+    if (buttonState == HIGH)
+    {
+      oledAwaitingSerial("CONNECTION");
+    }
+  }
   Keyboard.begin(); //Open keyboard connection over USB
   pinMode(buttonPin, INPUT_PULLUP); //Button input on pin 2
   pinMode(13, OUTPUT); //Onboard LED
@@ -378,9 +411,18 @@ void loop() {
     }
     byte size = Serial.readBytes(input, INPUT_SIZE);
     input[size] = 0; 
+    if (millis() == (loopTimer + 180000))
+    {
+      clearDisplayBuffer();
+      loopTimer = millis();
+    }
+    buttonState = digitalRead(buttonPin);
+    if (buttonState == HIGH)
+    {
+      oledFourLines("CONNECTED", "TO", "DESKTOP", "APP");
+    }
     if (input[0] == 'A')
     {
-      connected = true;
       int arrSize = sizeof(RGBArr) / sizeof(int);
       Serial.print("RGB Array : ");
       for(int i = 0; i < arrSize; i++)
@@ -395,7 +437,7 @@ void loop() {
       // Brightness Calibration screen
       Serial.setTimeout(200);
       int mod = input[1] - '0';
-      int potVal = 165 + mod;
+      int potVal = 1 + mod;
       digitalPotWrite(potVal);
       Serial.println("BRIGHTNESS CHECK");
       delay(500);
@@ -438,13 +480,13 @@ void loop() {
           if (in >= 1 && in <= 15)
           {
             // Increment potentiometer value by multiples of 10 up to 220
-            int add = 2 * in;
-            potVal = 165 + add;
+            int add = 15 * in;
+            potVal = 1 + add;
             digitalPotWrite(potVal);  
           }
           else if (in == 0)
           {
-            potVal = 165;
+            potVal = 1;
             digitalPotWrite(potVal);
           }
           int counter = 0;
@@ -475,12 +517,14 @@ void loop() {
       Serial.print("Runs:");
       Serial.println(testRuns);
       delay(100);
+      Serial.print("BoardType:");
+      Serial.println(boardType);
+      delay(100);
       Serial.println("FW:" + firmware);
       delay(100);
       Serial.print("FPS Key:");
       Serial.println(fpsLimit);
       delay(100);
-      int voltageTest = checkUSBVoltage(2000);
       int arrSize = sizeof(RGBArr) / sizeof(int);
       Serial.print("RGB Array:");
       for(int i = 0; i < arrSize; i++)
@@ -498,10 +542,6 @@ void loop() {
       int state = input[1] - '0';
       ADCHighSpeedMode(state);
     }
-    else if (input[0] == 'U')
-    {
-      checkUSBVoltage(10000);
-    }
     else if (input[0] == 'M')
     {
       testRuns = input[1] - '0';
@@ -518,6 +558,8 @@ void loop() {
     }
     else if (input[0] == 'G')
     {
+      delay(2000);
+      int brightnessTest = checkLightLevel();
       runGammaTest();
     }
     else if (input[0] == 'V')
@@ -552,7 +594,7 @@ void loop() {
     {
       int length = input[1] - '0';
       length++;
-      samplingTime = length * 50000;
+      samplingTime = 50000 * length;
       Serial.print("Sampling Time:");
       Serial.println(samplingTime);
     }
@@ -582,22 +624,26 @@ void loop() {
           //else 
           //{
             // Check monitor brightness level
+            oledFourLines("CALIBRATING","LIGHT","LEVEL","");
             int brightnessTest = checkLightLevel();
             if (brightnessTest == 0)
             {
               // If brightness too low or high, don't run the test
               Serial.println("Cancelling test");
               digitalWrite(13, HIGH); 
-              digitalPotWrite(0x80);
+              digitalPotWrite(0x00);
+              oledFourLines("FAILED TO","CALIBRATE","LIGHT","LEVEL");
               break;
             }
             else
             {
+              oledFourLines("CHECKING","SYSTEM","LATENCY","");
               checkLatency();
               delay(100);
               Serial.println("Test Started");
               // Set FPS limit (default 1000 FPS, key '1')
               delay(50);
+              oledFourLines("RUNNING","GAMMA","TEST","");
               runGammaTest();
               delay(100);
               while (input[0] != 'X')
@@ -643,6 +689,7 @@ void loop() {
                   {
                     int current = RGBArr[currentIndex];
                     int next = RGBArr[nextIndex];
+                    oledTestRunning(current, next);
                     Keyboard.print(Keys[currentIndex]);
                     delay(300);
                     runADC(current, next, Keys[nextIndex], "Results: ");
@@ -653,7 +700,8 @@ void loop() {
                 delay(50);  
               }
             }
-            digitalPotWrite(0x80);
+            oledFourLines("TEST","COMPLETE","CHECK","DESKTOP");
+            digitalPotWrite(0x01);
           //}
         }
         else 
@@ -761,7 +809,7 @@ void loop() {
       }
       if (input[0] != 'X')  {  
         Serial.setTimeout(200);
-        digitalPotWrite(170);
+        digitalPotWrite(1);
         while (input[0] != 'X')
         {
           buttonState = digitalRead(buttonPin);
@@ -791,7 +839,6 @@ void loop() {
           input[sized] = 0; 
           delay(10);
         }
-        digitalPotWrite(0x80);
       }
     }
     else if (input[0] == 'O')
@@ -799,7 +846,7 @@ void loop() {
       // Brightness Calibration screen
       Serial.setTimeout(200);
       int mod = input[1] - '0';
-      int potVal = 165 + mod;
+      int potVal = 1 + mod;
       digitalPotWrite(potVal);
       Serial.println("LIVE VIEW");
       delay(200);      
@@ -852,19 +899,45 @@ void loop() {
         if (in >= 1 && in <= 15)
         {
           // Increment potentiometer value by multiples of 10 up to 220
-          int add = 3 * in;
-          potVal = 165 + add;
+          int add = 15 * in;
+          potVal = 1 + add;
           digitalPotWrite(potVal); 
           Serial.print("pot val:");
           Serial.println(potVal); 
         }
         else if (in == 0)
         {
-          potVal = 165;
+          potVal = 1;
           digitalPotWrite(potVal);
           Serial.print("pot val:");
           Serial.println(potVal);
         }  
+      }
+    }
+    else if (input[0] == 'Y')
+    {
+      //digitalWrite(2, LOW);
+    }
+    else if (input[0] == 'Z')
+    {
+      int potVal = 1;
+      uint16_t result = 0;
+      Serial.println("PotVal,Result");
+      for (int i = 0; i < 255; i++)
+      {
+        int counter = 0;
+        digitalPotWrite(i);
+        Serial.print(i);
+        Serial.print(",");
+        while (counter < 100)
+        {
+          ADC0->SWTRIG.bit.START = 1; //Start ADC 
+          while(!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
+          result = ADC0->RESULT.reg; //save new ADC value to buffer @ sample_count position  
+          counter++;
+        }
+        Serial.println(result);
+        oledFourLines("POT VAL:", String(potVal), "VAL:", String(result));
       }
     }
   delay(100); 

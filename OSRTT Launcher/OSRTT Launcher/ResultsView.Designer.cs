@@ -85,7 +85,6 @@ namespace OSRTT_Launcher
             this.importResultsViewBtn = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.heatmaps1 = new OSRTT_Launcher.Heatmaps();
-            this.button1 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.graphViewPanel.SuspendLayout();
@@ -283,7 +282,6 @@ namespace OSRTT_Launcher
             // 
             // graphViewPanel
             // 
-            this.graphViewPanel.Controls.Add(this.button1);
             this.graphViewPanel.Controls.Add(this.viewGammaBtn);
             this.graphViewPanel.Controls.Add(this.saveGraphNoHSpanBtn);
             this.graphViewPanel.Controls.Add(this.saveAsPNGBtn);
@@ -707,20 +705,6 @@ namespace OSRTT_Launcher
             this.heatmaps1.Size = new System.Drawing.Size(1775, 950);
             this.heatmaps1.TabIndex = 6;
             // 
-            // button1
-            // 
-            this.button1.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.button1.FlatAppearance.BorderSize = 0;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button1.Font = new System.Drawing.Font("Consolas", 16F, System.Drawing.FontStyle.Bold);
-            this.button1.Location = new System.Drawing.Point(1180, 48);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(193, 36);
-            this.button1.TabIndex = 29;
-            this.button1.Text = "Test";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // ResultsView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -813,6 +797,5 @@ namespace OSRTT_Launcher
         private System.Windows.Forms.Button viewGammaBtn;
         private System.Windows.Forms.ToolStripComboBox rtViewMenuList;
         private System.Windows.Forms.ToolStripButton denoiseToolStripBtn;
-        private System.Windows.Forms.Button button1;
     }
 }

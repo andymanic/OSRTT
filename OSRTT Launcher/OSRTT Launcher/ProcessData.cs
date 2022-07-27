@@ -84,10 +84,13 @@ namespace OSRTT_Launcher
             public string RunName { get; set; }
             public string DateAndTime { get; set; }
             public string MonitorName { get; set; }
+            public string EDIDProductcode { get; set; }
             public int RefreshRate { get; set; }
+            public string Resolution { get; set; }
             public int FPSLimit { get; set; }
             public bool Vsync { get; set; }
             public string OverdriveMode { get; set; }
+            public int Mode { get; set; }
             public rtMethods rtMethod { get; set; }
             public osMethods osMethod { get; set; }
         }
@@ -131,12 +134,27 @@ namespace OSRTT_Launcher
                 normalisedData = new List<double> {0,0.001,0.005,0.015,0.032,0.057,0.092,0.138,0.195,0.265,0.348,0.446,0.560,0.689,0.836,1,1.183,1.385,1.606}
             }
         };
+        public class VRRKey
+        {
+            public string Name { get; set; }
+            public int Type { get; set; }
+            public double Best { get; set; }
+            public double Middle { get; set; }
+            public double Worst { get; set; }
+        }
 
-        public graphResult processGraphResult(List<List<rawResultData>> data, resultSelection res, int startDelay, List<gammaResult> processedGamma, string rtType)
+        public List<VRRKey> VRRTable = new List<VRRKey>
+        {
+            new VRRKey { Name = "IRT", Type=0, Best=2, Middle=14, Worst=28 },
+            new VRRKey { Name = "PRT", Type=1, Best=2, Middle=8, Worst=16 },
+            new VRRKey { Name = "OS", Type=2, Best=5, Middle=15, Worst=25 }
+        };
+
+        public graphResult processGraphResult(List<List<rawResultData>> data, resultSelection res, int startDelay, List<gammaResult> processedGamma, string rtType, runSettings runSetting)
         {
             try
             {
-                processedResult proc = ProcessResponseTimeData(data, res, startDelay, processedGamma);
+                processedResult proc = ProcessResponseTimeData(data, res, startDelay, processedGamma, runSetting);
                 graphResult gProc = new graphResult();
                 if (rtType == "complete")
                 {
@@ -352,7 +370,7 @@ namespace OSRTT_Launcher
             return averagedSamples.Skip(period).ToArray();
         }
 
-        public processedResult ProcessResponseTimeData(List<List<rawResultData>> data, resultSelection res, int startDelay, List<gammaResult> processedGamma)
+        public processedResult ProcessResponseTimeData(List<List<rawResultData>> data, resultSelection res, int startDelay, List<gammaResult> processedGamma, runSettings runSetting)
         {
             //This is a long one. This is the code that builds the gamma curve, finds the start/end points and calculates response times and overshoot % (gamma corrected)
             List<double[]> processedData = new List<double[]>();
@@ -1086,7 +1104,81 @@ namespace OSRTT_Launcher
                 double initialResponseTime = Math.Round(initialTransTime, 1);
                 double perceivedResponseTime = Math.Round(perceivedTransTime, 1);
 
-                double visualResponseRating = 100 - (initialResponseTime + perceivedResponseTime);
+                double frameTimeScore = 1000 / runSetting.RefreshRate;
+                frameTimeScore = (10 - frameTimeScore)*10;
+                double initialScore = 0;
+                double perceivedScore = 0;
+                double overshootScore = 0;
+                foreach (VRRKey v in VRRTable)
+                {
+                    double valueToScore = 0;
+                    double range = 0;
+                    double distanceToMiddle = 0;
+                    double Best = v.Best;
+                    double Middle = v.Middle;
+                    double Worst = v.Worst;
+                    double result = 0;
+                    if (v.Type == 0)
+                    {
+                        valueToScore = initialResponseTime;
+                    }
+                    else if (v.Type == 1)
+                    {
+                        valueToScore = perceivedResponseTime - initialResponseTime;
+                    }
+                    else if (v.Type == 2)
+                    {
+                        valueToScore = overshootRGBDiff;
+                    }
+                    if (valueToScore <= Middle)
+                    {
+                        if (valueToScore <= Best)
+                        {
+                            result = 100;
+                        }
+                        else
+                        {
+                            range = Middle - Best;
+                            distanceToMiddle = Middle - valueToScore;
+                            result = distanceToMiddle / range;
+                            result = 100 * result;
+                        }
+                    }
+                    else
+                    {
+                        if (valueToScore >= Worst)
+                        {
+                            result = 0;
+                        }
+                        else
+                        {
+                            range = Worst - Middle;
+                            distanceToMiddle = valueToScore - Middle;
+                            result = distanceToMiddle / range;
+                            result = 100 * result;
+                        }
+                    }
+                    if (v.Type == 0) // I know this can be done without checking this again.... but I can't engage my brain enough to find out how.
+                    {
+                        initialScore = result;
+                    }
+                    else if (v.Type == 1)
+                    {
+                        perceivedScore = result;
+                    }
+                    else if (v.Type == 2)
+                    {
+                        overshootScore = result;
+                    }
+                }
+                Console.WriteLine("FT: " + frameTimeScore + ", OS: " + overshootScore + ", PRT: " + perceivedScore + ", IRT: " + initialScore);
+                double visualResponseRating = frameTimeScore * 0.1;
+                visualResponseRating += overshootScore * 0.1;
+                visualResponseRating += perceivedScore * 0.3;
+                visualResponseRating += initialScore * 0.5;
+                visualResponseRating = Math.Round(visualResponseRating, 1);
+                // Old style
+                //double visualResponseRating = 100 - (initialResponseTime + perceivedResponseTime);
 
                 double inputLag = Math.Round(inputLagTime, 1);
 
@@ -1237,23 +1329,8 @@ namespace OSRTT_Launcher
             }
         }
 
-        public List<processedResult> ProcessFullResults(List<List<rawResultData>> data, resultSelection res, int startDelay, List<gammaResult> processedGamma)
-        {
-            List<processedResult> processedResults = new List<processedResult>();
-            for (int i = 0; i < data[res.arrayIndex].Count; i++)
-            {
-                resultSelection resSel = new resultSelection
-                {
-                    arrayIndex = res.arrayIndex,
-                    resultIndex = i,
-                    rtStyle = res.rtStyle,
-                    osStyle = res.osStyle,
-                };
-                processedResults.Add(ProcessResponseTimeData(data, resSel, startDelay, processedGamma));
-            }
-            return processedResults;
-        }
-        public List<List<processedResult>> ProcessAllResults(List<List<rawResultData>> data, resultSelection res, int startDelay, List<gammaResult> processedGamma)
+        
+        public List<List<processedResult>> ProcessAllResults(List<List<rawResultData>> data, resultSelection res, int startDelay, List<gammaResult> processedGamma, runSettings runSetting)
         {
             List<List<processedResult>> multipleProcessedResults = new List<List<processedResult>>();
             for (int k = 0; k < data.Count; k++)
@@ -1268,7 +1345,7 @@ namespace OSRTT_Launcher
                         rtStyle = res.rtStyle,
                         osStyle = res.osStyle,
                     };
-                    processedResult procRes = ProcessResponseTimeData(data, resSel, startDelay, processedGamma);
+                    processedResult procRes = ProcessResponseTimeData(data, resSel, startDelay, processedGamma, runSetting);
                     if (procRes == null)
                     {
                         procRes = new processedResult

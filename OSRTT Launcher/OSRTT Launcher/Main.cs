@@ -24,8 +24,10 @@ namespace OSRTT_Launcher
     {
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
         private double boardVersion = 2.6;
-        private double downloadedFirmwareVersion = 2.6;
-        private string softwareVersion = "3.3";
+        private double V1DLFW = 2.6;
+        private double ProDLFW = 0.8;
+        public int boardType = 0;
+        private string softwareVersion = "3.4";
 
         // TODO //
         //
@@ -61,7 +63,6 @@ namespace OSRTT_Launcher
         private int currentEnd = 0;
         private int currentRun = 0;
 
-        public int boardType = 0;
         private int potVal = 0;
         private int basePotVal = 0;
         private double timeBetween = 0.3;
@@ -91,8 +92,10 @@ namespace OSRTT_Launcher
         {
             public string Name { get; set; }
             public int Freq { get; set; }
+            public string Resolution { get; set; }
             public string Connection { get; set; }
             public string ManufacturerCode { get; set; }
+            public string EDIDModel { get; set; }
         }
         public List<Displays> displayList = new List<Displays>();
         public class FPS
@@ -252,6 +255,46 @@ namespace OSRTT_Launcher
             numberOfClicksLabel.Text = numberOfClicks.ToString();
             numberOfClicksSlider.Value = numberOfClicks;
         }
+        private void getDownloadedFirmwareVersions()
+        {
+            string V1FWPath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
+            V1FWPath = new Uri(System.IO.Path.GetDirectoryName(V1FWPath)).LocalPath;
+            string ProFWPath = V1FWPath;
+            V1FWPath += @"\\arduinoCLI\\OSRTT_Full_Code\\OSRTT_Full_Code.ino";
+            ProFWPath += @"\\arduinoCLI\\OSRTT_Pro_Code\\file2.ino";
+            try
+            {
+                if (File.Exists(V1FWPath))
+                {
+                    foreach (var l in File.ReadAllLines(V1FWPath))
+                    {
+                        if (l.Contains("firmware"))
+                        {
+                            string[] splitLine = l.Split('"');
+                            V1DLFW = double.Parse(splitLine[1]);
+                            break;
+                        }
+                    }
+                }
+                if (File.Exists(ProFWPath))
+                {
+                    foreach (var l in File.ReadAllLines(ProFWPath))
+                    {
+                        if (l.Contains("firmware"))
+                        {
+                            string[] splitLine = l.Split('"');
+                            ProDLFW = double.Parse(splitLine[1]);
+                            break;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message + ex.StackTrace);
+            }
+
+        }
 
         public Main()
         {
@@ -284,6 +327,7 @@ namespace OSRTT_Launcher
             progressBar1.MarqueeAnimationSpeed = 0;
             initialSetup();
             checkFolderPermissions();
+            getDownloadedFirmwareVersions();
             uptime = GetUpTime();
             if (uptime.TotalMinutes < 30)
             {
@@ -416,7 +460,9 @@ namespace OSRTT_Launcher
                         name = target.DisplaySource.ToString().Remove(0, 4);
                     }
                     else { manCode = item.DisplayTarget.EDIDManufactureCode; }
-                    var data = new Displays { Name = name, Freq = refresh, Connection = con, ManufacturerCode = manCode };
+                    string res = item.DisplayTarget.PreferredResolution.Width.ToString() + "x" + item.DisplayTarget.PreferredResolution.Height.ToString();
+                    string edidCode = item.DisplayTarget.EDIDProductCode.ToString();
+                    var data = new Displays { Name = name, Freq = refresh, Resolution = res, Connection = con, ManufacturerCode = manCode, EDIDModel = edidCode };
                     displayList.Add(data);
                     monitorCB.Items.Add(name);
                 }
@@ -585,7 +631,7 @@ namespace OSRTT_Launcher
                 }
                 else if (boardUpdate)
                 {
-                    if (boardVersion < downloadedFirmwareVersion || forceUpdate)
+                    if ((boardVersion < V1DLFW && boardType == 0) || forceUpdate || (boardVersion < ProDLFW && boardType == 1))
                     {
                         string p = ""; 
                         p = port.PortName;
@@ -606,15 +652,22 @@ namespace OSRTT_Launcher
                             System.Diagnostics.Process process = new System.Diagnostics.Process();
                             process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                             process.StartInfo.FileName = "cmd.exe";
-
+                            string installCommand = "/C .\\arduinoCLI\\arduino-cli.exe lib install Keyboard && .\\arduinoCLI\\arduino-cli.exe lib install Mouse && .\\arduinoCLI\\arduino-cli.exe lib install ArduinoUniqueID";
+                            string updateCommand = "/C .\\arduinoCLI\\arduino-cli.exe compile --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code && .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code";
+                            if (boardType == 1)
+                            {
+                                installCommand = "/C .\\arduinoCLI\\arduino-cli.exe lib install Keyboard && .\\arduinoCLI\\arduino-cli.exe lib install Mouse && .\\arduinoCLI\\arduino-cli.exe lib install ArduinoUniqueID" +
+                                    "&& .\\arduinoCLI\\arduino-cli.exe lib install Adafruit_SSD1306 && .\\arduinoCLI\\arduino-cli.exe lib install Adafruit_GFX_Library";
+                                updateCommand = "/C .\\arduinoCLI\\arduino-cli.exe compile --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Pro_Code && .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Pro_Code";
+                            }
                             Console.WriteLine("ready to start");
-                            process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe lib install Keyboard && .\\arduinoCLI\\arduino-cli.exe lib install Mouse && .\\arduinoCLI\\arduino-cli.exe lib install ArduinoUniqueID";
+                            process.StartInfo.Arguments = installCommand;
                             process.StartInfo.UseShellExecute = false;
                             process.StartInfo.RedirectStandardOutput = true;
                             process.StartInfo.CreateNoWindow = true;
                             process.Start();
                             process.WaitForExit();
-                            process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe compile --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code && .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code";
+                            process.StartInfo.Arguments = updateCommand;
                             try
                             {
                                 Console.WriteLine("starting");
@@ -707,9 +760,18 @@ namespace OSRTT_Launcher
 
         private void compareFirmware()
         {
-            if (boardVersion < downloadedFirmwareVersion && !Properties.Settings.Default.SuppressDiagBox)
+            if ((boardVersion < V1DLFW && boardType == 0) && !Properties.Settings.Default.SuppressDiagBox)
             {
-                DialogResult dialogResult = MessageBox.Show("A newer version of the board's firmware is available, do you want to update now? \n Current version: " + boardVersion + "\n New version: " + downloadedFirmwareVersion, "Board Firmware Update Available!", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                DialogResult dialogResult = MessageBox.Show("A newer version of the board's firmware is available, do you want to update now? \n Current version: " + boardVersion + "\n New version: " + V1DLFW, "Board Firmware Update Available!", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    //updateFirmware();
+                    boardUpdate = true;
+                }
+            }
+            else if (!Properties.Settings.Default.SuppressDiagBox && (boardVersion < ProDLFW && boardType == 1))
+            {
+                DialogResult dialogResult = MessageBox.Show("A newer version of the board's firmware is available, do you want to update now? \n Current version: " + boardVersion + "\n New version: " + ProDLFW, "Board Firmware Update Available!", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (dialogResult == DialogResult.Yes)
                 {
                     //updateFirmware();
@@ -2100,9 +2162,9 @@ namespace OSRTT_Launcher
         }
         private void updateDeviceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (boardVersion < downloadedFirmwareVersion && !Properties.Settings.Default.SuppressDiagBox)
+            if (boardVersion < V1DLFW && !Properties.Settings.Default.SuppressDiagBox)
             {
-                DialogResult dialogResult = MessageBox.Show("A newer version of the board's firmware is available, do you want to update now? \n Current version: " + boardVersion + "\n New version: " + downloadedFirmwareVersion, "Board Firmware Update Available!", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                DialogResult dialogResult = MessageBox.Show("A newer version of the board's firmware is available, do you want to update now? \n Current version: " + boardVersion + "\n New version: " + V1DLFW, "Board Firmware Update Available!", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (dialogResult == DialogResult.Yes)
                 {
                     //updateFirmware();
@@ -2193,6 +2255,8 @@ namespace OSRTT_Launcher
                 DateAndTime = DateTime.Now.ToString(),
                 MonitorName = displayList[monitor].ManufacturerCode + " " + displayList[monitor].Name,
                 RefreshRate = displayList[monitor].Freq,
+                Resolution = displayList[monitor].Resolution,
+                EDIDProductcode = displayList[monitor].EDIDModel,
                 FPSLimit = Convert.ToInt32(getSelectedFps()),
                 Vsync = getVsyncState(),
                 rtMethod = new ProcessData.rtMethods
@@ -2929,9 +2993,14 @@ namespace OSRTT_Launcher
 
         private void testButtonToolStripMenuItemToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Popup p = new Popup();
-            p.OverdriveModeWindow(this, runSettings);
-            p.Show();
+            if (testButtonMenuItem.Checked)
+            {
+                port.Write("H1");
+            }
+            else
+            {
+                port.Write("H0");
+            }
         }
 
         private void resultsViewBtn_Click(object sender, EventArgs e)
@@ -3012,7 +3081,7 @@ namespace OSRTT_Launcher
             {
                 rtStyle = rtMethod,
                 osStyle = osMethod
-            }, startDelay, processedGamma));
+            }, startDelay, processedGamma, runSettings));
             
             foreach (var res in processedData)
             {
@@ -3172,6 +3241,8 @@ namespace OSRTT_Launcher
                 {
                     RunName = runName,
                     RefreshRate = displayList[monitor].Freq,
+                    Resolution = displayList[monitor].Resolution,
+                    EDIDProductcode = displayList[monitor].EDIDModel,
                     FPSLimit = fps,
                     DateAndTime = DateTime.Now.ToString(),
                     MonitorName = displayList[monitor].ManufacturerCode + " " + displayList[monitor].Name,
