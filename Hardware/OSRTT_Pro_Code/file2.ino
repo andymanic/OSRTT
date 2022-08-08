@@ -125,7 +125,7 @@ int checkLightLevel() // Check light level & modulate potentiometer value
 {
   Keyboard.write('f');
   delay(400);
-  int potValue = 254;
+  int potValue = 2;
   digitalPotWrite(potValue);
   delay(200);
   ADC0->SWTRIG.bit.START = 1; //Start ADC 
@@ -256,10 +256,7 @@ void runADC(int curr, int nxt, char key, String type) // Run test, press key and
 
 void digitalPotWrite(int value)
 {
-  if (value == 0)
-  {
-    value = 1;
-  }
+  
   SPI.beginTransaction(settingsA);
   digitalWrite(2,LOW);
   delay(1);
@@ -536,6 +533,26 @@ void loop() {
       Serial.println();
       UniqueIDdump(Serial);
       Serial.println("Handshake");
+    }
+    else if (input[0] == 'J')
+    {
+      
+      int count = 0;
+          while (count < 256)
+          {
+            digitalPotWrite(count);
+            Serial.print(count);
+            Serial.print(",");
+          delay(100);
+            ADC0->SWTRIG.bit.START = 1; //Start ADC 
+            while(!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
+            long value = ADC0->RESULT.reg;  
+            Serial.println(value);
+             //delay(2000);
+            count++; 
+          }
+      
+      //checkLightLevel();
     }
     else if (input[0] == 'H')
     {

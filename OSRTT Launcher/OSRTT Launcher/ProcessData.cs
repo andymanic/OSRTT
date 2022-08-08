@@ -756,7 +756,7 @@ namespace OSRTT_Launcher
                             {
                                 if (maxValue > 65500)
                                 {
-                                    overUnderRGB = 260;
+                                    overUnderRGB = 261;
                                     break;
                                 }
                                 else
@@ -1227,39 +1227,43 @@ namespace OSRTT_Launcher
                     {
                         if (StartingRGB < EndRGB)
                         {
-                            if (peakValue > (endAverage + 100) || (res.osStyle.gammaCorrected && peakValue > endAverage))
+                            /*if (peakValue > (endAverage + 100) || (res.osStyle.gammaCorrected && peakValue > endAverage))
                             {
                                 os = (peakValue - endAverage) / endAverage;
                                 os *= 100;
                                 os = Math.Round(os, 1);
-                            }
+                            }*/
+                            os = overshootPercent;
                         }
                         else
                         {
-                            if (peakValue < (endAverage - 100) || (res.osStyle.gammaCorrected && peakValue < endAverage))
+                            /*if (peakValue < (endAverage - 100) || (res.osStyle.gammaCorrected && peakValue < endAverage))
                             {
                                 os = (endAverage - peakValue) / endAverage;
                                 // os *= -1;
                                 os *= 100;
                                 os = Math.Round(os, 1);
-                            }
+                            }*/
+                            os = overshootPercent;
                         }
                     }
                     else
                     {
                         if (StartingRGB < EndRGB)
                         {
-                            if (peakValue > (endAverage + 100) || (res.osStyle.gammaCorrected && peakValue > endAverage))
+                            /*if (peakValue > (endAverage + 100) || (res.osStyle.gammaCorrected && peakValue > endAverage))
                             {
                                 double range = endAverage - startAverage;
                                 double peakRange = peakValue - endAverage;
                                 os = peakRange / range;
                                 os *= 100;
                                 os = Math.Round(os, 1);
-                            }
+                            }*/
+                            os = overshootPercent;
                         }
                         else
                         {
+                            /*
                             if (peakValue < (endAverage - 100) || (res.osStyle.gammaCorrected && peakValue < endAverage))
                             {
                                 double range = startAverage - endAverage;
@@ -1268,7 +1272,8 @@ namespace OSRTT_Launcher
                                 // os *= -1;
                                 os *= 100;
                                 os = Math.Round(os, 1);
-                            }
+                            }*/
+                            os = overshootPercent;
                         }
                     }
                     double[] completeResult = new double[] { StartingRGB, EndRGB, responseTime, initialResponseTime, perceivedResponseTime, os, visualResponseRating, inputLag };

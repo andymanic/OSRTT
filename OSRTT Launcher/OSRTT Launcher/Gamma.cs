@@ -51,8 +51,8 @@ namespace OSRTT_Launcher
         {
             if (gamma.Count != 0)
             {
-                double[] lightData = new double[gamma.Count];
-                double[] rgbData = new double[gamma.Count];
+                double[] lightData = new double[256];
+                double[] rgbData = new double[256];
                 if (!normalise)
                 {
                     for (int i = 0; i < 256; i++)
