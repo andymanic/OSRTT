@@ -10,7 +10,6 @@ using System.Windows.Forms;
 using TestConsole;
 using System;
 using System.Windows.Input;
-using WK.Libraries.HotkeyListenerNS;
 using Key = System.Windows.Input.Key;
 using System.Reflection;
 

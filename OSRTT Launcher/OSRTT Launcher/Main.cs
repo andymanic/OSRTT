@@ -28,7 +28,7 @@ namespace OSRTT_Launcher
         private double V1DLFW = 2.7;
         private double ProDLFW = 1.1;
         public int boardType = 0;
-        private string softwareVersion = "3.4";
+        private string softwareVersion = "3.5";
 
         // TODO //
         //
