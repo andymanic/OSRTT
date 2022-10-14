@@ -142,3 +142,11 @@ void oledTestRunning(int fromRGB, int toRGB) {
   display.display();
   //delay(100);
 }
+
+void rotateDisplay(int rotation)
+{
+  // 0 = Standard
+  // 1 = Right
+  // 2 = Left
+  display.setRotation(rotation);
+}

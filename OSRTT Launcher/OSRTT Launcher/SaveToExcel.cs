@@ -67,6 +67,7 @@ namespace OSRTT_Launcher
                     Excel._Worksheet resTempSheet = resultsTemplateWorkbook.Sheets[1];
                     Excel._Worksheet resTempSheet2 = resultsTemplateWorkbook.Sheets[2];
                     Excel._Worksheet resTempSheet3 = resultsTemplateWorkbook.Sheets[3];
+                    Excel._Worksheet resTempSheet4 = resultsTemplateWorkbook.Sheets[4];
                     try
                     {
                         for (int h = 0; h < headers.Length; h++)
@@ -85,6 +86,7 @@ namespace OSRTT_Launcher
                             resTempSheet.Cells[p + 2, 7] = averageData[p].visualResponseRating;
                             resTempSheet.Cells[p + 2, 8] = averageData[p].inputLag;
                         }
+
                         resultsTemplateWorkbook.Save();
                     }
                     catch (Exception ex)
@@ -98,7 +100,11 @@ namespace OSRTT_Launcher
                     try
                     {
                         resTempSheet2.Cells[4, 12] = runSettings.RefreshRate;
-                        resTempSheet3.Activate();
+                        resTempSheet3.Cells[1, 2] = runSettings.MonitorName;
+                        resTempSheet3.Cells[2, 2] = runSettings.OverdriveMode;
+                        resTempSheet3.Cells[3, 2] = runSettings.FPSLimit.ToString();
+                        resTempSheet3.Cells[4, 2] = runSettings.Vsync.ToString();
+                        resTempSheet4.Activate();
                         resultsTemplateWorkbook.Save();
                     }
                     catch (Exception ex)
@@ -112,6 +118,9 @@ namespace OSRTT_Launcher
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
                     Marshal.ReleaseComObject(resTempSheet3);
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    Marshal.ReleaseComObject(resTempSheet4);
                 }
                 resultsTemplateWorkbook.Close();
                 Marshal.ReleaseComObject(resultsTemplateWorkbook);

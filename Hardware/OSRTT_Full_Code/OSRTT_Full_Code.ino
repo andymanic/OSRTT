@@ -36,7 +36,7 @@ SPISettings settingsA(10000000, MSBFIRST, SPI_MODE0);
 
 //Serial connection values
 bool connected = false;
-String firmware = "2.6";
+String firmware = "2.7";
 int testRuns = 4;
 bool vsync = true;
 bool extendedGamma = true;
@@ -284,6 +284,9 @@ void runGammaTest()
 
 void runInputLagTest(int timeBetween)
 {
+  //Keyboard.print('1');
+  //Keyboard.print('Q');
+  delay(50);
   int sampleTime = 200000;
   if (timeBetween == 100)
   {
@@ -291,7 +294,9 @@ void runInputLagTest(int timeBetween)
   }
   curr_time = micros();
   unsigned long clickTime = micros();
-  Mouse.click(MOUSE_LEFT);
+  //Mouse.click(MOUSE_LEFT);
+  //Mouse.click(MOUSE_LEFT);
+  Keyboard.print('6');
   unsigned long start_time = micros();  
   while(curr_time <= (start_time + (sampleTime - 1)))
   {
@@ -303,6 +308,8 @@ void runInputLagTest(int timeBetween)
   }
   ADC0->SWTRIG.bit.START = 0; 
   int timeTaken = curr_time - start_time;
+  Keyboard.print('1');
+  
   Serial.print("IL:");
   Serial.print(start_time - clickTime);
   Serial.print(",");
@@ -316,7 +323,8 @@ void runInputLagTest(int timeBetween)
     Serial.print(",");
   }
   Serial.println();
-    
+  Keyboard.print('1');
+  Keyboard.print('1');
   sample_count = 0; //reset sample count
     
   curr_time = micros();
@@ -491,6 +499,7 @@ void loop() {
       
       Serial.println();
       UniqueIDdump(Serial);
+      Serial.print("BoardType:0");
       Serial.println("Handshake");
     }
     else if (input[0] == 'H')
@@ -767,7 +776,7 @@ void loop() {
           buttonState = digitalRead(buttonPin);
           if (buttonState == HIGH) //Run when button pressed
           {
-            Keyboard.print('Q');
+            Keyboard.print('1');
             delay(100);
             int sw = micros();
             for (int k = 0; k < clicks; k++)
@@ -780,6 +789,8 @@ void loop() {
               }
             }
             Serial.println("IL Finished");
+            Keyboard.press(KEY_ESC);
+            Keyboard.releaseAll();
             input[0] = 'X';
             break;
           }
@@ -792,6 +803,8 @@ void loop() {
           delay(10);
         }
         digitalPotWrite(0x80);
+        Keyboard.press(KEY_ESC);
+        Keyboard.releaseAll();
       }
     }
     else if (input[0] == 'O')

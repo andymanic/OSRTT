@@ -72,6 +72,10 @@ namespace OSRTT_Launcher
             this.transSelect1 = new System.Windows.Forms.ComboBox();
             this.graphedData = new ScottPlot.FormsPlot();
             this.importPanel = new System.Windows.Forms.Panel();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.importProcessedInputLagBtn = new System.Windows.Forms.Button();
+            this.label9 = new System.Windows.Forms.Label();
+            this.processRawInputLagBtn = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
             this.label13 = new System.Windows.Forms.Label();
             this.importGraphBtn = new System.Windows.Forms.Button();
@@ -84,11 +88,14 @@ namespace OSRTT_Launcher
             this.label5 = new System.Windows.Forms.Label();
             this.importResultsViewBtn = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.importProcILBtn = new System.Windows.Forms.Button();
             this.heatmaps1 = new OSRTT_Launcher.Heatmaps();
+            this.inputLagProcRV1 = new OSRTT_Launcher.InputLagProcRV();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.graphViewPanel.SuspendLayout();
             this.importPanel.SuspendLayout();
+            this.panel4.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -102,7 +109,7 @@ namespace OSRTT_Launcher
             this.saveHeatmapsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(2577, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(2106, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -200,7 +207,7 @@ namespace OSRTT_Launcher
             this.importViewMenuButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(2577, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(2106, 25);
             this.toolStrip1.TabIndex = 3;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -302,7 +309,7 @@ namespace OSRTT_Launcher
             this.graphViewPanel.Controls.Add(this.label1);
             this.graphViewPanel.Controls.Add(this.transSelect1);
             this.graphViewPanel.Controls.Add(this.graphedData);
-            this.graphViewPanel.Location = new System.Drawing.Point(5, 442);
+            this.graphViewPanel.Location = new System.Drawing.Point(5, 558);
             this.graphViewPanel.Name = "graphViewPanel";
             this.graphViewPanel.Size = new System.Drawing.Size(1384, 719);
             this.graphViewPanel.TabIndex = 4;
@@ -540,13 +547,66 @@ namespace OSRTT_Launcher
             // 
             // importPanel
             // 
+            this.importPanel.Controls.Add(this.panel4);
             this.importPanel.Controls.Add(this.panel3);
             this.importPanel.Controls.Add(this.panel2);
             this.importPanel.Controls.Add(this.panel1);
             this.importPanel.Location = new System.Drawing.Point(5, 52);
             this.importPanel.Name = "importPanel";
-            this.importPanel.Size = new System.Drawing.Size(1082, 290);
+            this.importPanel.Size = new System.Drawing.Size(1082, 406);
             this.importPanel.TabIndex = 5;
+            // 
+            // panel4
+            // 
+            this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel4.Controls.Add(this.importProcessedInputLagBtn);
+            this.panel4.Controls.Add(this.label9);
+            this.panel4.Controls.Add(this.processRawInputLagBtn);
+            this.panel4.Location = new System.Drawing.Point(7, 289);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(1062, 105);
+            this.panel4.TabIndex = 25;
+            // 
+            // importProcessedInputLagBtn
+            // 
+            this.importProcessedInputLagBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.importProcessedInputLagBtn.FlatAppearance.BorderSize = 0;
+            this.importProcessedInputLagBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.importProcessedInputLagBtn.Font = new System.Drawing.Font("Consolas", 18F, System.Drawing.FontStyle.Bold);
+            this.importProcessedInputLagBtn.Location = new System.Drawing.Point(713, 13);
+            this.importProcessedInputLagBtn.Name = "importProcessedInputLagBtn";
+            this.importProcessedInputLagBtn.Size = new System.Drawing.Size(309, 75);
+            this.importProcessedInputLagBtn.TabIndex = 24;
+            this.importProcessedInputLagBtn.Text = "Import Processed File to Graph";
+            this.importProcessedInputLagBtn.UseVisualStyleBackColor = false;
+            this.importProcessedInputLagBtn.Click += new System.EventHandler(this.importProcILBtn_Click_1);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.BackColor = System.Drawing.Color.Transparent;
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.ForeColor = System.Drawing.Color.Black;
+            this.label9.Location = new System.Drawing.Point(44, 14);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(221, 74);
+            this.label9.TabIndex = 23;
+            this.label9.Text = "Input Latency\r\nFunctions";
+            this.label9.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
+            // processRawInputLagBtn
+            // 
+            this.processRawInputLagBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.processRawInputLagBtn.FlatAppearance.BorderSize = 0;
+            this.processRawInputLagBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.processRawInputLagBtn.Font = new System.Drawing.Font("Consolas", 18F, System.Drawing.FontStyle.Bold);
+            this.processRawInputLagBtn.Location = new System.Drawing.Point(329, 13);
+            this.processRawInputLagBtn.Name = "processRawInputLagBtn";
+            this.processRawInputLagBtn.Size = new System.Drawing.Size(309, 75);
+            this.processRawInputLagBtn.TabIndex = 9;
+            this.processRawInputLagBtn.Text = "Import Raw Data File to Process";
+            this.processRawInputLagBtn.UseVisualStyleBackColor = false;
+            this.processRawInputLagBtn.Click += new System.EventHandler(this.processRawInputLagBtn_Click);
             // 
             // panel3
             // 
@@ -688,7 +748,7 @@ namespace OSRTT_Launcher
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(0, 348);
+            this.progressBar1.Location = new System.Drawing.Point(0, 464);
             this.progressBar1.MarqueeAnimationSpeed = 30;
             this.progressBar1.Maximum = 50;
             this.progressBar1.Name = "progressBar1";
@@ -698,6 +758,19 @@ namespace OSRTT_Launcher
             this.progressBar1.TabIndex = 34;
             this.progressBar1.Visible = false;
             // 
+            // importProcILBtn
+            // 
+            this.importProcILBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.importProcILBtn.FlatAppearance.BorderSize = 0;
+            this.importProcILBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.importProcILBtn.Font = new System.Drawing.Font("Consolas", 18F, System.Drawing.FontStyle.Bold);
+            this.importProcILBtn.Location = new System.Drawing.Point(713, 13);
+            this.importProcILBtn.Name = "importProcILBtn";
+            this.importProcILBtn.Size = new System.Drawing.Size(309, 75);
+            this.importProcILBtn.TabIndex = 24;
+            this.importProcILBtn.Text = "Import Processed File to Graph";
+            this.importProcILBtn.UseVisualStyleBackColor = false;
+            // 
             // heatmaps1
             // 
             this.heatmaps1.Location = new System.Drawing.Point(1395, 55);
@@ -705,12 +778,22 @@ namespace OSRTT_Launcher
             this.heatmaps1.Size = new System.Drawing.Size(1775, 950);
             this.heatmaps1.TabIndex = 6;
             // 
+            // inputLagProcRV1
+            // 
+            this.inputLagProcRV1.BackColor = System.Drawing.Color.Transparent;
+            this.inputLagProcRV1.inputLagResults = null;
+            this.inputLagProcRV1.Location = new System.Drawing.Point(1433, 95);
+            this.inputLagProcRV1.Name = "inputLagProcRV1";
+            this.inputLagProcRV1.Size = new System.Drawing.Size(1232, 774);
+            this.inputLagProcRV1.TabIndex = 35;
+            // 
             // ResultsView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.ClientSize = new System.Drawing.Size(2577, 1329);
+            this.ClientSize = new System.Drawing.Size(2106, 1204);
+            this.Controls.Add(this.inputLagProcRV1);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.heatmaps1);
             this.Controls.Add(this.importPanel);
@@ -730,6 +813,8 @@ namespace OSRTT_Launcher
             this.graphViewPanel.ResumeLayout(false);
             this.graphViewPanel.PerformLayout();
             this.importPanel.ResumeLayout(false);
+            this.panel4.ResumeLayout(false);
+            this.panel4.PerformLayout();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
             this.panel2.ResumeLayout(false);
@@ -797,5 +882,11 @@ namespace OSRTT_Launcher
         private System.Windows.Forms.Button viewGammaBtn;
         private System.Windows.Forms.ToolStripComboBox rtViewMenuList;
         private System.Windows.Forms.ToolStripButton denoiseToolStripBtn;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.Button importProcessedInputLagBtn;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Button processRawInputLagBtn;
+        private System.Windows.Forms.Button importProcILBtn;
+        private InputLagProcRV inputLagProcRV1;
     }
 }

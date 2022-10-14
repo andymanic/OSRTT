@@ -454,5 +454,17 @@ namespace OSRTT_Launcher.Properties {
                 this["heatmapTextColour"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int proDisplayOrient {
+            get {
+                return ((int)(this["proDisplayOrient"]));
+            }
+            set {
+                this["proDisplayOrient"] = value;
+            }
+        }
     }
 }

@@ -24,7 +24,7 @@ namespace OSRTT_Launcher
             }
         }
 
-        public string createFileName(string resultsFolderPath, string searchParams)
+        public static string createFileName(string resultsFolderPath, string searchParams)
         {
             decimal fileNumber = 001;
             // search /Results folder for existing file names, pick new name

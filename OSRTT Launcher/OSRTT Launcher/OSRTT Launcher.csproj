@@ -88,6 +88,9 @@
     <Reference Include="GlobalHotKey, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\GlobalHotKey.1.1.0\lib\GlobalHotKey.dll</HintPath>
     </Reference>
+    <Reference Include="HotkeyListener, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\HotkeyListener.1.9.0\lib\net40\HotkeyListener.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Management.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\WMI\v1.0\Microsoft.Management.Infrastructure.dll</HintPath>
@@ -95,12 +98,40 @@
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="ScottPlot, Version=4.1.41.0, Culture=neutral, PublicKeyToken=86698dc10387c39e, processorArchitecture=MSIL">
       <HintPath>..\packages\ScottPlot.4.1.41\lib\net461\ScottPlot.dll</HintPath>
     </Reference>
     <Reference Include="ScottPlot.WinForms, Version=4.1.41.0, Culture=neutral, PublicKeyToken=5df1dfa5321e734b, processorArchitecture=MSIL">
       <HintPath>..\packages\ScottPlot.WinForms.4.1.41\lib\net461\ScottPlot.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.D3DCompiler, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.D3DCompiler.4.2.0\lib\net45\SharpDX.D3DCompiler.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Desktop, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Desktop.4.2.0\lib\net45\SharpDX.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct2D1, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Direct2D1.4.2.0\lib\net45\SharpDX.Direct2D1.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Direct3D11.4.2.0\lib\net45\SharpDX.Direct3D11.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.DirectInput, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.DirectInput.4.2.0\lib\net45\SharpDX.DirectInput.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.DXGI, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.DXGI.4.2.0\lib\net45\SharpDX.DXGI.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Mathematics, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Mathematics.4.2.0\lib\net45\SharpDX.Mathematics.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.RawInput, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.RawInput.4.0.1\lib\net45\SharpDX.RawInput.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -136,6 +167,20 @@
   <ItemGroup>
     <Compile Include="CFuncs.cs" />
     <Compile Include="DataUpload.cs" />
+    <Compile Include="DirectX\DPerformanceTester.cs" />
+    <Compile Include="DirectX\Graphics\DCameraClass.cs" />
+    <Compile Include="DirectX\Graphics\DDX11Class.cs" />
+    <Compile Include="DirectX\Graphics\DGraphicsClass.cs" />
+    <Compile Include="DirectX\Graphics\DTextureClass.cs" />
+    <Compile Include="DirectX\Graphics\TextFont\DFontClass.cs" />
+    <Compile Include="DirectX\Graphics\TextFont\DFontShaderClass.cs" />
+    <Compile Include="DirectX\Graphics\TextFont\DTextClass.cs" />
+    <Compile Include="DirectX\Input\DInputClass.cs" />
+    <Compile Include="DirectX\System\DCPUClass.cs" />
+    <Compile Include="DirectX\System\DFPSClass.cs" />
+    <Compile Include="DirectX\System\DSystemClass.cs" />
+    <Compile Include="DirectX\System\DSystemConfigurationClass.cs" />
+    <Compile Include="DirectX\System\DTimerClass.cs" />
     <Compile Include="Gamma.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -147,6 +192,12 @@
     </Compile>
     <Compile Include="GammaView.Designer.cs">
       <DependentUpon>GammaView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InputLagProcRV.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InputLagProcRV.Designer.cs">
+      <DependentUpon>InputLagProcRV.cs</DependentUpon>
     </Compile>
     <Compile Include="OverdriveModes.cs">
       <SubType>UserControl</SubType>
@@ -218,6 +269,9 @@
     <EmbeddedResource Include="Heatmaps.resx">
       <DependentUpon>Heatmaps.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="InputLagProcRV.resx">
+      <DependentUpon>InputLagProcRV.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
     </EmbeddedResource>
@@ -252,6 +306,8 @@
     <EmbeddedResource Include="ResultsView.resx">
       <DependentUpon>ResultsView.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="DirectX\Font\Font.ps" />
+    <None Include="DirectX\Font\Font.vs" />
     <None Include="odmodes.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -288,6 +344,10 @@
     <None Include="Properties\osrttIcon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="DirectX\Font\font.bmp" />
+    <Content Include="DirectX\Font\font01.bmp" />
+    <Content Include="DirectX\Font\font01.txt" />
+    <Content Include="DirectX\Font\fontdata.txt" />
     <Content Include="osrttIcon.ico" />
     <None Include="Resources\arrow-rotate-right.png" />
     <None Include="Resources\check.png" />

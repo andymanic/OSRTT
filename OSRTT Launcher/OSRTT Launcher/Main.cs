@@ -17,6 +17,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
+using SharpDX.RawInput;
 
 namespace OSRTT_Launcher
 {
@@ -24,8 +25,8 @@ namespace OSRTT_Launcher
     {
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
         private double boardVersion = 2.6;
-        private double V1DLFW = 2.6;
-        private double ProDLFW = 0.8;
+        private double V1DLFW = 2.7;
+        private double ProDLFW = 1.1;
         public int boardType = 0;
         private string softwareVersion = "3.4";
 
@@ -57,11 +58,17 @@ namespace OSRTT_Launcher
         private bool triggerNextResult = false;
         private bool vsyncTrigger = false;
         private bool liveView = false;
+        private bool boardCalibration = false;
+        private bool latencyTest = false;
+        private bool inputLagRun = false;
 
         private List<int> RGBArr = new List<int>{0, 51, 102, 153, 204, 255};
+        private List<float> RGBKeys = new List<float> { 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f };
+        private List<int> GammaArr = new List<int> { 0, 17, 34, 51, 68, 85, 102, 119, 136, 153, 170, 187, 204, 221, 238, 255 };
         private int currentStart = 0;
         private int currentEnd = 0;
         private int currentRun = 0;
+        private List<float> inputLagEvents = new List<float>();
 
         private int potVal = 0;
         private int basePotVal = 0;
@@ -88,6 +95,9 @@ namespace OSRTT_Launcher
         private List<ProcessData.processedResult> averageData = new List<ProcessData.processedResult>();
         private List<ProcessData.gammaResult> processedGamma = new List<ProcessData.gammaResult>();
         private bool excelInstalled = false;
+
+        private DirectX.System.DSystem testProgram;
+
         public class Displays
         {
             public string Name { get; set; }
@@ -440,31 +450,47 @@ namespace OSRTT_Launcher
             {
                 foreach (var item in target.TargetsInfo)
                 {
-                    string con = "Other";
-                    if (item.OutputTechnology.ToString() == "DisplayPortExternal")
+                    try
                     {
-                        con = "DP";
+                        string con = "Other";
+                        if (item.OutputTechnology.ToString() == "DisplayPortExternal")
+                        {
+                            con = "DP";
+                        }
+                        else if (item.OutputTechnology.ToString() == "HDMI")
+                        {
+                            con = "HDMI";
+                        }
+                        double refreshRate = item.FrequencyInMillihertz;
+                        refreshRate /= 1000;
+                        refreshRate = Math.Round(refreshRate, 0);
+                        int refresh = (int)refreshRate;
+                        string name = item.DisplayTarget.ToString();
+                        string manCode = "";
+                        if (name == "")
+                        {
+                            name = target.DisplaySource.ToString().Remove(0, 4);
+                        }
+                        else { manCode = item.DisplayTarget.EDIDManufactureCode; }
+                        string res = "";
+                        try
+                        {
+                            res = item.DisplayTarget.PreferredResolution.Width.ToString() + "x" + item.DisplayTarget.PreferredResolution.Height.ToString();
+                        }
+                        catch { }
+                        if (res == "")
+                        {
+                            res = "Failed to Aquire";
+                        }
+                        string edidCode = item.DisplayTarget.EDIDProductCode.ToString();
+                        var data = new Displays { Name = name, Freq = refresh, Resolution = res, Connection = con, ManufacturerCode = manCode, EDIDModel = edidCode };
+                        displayList.Add(data);
+                        monitorCB.Items.Add(name);
                     }
-                    else if (item.OutputTechnology.ToString() == "HDMI")
+                    catch (Exception ex)
                     {
-                        con = "HDMI";
+                        Console.WriteLine(ex.Message + ex.StackTrace);
                     }
-                    double refreshRate = item.FrequencyInMillihertz;
-                    refreshRate /= 1000;
-                    refreshRate = Math.Round(refreshRate, 0);
-                    int refresh = (int)refreshRate;
-                    string name = item.DisplayTarget.ToString();
-                    string manCode = "";
-                    if (name == "")
-                    {
-                        name = target.DisplaySource.ToString().Remove(0, 4);
-                    }
-                    else { manCode = item.DisplayTarget.EDIDManufactureCode; }
-                    string res = item.DisplayTarget.PreferredResolution.Width.ToString() + "x" + item.DisplayTarget.PreferredResolution.Height.ToString();
-                    string edidCode = item.DisplayTarget.EDIDProductCode.ToString();
-                    var data = new Displays { Name = name, Freq = refresh, Resolution = res, Connection = con, ManufacturerCode = manCode, EDIDModel = edidCode };
-                    displayList.Add(data);
-                    monitorCB.Items.Add(name);
                 }
             }
             monitorCB.SelectedIndex = selected; // Pre-select the primary display
@@ -1080,6 +1106,10 @@ namespace OSRTT_Launcher
                         }
                         RGBArr.AddRange(intValues);
                     }
+                    else if (message.Contains("Board Calibrated"))
+                    {
+                        boardCalibration = true;
+                    }
                     else if (message.Contains("Results"))
                     {
                         // Split result string into individual results
@@ -1196,11 +1226,10 @@ namespace OSRTT_Launcher
                                 }
                             }
                         }
-                        if (boardVersion > 1.5)
-                        {
+                        
                             currentStart = intValues[0];
                             currentEnd = intValues[1];
-                        }
+                        
                     }
                     else if (message.Contains("Gamma"))
                     {
@@ -1470,13 +1499,24 @@ namespace OSRTT_Launcher
                                 }
                                 else { continue; }
                             }
+                            if (DirectX.System.DSystem.EventList.Count == 0)
+                            { Thread.Sleep(50); } // add continuous check
+                            float frameTime = 0;
+                            try
+                            {
+                                frameTime = DirectX.System.DSystem.EventList.Last();
+                            }
+                            catch
+                            { }
+                                                        
                             ProcessData.rawInputLagResult rawLag = new ProcessData.rawInputLagResult
                             {
                                 ClickTime = intValues[0],
                                 TimeTaken = intValues[1],
                                 SampleCount = intValues[2],
                                 SampleTime = (double)intValues[1] / (double)intValues[2],
-                                Samples = intValues.Skip(3).ToList()
+                                Samples = intValues.Skip(4).ToList(),
+                                FrameTime = frameTime
                             };
                             inputLagRawData.Add(rawLag);
                         }
@@ -1498,7 +1538,7 @@ namespace OSRTT_Launcher
                             {
                                 string[] folders = resultsFolderPath.Split('\\');
                                 string monitorInfo = folders.Last();
-                                string filePath = resultsFolderPath + "\\" + monitorInfo + "-INPUT-LAG-RAW.csv";
+                                string filePath = resultsFolderPath + "\\" + monitorInfo + "-INPUT-LATENCY-RAW.csv";
                                 /*
                                 decimal fileNumber = 001;
                                 // search /Results folder for existing file names, pick new name
@@ -1519,11 +1559,13 @@ namespace OSRTT_Launcher
                                 StringBuilder csvString = new StringBuilder();
                                 foreach (var res in inputLagRawData)
                                 {
-                                    csvString.AppendLine(string.Join(strSeparator, res));
+                                    csvString.AppendLine(res.ClickTime.ToString() + "," + res.FrameTime.ToString() + ","  + res.TimeTaken.ToString() + "," + res.SampleCount.ToString() + "," + string.Join(strSeparator, res.Samples));
                                 }
                                 File.WriteAllText(filePath, csvString.ToString());
                             }
-                            processInputLagData();
+                            Thread inputLagThread = new Thread(new ThreadStart(processInputLagData));
+                            inputLagThread.Start();
+                            //processInputLagData();
                         }
                     }
                     else if (message.Contains("TL"))
@@ -1579,6 +1621,7 @@ namespace OSRTT_Launcher
                             Thread.Sleep(100);
                             port.Write("S" + Properties.Settings.Default.captureTime.ToString());
                         }
+                        latencyTest = true;
                     }
                     else if (message.Contains("BoardType"))
                     {
@@ -1586,6 +1629,10 @@ namespace OSRTT_Launcher
                         try
                         {
                             boardType = Int32.Parse(newMessage);
+                            if (boardType == 1)
+                            {
+                                port.Write("R" + Properties.Settings.Default.proDisplayOrient);
+                            }
                         }
                         catch (Exception parseEx)
                         {
@@ -1739,6 +1786,7 @@ namespace OSRTT_Launcher
                 }
                 testRunning = true;
                 vsyncTrigger = false;
+                gammaTest = true;
                 // Launch UE4 game
                 // thinking about it you can probably just bundle this into one process instead of launching, then finding it again...
                 string ue4Path = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
@@ -1818,13 +1866,12 @@ namespace OSRTT_Launcher
                     
                     checkWindowThread = new Thread(new ThreadStart(this.checkFocusedWindow));
                     checkWindowThread.Start();
-                    if (boardVersion > 1.5)
-                    {
+                    
                         testRunning = true;
                         
                         runTestThread = new Thread(new ThreadStart(this.runTest));
                         runTestThread.Start();
-                    }
+                    
                     // Wait for game to close then send cancel command to board
                     p[0].WaitForExit();
                     /*if (runTestThread != null)
@@ -1994,10 +2041,12 @@ namespace OSRTT_Launcher
             {
                 Thread.Sleep(100);
             }
+            Console.WriteLine("Gamma test complete");
             while(!testRunning)
             {
                 Thread.Sleep(10);
             }
+            Console.WriteLine("test running");
             while(testRunning)
             {
                 currentRun = 0;
@@ -2718,58 +2767,13 @@ namespace OSRTT_Launcher
             try //Wrapped whole thing in try just in case
             {
                 // Then process the lines
-                ProcessData pd = new ProcessData();
-                inputLagProcessed.AddRange(pd.processInputLagData(inputLagRawData));
-                if (inputLagProcessed.Count == 0)
-                {
-                    throw new Exception("Processing Failed");
-                }
-
-                // convert to double array for each type of average
-                ProcessData.inputLagResult averageInputLag = new ProcessData.inputLagResult{ clickTimeMs = 0, inputLag = 0, totalInputLag = 0 };
-                ProcessData.inputLagResult minInputLag = new ProcessData.inputLagResult { clickTimeMs = 1000, inputLag = 1000, totalInputLag = 1000 };
-                ProcessData.inputLagResult maxInputLag = new ProcessData.inputLagResult { clickTimeMs = 0, inputLag = 0, totalInputLag = 0 };
-                for (int i = 0; i < inputLagProcessed.Count; i++)
-                {
-                    averageInputLag.clickTimeMs += inputLagProcessed[i].clickTimeMs;
-                    averageInputLag.inputLag += inputLagProcessed[i].inputLag;
-                    averageInputLag.totalInputLag += inputLagProcessed[i].totalInputLag;
-                    if (inputLagProcessed[i].clickTimeMs < minInputLag.clickTimeMs)
-                    {
-                        minInputLag.clickTimeMs = inputLagProcessed[i].clickTimeMs;
-                    }
-                    else if (inputLagProcessed[i].clickTimeMs > maxInputLag.clickTimeMs)
-                    {
-                        maxInputLag.clickTimeMs = inputLagProcessed[i].clickTimeMs;
-                    }
-                    if (inputLagProcessed[i].inputLag < minInputLag.inputLag)
-                    {
-                        minInputLag.inputLag = inputLagProcessed[i].inputLag;
-                    }
-                    else if (inputLagProcessed[i].inputLag > maxInputLag.inputLag)
-                    {
-                        maxInputLag.inputLag = inputLagProcessed[i].inputLag;
-                    }
-                    if (inputLagProcessed[i].totalInputLag < minInputLag.totalInputLag)
-                    {
-                        minInputLag.totalInputLag = inputLagProcessed[i].totalInputLag;
-                    }
-                    else if (inputLagProcessed[i].totalInputLag > maxInputLag.totalInputLag)
-                    {
-                        maxInputLag.totalInputLag = inputLagProcessed[i].totalInputLag;
-                    }
-                }
-                averageInputLag.clickTimeMs /= inputLagProcessed.Count;
-                averageInputLag.clickTimeMs = Math.Round(averageInputLag.clickTimeMs, 3);
-                averageInputLag.inputLag /= inputLagProcessed.Count;
-                averageInputLag.inputLag = Math.Round(averageInputLag.inputLag, 3);
-                averageInputLag.totalInputLag /= inputLagProcessed.Count;
-                averageInputLag.totalInputLag = Math.Round(averageInputLag.totalInputLag, 3);
+                //ProcessData pd = new ProcessData();
+                ProcessData.averagedInputLag inputLagProcessed = ProcessData.AverageInputLagResults(inputLagRawData);
 
                 // Write results to csv using new name
                 decimal fileNumber = 001;
                 // search /Results folder for existing file names, pick new name
-                string[] existingFiles = Directory.GetFiles(resultsFolderPath, "*-INPUT-LAG-OSRTT.csv");
+                string[] existingFiles = Directory.GetFiles(resultsFolderPath, "*-INPUT-LATENCY-OSRTT.csv");
                 // Search \Results folder for existing results to not overwrite existing or have save conflict errors
                 foreach (var s in existingFiles)
                 {
@@ -2785,25 +2789,26 @@ namespace OSRTT_Launcher
                 }
                 string[] folders = resultsFolderPath.Split('\\');
                 string monitorInfo = folders.Last();
-                string filePath = resultsFolderPath + "\\" + monitorInfo + "-INPUT-LAG-OSRTT.csv";
+                string filePath = resultsFolderPath + "\\" + monitorInfo + "-INPUT-LATENCY-OSRTT.csv";
                 //string filePath = resultsFolderPath + "\\" + fileNumber.ToString("000") + "-INPUT-LAG-OSRTT.csv";
 
                 string strSeparator = ",";
                 StringBuilder csvString = new StringBuilder();
-                csvString.AppendLine("Shot Number,Click Time (ms),Processing & Display Latency(ms),Total System Input Lag (ms)");
+                csvString.AppendLine("Shot Number,Click Time (ms),Processing Latency (ms),Display Latency(ms),Total System Input Lag (ms)");
                 
-                foreach (var res in inputLagProcessed)
+                foreach (var res in inputLagProcessed.inputLagResults)
                 {
                     csvString.AppendLine(
                         res.shotNumber.ToString() + "," +
                         res.clickTimeMs.ToString() + "," +
-                        res.inputLag.ToString() + "," +
+                        res.frameTimeMs.ToString() + "," +
+                        res.onDisplayLatency.ToString() + "," +
                         res.totalInputLag.ToString()
                         );
                 }
-                csvString.AppendLine("AVERAGE," + averageInputLag.clickTimeMs.ToString() + "," + averageInputLag.inputLag.ToString() + "," + averageInputLag.totalInputLag.ToString());
-                csvString.AppendLine("MINIMUM," + minInputLag.clickTimeMs.ToString() + "," + minInputLag.inputLag.ToString() + "," + minInputLag.totalInputLag.ToString());
-                csvString.AppendLine("MAXIMUM," + maxInputLag.clickTimeMs.ToString() + "," + maxInputLag.inputLag.ToString() + "," + maxInputLag.totalInputLag.ToString());
+                csvString.AppendLine("AVERAGE," + inputLagProcessed.ClickTime.AVG.ToString() + "," + inputLagProcessed.FrameTime.AVG.ToString() + "," + inputLagProcessed.onDisplayLatency.AVG.ToString() + "," + inputLagProcessed.totalInputLag.AVG.ToString());
+                csvString.AppendLine("MINIMUM," + inputLagProcessed.ClickTime.MIN.ToString() + "," + inputLagProcessed.FrameTime.MIN.ToString() + "," + inputLagProcessed.onDisplayLatency.MIN.ToString() + "," + inputLagProcessed.totalInputLag.MIN.ToString());
+                csvString.AppendLine("MAXIMUM," + inputLagProcessed.ClickTime.MAX.ToString() + "," + inputLagProcessed.FrameTime.MAX.ToString() + "," + inputLagProcessed.onDisplayLatency.MAX.ToString() + "," + inputLagProcessed.totalInputLag.MAX.ToString());
                 Console.WriteLine(filePath);
                 File.WriteAllText(filePath, csvString.ToString());
                 Process[] p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
@@ -2811,7 +2816,14 @@ namespace OSRTT_Launcher
                 {
                     p[0].Kill();
                 }
-                Process.Start("explorer.exe", resultsFolderPath);
+
+                this.Invoke((MethodInvoker)delegate ()
+                {
+                    ResultsView rv = new ResultsView();
+                    rv.inputLagMode(inputLagProcessed);
+                    rv.Show();
+                });
+                //Process.Start("explorer.exe", resultsFolderPath);
             }
             catch (Exception procEx)
             {
@@ -2853,49 +2865,58 @@ namespace OSRTT_Launcher
 
         private void inputLagButton_Click(object sender, EventArgs e)
         {
-            if (port != null)
+            if ( (boardType == 0 && boardVersion > 2.6) || (boardType == 1 && boardVersion > 1.0))
             {
-                try
+                if (port != null)
                 {
-                    makeResultsFolder();
-                    port.Write("P");
+                    try
+                    {
+                        makeResultsFolder();
+                        port.Write("P");
 
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message + ex.StackTrace);
+                    }
+                    //launchGameThread = new Thread(new ThreadStart(this.launchInputLagTest));
+                    //launchGameThread.Start();
+                    launchInputLagTest();
                 }
-                catch (Exception ex)
+            }
+            else
+            {
+                DialogResult d = MessageBox.Show("ERROR: Can't run input lag test with your current board firmware version. Would you like to update?", "Firmware Version too Low", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+                if (d == DialogResult.Yes)
                 {
-                    Console.WriteLine(ex.Message + ex.StackTrace);
+                    compareFirmware();
                 }
-                launchGameThread = new Thread(new ThreadStart(this.launchInputLagTest));
-                launchGameThread.Start();
             }
         }
 
         private void launchInputLagTest()
         {
-            string ue4Path = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
-            ue4Path = new Uri(System.IO.Path.GetDirectoryName(ue4Path)).LocalPath;
-            ue4Path += @"\OSRTT UE4\ResponseTimeTest.exe";
-            // Move UE4 window to selected monitor if that isn't the primary (will open by default there).
             int selectedDisplay = getSelectedMonitor();
-            var display = Screen.AllScreens[selectedDisplay];
-            int WinX = 0;
-            int WinY = 0;
-            if (display.Primary == false)
-            {
-                // Force UE4 window to selected display if selected is not primary
-                WinX = display.Bounds.Location.X;
-                WinY = display.Bounds.Location.Y;
-            }
-            Process ue4 = new Process();
             try
             {
                 ControlDeviceButtons(false);
-                ue4.StartInfo.FileName = ue4Path;
-                ue4.StartInfo.Arguments = ue4Path + " WinX=" + WinX + " WinY=" + WinY + " NoVSync";
-                ue4.Start();
-                // Process.Start(ue4Path);
-                ue4.WaitForExit();
+                inputLagEvents.Clear();
+                inputLagProcessed.Clear();
+                inputLagRawData.Clear();
+                if (OSRTT_Launcher.DirectX.System.DSystem.mainWindow == null)
+                    OSRTT_Launcher.DirectX.System.DSystem.mainWindow = this;
+
+                
+                OSRTT_Launcher.DirectX.System.DSystem.inputLagMode = true;
+                OSRTT_Launcher.DirectX.System.DSystem.StartRenderForm("OSRTT Test Window (DirectX 11)", 800, 600, false, true, selectedDisplay, 1);
+                inputLagRun = !inputLagRun;
                 port.Write("X");
+                OSRTT_Launcher.DirectX.System.DSystem.inputLagMode = false;
+                OSRTT_Launcher.DirectX.System.DSystem.exit = true;
+                Thread.Sleep(10);
+                OSRTT_Launcher.DirectX.System.DSystem.exit = false;
+                //OSRTT_Launcher.DirectX.System.DSystem.mainWindow = null;
+                //OSRTT_Launcher.DirectX.System.DSystem.
                 ControlDeviceButtons(true);
             }
             catch (Exception strE)
@@ -2903,7 +2924,23 @@ namespace OSRTT_Launcher
                 Console.WriteLine(strE);
                 SetText(strE.Message + strE.StackTrace);
             }
-            launchGameThread.Abort();
+            //launchGameThread.Abort();
+        }
+        private void runDirectXWindow()
+        {
+            OSRTT_Launcher.DirectX.System.DSystem.mainWindow = this;
+            OSRTT_Launcher.DirectX.System.DSystem.inputLagMode = true;
+            OSRTT_Launcher.DirectX.System.DSystem.StartRenderForm("OSRTT Test Window (DirectX 11)", 800, 600, false, true, 1, 1);
+            OSRTT_Launcher.DirectX.System.DSystem.inputLagMode = false;
+        }
+        public void getTestFPS(List<float> fpsList)
+        {
+            Console.WriteLine(fpsList.Average().ToString());
+        }
+        public void getInputLagEvents(List<float> fpsList)
+        {
+            inputLagEvents = fpsList;
+            //Console.WriteLine(fpsList.Average().ToString());
         }
 
         private void captureTimeBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -2993,14 +3030,31 @@ namespace OSRTT_Launcher
 
         private void testButtonToolStripMenuItemToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (testButtonMenuItem.Checked)
-            {
-                port.Write("H1");
-            }
-            else
-            {
-                port.Write("H0");
-            }
+            //testRawInput();
+
+            runDirectXWindow();
+        }
+        static void testRawInput()
+        {
+            Device.RegisterDevice(SharpDX.Multimedia.UsagePage.Generic, SharpDX.Multimedia.UsageId.GenericMouse, DeviceFlags.None);
+            Device.MouseInput += (sender, args) => UpdateMouseText(args);
+
+            Device.RegisterDevice(SharpDX.Multimedia.UsagePage.Generic, SharpDX.Multimedia.UsageId.GenericKeyboard, DeviceFlags.None);
+            Device.KeyboardInput += (sender, args) => UpdateKeyboardText(args);
+        }
+        public delegate void UpdateTextCallback(EventHandler<KeyboardInputEventArgs> args);
+        static void UpdateMouseText(RawInputEventArgs rawArgs)
+        {
+            var args = (MouseInputEventArgs)rawArgs;
+
+            Console.WriteLine(string.Format("(x,y):({0},{1}) Buttons: {2} State: {3} Wheel: {4}\r\n", args.X, args.Y, args.ButtonFlags, args.Mode, args.WheelDelta));
+        }
+
+        static void UpdateKeyboardText(RawInputEventArgs rawArgs)
+        {
+            var args = (KeyboardInputEventArgs)rawArgs;
+            
+            Console.WriteLine(string.Format("Key: {0} State: {1} ScanCodeFlags: {2}\r\n", args.Key, args.State, args.ScanCodeFlags));
         }
 
         private void resultsViewBtn_Click(object sender, EventArgs e)
@@ -3067,7 +3121,7 @@ namespace OSRTT_Launcher
             // save gamma data to file
             if (Properties.Settings.Default.saveGammaTable)
             {
-                string gammaName = cf.createFileName(resultsFolderPath, "-GAMMA-OSRTT.csv");
+                string gammaName = CFuncs.createFileName(resultsFolderPath, "-GAMMA-OSRTT.csv");
                 StringBuilder gammaCsv = new StringBuilder();
                 gammaCsv.AppendLine("RGB,Light Level");
                 foreach (ProcessData.gammaResult g in processedGamma)
@@ -3113,7 +3167,7 @@ namespace OSRTT_Launcher
                 {
                     osSign = "(RGB %)";
                 }
-                string fullFileName = cf.createFileName(resultsFolderPath, "-FULL-OSRTT.csv");
+                string fullFileName = CFuncs.createFileName(resultsFolderPath, "-FULL-OSRTT.csv");
                 csvString.AppendLine("Starting RGB,End RGB,Complete Response Time (ms)," + rtType + "," + perType + "," + osType + " " + osSign + ",Visual Response Rating,Input Lag (ms)");
                 bool failed = false;
                 foreach (ProcessData.processedResult i in res)

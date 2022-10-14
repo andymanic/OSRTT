@@ -46,10 +46,17 @@ namespace OSRTT_Launcher
 
         private void SavingLabel()
         {
-            this.saveLabel.Invoke((MethodInvoker)(() => this.saveLabel.Visible = true));
-            Thread.Sleep(2500);
-            this.saveLabel.Invoke((MethodInvoker)(() => this.saveLabel.Visible = false));
-            saveThread.Abort(); // I probably don't need to do this. Remind me to look up the documentation on this...
+            try
+            {
+                this.saveLabel.Invoke((MethodInvoker)(() => this.saveLabel.Visible = true));
+                Thread.Sleep(2500);
+                this.saveLabel.Invoke((MethodInvoker)(() => this.saveLabel.Visible = false));
+                saveThread.Abort(); // I probably don't need to do this. Remind me to look up the documentation on this...
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message + ex.StackTrace);
+            }
         }
         
         private void initSettingsPreset()
@@ -322,6 +329,7 @@ namespace OSRTT_Launcher
                 denoiseSelect.SelectedIndex = 1;
             }
         }
+        
         private void settingsPresetSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
             var ctrl = sender as ComboBox;
@@ -997,6 +1005,8 @@ namespace OSRTT_Launcher
                 Properties.Settings.Default.Save();
             }
         }
+
+       
     }
 
     public class RoundButton : Button
