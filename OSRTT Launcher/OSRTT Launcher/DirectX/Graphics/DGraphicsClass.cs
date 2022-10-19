@@ -68,16 +68,17 @@ namespace OSRTT_Launcher.DirectX.Graphics
             D3D?.ShutDown();
             D3D = null;
         }
-        public bool Frame(int fps, int cpu)
+        public bool Frame(int fps = 0, int cpu = 0)
         {
+            
             // Set the frames per second.
-            if (!Text.SetFps(fps, D3D.DeviceContext))
+            if (!Text.SetFps(D3D.DeviceContext, fps))
                 return false;
-
+            
             // Set the cpu usage.
-            if (!Text.SetCpu(cpu, D3D.DeviceContext))
+            if (!Text.SetCpu(D3D.DeviceContext, cpu))
                 return false;
-
+            
             // Set the position of the camera.
             Camera.SetPosition(0, 0, -10f);
 

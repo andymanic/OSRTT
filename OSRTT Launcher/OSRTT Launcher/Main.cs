@@ -28,7 +28,7 @@ namespace OSRTT_Launcher
         private double V1DLFW = 2.7;
         private double ProDLFW = 1.1;
         public int boardType = 0;
-        private string softwareVersion = "3.5";
+        private string softwareVersion = "3.6";
 
         // TODO //
         //
@@ -1639,6 +1639,53 @@ namespace OSRTT_Launcher
                             Console.WriteLine(parseEx.Message + parseEx.StackTrace);
                         }
                     }
+                    else if (message.Contains("PROADC"))
+                    {
+                        string newMessage = message.Remove(0, 7);
+                        string[] stringLine = newMessage.Split(',');
+                        int[] intValues = new int[stringLine.Length - 1];
+                        for (int i = 0; i < stringLine.Length - 1; i++)
+                        {
+                            string[] values = stringLine[i].Split(':');
+                            if (values[1] == "0")
+                            {
+                                intValues[i] = 0;
+                            }
+                            else if (values[1] != "")
+                            {
+                                try
+                                {
+                                    intValues[i] = int.Parse(values[1]);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine(values[1]);
+                                }
+                            }
+                            else { continue; }
+                        }
+                        for (int k = 0; k < intValues.Length; k++)
+                        {
+                            if ((k != 0 && k < 129) && (intValues[k] > intValues[k - 1] && intValues[k] != 65520))
+                            {
+                                Console.WriteLine("FAILED");
+                            }
+                            else if ((k > 129 && k < 160) && (intValues[k] > intValues[k - 1] && intValues[k] != 65520))
+                            {
+                                Console.WriteLine("FAILED");
+                            }
+                            else if ((k > 161 && k < 224) && (intValues[k] > intValues[k - 1] && intValues[k] != 65520))
+                            {
+                                Console.WriteLine("FAILED");
+                            }
+                            else if ((k > 225 && k < 256) && (intValues[k] > intValues[k - 1] && intValues[k] != 65520))
+                            {
+                                Console.WriteLine("FAILED");
+                            }
+                            
+                        }
+                        Console.WriteLine("Test finished");
+                    }
                     else
                     {
                         this.SetText(message);
@@ -2912,9 +2959,9 @@ namespace OSRTT_Launcher
                 inputLagRun = !inputLagRun;
                 port.Write("X");
                 OSRTT_Launcher.DirectX.System.DSystem.inputLagMode = false;
-                OSRTT_Launcher.DirectX.System.DSystem.exit = true;
+                //OSRTT_Launcher.DirectX.System.DSystem.exit = true;
                 Thread.Sleep(10);
-                OSRTT_Launcher.DirectX.System.DSystem.exit = false;
+                //OSRTT_Launcher.DirectX.System.DSystem.exit = false;
                 //OSRTT_Launcher.DirectX.System.DSystem.mainWindow = null;
                 //OSRTT_Launcher.DirectX.System.DSystem.
                 ControlDeviceButtons(true);
@@ -3031,8 +3078,8 @@ namespace OSRTT_Launcher
         private void testButtonToolStripMenuItemToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //testRawInput();
-
-            runDirectXWindow();
+            port.Write("J");
+            //runDirectXWindow();
         }
         static void testRawInput()
         {

@@ -38,11 +38,11 @@ namespace OSRTT_Launcher.DirectX.Graphics.TextFont
             // Load in the text file containing the font data.
             if (!LoadFontData(fontFileName))
                 return false;
-
+         
             // Load the texture that has font characters on it.
             if (!LoadTexture(device, textureFileName))
                 return false;
-
+         
             return true;
         }
         public void Shutdown()
@@ -69,8 +69,9 @@ namespace OSRTT_Launcher.DirectX.Graphics.TextFont
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.Message + ex.StackTrace);
                 return false;
             }
         }

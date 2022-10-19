@@ -1885,16 +1885,23 @@ namespace OSRTT_Launcher
 
         private void processRawInputLagBtn_Click(object sender, EventArgs e)
         {
-            var rawData = importRawInputLagData();
-            if (rawData.Count != 0)
+            try
             {
-                var data = ProcessData.AverageInputLagResults(rawData);
-                inputLagMode(data);
+                var rawData = importRawInputLagData();
+                if (rawData.Count != 0)
+                {
+                    var data = ProcessData.AverageInputLagResults(rawData);
+                    inputLagMode(data);
+                }
+                else
+                {
+                    MessageBox.Show("Failed to import data", "Import Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }    
             }
-            else
+            catch
             {
-                MessageBox.Show("Failed to import data", "Import Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }    
+
+            }
         }
 
         private void importProcILBtn_Click_1(object sender, EventArgs e)
@@ -2152,7 +2159,7 @@ namespace OSRTT_Launcher
                     else
                     {
                         MessageBox.Show("Sorry, only 'RAW' files can be imported. Please select a 'LATENCY-OSRTT.csv' file instead.", "Importer Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        throw new Exception("Importer Error");
+                        //throw new Exception("Importer Error");
                     }
                 }
             }

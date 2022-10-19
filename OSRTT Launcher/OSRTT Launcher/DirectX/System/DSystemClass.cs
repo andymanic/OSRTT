@@ -42,7 +42,7 @@ namespace OSRTT_Launcher.DirectX.System
 
         public static bool exit { get; set; }
 
-
+        private static int failedFrames { get; set; }
         private static bool directInput = false;
 
         // Statuc Properties
@@ -65,7 +65,7 @@ namespace OSRTT_Launcher.DirectX.System
                 KeyboardEvent = new KeyboardInputEventArgs();
                 MouseEvent = new MouseInputEventArgs();
             }
-            
+            failedFrames = 0;
             
             system.RunRenderForm(fpsLimit);
             system = null;
@@ -160,6 +160,7 @@ namespace OSRTT_Launcher.DirectX.System
             // Calc fps limit based on ticks per ms 
             float frameTickLimit = (float)fpsLimit * ticksPerMs;
             frameTickLimit -= 2; // += ?
+            Console.WriteLine("Starting render form");
             RenderLoop.Run(RenderForm, () =>
             {
                 sw.Restart();
@@ -182,18 +183,19 @@ namespace OSRTT_Launcher.DirectX.System
         public bool Frame()
         {
             // Check if the user pressed escape and wants to exit the application.
-            if (directInput)
-                if (!Input.Frame() || Input.IsEscapePressed())
-                    return false;
+            
+            //Console.WriteLine("1");
             if (exit)
                 return false;
-
+            //Console.WriteLine("2");
             // Update the system stats.
             CPU.Frame();
+            //Console.WriteLine("3");
             FPS.Frame();
-
+            //Console.WriteLine("4");
             // Performance Logging.
             Timer.Frame2();
+            //Console.WriteLine("5");
             /*if (true)
             {
                 //DPerfLogger.Frame(Timer.FrameTime);
@@ -205,8 +207,14 @@ namespace OSRTT_Launcher.DirectX.System
 
             // Do the frame processing for the graphics object.
             if (!Graphics.Frame(FPS.Value, CPU.Value))
-                return false;
-
+            {
+                //failedFrames++;
+                //if (failedFrames > 10)
+                //{
+                    return false;
+                //}
+            }
+            //Console.WriteLine("6");
             if (!directInput) //!directInput
             {
                 if (KeyboardEvent != null)
@@ -284,103 +292,9 @@ namespace OSRTT_Launcher.DirectX.System
                     }
                 }
             }
+            //Console.WriteLine("7");
 
-            if (false) // directInput
-            {
-                if (Input.PressedKeys != null)
-                {
-                    foreach (Key k in Input._KeyboardState.PressedKeys)
-                    {
-                        Console.WriteLine(k.ToString());
-                        switch (k)
-                        {
-                            case Key.D1:  // RGB 0
-                                RGB = 0f;
-                                break;
-                            case Key.D2:  // RGB 51
-                                RGB = 0.2f;
-                                break;
-                            case Key.D3:  // RGB 102
-                                RGB = 0.4f;
-                                break;
-                            case Key.D4:  // RGB 153
-                                RGB = 0.6f;
-                                break;
-                            case Key.D5:  // RGB 204
-                                RGB = 0.8f;
-                                break;
-                            case Key.D6:  // RGB 255
-                                RGB = 1f;
-                                if (inputLagMode)
-                                    EventList.Add(Timer.FrameTime); // I think this needs to be done on the next frame for perfect accuracy but I'll see.
-                                break;
-                            case Key.D7:  // RGB 17
-                                RGB = 17f / 255f;
-                                break;
-                            case Key.D8:  // RGB 34
-                                RGB = 34f / 255f;
-                                break;
-                            case Key.D9:  // RGB 68
-                                RGB = 68f / 255f;
-                                break;
-                            case Key.D0:  // RGB 85 
-                                RGB = 85f / 255f;
-                                break;
-                            case Key.Q:  // RGB 119
-                                RGB = 119f / 255f;
-                                break;
-                            case Key.W:  // RGB 136
-                                RGB = 136f / 255f;
-                                break;
-                            case Key.E:  // RGB 170
-                                RGB = 170f / 255f;
-                                break;
-                            case Key.A:  // RGB 187
-                                RGB = 187f / 255f;
-                                break;
-                            case Key.S:  // RGB 221
-                                RGB = 221f / 255f;
-                                break;
-                            case Key.D:  // RGB 238
-                                RGB = 238f / 255f;
-                                break;
-                        }
-                    }
-                }
-                if (Input._MouseState != null)
-                {
-                    if (Input._MouseState.Buttons[1])
-                    {  //RMB
-                        RGB = 0f;
-                    }
-                    if (Input._MouseState.Buttons[0])
-                    { //LMB
-                        RGB = 1f;
-                        if (inputLagMode)
-                        {
-                            EventList.Add(Timer.FrameTime);
-                            ILFrameCounter += 1;
-                        }
-                    }
-                }
-            }
-            /*if (inputLagMode && ILFrameCounter != 0)
-            {
-                if (ILFrameCounter < 30)
-                {
-                    ILFrameCounter += 1;
-                }
-                else
-                {
-                    RGB = 0f;
-                    ILFrameCounter = 0;
-                }
-            }*/
-            /*if (eventTimer.IsRunning && eventTimer.ElapsedMilliseconds >= 100)
-            {
-                eventTimer.Restart();
-                RGB = 0f;
-            }*/
+
             // Finally render the graphics to the screen.
             if (!Graphics.Render(RGB))
                 return false;
@@ -389,6 +303,7 @@ namespace OSRTT_Launcher.DirectX.System
         }
         public void ShutDown()
         {
+            Console.WriteLine("Shutting Down");
             SharpDX.RawInput.Device.RegisterDevice(SharpDX.Multimedia.UsagePage.Generic, SharpDX.Multimedia.UsageId.GenericKeyboard, SharpDX.RawInput.DeviceFlags.Remove);
             SharpDX.RawInput.Device.RegisterDevice(SharpDX.Multimedia.UsagePage.Generic, SharpDX.Multimedia.UsageId.GenericMouse, SharpDX.RawInput.DeviceFlags.Remove);
             ShutdownWindows();

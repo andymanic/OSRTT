@@ -135,22 +135,29 @@ void loop() {
   }
   else if (input[0] == 'J')
   {
-
     int count = 0;
     while (count < 256)
     {
       digitalPotWrite(count);
-      Serial.print(count);
-      Serial.print(",");
+      //Serial.print(count);
+      //Serial.print(",");
       delay(100);
       ADC0->SWTRIG.bit.START = 1; //Start ADC
       while (!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
-      long value = ADC0->RESULT.reg;
-      Serial.println(value);
+      adcBuff[count] = ADC0->RESULT.reg;
+      //Serial.println(value);
       //delay(2000);
       count++;
     }
-
+    Serial.print("PROADC:");
+    for (int i = 0; i < 256; i++)
+    {
+      Serial.print(i);
+      Serial.print(":");
+      Serial.print(adcBuff[i]);
+      Serial.print(",");
+    }
+    Serial.println();
     //checkLightLevel();
   }
   else if (input[0] == 'H')

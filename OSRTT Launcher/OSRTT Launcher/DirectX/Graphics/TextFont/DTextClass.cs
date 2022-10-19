@@ -106,7 +106,7 @@ namespace OSRTT_Launcher.DirectX.Graphics.TextFont
 
             return true;
         }
-        public bool SetFps(int fps, DeviceContext deviceContext)
+        public bool SetFps(DeviceContext deviceContext, int fps = 0)
         {
             // Truncate the FPS to below 10,000
             if (fps > 9999)
@@ -146,7 +146,7 @@ namespace OSRTT_Launcher.DirectX.Graphics.TextFont
 
             return true;
         }
-        public bool SetCpu(int cpu, DeviceContext deviceContext)
+        public bool SetCpu(DeviceContext deviceContext, int cpu = 0)
         {
             // Format string for this sentance to report CPU Usage percetange
             string formattedCpuUsage = string.Format("CPU: {0}%", cpu);
@@ -210,27 +210,27 @@ namespace OSRTT_Launcher.DirectX.Graphics.TextFont
 
             // Store the Text to update the given sentence.
             sentence.sentenceText = text;
-
+            
             // Store the color of the sentence.
             sentence.red = red;
             sentence.green = green;
             sentence.blue = blue;
-
+            
             // Get the number of the letter in the sentence.
             var numLetters = text.Length;
-
+            
             // Check for possible buffer overflow.
             if (numLetters > sentence.MaxLength)
                 return false;
-
+            
             // Calculate the X and Y pixel position on screen to start drawing to.
             var drawX = -(ScreenWidth >> 1) + positionX;
             var drawY = (ScreenHeight >> 1) - positionY;
-
+            
             // Use the font class to build the vertex array from the sentence text and sentence draw location.
             List<DTextClass.DVertex> vertices;
             Font.BuildVertexArray(out vertices, text, drawX, drawY);
-
+            
             DataStream mappedResource;
 
             #region Vertex Buffer 
@@ -243,7 +243,7 @@ namespace OSRTT_Launcher.DirectX.Graphics.TextFont
             // Unlock the vertex buffer.
             deviceContext.UnmapSubresource(sentence.VertexBuffer, 0);
             #endregion
-
+            
             vertices?.Clear();
             vertices = null;
 
