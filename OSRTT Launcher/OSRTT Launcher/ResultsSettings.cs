@@ -329,7 +329,21 @@ namespace OSRTT_Launcher
                 denoiseSelect.SelectedIndex = 1;
             }
         }
-        
+        private void initDateSelect()
+        {
+            showDataBox.Items.Clear();
+            showDataBox.Items.Add("Disabled");
+            showDataBox.Items.Add("Enabled");
+            if (!Properties.Settings.Default.showDate)
+            {
+                showDataBox.SelectedIndex = 0;
+            }
+            else
+            {
+                showDataBox.SelectedIndex = 1;
+            }
+        }
+
         private void settingsPresetSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
             var ctrl = sender as ComboBox;
@@ -1006,7 +1020,27 @@ namespace OSRTT_Launcher
             }
         }
 
-       
+        private void showDataBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var ctrl = sender as ComboBox;
+            if (ctrl.Focused)
+            {
+                if (saveThread == null || !saveThread.IsAlive)
+                {
+                    saveThread = new Thread(new ThreadStart(this.SavingLabel));
+                    saveThread.Start();
+                }
+                if (ctrl.SelectedIndex == 0)
+                {
+                    Properties.Settings.Default.showDate = false;
+                }
+                else
+                {
+                    Properties.Settings.Default.showDate = true;
+                }
+                Properties.Settings.Default.Save();
+            }
+        }
     }
 
     public class RoundButton : Button

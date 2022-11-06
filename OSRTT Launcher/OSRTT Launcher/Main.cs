@@ -1530,7 +1530,8 @@ namespace OSRTT_Launcher
                         else if (message.Contains("Clicks"))
                         {
                             // Send number of clicks to run
-                            port.Write(numberOfClicks.ToString());
+                            int clicks = numberOfClicks / 10;
+                            port.Write(clicks.ToString());
                         }
                         else if (message.Contains("Finished"))
                         {
@@ -1684,6 +1685,22 @@ namespace OSRTT_Launcher
                             }
                             
                         }
+                        // search /Results folder for existing file names, pick new name
+                        string[] existingUSBFile = Directory.GetFiles(path, "PRO-DATA.csv");
+                        // Search \Results folder for existing results to not overwrite existing or have save conflict errors
+                        foreach (var s in existingUSBFile)
+                        {
+                            // Delete existing file if present
+                            File.Delete(s);
+                            Console.WriteLine(s);
+                        }
+                        string USBOutputPath = path + "\\PRO-DATA.csv";
+                        StringBuilder USBOutputString = new StringBuilder();
+                        foreach (var i in intValues)
+                        {
+                            USBOutputString.AppendLine(i.ToString());
+                        }
+                        File.WriteAllText(USBOutputPath, USBOutputString.ToString());
                         Console.WriteLine("Test finished");
                     }
                     else

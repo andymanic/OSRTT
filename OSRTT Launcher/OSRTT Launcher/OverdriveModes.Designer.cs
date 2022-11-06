@@ -35,6 +35,8 @@ namespace OSRTT_Launcher
             this.label2 = new System.Windows.Forms.Label();
             this.odModeBox = new System.Windows.Forms.TextBox();
             this.continueBtn = new System.Windows.Forms.Button();
+            this.extraInfoBox = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label6
@@ -96,7 +98,7 @@ namespace OSRTT_Launcher
             this.continueBtn.FlatAppearance.BorderSize = 0;
             this.continueBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.continueBtn.Font = new System.Drawing.Font("Calibri", 24F, System.Drawing.FontStyle.Bold);
-            this.continueBtn.Location = new System.Drawing.Point(20, 183);
+            this.continueBtn.Location = new System.Drawing.Point(20, 231);
             this.continueBtn.Name = "continueBtn";
             this.continueBtn.Size = new System.Drawing.Size(471, 48);
             this.continueBtn.TabIndex = 30;
@@ -104,11 +106,32 @@ namespace OSRTT_Launcher
             this.continueBtn.UseVisualStyleBackColor = false;
             this.continueBtn.Click += new System.EventHandler(this.continueBtn_Click);
             // 
+            // extraInfoBox
+            // 
+            this.extraInfoBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.extraInfoBox.Location = new System.Drawing.Point(142, 185);
+            this.extraInfoBox.Name = "extraInfoBox";
+            this.extraInfoBox.Size = new System.Drawing.Size(349, 31);
+            this.extraInfoBox.TabIndex = 32;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Arial", 18F);
+            this.label3.ForeColor = System.Drawing.Color.White;
+            this.label3.Location = new System.Drawing.Point(15, 188);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(121, 27);
+            this.label3.TabIndex = 31;
+            this.label3.Text = "Extra Info:";
+            // 
             // OverdriveModes
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.Controls.Add(this.extraInfoBox);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.continueBtn);
             this.Controls.Add(this.odModeBox);
             this.Controls.Add(this.label2);
@@ -116,7 +139,7 @@ namespace OSRTT_Launcher
             this.Controls.Add(this.label6);
             this.Controls.Add(this.manufacturerSelect);
             this.Name = "OverdriveModes";
-            this.Size = new System.Drawing.Size(511, 258);
+            this.Size = new System.Drawing.Size(511, 295);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -130,5 +153,7 @@ namespace OSRTT_Launcher
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox odModeBox;
         private System.Windows.Forms.Button continueBtn;
+        private System.Windows.Forms.TextBox extraInfoBox;
+        private System.Windows.Forms.Label label3;
     }
 }

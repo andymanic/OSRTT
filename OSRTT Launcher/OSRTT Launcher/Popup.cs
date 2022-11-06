@@ -27,7 +27,7 @@ namespace OSRTT_Launcher
             {
                 mainWindow = mainWindow,
                 Location = new Point(0, 0),
-                Size = new Size(511, 258),
+                Size = new Size(511, 295),
                 Name = "OverdriveModes",
                 runSetting = rs,
             };

@@ -93,6 +93,7 @@ namespace OSRTT_Launcher
             public int Mode { get; set; }
             public rtMethods rtMethod { get; set; }
             public osMethods osMethod { get; set; }
+            public string ExtraInfo { get; set; }
         }
 
         public class normalisedGamma

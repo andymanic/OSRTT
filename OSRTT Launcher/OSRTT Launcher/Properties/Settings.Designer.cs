@@ -466,5 +466,17 @@ namespace OSRTT_Launcher.Properties {
                 this["proDisplayOrient"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool showDate {
+            get {
+                return ((bool)(this["showDate"]));
+            }
+            set {
+                this["showDate"] = value;
+            }
+        }
     }
 }

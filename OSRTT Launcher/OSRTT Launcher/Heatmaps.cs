@@ -358,8 +358,14 @@ namespace OSRTT_Launcher
                 List<string[]> data = new List<string[]>();
                 if (runSettings.OverdriveMode == null)
                 {
+                    int numberOfRows = 3;
                     runSettingsView.Size = new Size(450, 105);
-                    for (int i = 0; i < 3; i++)
+                    if (Properties.Settings.Default.showDate)
+                    {
+                        runSettingsView.Height += 35;
+                        numberOfRows++;
+                    }
+                    for (int i = 0; i < numberOfRows; i++)
                     {
                         // Fill list with sized empty string arrays to address later
                         string[] line = new string[2];
@@ -380,11 +386,22 @@ namespace OSRTT_Launcher
                     data[1][1] = runSettings.FPSLimit.ToString();
                     data[2][0] = "V-Sync";
                     data[2][1] = runSettings.Vsync.ToString();
+                    if (Properties.Settings.Default.showDate)
+                    {
+                        data[3][0] = "Date";
+                        data[3][1] = runSettings.DateAndTime.ToString();
+                    }
                 }
                 else
                 {
+                    int numberOfRows = 3;
                     runSettingsView.Size = new Size(450, 140);
-                    for (int i = 0; i < 4; i++)
+                    if (Properties.Settings.Default.showDate)
+                    {
+                        runSettingsView.Height += 35;
+                        numberOfRows++;
+                    }
+                    for (int i = 0; i < numberOfRows; i++)
                     {
                         // Fill list with sized empty string arrays to address later
                         string[] line = new string[2];
@@ -407,11 +424,42 @@ namespace OSRTT_Launcher
                     data[2][1] = runSettings.FPSLimit.ToString();
                     data[3][0] = "V-Sync";
                     data[3][1] = runSettings.Vsync.ToString();
+                    if (Properties.Settings.Default.showDate)
+                    {
+                        data[4][0] = "Date";
+                        data[4][1] = runSettings.DateAndTime.ToString();
+                    }
                 }
-                
+
                 foreach (var item in data)
                 {
                     dgv.Rows.Add(item);
+                }
+            }
+            else if (dgv.Name.Contains("notes"))
+            {
+                List<string[]> data = new List<string[]>();
+                if (runSettings.ExtraInfo != null)
+                {
+
+                    for (int i = 0; i < 1; i++)
+                    {
+                        // Fill list with sized empty string arrays to address later
+                        string[] line = new string[2];
+                        data.Add(line);
+                    }
+
+                    data[0][0] = "Notes";
+                    data[0][1] = runSettings.ExtraInfo;
+                    foreach (var item in data)
+                    {
+                        dgv.Rows.Add(item);
+                    }
+                    dgv.Visible = true;
+                }
+                else
+                {
+                    dgv.Visible = false;
                 }
             }
             else
@@ -454,7 +502,7 @@ namespace OSRTT_Launcher
                     {
                         worstRT = rtTimes[indexToUse];
                     }
-                    
+
                 }
                 averageInitialRT = averageInitialRT / averageData.Count;
                 averageInitialRT = Math.Round(averageInitialRT, 2);
@@ -808,6 +856,10 @@ namespace OSRTT_Launcher
                     {
                         dgv.Columns[k].Width = 200;
                     }
+                    else if (dgv.Name.Contains("notes"))
+                    {
+                        dgv.Columns[k].Width = 150;
+                    }
                     else
                     {
                         dgv.Columns[k].Width = 325;
@@ -819,6 +871,10 @@ namespace OSRTT_Launcher
                     if (dgv.Name.Contains("Settings"))
                     {
                         dgv.Columns[k].Width = 250;
+                    }
+                    else if (dgv.Name.Contains("notes"))
+                    {
+                        dgv.Columns[k].Width = 300;
                     }
                     else
                     {

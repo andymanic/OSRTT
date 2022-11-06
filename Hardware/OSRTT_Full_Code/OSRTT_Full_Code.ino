@@ -714,11 +714,11 @@ void loop() {
           int secondDigit = input[1] - '0';
           if (firstDigit == 0)
           {
-            clicks = secondDigit;
+            clicks = (secondDigit * 10);
           }
           else
           {
-            clicks = ((firstDigit * 10) + secondDigit);
+            clicks = ((firstDigit * 100) + (secondDigit*10));
           }
           break;
         }

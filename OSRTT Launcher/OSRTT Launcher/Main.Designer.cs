@@ -156,7 +156,7 @@
             this.deviceToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(5, 5);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(2094, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1914, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -864,14 +864,14 @@
             this.numberOfClicksSlider.Cursor = System.Windows.Forms.Cursors.SizeWE;
             this.numberOfClicksSlider.LargeChange = 1;
             this.numberOfClicksSlider.Location = new System.Drawing.Point(17, 147);
-            this.numberOfClicksSlider.Maximum = 50;
-            this.numberOfClicksSlider.Minimum = 1;
+            this.numberOfClicksSlider.Maximum = 500;
+            this.numberOfClicksSlider.Minimum = 10;
             this.numberOfClicksSlider.Name = "numberOfClicksSlider";
             this.numberOfClicksSlider.Size = new System.Drawing.Size(310, 45);
             this.numberOfClicksSlider.TabIndex = 16;
-            this.numberOfClicksSlider.TickFrequency = 5;
+            this.numberOfClicksSlider.TickFrequency = 10;
             this.numberOfClicksSlider.TickStyle = System.Windows.Forms.TickStyle.Both;
-            this.numberOfClicksSlider.Value = 1;
+            this.numberOfClicksSlider.Value = 10;
             this.numberOfClicksSlider.Scroll += new System.EventHandler(this.numberOfClicksSlider_Scroll);
             // 
             // label16
@@ -1015,7 +1015,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.ClientSize = new System.Drawing.Size(2104, 1024);
+            this.ClientSize = new System.Drawing.Size(1924, 1024);
             this.Controls.Add(this.overdriveModes1);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.mainPanel);

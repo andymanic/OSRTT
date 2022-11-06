@@ -127,6 +127,10 @@ namespace OSRTT_Launcher
         {
             if (mainWindow != null)
             {
+                if (extraInfoBox.Text != null && extraInfoBox.Text != "")
+                {
+                    runSetting.ExtraInfo = extraInfoBox.Text;
+                }
                 if (odModeBox.Text != null && odModeBox.Text != "")
                 {
                     runSetting.OverdriveMode = odModeBox.Text;
