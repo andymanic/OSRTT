@@ -201,7 +201,7 @@ namespace OSRTT_Launcher
             // Best / worst
 
             // 0 - 255 - 0 - again roll through main loop. 
-            Console.WriteLine(type);
+            Console.WriteLine(dgv.Name);
             // Basically just loop through the list, add value to any relevant sums then divide/round at the end.
             if (type == "overshoot")
             {
@@ -359,7 +359,7 @@ namespace OSRTT_Launcher
                 if (runSettings.OverdriveMode == null)
                 {
                     int numberOfRows = 3;
-                    runSettingsView.Size = new Size(450, 105);
+                    runSettingsView.Size = new Size(525, 105);
                     if (Properties.Settings.Default.showDate)
                     {
                         runSettingsView.Height += 35;
@@ -394,8 +394,8 @@ namespace OSRTT_Launcher
                 }
                 else
                 {
-                    int numberOfRows = 3;
-                    runSettingsView.Size = new Size(450, 140);
+                    int numberOfRows = 4;
+                    runSettingsView.Size = new Size(525, 140);
                     if (Properties.Settings.Default.showDate)
                     {
                         runSettingsView.Height += 35;
@@ -455,6 +455,7 @@ namespace OSRTT_Launcher
                     {
                         dgv.Rows.Add(item);
                     }
+                    dgv.Rows[0].Height = 115;
                     dgv.Visible = true;
                 }
                 else
@@ -668,7 +669,7 @@ namespace OSRTT_Launcher
                 {
                     cellColour = Color.Gray;
                 }
-                else if (dgv.Name.Contains("Settings"))
+                else if (dgv.Name.Contains("Settings") || dgv.Name.Contains("notes"))
                 {
                     cellColour = Color.Gray;
                     e.CellStyle.ForeColor = Color.White;
@@ -858,7 +859,7 @@ namespace OSRTT_Launcher
                     }
                     else if (dgv.Name.Contains("notes"))
                     {
-                        dgv.Columns[k].Width = 150;
+                        dgv.Columns[k].Width = 90;
                     }
                     else
                     {
@@ -868,13 +869,17 @@ namespace OSRTT_Launcher
                 }
                 else
                 {
-                    if (dgv.Name.Contains("Settings"))
+                    if (dgv.Name.Contains("runSettings"))
+                    {
+                        dgv.Columns[k].Width = 325;
+                    }
+                    else if (dgv.Name.Contains("Settings"))
                     {
                         dgv.Columns[k].Width = 250;
                     }
                     else if (dgv.Name.Contains("notes"))
                     {
-                        dgv.Columns[k].Width = 300;
+                        dgv.Columns[k].Width = 360;
                     }
                     else
                     {
@@ -966,6 +971,7 @@ namespace OSRTT_Launcher
                 initStatsGridViewColumns(osStatsGridView);
                 initStatsGridViewColumns(vrrStatsGridView);
                 initStatsGridViewColumns(runSettingsView);
+                initStatsGridViewColumns(notesGridView);
             }
             catch (Exception e)
             {
@@ -978,6 +984,7 @@ namespace OSRTT_Launcher
                 drawStatsTable(osStatsGridView, "overshoot");
                 drawStatsTable(vrrStatsGridView, "vrr");
                 drawStatsTable(runSettingsView, "runSettings");
+                drawStatsTable(notesGridView, "notes");
             }
             catch (Exception ex)
             {

@@ -36,6 +36,7 @@ namespace OSRTT_Launcher
             initKeys();
             initTextColour();
             initDenoiseSelect();
+            initDateSelect();
             saveLabel.Visible = false;
         }
 

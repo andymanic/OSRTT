@@ -139,7 +139,7 @@ namespace OSRTT_Launcher
             this.Controls.Add(this.label6);
             this.Controls.Add(this.manufacturerSelect);
             this.Name = "OverdriveModes";
-            this.Size = new System.Drawing.Size(511, 295);
+            this.Size = new System.Drawing.Size(511, 298);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -136,7 +136,7 @@ namespace OSRTT_Launcher
         {
             if (ScatterOption)
             {
-                string run = CFuncs.createFileName(resultsFolderPath, "OSRTT-INPUT-LAG.png");
+                string run = CFuncs.createFileName(resultsFolderPath, "-OSRTT-INPUT-LAG.png");
                 Color bnColor = BackColor;
                 graphedData.Plot.Style(figureBackground: Color.Transparent, dataBackground: Color.Transparent);
                 graphedData.Plot.SaveFig(resultsFolderPath + "\\" + run, 1920, 1080, false);
@@ -145,7 +145,7 @@ namespace OSRTT_Launcher
             }
             else
             {
-                string run = CFuncs.createFileName(resultsFolderPath, "OSRTT-INPUT-LAG.png");
+                string run = CFuncs.createFileName(resultsFolderPath, "-OSRTT-INPUT-LAG.png");
                 Color bnColor = BackColor;
                 barPlot.Plot.Style(figureBackground: Color.Transparent, dataBackground: Color.Transparent);
                 barPlot.Plot.SaveFig(resultsFolderPath + "\\" + run, 1920, 1080, false);

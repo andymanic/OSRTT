@@ -862,12 +862,13 @@
             // 
             this.numberOfClicksSlider.BackColor = System.Drawing.Color.White;
             this.numberOfClicksSlider.Cursor = System.Windows.Forms.Cursors.SizeWE;
-            this.numberOfClicksSlider.LargeChange = 1;
+            this.numberOfClicksSlider.LargeChange = 10;
             this.numberOfClicksSlider.Location = new System.Drawing.Point(17, 147);
             this.numberOfClicksSlider.Maximum = 500;
             this.numberOfClicksSlider.Minimum = 10;
             this.numberOfClicksSlider.Name = "numberOfClicksSlider";
             this.numberOfClicksSlider.Size = new System.Drawing.Size(310, 45);
+            this.numberOfClicksSlider.SmallChange = 10;
             this.numberOfClicksSlider.TabIndex = 16;
             this.numberOfClicksSlider.TickFrequency = 10;
             this.numberOfClicksSlider.TickStyle = System.Windows.Forms.TickStyle.Both;
@@ -1007,7 +1008,7 @@
             this.overdriveModes1.BackColor = System.Drawing.SystemColors.ControlDark;
             this.overdriveModes1.Location = new System.Drawing.Point(10, 559);
             this.overdriveModes1.Name = "overdriveModes1";
-            this.overdriveModes1.Size = new System.Drawing.Size(511, 258);
+            this.overdriveModes1.Size = new System.Drawing.Size(511, 299);
             this.overdriveModes1.TabIndex = 34;
             // 
             // Main

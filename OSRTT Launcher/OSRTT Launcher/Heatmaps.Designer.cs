@@ -29,6 +29,7 @@ namespace OSRTT_Launcher
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
@@ -37,8 +38,9 @@ namespace OSRTT_Launcher
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
             this.standardResultsPanel = new System.Windows.Forms.Panel();
+            this.notesGridView = new System.Windows.Forms.DataGridView();
             this.runSettingsView = new System.Windows.Forms.DataGridView();
             this.panel5 = new System.Windows.Forms.Panel();
             this.panel6 = new System.Windows.Forms.Panel();
@@ -84,8 +86,8 @@ namespace OSRTT_Launcher
             this.label12 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
-            this.notesGridView = new System.Windows.Forms.DataGridView();
             this.standardResultsPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.notesGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.runSettingsView)).BeginInit();
             this.panel5.SuspendLayout();
             this.panel6.SuspendLayout();
@@ -107,7 +109,6 @@ namespace OSRTT_Launcher
             ((System.ComponentModel.ISupportInitialize)(this.vrrGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.osGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtGridView)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.notesGridView)).BeginInit();
             this.SuspendLayout();
             // 
             // standardResultsPanel
@@ -143,6 +144,46 @@ namespace OSRTT_Launcher
             this.standardResultsPanel.Size = new System.Drawing.Size(1775, 950);
             this.standardResultsPanel.TabIndex = 3;
             // 
+            // notesGridView
+            // 
+            this.notesGridView.AllowUserToAddRows = false;
+            this.notesGridView.AllowUserToDeleteRows = false;
+            this.notesGridView.AllowUserToResizeColumns = false;
+            this.notesGridView.AllowUserToResizeRows = false;
+            this.notesGridView.BackgroundColor = System.Drawing.SystemColors.WindowFrame;
+            this.notesGridView.ColumnHeadersHeight = 40;
+            this.notesGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            this.notesGridView.ColumnHeadersVisible = false;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.notesGridView.DefaultCellStyle = dataGridViewCellStyle1;
+            this.notesGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.notesGridView.EnableHeadersVisualStyles = false;
+            this.notesGridView.GridColor = System.Drawing.Color.White;
+            this.notesGridView.Location = new System.Drawing.Point(1225, 667);
+            this.notesGridView.MultiSelect = false;
+            this.notesGridView.Name = "notesGridView";
+            this.notesGridView.ReadOnly = true;
+            this.notesGridView.RowHeadersVisible = false;
+            this.notesGridView.RowHeadersWidth = 65;
+            this.notesGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.notesGridView.RowsDefaultCellStyle = dataGridViewCellStyle2;
+            this.notesGridView.RowTemplate.Height = 35;
+            this.notesGridView.RowTemplate.ReadOnly = true;
+            this.notesGridView.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.notesGridView.ScrollBars = System.Windows.Forms.ScrollBars.None;
+            this.notesGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            this.notesGridView.ShowCellToolTips = false;
+            this.notesGridView.ShowEditingIcon = false;
+            this.notesGridView.Size = new System.Drawing.Size(450, 115);
+            this.notesGridView.TabIndex = 42;
+            // 
             // runSettingsView
             // 
             this.runSettingsView.AllowUserToAddRows = false;
@@ -153,18 +194,18 @@ namespace OSRTT_Launcher
             this.runSettingsView.ColumnHeadersHeight = 40;
             this.runSettingsView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.runSettingsView.ColumnHeadersVisible = false;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.runSettingsView.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.runSettingsView.DefaultCellStyle = dataGridViewCellStyle3;
             this.runSettingsView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.runSettingsView.EnableHeadersVisualStyles = false;
             this.runSettingsView.GridColor = System.Drawing.Color.White;
-            this.runSettingsView.Location = new System.Drawing.Point(636, 603);
+            this.runSettingsView.Location = new System.Drawing.Point(603, 603);
             this.runSettingsView.MultiSelect = false;
             this.runSettingsView.Name = "runSettingsView";
             this.runSettingsView.ReadOnly = true;
@@ -178,7 +219,7 @@ namespace OSRTT_Launcher
             this.runSettingsView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.runSettingsView.ShowCellToolTips = false;
             this.runSettingsView.ShowEditingIcon = false;
-            this.runSettingsView.Size = new System.Drawing.Size(450, 105);
+            this.runSettingsView.Size = new System.Drawing.Size(525, 105);
             this.runSettingsView.TabIndex = 41;
             // 
             // panel5
@@ -437,14 +478,14 @@ namespace OSRTT_Launcher
             this.rtStatsRefreshGridView.ColumnHeadersHeight = 40;
             this.rtStatsRefreshGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.rtStatsRefreshGridView.ColumnHeadersVisible = false;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.rtStatsRefreshGridView.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.rtStatsRefreshGridView.DefaultCellStyle = dataGridViewCellStyle4;
             this.rtStatsRefreshGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.rtStatsRefreshGridView.EnableHeadersVisualStyles = false;
             this.rtStatsRefreshGridView.GridColor = System.Drawing.Color.White;
@@ -530,14 +571,14 @@ namespace OSRTT_Launcher
             this.vrrStatsGridView.ColumnHeadersHeight = 40;
             this.vrrStatsGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.vrrStatsGridView.ColumnHeadersVisible = false;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.vrrStatsGridView.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.vrrStatsGridView.DefaultCellStyle = dataGridViewCellStyle5;
             this.vrrStatsGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.vrrStatsGridView.EnableHeadersVisualStyles = false;
             this.vrrStatsGridView.GridColor = System.Drawing.Color.White;
@@ -568,14 +609,14 @@ namespace OSRTT_Launcher
             this.osStatsGridView.ColumnHeadersHeight = 40;
             this.osStatsGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.osStatsGridView.ColumnHeadersVisible = false;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.osStatsGridView.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.osStatsGridView.DefaultCellStyle = dataGridViewCellStyle6;
             this.osStatsGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.osStatsGridView.EnableHeadersVisualStyles = false;
             this.osStatsGridView.GridColor = System.Drawing.Color.White;
@@ -606,14 +647,14 @@ namespace OSRTT_Launcher
             this.rtStatsGridView.ColumnHeadersHeight = 40;
             this.rtStatsGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.rtStatsGridView.ColumnHeadersVisible = false;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.rtStatsGridView.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.rtStatsGridView.DefaultCellStyle = dataGridViewCellStyle7;
             this.rtStatsGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.rtStatsGridView.EnableHeadersVisualStyles = false;
             this.rtStatsGridView.GridColor = System.Drawing.Color.White;
@@ -665,14 +706,14 @@ namespace OSRTT_Launcher
             this.vrrGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.vrrGridView.ColumnHeadersHeight = 50;
             this.vrrGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.vrrGridView.DefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.vrrGridView.DefaultCellStyle = dataGridViewCellStyle8;
             this.vrrGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.vrrGridView.EnableHeadersVisualStyles = false;
             this.vrrGridView.GridColor = System.Drawing.Color.White;
@@ -704,14 +745,14 @@ namespace OSRTT_Launcher
             this.osGridView.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             this.osGridView.ColumnHeadersHeight = 50;
             this.osGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle8.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.osGridView.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle9.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle9.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle9.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.osGridView.DefaultCellStyle = dataGridViewCellStyle9;
             this.osGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.osGridView.EnableHeadersVisualStyles = false;
             this.osGridView.GridColor = System.Drawing.Color.White;
@@ -743,14 +784,14 @@ namespace OSRTT_Launcher
             this.rtGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.rtGridView.ColumnHeadersHeight = 50;
             this.rtGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle9.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle9.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle9.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.rtGridView.DefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle10.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle10.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle10.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.rtGridView.DefaultCellStyle = dataGridViewCellStyle10;
             this.rtGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.rtGridView.EnableHeadersVisualStyles = false;
             this.rtGridView.GridColor = System.Drawing.Color.White;
@@ -843,44 +884,6 @@ namespace OSRTT_Launcher
             this.label9.TabIndex = 23;
             this.label9.Text = "To";
             // 
-            // notesGridView
-            // 
-            this.notesGridView.AllowUserToAddRows = false;
-            this.notesGridView.AllowUserToDeleteRows = false;
-            this.notesGridView.AllowUserToResizeColumns = false;
-            this.notesGridView.AllowUserToResizeRows = false;
-            this.notesGridView.BackgroundColor = System.Drawing.SystemColors.WindowFrame;
-            this.notesGridView.ColumnHeadersHeight = 40;
-            this.notesGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            this.notesGridView.ColumnHeadersVisible = false;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.notesGridView.DefaultCellStyle = dataGridViewCellStyle1;
-            this.notesGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.notesGridView.EnableHeadersVisualStyles = false;
-            this.notesGridView.GridColor = System.Drawing.Color.White;
-            this.notesGridView.Location = new System.Drawing.Point(1225, 675);
-            this.notesGridView.MultiSelect = false;
-            this.notesGridView.Name = "notesGridView";
-            this.notesGridView.ReadOnly = true;
-            this.notesGridView.RowHeadersVisible = false;
-            this.notesGridView.RowHeadersWidth = 65;
-            this.notesGridView.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            this.notesGridView.RowTemplate.Height = 35;
-            this.notesGridView.RowTemplate.ReadOnly = true;
-            this.notesGridView.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.notesGridView.ScrollBars = System.Windows.Forms.ScrollBars.None;
-            this.notesGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.notesGridView.ShowCellToolTips = false;
-            this.notesGridView.ShowEditingIcon = false;
-            this.notesGridView.Size = new System.Drawing.Size(450, 105);
-            this.notesGridView.TabIndex = 42;
-            // 
             // Heatmaps
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -891,6 +894,7 @@ namespace OSRTT_Launcher
             this.Load += new System.EventHandler(this.Heatmaps_Load);
             this.standardResultsPanel.ResumeLayout(false);
             this.standardResultsPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.notesGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.runSettingsView)).EndInit();
             this.panel5.ResumeLayout(false);
             this.panel5.PerformLayout();
@@ -915,7 +919,6 @@ namespace OSRTT_Launcher
             ((System.ComponentModel.ISupportInitialize)(this.vrrGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.osGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtGridView)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.notesGridView)).EndInit();
             this.ResumeLayout(false);
 
         }

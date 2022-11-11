@@ -460,6 +460,7 @@ void loop() {
         buttonState = digitalRead(buttonPin);
         if (buttonState == HIGH) //Run when button pressed
         {
+          oledFourLines("RUNNING","INPUT","LATENCY","TEST");
           Keyboard.print('1');
           delay(100);
           int sw = micros();

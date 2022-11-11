@@ -25,10 +25,10 @@ namespace OSRTT_Launcher
     {
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
         private double boardVersion = 2.6;
-        private double V1DLFW = 2.7;
-        private double ProDLFW = 1.1;
+        private double V1DLFW = 2.8;
+        private double ProDLFW = 1.2;
         public int boardType = 0;
-        private string softwareVersion = "3.6";
+        private string softwareVersion = "3.7";
 
         // TODO //
         //
@@ -2594,9 +2594,9 @@ namespace OSRTT_Launcher
                         }
                         overdriveModes1.mainWindow = this;
                         mainPanel.Location = new Point(1500, 26);
-                        brightnessPanel.Location = new Point(0, 0);
+                        brightnessPanel.Location = new Point(1500, 0);
                         aboutPanel.Location = new Point(1500, 402);
-                        Size = new Size(525, 280);
+                        Size = new Size(525, 330);
                         debugPanel.Location = new Point(1500, 30);
                         menuStrip1.Visible = false;
                         overdriveModes1.Location = new Point(0, 0);
@@ -2884,6 +2884,7 @@ namespace OSRTT_Launcher
                 this.Invoke((MethodInvoker)delegate ()
                 {
                     ResultsView rv = new ResultsView();
+                    rv.setResultsFolder(resultsFolderPath);
                     rv.inputLagMode(inputLagProcessed);
                     rv.Show();
                 });
@@ -2921,6 +2922,12 @@ namespace OSRTT_Launcher
 
         private void numberOfClicksSlider_Scroll(object sender, EventArgs e)
         {
+            int value = (sender as TrackBar).Value;
+            double indexDbl = (value * 1.0) / numberOfClicksSlider.TickFrequency;
+            int index = Convert.ToInt32(Math.Round(indexDbl));
+
+            numberOfClicksSlider.Value = numberOfClicksSlider.TickFrequency * index;
+
             numberOfClicks = numberOfClicksSlider.Value;
             numberOfClicksLabel.Text = numberOfClicks.ToString();
             Properties.Settings.Default.numberOfClicks = numberOfClicks;

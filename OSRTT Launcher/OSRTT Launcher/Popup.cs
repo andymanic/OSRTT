@@ -31,7 +31,7 @@ namespace OSRTT_Launcher
                 Name = "OverdriveModes",
                 runSetting = rs,
             };
-            Size = new Size(522, 291);
+            Size = new Size(522, 350);
             Text = "Overdrive Mode";
             od.runSetting = rs;
             od.initialiseList("");
