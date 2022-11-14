@@ -37,6 +37,7 @@ namespace OSRTT_Launcher
             initTextColour();
             initDenoiseSelect();
             initDateSelect();
+            initUseUE4Select();
             saveLabel.Visible = false;
         }
 
@@ -342,6 +343,21 @@ namespace OSRTT_Launcher
             else
             {
                 showDataBox.SelectedIndex = 1;
+            }
+        }
+
+        private void initUseUE4Select()
+        {
+            useUE4Select.Items.Clear();
+            useUE4Select.Items.Add("No -Disabled");
+            useUE4Select.Items.Add("Yes - Enabled");
+            if (!Properties.Settings.Default.useUE4)
+            {
+                useUE4Select.SelectedIndex = 0;
+            }
+            else
+            {
+                useUE4Select.SelectedIndex = 1;
             }
         }
 
@@ -1038,6 +1054,28 @@ namespace OSRTT_Launcher
                 else
                 {
                     Properties.Settings.Default.showDate = true;
+                }
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        private void useUE4Select_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var ctrl = sender as ComboBox;
+            if (ctrl.Focused)
+            {
+                if (saveThread == null || !saveThread.IsAlive)
+                {
+                    saveThread = new Thread(new ThreadStart(this.SavingLabel));
+                    saveThread.Start();
+                }
+                if (ctrl.SelectedIndex == 0)
+                {
+                    Properties.Settings.Default.useUE4 = false;
+                }
+                else
+                {
+                    Properties.Settings.Default.useUE4 = true;
                 }
                 Properties.Settings.Default.Save();
             }

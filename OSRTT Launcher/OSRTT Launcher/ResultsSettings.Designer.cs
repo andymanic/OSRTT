@@ -76,6 +76,9 @@ namespace OSRTT_Launcher
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.testSettingsTab = new System.Windows.Forms.TabPage();
             this.resultSettingsTab = new System.Windows.Forms.TabPage();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.label22 = new System.Windows.Forms.Label();
+            this.showDataBox = new System.Windows.Forms.ComboBox();
             this.panel7 = new System.Windows.Forms.Panel();
             this.label23 = new System.Windows.Forms.Label();
             this.denoiseSelect = new System.Windows.Forms.ComboBox();
@@ -119,9 +122,9 @@ namespace OSRTT_Launcher
             this.roundButton1 = new OSRTT_Launcher.RoundButton();
             this.roundButton2 = new OSRTT_Launcher.RoundButton();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
-            this.panel6 = new System.Windows.Forms.Panel();
-            this.label22 = new System.Windows.Forms.Label();
-            this.showDataBox = new System.Windows.Forms.ComboBox();
+            this.useUE4Panel = new System.Windows.Forms.Panel();
+            this.label28 = new System.Windows.Forms.Label();
+            this.useUE4Select = new System.Windows.Forms.ComboBox();
             this.panel2.SuspendLayout();
             this.tolerancePanel.SuspendLayout();
             this.testSettingsPanel.SuspendLayout();
@@ -138,6 +141,7 @@ namespace OSRTT_Launcher
             this.tabControl1.SuspendLayout();
             this.testSettingsTab.SuspendLayout();
             this.resultSettingsTab.SuspendLayout();
+            this.panel6.SuspendLayout();
             this.panel7.SuspendLayout();
             this.panel5.SuspendLayout();
             this.vrrKeyPanel.SuspendLayout();
@@ -155,14 +159,14 @@ namespace OSRTT_Launcher
             ((System.ComponentModel.ISupportInitialize)(this.rtHighNum)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtMidNum)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtLowNum)).BeginInit();
-            this.panel6.SuspendLayout();
+            this.useUE4Panel.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.Khaki;
             this.panel2.Controls.Add(this.label1);
-            this.panel2.Location = new System.Drawing.Point(13, 300);
+            this.panel2.Location = new System.Drawing.Point(13, 354);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(356, 54);
             this.panel2.TabIndex = 1;
@@ -172,7 +176,7 @@ namespace OSRTT_Launcher
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Arial", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.Black;
-            this.label1.Location = new System.Drawing.Point(4, 11);
+            this.label1.Location = new System.Drawing.Point(4, 10);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(337, 32);
             this.label1.TabIndex = 11;
@@ -183,7 +187,7 @@ namespace OSRTT_Launcher
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.label3.Location = new System.Drawing.Point(17, 363);
+            this.label3.Location = new System.Drawing.Point(17, 413);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(348, 130);
             this.label3.TabIndex = 11;
@@ -208,7 +212,7 @@ namespace OSRTT_Launcher
             this.tolerancePanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tolerancePanel.Controls.Add(this.label4);
             this.tolerancePanel.Controls.Add(this.toleranceStyleSelect);
-            this.tolerancePanel.Location = new System.Drawing.Point(387, 300);
+            this.tolerancePanel.Location = new System.Drawing.Point(387, 354);
             this.tolerancePanel.Name = "tolerancePanel";
             this.tolerancePanel.Size = new System.Drawing.Size(615, 50);
             this.tolerancePanel.TabIndex = 22;
@@ -261,7 +265,7 @@ namespace OSRTT_Launcher
             this.overshootStylePanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.overshootStylePanel.Controls.Add(this.label10);
             this.overshootStylePanel.Controls.Add(this.osPercentSelect);
-            this.overshootStylePanel.Location = new System.Drawing.Point(387, 576);
+            this.overshootStylePanel.Location = new System.Drawing.Point(387, 630);
             this.overshootStylePanel.Name = "overshootStylePanel";
             this.overshootStylePanel.Size = new System.Drawing.Size(615, 50);
             this.overshootStylePanel.TabIndex = 24;
@@ -293,7 +297,7 @@ namespace OSRTT_Launcher
             this.overshootSourcePanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.overshootSourcePanel.Controls.Add(this.label9);
             this.overshootSourcePanel.Controls.Add(this.osGammaSelect);
-            this.overshootSourcePanel.Location = new System.Drawing.Point(387, 527);
+            this.overshootSourcePanel.Location = new System.Drawing.Point(387, 581);
             this.overshootSourcePanel.Name = "overshootSourcePanel";
             this.overshootSourcePanel.Size = new System.Drawing.Size(615, 50);
             this.overshootSourcePanel.TabIndex = 25;
@@ -328,7 +332,7 @@ namespace OSRTT_Launcher
             this.toleranceLevelPanel.Controls.Add(this.RGB10Btn);
             this.toleranceLevelPanel.Controls.Add(this.RGB5Btn);
             this.toleranceLevelPanel.Controls.Add(this.label5);
-            this.toleranceLevelPanel.Location = new System.Drawing.Point(387, 349);
+            this.toleranceLevelPanel.Location = new System.Drawing.Point(387, 403);
             this.toleranceLevelPanel.Name = "toleranceLevelPanel";
             this.toleranceLevelPanel.Size = new System.Drawing.Size(615, 100);
             this.toleranceLevelPanel.TabIndex = 25;
@@ -398,20 +402,20 @@ namespace OSRTT_Launcher
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label7.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.label7.Location = new System.Drawing.Point(17, 590);
+            this.label7.Location = new System.Drawing.Point(17, 639);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(335, 130);
+            this.label7.Size = new System.Drawing.Size(355, 88);
             this.label7.TabIndex = 13;
-            this.label7.Text = "Adjust how you would like the\r\nOvershoot data to be calculated\r\nand reported. Gam" +
-    "ma corrected\r\nmeans using RGB values instead\r\nof raw light level.";
+            this.label7.Text = "Adjust how you would like the Overshoot \r\ndata to be calculated and reported. Gam" +
+    "ma\r\ncorrected means using RGB values instead\r\nof raw light level.";
             // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.Khaki;
             this.panel1.Controls.Add(this.label8);
-            this.panel1.Location = new System.Drawing.Point(13, 527);
+            this.panel1.Location = new System.Drawing.Point(13, 581);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(356, 54);
             this.panel1.TabIndex = 12;
@@ -433,7 +437,7 @@ namespace OSRTT_Launcher
             this.gammaPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.gammaPanel.Controls.Add(this.label11);
             this.gammaPanel.Controls.Add(this.saveGammaTableSelect);
-            this.gammaPanel.Location = new System.Drawing.Point(387, 448);
+            this.gammaPanel.Location = new System.Drawing.Point(387, 502);
             this.gammaPanel.Name = "gammaPanel";
             this.gammaPanel.Size = new System.Drawing.Size(615, 50);
             this.gammaPanel.TabIndex = 26;
@@ -644,6 +648,7 @@ namespace OSRTT_Launcher
             // testSettingsTab
             // 
             this.testSettingsTab.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.testSettingsTab.Controls.Add(this.useUE4Panel);
             this.testSettingsTab.Controls.Add(this.panel10);
             this.testSettingsTab.Controls.Add(this.panel2);
             this.testSettingsTab.Controls.Add(this.panel3);
@@ -687,6 +692,38 @@ namespace OSRTT_Launcher
             this.resultSettingsTab.Size = new System.Drawing.Size(1019, 746);
             this.resultSettingsTab.TabIndex = 1;
             this.resultSettingsTab.Text = "Results Settings";
+            // 
+            // panel6
+            // 
+            this.panel6.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.panel6.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel6.Controls.Add(this.label22);
+            this.panel6.Controls.Add(this.showDataBox);
+            this.panel6.Location = new System.Drawing.Point(387, 457);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(615, 50);
+            this.panel6.TabIndex = 53;
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Font = new System.Drawing.Font("Arial", 18F);
+            this.label22.Location = new System.Drawing.Point(10, 11);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(286, 27);
+            this.label22.TabIndex = 23;
+            this.label22.Text = "Show Date on Heatmaps:";
+            // 
+            // showDataBox
+            // 
+            this.showDataBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.showDataBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.showDataBox.FormattingEnabled = true;
+            this.showDataBox.Location = new System.Drawing.Point(311, 8);
+            this.showDataBox.Name = "showDataBox";
+            this.showDataBox.Size = new System.Drawing.Size(289, 32);
+            this.showDataBox.TabIndex = 21;
+            this.showDataBox.SelectedIndexChanged += new System.EventHandler(this.showDataBox_SelectedIndexChanged);
             // 
             // panel7
             // 
@@ -1139,37 +1176,37 @@ namespace OSRTT_Launcher
             this.roundButton2.TabIndex = 34;
             this.roundButton2.UseVisualStyleBackColor = false;
             // 
-            // panel6
+            // useUE4Panel
             // 
-            this.panel6.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.panel6.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel6.Controls.Add(this.label22);
-            this.panel6.Controls.Add(this.showDataBox);
-            this.panel6.Location = new System.Drawing.Point(387, 457);
-            this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(615, 50);
-            this.panel6.TabIndex = 53;
+            this.useUE4Panel.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.useUE4Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.useUE4Panel.Controls.Add(this.label28);
+            this.useUE4Panel.Controls.Add(this.useUE4Select);
+            this.useUE4Panel.Location = new System.Drawing.Point(387, 276);
+            this.useUE4Panel.Name = "useUE4Panel";
+            this.useUE4Panel.Size = new System.Drawing.Size(615, 50);
+            this.useUE4Panel.TabIndex = 32;
             // 
-            // label22
+            // label28
             // 
-            this.label22.AutoSize = true;
-            this.label22.Font = new System.Drawing.Font("Arial", 18F);
-            this.label22.Location = new System.Drawing.Point(10, 11);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(286, 27);
-            this.label22.TabIndex = 23;
-            this.label22.Text = "Show Date on Heatmaps:";
+            this.label28.AutoSize = true;
+            this.label28.Font = new System.Drawing.Font("Arial", 18F);
+            this.label28.Location = new System.Drawing.Point(9, 10);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(256, 27);
+            this.label28.TabIndex = 22;
+            this.label28.Text = "Use Old Test Program:";
             // 
-            // showDataBox
+            // useUE4Select
             // 
-            this.showDataBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.showDataBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.showDataBox.FormattingEnabled = true;
-            this.showDataBox.Location = new System.Drawing.Point(311, 8);
-            this.showDataBox.Name = "showDataBox";
-            this.showDataBox.Size = new System.Drawing.Size(289, 32);
-            this.showDataBox.TabIndex = 21;
-            this.showDataBox.SelectedIndexChanged += new System.EventHandler(this.showDataBox_SelectedIndexChanged);
+            this.useUE4Select.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.useUE4Select.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.useUE4Select.FormattingEnabled = true;
+            this.useUE4Select.Location = new System.Drawing.Point(271, 7);
+            this.useUE4Select.Name = "useUE4Select";
+            this.useUE4Select.Size = new System.Drawing.Size(329, 33);
+            this.useUE4Select.TabIndex = 21;
+            this.useUE4Select.SelectedIndexChanged += new System.EventHandler(this.useUE4Select_SelectedIndexChanged);
             // 
             // ResultsSettings
             // 
@@ -1216,6 +1253,8 @@ namespace OSRTT_Launcher
             this.testSettingsTab.PerformLayout();
             this.resultSettingsTab.ResumeLayout(false);
             this.resultSettingsTab.PerformLayout();
+            this.panel6.ResumeLayout(false);
+            this.panel6.PerformLayout();
             this.panel7.ResumeLayout(false);
             this.panel7.PerformLayout();
             this.panel5.ResumeLayout(false);
@@ -1241,8 +1280,8 @@ namespace OSRTT_Launcher
             ((System.ComponentModel.ISupportInitialize)(this.rtHighNum)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtMidNum)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtLowNum)).EndInit();
-            this.panel6.ResumeLayout(false);
-            this.panel6.PerformLayout();
+            this.useUE4Panel.ResumeLayout(false);
+            this.useUE4Panel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1341,5 +1380,8 @@ namespace OSRTT_Launcher
         private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.ComboBox showDataBox;
+        private System.Windows.Forms.Panel useUE4Panel;
+        private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.ComboBox useUE4Select;
     }
 }

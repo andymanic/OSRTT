@@ -1,7 +1,7 @@
 {
   "Updates": [
     {
-      "Title": "NEW FEATURES & BUG FIXES!",
+      "Title": "NEW FEATURES &BUG FIXES!",
       "MainText": "This update contains a whole load of new stuff, including: \n - Input lag clicks can now go up to 990. I don't know why either. \n- New option to add extra info to the heatmaps. Useful for tracking extra settings changes. \n- New option to display the date and time of the result, again good for distinguishing results \n- Save as PNG button is now working on the input lag mode."
     }
   ]

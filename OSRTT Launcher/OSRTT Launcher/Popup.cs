@@ -39,5 +39,19 @@ namespace OSRTT_Launcher
             this.Controls.Add(od);
             this.Activate();
         }
+
+        public void announcementMode()
+        {
+            Announcements an = new Announcements {
+                Location = new Point(0, 0),
+                Size = new Size(814, 717),
+                Name = "Announcements"
+            };
+            Size = new Size(814, 717);
+            Text = "Announcements";
+            an.Show();
+            this.Controls.Add(an);
+            this.Activate();
+        }
     }
 }

@@ -225,126 +225,352 @@ void loop() {
   {
     Serial.println("Ready to test");
     Serial.setTimeout(200);
+    bool useUE4 = true;
+    if (input[1] = '1')
+    {
+        useUE4 = false;
+    }
     while (input[0] != 'X')
     {
       // Check if button has been pressed
       buttonState = digitalRead(buttonPin);
       if (buttonState == HIGH) //Run when button pressed
       {
-        Serial.setTimeout(500);
-        Keyboard.print(fpsLimit);
-        Keyboard.print(fpsLimit);
-        oledFourLines("CHECKING", "FOR", "STROBING", "");
-        int sample_count = 0;
-        while (sample_count < 1000)
+        if(useUE4)
         {
-          ADC0->SWTRIG.bit.START = 1; //Start ADC
-          while (!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
-          adcBuff[sample_count] = ADC0->RESULT.reg; //save new ADC value to buffer @ sample_count position
-          sample_count++; //Increment sample count
-        }
-        int minVal = 65520;
-        int maxVal = 0;
-        for (int i = 200; i < sample_count; i++)
-        {
-          if (adcBuff[i] < minVal)
-          {
-            minVal = adcBuff[i];
-          }
-          else if (adcBuff[i] > maxVal)
-          {
-            maxVal = adcBuff[i];
-          }
-        }
-        if ((maxVal - minVal) > 1000)
-        {
-          oledFourLines("BACKLIGHT", "STROBING", "TEST", "CANCELLED");
-          input[0] = 'X';
-          break;
-        }
-        sample_count = 0;
+          Serial.setTimeout(500);
+          Keyboard.print(fpsLimit);
+          Keyboard.print(fpsLimit);
 
-        // Check monitor brightness level
-        oledFourLines("CHECKING", "LIGHT", "LEVEL", "");
-        int brightnessTest = checkLightLevel();
-        if (brightnessTest == 0)
-        {
-          // If brightness too low or high, don't run the test
-          Serial.println("Cancelling test");
-          digitalWrite(13, HIGH);
-          digitalPotWrite(0x00);
-          oledFourLines("FAILED TO", "CALIBRATE", "LIGHT", "LEVEL");
-          break;
+          oledFourLines("CHECKING", "FOR", "STROBING", "");
+          int sample_count = 0;
+          while (sample_count < 1000)
+          {
+            ADC0->SWTRIG.bit.START = 1; //Start ADC
+            while (!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
+            adcBuff[sample_count] = ADC0->RESULT.reg; //save new ADC value to buffer @ sample_count position
+            sample_count++; //Increment sample count
+          }
+          int minVal = 65520;
+          int maxVal = 0;
+          for (int i = 200; i < sample_count; i++)
+          {
+            if (adcBuff[i] < minVal)
+            {
+              minVal = adcBuff[i];
+            }
+            else if (adcBuff[i] > maxVal)
+            {
+              maxVal = adcBuff[i];
+            }
+          }
+          if ((maxVal - minVal) > 1000)
+          {
+            oledFourLines("BACKLIGHT", "STROBING", "TEST", "CANCELLED");
+            input[0] = 'X';
+            break;
+          }
+          sample_count = 0;
+
+          // Check monitor brightness level
+          oledFourLines("CHECKING", "LIGHT", "LEVEL", "");
+          
+          int brightnessTest = checkLightLevel();
+          if (brightnessTest == 0)
+          {
+            // If brightness too low or high, don't run the test
+            Serial.println("Cancelling test");
+            digitalWrite(13, HIGH);
+            digitalPotWrite(0x00);
+            oledFourLines("FAILED TO", "CALIBRATE", "LIGHT", "LEVEL");
+            break;
+          }
+          else
+          {
+            oledFourLines("CHECKING", "SYSTEM", "LATENCY", "");
+            checkLatency(true);
+            delay(100);
+            Serial.println("Test Started");
+            // Set FPS limit (default 1000 FPS, key '1')
+            delay(50);
+            oledFourLines("RUNNING", "GAMMA", "TEST", "");
+            runGammaTest();
+            delay(100);
+            while (input[0] != 'X')
+            {
+              //oledFourLines("RUNNING", "FULL", "TEST", "");
+              for (int i = 0; i < INPUT_SIZE + 1; i++)
+              {
+                input[i] = ' ';
+              }
+              byte sized = Serial.readBytes(input, INPUT_SIZE);
+              input[sized] = 0;
+              if (input[0] == 'X')
+              {
+                break;
+              }
+              else if (input[0] == 'S')
+              {
+                int t = input[1] - '0';
+                t++;
+                samplingTime = 50000 * t;
+              }
+              else
+              {
+                int currentIndex = 0;
+                int nextIndex = 0;
+                if (input[0] <= 57)
+                {
+                  currentIndex = input[0] - '0'; // Convert char to int
+                }
+                else
+                {
+                  currentIndex = input[0] - 55;
+                }
+                if (input[1] <= 57)
+                {
+                  nextIndex = input[1] - '0'; // Convert char to int
+                }
+                else
+                {
+                  nextIndex = input[1] - 55;
+                }
+                int arrSize = sizeof(RGBArr) / sizeof(int);
+                if (currentIndex >= 0 && currentIndex < arrSize)
+                {
+                  int current = RGBArr[currentIndex];
+                  int next = RGBArr[nextIndex];
+                  oledTestRunning(current, next);
+                  Keyboard.print(Keys[currentIndex]);
+                  delay(300);
+                  runADC(current, next, Keys[nextIndex], true, "Results: ");
+                  delay(50);
+                  Serial.println("NEXT");
+                }
+              }
+              delay(50);
+            }
+          }
+          oledFourLines("TEST", "COMPLETE", "CHECK", "DESKTOP");
+          digitalPotWrite(0x01);
+          //}
         }
         else
-        {
-          oledFourLines("CHECKING", "SYSTEM", "LATENCY", "");
-          checkLatency();
-          delay(100);
+        { // NEW TEST METHOD - FULL DESKTOP CONTROL
+          Serial.setTimeout(500);
+          Keyboard.print(fpsLimit);
+          Keyboard.print(fpsLimit);
           Serial.println("Test Started");
-          // Set FPS limit (default 1000 FPS, key '1')
-          delay(50);
-          oledFourLines("RUNNING", "GAMMA", "TEST", "");
-          runGammaTest();
-          delay(100);
-          while (input[0] != 'X')
+          
+            while (input[0] != 'X' && input[0] != 'C')
+            {
+              
+              for (int i = 0; i < INPUT_SIZE + 1; i++)
+                  {
+                    input[i] = ' ';
+                  }
+                  byte sized = Serial.readBytes(input, INPUT_SIZE);
+                  input[sized] = 0;
+                  if (input[0] == 'X')
+                  {
+                    break;
+                  }
+            }
+          
+          oledFourLines("CHECKING", "FOR", "STROBING", "");
+          int sample_count = 0;
+          while (sample_count < 1000)
           {
-            //oledFourLines("RUNNING", "FULL", "TEST", "");
-            for (int i = 0; i < INPUT_SIZE + 1; i++)
-            {
-              input[i] = ' ';
-            }
-            byte sized = Serial.readBytes(input, INPUT_SIZE);
-            input[sized] = 0;
-            if (input[0] == 'X')
-            {
-              break;
-            }
-            else if (input[0] == 'S')
-            {
-              int t = input[1] - '0';
-              t++;
-              samplingTime = 50000 * t;
-            }
-            else
-            {
-              int currentIndex = 0;
-              int nextIndex = 0;
-              if (input[0] <= 57)
-              {
-                currentIndex = input[0] - '0'; // Convert char to int
-              }
-              else
-              {
-                currentIndex = input[0] - 55;
-              }
-              if (input[1] <= 57)
-              {
-                nextIndex = input[1] - '0'; // Convert char to int
-              }
-              else
-              {
-                nextIndex = input[1] - 55;
-              }
-              int arrSize = sizeof(RGBArr) / sizeof(int);
-              if (currentIndex >= 0 && currentIndex < arrSize)
-              {
-                int current = RGBArr[currentIndex];
-                int next = RGBArr[nextIndex];
-                oledTestRunning(current, next);
-                Keyboard.print(Keys[currentIndex]);
-                delay(300);
-                runADC(current, next, Keys[nextIndex], "Results: ");
-                delay(50);
-                Serial.println("NEXT");
-              }
-            }
-            delay(50);
+            ADC0->SWTRIG.bit.START = 1; //Start ADC
+            while (!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
+            adcBuff[sample_count] = ADC0->RESULT.reg; //save new ADC value to buffer @ sample_count position
+            sample_count++; //Increment sample count
           }
+          int minVal = 65520;
+          int maxVal = 0;
+          for (int i = 200; i < sample_count; i++)
+          {
+            if (adcBuff[i] < minVal)
+            {
+              minVal = adcBuff[i];
+            }
+            else if (adcBuff[i] > maxVal)
+            {
+              maxVal = adcBuff[i];
+            }
+          }
+          if ((maxVal - minVal) > 1000)
+          {
+            oledFourLines("BACKLIGHT", "STROBING", "TEST", "CANCELLED");
+            input[0] = 'X';
+            break;
+          }
+          sample_count = 0;
+
+          // Check monitor brightness level
+          oledFourLines("CHECKING", "LIGHT", "LEVEL", "");
+          
+          int brightnessTest = checkLightLevel();
+          if (brightnessTest == 0)
+          {
+            // If brightness too low or high, don't run the test
+            Serial.println("Cancelling test");
+            digitalWrite(13, HIGH);
+            digitalPotWrite(0x00);
+            oledFourLines("FAILED TO", "CALIBRATE", "LIGHT", "LEVEL");
+            break;
+          }
+          else
+          {
+            while (input[0] != 'X' && input[0] != 'L')
+            {
+              
+              for (int i = 0; i < INPUT_SIZE + 1; i++)
+                  {
+                    input[i] = ' ';
+                  }
+                  byte sized = Serial.readBytes(input, INPUT_SIZE);
+                  input[sized] = 0;
+                  if (input[0] == 'X')
+                  {
+                    break;
+                  }
+            }
+            oledFourLines("CHECKING", "SYSTEM", "LATENCY", "");
+            checkLatency(false);
+            //delay(100);
+            
+            while (input[0] != 'X' && input[0] != 'G')
+            {
+              
+              for (int i = 0; i < INPUT_SIZE + 1; i++)
+                  {
+                    input[i] = ' ';
+                  }
+                  byte sized = Serial.readBytes(input, INPUT_SIZE);
+                  input[sized] = 0;
+                  if (input[0] == 'X')
+                  {
+                    break;
+                  }
+            }
+
+            // Set FPS limit (default 1000 FPS, key '1')
+            //delay(50);
+            oledFourLines("RUNNING", "GAMMA", "TEST", "");
+            //runGammaTest();
+
+            // Gamma test
+            while (input[0] != 'X')
+            {
+              //oledFourLines("RUNNING", "FULL", "TEST", "");
+              for (int i = 0; i < INPUT_SIZE + 1; i++)
+              {
+                input[i] = ' ';
+              }
+              byte sized = Serial.readBytes(input, INPUT_SIZE);
+              input[sized] = 0;
+              if (input[0] == 'X')
+              {
+                break;
+              }
+              else if (input[0] == 'S')
+              {
+                int t = input[1] - '0';
+                t++;
+                samplingTime = 50000 * t;
+              }
+              else
+              {
+                int currentIndex = 0;
+                int nextIndex = 0;
+                if (input[0] <= 57)
+                {
+                  currentIndex = input[0] - '0'; // Convert char to int
+                }
+                else
+                {
+                  currentIndex = input[0] - 55;
+                }
+                int arrSize = sizeof(extGammaArr) / sizeof(int);
+                if (currentIndex >= 0 && currentIndex < arrSize)
+                {
+                  int current = extGammaArr[currentIndex];
+                  oledTestRunning(current, next);
+                  Keyboard.print(Keys[currentIndex]);
+                  delay(300);
+                  runADC(current, next, '', false, "Gamma: ");
+                  delay(50);
+                  Serial.println("NEXT");
+                }
+                else if (currentIndex == 15)
+                {
+                  Serial.println("G Test Complete");
+                  break;
+                }
+              }
+              //delay(50);
+            }
+
+            // Main test
+            while (input[0] != 'X')
+            {
+              //oledFourLines("RUNNING", "FULL", "TEST", "");
+              for (int i = 0; i < INPUT_SIZE + 1; i++)
+              {
+                input[i] = ' ';
+              }
+              byte sized = Serial.readBytes(input, INPUT_SIZE);
+              input[sized] = 0;
+              if (input[0] == 'X')
+              {
+                break;
+              }
+              else if (input[0] == 'S')
+              {
+                int t = input[1] - '0';
+                t++;
+                samplingTime = 50000 * t;
+              }
+              else
+              {
+                int currentIndex = 0;
+                int nextIndex = 0;
+                if (input[0] <= 57)
+                {
+                  currentIndex = input[0] - '0'; // Convert char to int
+                }
+                else
+                {
+                  currentIndex = input[0] - 55;
+                }
+                if (input[1] <= 57)
+                {
+                  nextIndex = input[1] - '0'; // Convert char to int
+                }
+                else
+                {
+                  nextIndex = input[1] - 55;
+                }
+                int arrSize = sizeof(extGammaArr) / sizeof(int);
+                if (currentIndex >= 0 && currentIndex < arrSize)
+                {
+                  int current = extGammaArr[currentIndex];
+                  int next = extGammaArr[nextIndex];
+                  oledTestRunning(current, next);
+                  //Keyboard.print(Keys[currentIndex]);
+                  //delay(300);
+                  runADC(current, next, '', false, "Results: ");
+                  delay(50);
+                  Serial.println("NEXT");
+                }
+              }
+              delay(50);
+            }
+          }
+          oledFourLines("TEST", "COMPLETE", "CHECK", "DESKTOP");
+          digitalPotWrite(0x01);
         }
-        oledFourLines("TEST", "COMPLETE", "CHECK", "DESKTOP");
-        digitalPotWrite(0x01);
-        //}
       }
       else
       {

@@ -162,6 +162,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Announcements.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Announcements.Designer.cs">
+      <DependentUpon>Announcements.cs</DependentUpon>
+    </Compile>
     <Compile Include="CFuncs.cs" />
     <Compile Include="DataUpload.cs" />
     <Compile Include="DirectX\DPerformanceTester.cs" />
@@ -257,6 +263,9 @@
     <Compile Include="Heatmaps.Designer.cs">
       <DependentUpon>Heatmaps.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Announcements.resx">
+      <DependentUpon>Announcements.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Gamma.resx">
       <DependentUpon>Gamma.cs</DependentUpon>
     </EmbeddedResource>
@@ -303,6 +312,7 @@
     <EmbeddedResource Include="ResultsView.resx">
       <DependentUpon>ResultsView.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="announcements.json" />
     <None Include="DirectX\Font\Font.ps" />
     <None Include="DirectX\Font\Font.vs" />
     <None Include="odmodes.json">

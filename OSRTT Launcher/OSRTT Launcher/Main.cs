@@ -60,6 +60,7 @@ namespace OSRTT_Launcher
         private bool liveView = false;
         private bool boardCalibration = false;
         private bool latencyTest = false;
+        private bool startLatencyTest = false;
         private bool inputLagRun = false;
 
         private List<int> RGBArr = new List<int>{0, 51, 102, 153, 204, 255};
@@ -1106,7 +1107,7 @@ namespace OSRTT_Launcher
                         }
                         RGBArr.AddRange(intValues);
                     }
-                    else if (message.Contains("Board Calibrated"))
+                    else if (message.Contains("CAL DONE"))
                     {
                         boardCalibration = true;
                     }
@@ -1569,6 +1570,10 @@ namespace OSRTT_Launcher
                             //processInputLagData();
                         }
                     }
+                    else if (message.Contains("LATENCY"))
+                    {
+                        startLatencyTest = true;
+                    }
                     else if (message.Contains("TL"))
                     {
                         // Split result string into individual results
@@ -1866,38 +1871,57 @@ namespace OSRTT_Launcher
                 {
                     vsync = " NoVSync";
                 }
-                
-                Process ue4 = new Process();
-                try
+                if (Properties.Settings.Default.useUE4)
                 {
-                    ue4.StartInfo.FileName = ue4Path;
-                    if (display.Primary == false)
+                    Process ue4 = new Process();
+                    try
                     {
-                        // Force UE4 window to selected display if selected is not primary
-                        WinX = display.Bounds.Location.X;
-                        WinY = display.Bounds.Location.Y;
-                        ue4.StartInfo.Arguments = ue4Path + " WinX=" + WinX + " WinY=" + WinY;
+                        ue4.StartInfo.FileName = ue4Path;
+                        if (display.Primary == false)
+                        {
+                            // Force UE4 window to selected display if selected is not primary
+                            WinX = display.Bounds.Location.X;
+                            WinY = display.Bounds.Location.Y;
+                            ue4.StartInfo.Arguments = ue4Path + " WinX=" + WinX + " WinY=" + WinY;
+                        }
+                        else
+                        {
+                            ue4.StartInfo.Arguments = ue4Path;
+                        }
+                        ue4.Start();
+                        // Process.Start(ue4Path);
                     }
-                    else
+                    catch (Exception strE)
                     {
-                        ue4.StartInfo.Arguments = ue4Path;
+                        Console.WriteLine(strE.Message + strE.StackTrace);
+                        SetText(strE.Message + strE.StackTrace);
                     }
-                    ue4.Start();
-                    // Process.Start(ue4Path);
                 }
-                catch (Exception strE)
+                else
                 {
-                    Console.WriteLine(strE.Message + strE.StackTrace);
-                    SetText(strE.Message + strE.StackTrace);
+                    gammaTest = false;
+                    boardCalibration = false;
+                    latencyTest = false;
+                    if (OSRTT_Launcher.DirectX.System.DSystem.mainWindow == null)
+                        OSRTT_Launcher.DirectX.System.DSystem.mainWindow = this;
+
+                    var item = fpsList.Find(x => x.FPSValue == getSelectedFps());
+                    double fpsLimit = 1000 / double.Parse(item.FPSValue);
+                    //SendKeys.SendWait(item.Key);
+                    OSRTT_Launcher.DirectX.System.DSystem.inputLagMode = false;
+                    OSRTT_Launcher.DirectX.System.DSystem.StartRenderForm("OSRTT Test Window (DirectX 11)", 800, 600, false, true, selectedDisplay, fpsLimit);
                 }
                 try
                 {
                     Process[] p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
-                    while (p.Length == 0)
+                    if (Properties.Settings.Default.useUE4)
                     {
-                        // Added in case game hasn't finished launching yet
-                        p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
-                        Thread.Sleep(100);
+                        while (p.Length == 0)
+                        {
+                            // Added in case game hasn't finished launching yet
+                            p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
+                            Thread.Sleep(100);
+                        }
                     }
                     
                     try
@@ -1914,11 +1938,23 @@ namespace OSRTT_Launcher
                             results.Add(new List<ProcessData.rawResultData>());
                         }
                         testStarted = false;
-                        port.Write("T");
-                        while (!testMode)
+                        if (Properties.Settings.Default.useUE4)
                         {
-                            Thread.Sleep(200);
                             port.Write("T");
+                            while (!testMode)
+                            {
+                                Thread.Sleep(200);
+                                port.Write("T");
+                            }
+                        }
+                        else
+                        {
+                            port.Write("T1");
+                            while (!testMode)
+                            {
+                                Thread.Sleep(200);
+                                port.Write("T1");
+                            }
                         }
                     }
                     catch (Exception exc)
@@ -1927,17 +1963,33 @@ namespace OSRTT_Launcher
                         Console.WriteLine(exc.Message + exc.StackTrace);
                     }
                     Thread.Sleep(200);
+
+                    if (Properties.Settings.Default.useUE4)
+                    {
+                        checkWindowThread = new Thread(new ThreadStart(this.checkFocusedWindow));
+                        checkWindowThread.Start();
+                    }
                     
-                    checkWindowThread = new Thread(new ThreadStart(this.checkFocusedWindow));
-                    checkWindowThread.Start();
-                    
-                        testRunning = true;
-                        
+                    testRunning = true;
+
+                    if (Properties.Settings.Default.useUE4)
+                    {
+                        runTestThread = new Thread(new ThreadStart(runUE4Test));
+                        runTestThread.Start();
+
+                        // Wait for game to close then send cancel command to board
+                        p[0].WaitForExit();
+                    }
+                    else
+                    {
                         runTestThread = new Thread(new ThreadStart(this.runTest));
                         runTestThread.Start();
-                    
-                    // Wait for game to close then send cancel command to board
-                    p[0].WaitForExit();
+                        while (testRunning)
+                        {
+                            Thread.Sleep(100);
+                        }
+                    }
+
                     /*if (runTestThread != null)
                     {
                         runTestThread.Abort();
@@ -1949,7 +2001,10 @@ namespace OSRTT_Launcher
                             runTestThread.Abort();
                         }
                     }
-                    checkWindowThread.Abort();
+                    if (checkWindowThread.IsAlive)
+                    {
+                        checkWindowThread.Abort();
+                    }
                     Console.WriteLine("Game closed");
                     SetText("Game closed");
                     port.Write("X");
@@ -2093,7 +2148,187 @@ namespace OSRTT_Launcher
             }
         }
 
+
+        private void runGammaTest()
+        {
+            List<float> gammaFloats = new List<float>();
+            for (int i = 0; i < 256; i += 17)
+            {
+                gammaFloats.Add(i / 255f);
+                Console.WriteLine("I: " + i + ", F: " + i / 255f);
+            }
+            // set each
+            for (int i = 0; i < gammaFloats.Count; i++)
+            {
+                DirectX.System.DSystem.RGB = gammaFloats[i];
+                Thread.Sleep(50);
+                port.Write(i.ToString("X"));
+                Stopwatch sw = new Stopwatch();
+                sw.Reset();
+                sw.Start();
+                while (sw.ElapsedMilliseconds < 5000)
+                { // wait for CORRECT result to come back
+                    if (triggerNextResult) 
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
         private void runTest()
+        {
+            while (!testStarted)
+            { // Wait for user to press the button
+                Thread.Sleep(100);
+            }
+            testStarted = false;
+            Thread.Sleep(100);
+            port.Write("C");
+            DirectX.System.DSystem.RGB = 1f;
+            while (!boardCalibration)
+            {
+                Thread.Sleep(100);
+            }
+            boardCalibration = false;
+            DirectX.System.DSystem.RGB = 0f;
+            port.Write("L");
+            while(!startLatencyTest)
+            {
+                Thread.Sleep(1);
+            }
+
+            DirectX.System.DSystem.RGB = 1f;
+
+            while (!latencyTest) { }
+
+            port.Write("G");
+            runGammaTest();
+            while (gammaTest)
+            {
+                Thread.Sleep(100);
+            }
+            Console.WriteLine("Gamma test complete");
+            while (!testRunning)
+            {
+                Thread.Sleep(10);
+            }
+            Console.WriteLine("test running");
+            while (testRunning)
+            {
+                currentRun = 0;
+                currentStart = 0;
+                currentEnd = 0;
+                int testPatternSize = RGBArr.Count * (RGBArr.Count - 1);
+                for (int r = 0; r < testCount.Value; r++)
+                { // how many runs to do
+                    DirectX.System.DSystem.RGB = 0f;
+                    singleResults.Clear();
+                    for (int i = 0; i < RGBArr.Count; i++)
+                    { // loop through each "base" value
+                        for (int k = i + 1; k < RGBArr.Count; k++)
+                        { // loop through each combination of "base" value and the rest of the array
+                            if (port == null)
+                            {
+                                testRunning = false;
+                                break;
+                            }
+                            while (paused)
+                            { // check if test should be paused first, if so sleep for 100ms.
+                                Thread.Sleep(100);
+                            }
+                            Thread.Sleep(10);
+                            try
+                            { port.Write(i.ToString() + k.ToString()); }
+                            catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); SetText(ex.Message + ex.StackTrace); }
+                            Thread.Sleep(5);
+                            DirectX.System.DSystem.RGB = RGBArr[k] / 255f;
+                            Stopwatch sw = new Stopwatch();
+                            sw.Reset();
+                            sw.Start();
+                            while (sw.ElapsedMilliseconds < 5000)
+                            { // wait for CORRECT result to come back
+                                if (currentStart == RGBArr[i] && currentEnd == RGBArr[k] && triggerNextResult)
+                                {
+                                    break;
+                                }
+                                Thread.Sleep(10);
+                            }
+                            if (sw.ElapsedMilliseconds > 5000)
+                            {
+                                DialogResult d = showMessageBox("Error: The test was unable to run the last transition, try again?", "Test Timed Out", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                                if (d == DialogResult.Retry)
+                                {
+                                    try
+                                    { port.Write(i.ToString() + k.ToString()); }
+                                    catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); SetText(ex.Message + ex.StackTrace); }
+                                }
+                                else
+                                {
+                                    testRunning = false;
+                                    break;
+                                }
+                            }
+                            triggerNextResult = false;
+                            Thread.Sleep(100);
+                            if (port == null)
+                            {
+                                testRunning = false;
+                                break;
+                            }
+                            try
+                            { port.Write(k.ToString() + i.ToString()); }
+                            catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); SetText(ex.Message + ex.StackTrace); }
+                            Thread.Sleep(5);
+                            DirectX.System.DSystem.RGB = RGBArr[i] / 255f;
+                            sw.Reset();
+                            sw.Start();
+                            while (sw.ElapsedMilliseconds < 5000)
+                            { // wait for CORRECT result to come back
+                                if (currentStart == RGBArr[k] && currentEnd == RGBArr[i] && triggerNextResult)
+                                {
+                                    break;
+                                }
+                                Thread.Sleep(10);
+                            }
+                            if (sw.ElapsedMilliseconds > 5000)
+                            {
+                                DialogResult d = showMessageBox("Error: The test was unable to run the last transition, try again?", "Test Timed Out", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                                if (d == DialogResult.Retry)
+                                {
+                                    try
+                                    { port.Write(k.ToString() + i.ToString()); }
+                                    catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); SetText(ex.Message + ex.StackTrace); }
+                                }
+                                else
+                                {
+                                    testRunning = false;
+                                    break;
+                                }
+                            }
+                            triggerNextResult = false;
+                            if (!testRunning) { break; }
+                            Thread.Sleep(100);
+                        }
+                        if (!testRunning) { break; }
+                        Thread.Sleep(100);
+                    }
+                    if (!testRunning) { break; }
+                    Thread.Sleep(200);
+                    //results.Add(singleResults);
+                    runComplete();
+                    Thread.Sleep(500);
+                    currentRun++;
+                    singleResults.Clear();
+                }
+                if (!testRunning) { break; }
+                port.Write("X");
+                Process.Start("explorer.exe", resultsFolderPath);
+                testRunning = false;
+            }
+        }
+
+        private void runUE4Test()
         {
             while (!testStarted)
             { // Wait for user to press the button
@@ -3102,9 +3337,15 @@ namespace OSRTT_Launcher
         private void testButtonToolStripMenuItemToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //testRawInput();
-            port.Write("J");
+            //port.Write("J");
+            //var item = fpsList.Find(x => x.FPSValue == getSelectedFps());
+            Popup p = new Popup();
+            p.announcementMode();
+            p.Show();
+            Console.WriteLine();
             //runDirectXWindow();
         }
+
         static void testRawInput()
         {
             Device.RegisterDevice(SharpDX.Multimedia.UsagePage.Generic, SharpDX.Multimedia.UsageId.GenericMouse, DeviceFlags.None);

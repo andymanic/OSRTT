@@ -478,5 +478,17 @@ namespace OSRTT_Launcher.Properties {
                 this["showDate"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool useUE4 {
+            get {
+                return ((bool)(this["useUE4"]));
+            }
+            set {
+                this["useUE4"] = value;
+            }
+        }
     }
 }

@@ -212,11 +212,14 @@ int checkLightLevel() // Check light level & modulate potentiometer value
   return 1;
 }
 
-void runADC(int curr, int nxt, char key, String type) // Run test, press key and print results
+void runADC(int curr, int nxt, char key, bool sendKeys, String type) // Run test, press key and print results
 {
   digitalWrite(3, HIGH);
   // Set next colour
-  Keyboard.print(key);
+  if (sendKeys)
+  {
+    Keyboard.print(key);
+  }
 
   curr_time = micros(); //need to run this in case board is left connected for long period as first run won't read any samples
   unsigned long start_time = micros();
@@ -289,7 +292,7 @@ void runGammaTest()
     {
       Keyboard.print(extGammaKeys[i]);
       delay(200);
-      runADC(extGammaArr[i], extGammaArr[i], extGammaKeys[i], "Gamma: ");
+      runADC(extGammaArr[i], extGammaArr[i], extGammaKeys[i], false, "Gamma: ");
       delay(200);
     }
   }
@@ -300,7 +303,7 @@ void runGammaTest()
     {
       Keyboard.print(Keys[i]);
       delay(200);
-      runADC(RGBArr[i], RGBArr[i], Keys[i], "Gamma: ");
+      runADC(RGBArr[i], RGBArr[i], Keys[i], false, "Gamma: ");
       delay(200);
     }
   }
@@ -355,11 +358,14 @@ void runInputLagTest(int timeBetween)
   curr_time = micros();
 }
 
-void checkLatency() {
+void checkLatency(bool sendKey) {
   delay(100);
-  Keyboard.print('Q');
+  if (sendKey)
+  {
+    Keyboard.print('Q');
+  }
   delay(100);
-  runADC(1000, 1000, 'F', "TL:");
+  runADC(1000, 1000, 'F', false, "TL:");
   char input[INPUT_SIZE + 1];
   unsigned long startTime = micros();
   while (curr_time < (startTime + 3000))
