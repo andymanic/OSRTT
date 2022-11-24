@@ -380,6 +380,7 @@ void loop() {
     int clicks = 1;
     int timeBetween = 300;
     int totalTime = 100;
+    delay(100);
     oledFourLines("SETTING","CLICK","COUNT","");
     Serial.println("IL Clicks");
     while (input[0] != 'X')
@@ -405,6 +406,8 @@ void loop() {
         break;
       }
     }
+    Serial.print("C: ");
+    Serial.println(clicks);
     if (input[0] != 'X')  {
       oledFourLines("SETTING","TIME","BETWEEN","");
       Serial.println("IL Time");

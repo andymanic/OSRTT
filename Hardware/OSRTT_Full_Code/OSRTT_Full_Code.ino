@@ -36,7 +36,7 @@ SPISettings settingsA(10000000, MSBFIRST, SPI_MODE0);
 
 //Serial connection values
 bool connected = false;
-String firmware = "2.8";
+String firmware = "2.9";
 int testRuns = 4;
 bool vsync = true;
 bool extendedGamma = true;
@@ -699,6 +699,7 @@ void loop() {
       int clicks = 1;
       int timeBetween = 300;
       int totalTime = 100;
+      delay(100);
       Serial.println("IL Clicks");
       while (input[0] != 'X')
       {

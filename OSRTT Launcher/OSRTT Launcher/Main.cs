@@ -28,7 +28,7 @@ namespace OSRTT_Launcher
         private double V1DLFW = 2.8;
         private double ProDLFW = 1.2;
         public int boardType = 0;
-        private string softwareVersion = "3.7";
+        private string softwareVersion = "3.8";
 
         // TODO //
         //
@@ -1520,18 +1520,19 @@ namespace OSRTT_Launcher
                             };
                             inputLagRawData.Add(rawLag);
                         }
+                        else if (message.Contains("Clicks"))
+                        {
+                            // Send number of clicks to run
+                            int clicks = numberOfClicks / 10;
+                            Console.WriteLine("Clicks: " + clicks);
+                            port.Write(clicks.ToString("00"));
+                        }
                         else if (message.Contains("Time"))
                         {
                             // Send time between setting
                             double t = timeBetween * 10;
                             port.Write(t.ToString());
                             Console.WriteLine("Time Between: " + t);
-                        }
-                        else if (message.Contains("Clicks"))
-                        {
-                            // Send number of clicks to run
-                            int clicks = numberOfClicks / 10;
-                            port.Write(clicks.ToString());
                         }
                         else if (message.Contains("Finished"))
                         {

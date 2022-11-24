@@ -1725,7 +1725,8 @@ namespace OSRTT_Launcher
                 inputLagResult completeResult = new inputLagResult { shotNumber = shotNumber, clickTimeMs = clickTimeMs, frameTimeMs = Convert.ToDouble(FrameTime), inputLag = inputLag, totalInputLag = totalInputLag, onDisplayLatency = onDisplayLag};
                 inputLagProcessed.Add(completeResult);
                 shotNumber++;
-            }   
+            }
+            Console.WriteLine("Finished processing");
             return inputLagProcessed;
         }
 
@@ -1801,8 +1802,9 @@ namespace OSRTT_Launcher
         public static List<inputLagResult> inputLagOutlierRejection(List<inputLagResult> res)
         {
             // Consider adding actual outlier rejection like response time averaging...
-            List<inputLagResult> newRes = res;
-            foreach (var i in newRes)
+            List<inputLagResult> newRes = new List<inputLagResult>();
+            newRes.AddRange(res);
+            foreach (var i in res)
             {
                 if (i.onDisplayLatency == 0)
                 {

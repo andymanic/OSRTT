@@ -1891,6 +1891,48 @@ namespace OSRTT_Launcher
                 if (rawData.Count != 0)
                 {
                     var data = ProcessData.AverageInputLagResults(rawData);
+                    // Write results to csv using new name
+                    decimal fileNumber = 001;
+                    // search /Results folder for existing file names, pick new name
+                    string[] existingFiles = Directory.GetFiles(resultsFolderPath, "*-INPUT-LATENCY-OSRTT.csv");
+                    // Search \Results folder for existing results to not overwrite existing or have save conflict errors
+                    foreach (var s in existingFiles)
+                    {
+                        decimal num = 0;
+                        Console.WriteLine(Path.GetFileNameWithoutExtension(s).Remove(3));
+                        try
+                        { num = decimal.Parse(Path.GetFileNameWithoutExtension(s).Remove(3)); }
+                        catch
+                        { Console.WriteLine("Non-standard file name found"); }
+                        if (num >= fileNumber)
+                        {
+                            fileNumber = num + 1;
+                        }
+                    }
+                    string[] folders = resultsFolderPath.Split('\\');
+                    string monitorInfo = folders.Last();
+                    string filePath = resultsFolderPath + "\\" + monitorInfo + "-INPUT-LATENCY-OSRTT.csv";
+                    //string filePath = resultsFolderPath + "\\" + fileNumber.ToString("000") + "-INPUT-LAG-OSRTT.csv";
+
+                    string strSeparator = ",";
+                    StringBuilder csvString = new StringBuilder();
+                    csvString.AppendLine("Shot Number,Click Time (ms),Processing Latency (ms),Display Latency(ms),Total System Input Lag (ms)");
+
+                    foreach (var res in data.inputLagResults)
+                    {
+                        csvString.AppendLine(
+                            res.shotNumber.ToString() + "," +
+                            res.clickTimeMs.ToString() + "," +
+                            res.frameTimeMs.ToString() + "," +
+                            res.onDisplayLatency.ToString() + "," +
+                            res.totalInputLag.ToString()
+                            );
+                    }
+                    csvString.AppendLine("AVERAGE," + data.ClickTime.AVG.ToString() + "," + data.FrameTime.AVG.ToString() + "," + data.onDisplayLatency.AVG.ToString() + "," + data.totalInputLag.AVG.ToString());
+                    csvString.AppendLine("MINIMUM," + data.ClickTime.MIN.ToString() + "," + data.FrameTime.MIN.ToString() + "," + data.onDisplayLatency.MIN.ToString() + "," + data.totalInputLag.MIN.ToString());
+                    csvString.AppendLine("MAXIMUM," + data.ClickTime.MAX.ToString() + "," + data.FrameTime.MAX.ToString() + "," + data.onDisplayLatency.MAX.ToString() + "," + data.totalInputLag.MAX.ToString());
+                    Console.WriteLine(filePath);
+                    File.WriteAllText(filePath, csvString.ToString());
                     inputLagMode(data);
                 }
                 else
@@ -1898,9 +1940,9 @@ namespace OSRTT_Launcher
                     MessageBox.Show("Failed to import data", "Import Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }    
             }
-            catch
+            catch (Exception ex)
             {
-
+                Console.WriteLine(ex.Message + ex.StackTrace);
             }
         }
 
