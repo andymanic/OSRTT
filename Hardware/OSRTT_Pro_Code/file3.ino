@@ -116,6 +116,9 @@ void loop() {
     Serial.print("BoardType:");
     Serial.println(boardType);
     delay(100);
+    Serial.print("BoardType:");
+    Serial.println(boardType);
+    delay(100);
     Serial.println("FW:" + firmware);
     delay(100);
     Serial.print("FPS Key:");

@@ -478,5 +478,17 @@ namespace OSRTT_Launcher.Properties {
                 this["showDate"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int autoSavePNG {
+            get {
+                return ((int)(this["autoSavePNG"]));
+            }
+            set {
+                this["autoSavePNG"] = value;
+            }
+        }
     }
 }

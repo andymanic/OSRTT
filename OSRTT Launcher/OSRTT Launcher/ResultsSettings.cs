@@ -37,6 +37,7 @@ namespace OSRTT_Launcher
             initTextColour();
             initDenoiseSelect();
             initDateSelect();
+            initAutoSavePNGSelect();
             saveLabel.Visible = false;
         }
 
@@ -343,6 +344,15 @@ namespace OSRTT_Launcher
             {
                 showDataBox.SelectedIndex = 1;
             }
+        }
+        private void initAutoSavePNGSelect()
+        {
+            autosavePNGsSelect.Items.Clear();
+            autosavePNGsSelect.Items.Add("Off");
+            autosavePNGsSelect.Items.Add("Transparent");
+            autosavePNGsSelect.Items.Add("White Background");
+            autosavePNGsSelect.SelectedIndex = Properties.Settings.Default.autoSavePNG;
+            
         }
 
         private void settingsPresetSelect_SelectedIndexChanged(object sender, EventArgs e)
@@ -1039,6 +1049,21 @@ namespace OSRTT_Launcher
                 {
                     Properties.Settings.Default.showDate = true;
                 }
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        private void autosavePNGsSelect_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var ctrl = sender as ComboBox;
+            if (ctrl.Focused)
+            {
+                if (saveThread == null || !saveThread.IsAlive)
+                {
+                    saveThread = new Thread(new ThreadStart(this.SavingLabel));
+                    saveThread.Start();
+                }
+                Properties.Settings.Default.autoSavePNG = ctrl.SelectedIndex;
                 Properties.Settings.Default.Save();
             }
         }

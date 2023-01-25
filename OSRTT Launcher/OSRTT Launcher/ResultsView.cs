@@ -418,6 +418,18 @@ namespace OSRTT_Launcher
             heatmaps1.standardView();
             rtViewMenuList.Visible = false;
             denoiseToolStripBtn.Visible = false;
+            string[] existingFiles = Directory.GetFiles(resultsFolderPath, "*.png");
+            if (existingFiles.Length == 0 && Properties.Settings.Default.autoSavePNG != 0)
+            {
+                if (Properties.Settings.Default.autoSavePNG == 1)
+                {
+                    asTransparentPNGToolStripMenuItem_Click(null, null);
+                }
+                else
+                {
+                    asPNGToolStripMenuItem_Click(null, null);
+                }
+            }
         }
         private void graphView()
         {
@@ -650,6 +662,7 @@ namespace OSRTT_Launcher
             toolStripSeparator3.Visible = true;
             rtViewMenuList.Visible = true;
             denoiseToolStripBtn.Visible = true;
+            
         }
 
         private void importViewMenuButton_Click(object sender, EventArgs e)
@@ -1295,7 +1308,7 @@ namespace OSRTT_Launcher
             }
              
             finalHeatmaps.Save(resultsFolderPath + "\\" + fileName);
-            Process.Start("explorer.exe", resultsFolderPath);
+            //Process.Start("explorer.exe", resultsFolderPath);
             BackColor = Color.White;
             heatmaps1.hideText(true);
         }
@@ -1369,7 +1382,7 @@ namespace OSRTT_Launcher
             //Bitmap finalHeatmaps = ScaleImage(scaledHeatmap, 1920, 1080);
             Bitmap finalHeatmaps = CropImage(heatmaps, rect);
             finalHeatmaps.Save(resultsFolderPath + "\\" + fileName);
-            Process.Start("explorer.exe", resultsFolderPath);
+            //Process.Start("explorer.exe", resultsFolderPath);
         }
 
         private void perceivedResponseTimeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1570,10 +1583,15 @@ namespace OSRTT_Launcher
 
         private void importRawFileBtn_Click(object sender, EventArgs e)
         {
-            bool success = false;
+            bool success;
             try
             {
                 importRawData();
+                if (rawData.Count() == 0)
+                {
+                    success = false;
+                    throw new Exception();
+                }
                 success = true;
                 setProgressBar(true);
             }
@@ -1582,61 +1600,64 @@ namespace OSRTT_Launcher
                 success = false;
                 Console.WriteLine(er.Message + er.StackTrace);
             }
-            ProcessData.rtMethods rt = new ProcessData.rtMethods
+            if (success)
             {
-                Name = Properties.Settings.Default.rtName,
-                Tolerance = Properties.Settings.Default.rtTolerance,
-                gammaCorrected = Properties.Settings.Default.rtGammaCorrected,
-                percentage = Properties.Settings.Default.rtPercentage
-            };
-            ProcessData.osMethods os = new ProcessData.osMethods
-            {
-                Name = Properties.Settings.Default.osName,
-                gammaCorrected = Properties.Settings.Default.osGammaCorrected,
-                endPercent = Properties.Settings.Default.osEndPercent,
-                rangePercent = Properties.Settings.Default.osRangePercent
-            };
-            if (runSettings == null)
-            {
-                runSettings = new ProcessData.runSettings       // REMOVE THIS 
+                ProcessData.rtMethods rt = new ProcessData.rtMethods
                 {
-                    RunName = "001-DISPLAY-165-DP",
-                    RefreshRate = 165,
-                    FPSLimit = 1000,
-                    DateAndTime = DateTime.Now.ToString(),
-                    MonitorName = "DISPLAY",
-                    Vsync = true,
-                    osMethod = os,
-                    rtMethod = rt
+                    Name = Properties.Settings.Default.rtName,
+                    Tolerance = Properties.Settings.Default.rtTolerance,
+                    gammaCorrected = Properties.Settings.Default.rtGammaCorrected,
+                    percentage = Properties.Settings.Default.rtPercentage
                 };
-            }
-            else
-            {
-                runSettings.rtMethod = rt;
-                runSettings.osMethod = os;
-            }
-            if (success)
-            {
-                try
+                ProcessData.osMethods os = new ProcessData.osMethods
                 {
-                    processAllRuns(rt, os, true);
-                    success = true;
-                }
-                catch (Exception ex)
+                    Name = Properties.Settings.Default.osName,
+                    gammaCorrected = Properties.Settings.Default.osGammaCorrected,
+                    endPercent = Properties.Settings.Default.osEndPercent,
+                    rangePercent = Properties.Settings.Default.osRangePercent
+                };
+                if (runSettings == null)
                 {
-                    success = false;
-                    MessageBox.Show(ex.Message + ex.StackTrace, "Error importing files", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Console.WriteLine(ex.Message + ex.StackTrace);
+                    runSettings = new ProcessData.runSettings       // REMOVE THIS 
+                    {
+                        RunName = "001-DISPLAY-165-DP",
+                        RefreshRate = 165,
+                        FPSLimit = 1000,
+                        DateAndTime = DateTime.Now.ToString(),
+                        MonitorName = "DISPLAY",
+                        Vsync = true,
+                        osMethod = os,
+                        rtMethod = rt
+                    };
                 }
+                else
+                {
+                    runSettings.rtMethod = rt;
+                    runSettings.osMethod = os;
+                }
+                if (success)
+                {
+                    try
+                    {
+                        processAllRuns(rt, os, true);
+                        success = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        success = false;
+                        MessageBox.Show(ex.Message + ex.StackTrace, "Error importing files", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Console.WriteLine(ex.Message + ex.StackTrace);
+                    }
+                }
+                if (success)
+                {
+                    handleRunsList();
+                    handleResultsList(runSelectBox.SelectedIndex);
+                    stdResultsMenuBtn_Click(null, null);
+                    Process.Start("explorer.exe", resultsFolderPath);
+                }
+                setProgressBar(false);
             }
-            if (success)
-            {
-                handleRunsList();
-                handleResultsList(runSelectBox.SelectedIndex);
-                stdResultsMenuBtn_Click(null, null);
-                Process.Start("explorer.exe", resultsFolderPath);
-            }
-            setProgressBar(false);
         }
 
         private void importRawFolderBtn_Click(object sender, EventArgs e)
@@ -1645,6 +1666,11 @@ namespace OSRTT_Launcher
             try
             {
                 importRawFolderData();
+                if (rawData.Count() == 0)
+                {
+                    success = false;
+                    throw new Exception();
+                }
                 success = true;
                 setProgressBar(true);
             }
@@ -1653,61 +1679,64 @@ namespace OSRTT_Launcher
                 success = false;
                 Console.WriteLine(er.Message + er.StackTrace);
             }
-            ProcessData.rtMethods rt = new ProcessData.rtMethods
+            if (success)
             {
-                Name = Properties.Settings.Default.rtName,
-                Tolerance = Properties.Settings.Default.rtTolerance,
-                gammaCorrected = Properties.Settings.Default.rtGammaCorrected,
-                percentage = Properties.Settings.Default.rtPercentage
-            };
-            ProcessData.osMethods os = new ProcessData.osMethods
-            {
-                Name = Properties.Settings.Default.osName,
-                gammaCorrected = Properties.Settings.Default.osGammaCorrected,
-                endPercent = Properties.Settings.Default.osEndPercent,
-                rangePercent = Properties.Settings.Default.osRangePercent
-            };
-            if (runSettings == null)
-            {
-                runSettings = new ProcessData.runSettings       // REMOVE THIS 
+                ProcessData.rtMethods rt = new ProcessData.rtMethods
                 {
-                    RunName = "001-DISPLAY-165-DP",
-                    RefreshRate = 165,
-                    FPSLimit = 1000,
-                    DateAndTime = DateTime.Now.ToString(),
-                    MonitorName = "DISPLAY",
-                    Vsync = true,
-                    osMethod = os,
-                    rtMethod = rt
+                    Name = Properties.Settings.Default.rtName,
+                    Tolerance = Properties.Settings.Default.rtTolerance,
+                    gammaCorrected = Properties.Settings.Default.rtGammaCorrected,
+                    percentage = Properties.Settings.Default.rtPercentage
                 };
-            }
-            else
-            {
-                runSettings.rtMethod = rt;
-                runSettings.osMethod = os;
-            }
-            if (success)
-            {
-                try
+                ProcessData.osMethods os = new ProcessData.osMethods
                 {
-                    processAllRuns(rt, os, false);
-                    success = true;
-                }
-                catch (Exception ex)
+                    Name = Properties.Settings.Default.osName,
+                    gammaCorrected = Properties.Settings.Default.osGammaCorrected,
+                    endPercent = Properties.Settings.Default.osEndPercent,
+                    rangePercent = Properties.Settings.Default.osRangePercent
+                };
+                if (runSettings == null)
                 {
-                    success = false;
-                    MessageBox.Show(ex.Message + ex.StackTrace, "Error importing files", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Console.WriteLine(ex.Message + ex.StackTrace);
+                    runSettings = new ProcessData.runSettings       // REMOVE THIS 
+                    {
+                        RunName = "001-DISPLAY-165-DP",
+                        RefreshRate = 165,
+                        FPSLimit = 1000,
+                        DateAndTime = DateTime.Now.ToString(),
+                        MonitorName = "DISPLAY",
+                        Vsync = true,
+                        osMethod = os,
+                        rtMethod = rt
+                    };
                 }
+                else
+                {
+                    runSettings.rtMethod = rt;
+                    runSettings.osMethod = os;
+                }
+                if (success)
+                {
+                    try
+                    {
+                        processAllRuns(rt, os, false);
+                        success = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        success = false;
+                        MessageBox.Show(ex.Message + ex.StackTrace, "Error importing files", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Console.WriteLine(ex.Message + ex.StackTrace);
+                    }
+                }
+                if (success)
+                {
+                    handleRunsList();
+                    handleResultsList(runSelectBox.SelectedIndex);
+                    stdResultsMenuBtn_Click(null, null);
+                    Process.Start("explorer.exe", resultsFolderPath);
+                }
+                setProgressBar(false);
             }
-            if (success)
-            {
-                handleRunsList();
-                handleResultsList(runSelectBox.SelectedIndex);
-                stdResultsMenuBtn_Click(null, null);
-                Process.Start("explorer.exe", resultsFolderPath);
-            }
-            setProgressBar(false);
         }
 
         private void optionsToolStripMenuItem_Click(object sender, EventArgs e)

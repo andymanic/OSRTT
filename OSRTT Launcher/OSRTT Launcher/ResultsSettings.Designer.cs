@@ -76,6 +76,9 @@ namespace OSRTT_Launcher
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.testSettingsTab = new System.Windows.Forms.TabPage();
             this.resultSettingsTab = new System.Windows.Forms.TabPage();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.label22 = new System.Windows.Forms.Label();
+            this.showDataBox = new System.Windows.Forms.ComboBox();
             this.panel7 = new System.Windows.Forms.Panel();
             this.label23 = new System.Windows.Forms.Label();
             this.denoiseSelect = new System.Windows.Forms.ComboBox();
@@ -119,9 +122,9 @@ namespace OSRTT_Launcher
             this.roundButton1 = new OSRTT_Launcher.RoundButton();
             this.roundButton2 = new OSRTT_Launcher.RoundButton();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
-            this.panel6 = new System.Windows.Forms.Panel();
-            this.label22 = new System.Windows.Forms.Label();
-            this.showDataBox = new System.Windows.Forms.ComboBox();
+            this.panel8 = new System.Windows.Forms.Panel();
+            this.label28 = new System.Windows.Forms.Label();
+            this.autosavePNGsSelect = new System.Windows.Forms.ComboBox();
             this.panel2.SuspendLayout();
             this.tolerancePanel.SuspendLayout();
             this.testSettingsPanel.SuspendLayout();
@@ -138,6 +141,7 @@ namespace OSRTT_Launcher
             this.tabControl1.SuspendLayout();
             this.testSettingsTab.SuspendLayout();
             this.resultSettingsTab.SuspendLayout();
+            this.panel6.SuspendLayout();
             this.panel7.SuspendLayout();
             this.panel5.SuspendLayout();
             this.vrrKeyPanel.SuspendLayout();
@@ -155,7 +159,7 @@ namespace OSRTT_Launcher
             ((System.ComponentModel.ISupportInitialize)(this.rtHighNum)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtMidNum)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtLowNum)).BeginInit();
-            this.panel6.SuspendLayout();
+            this.panel8.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel2
@@ -670,6 +674,7 @@ namespace OSRTT_Launcher
             // resultSettingsTab
             // 
             this.resultSettingsTab.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.resultSettingsTab.Controls.Add(this.panel8);
             this.resultSettingsTab.Controls.Add(this.panel6);
             this.resultSettingsTab.Controls.Add(this.panel7);
             this.resultSettingsTab.Controls.Add(this.panel5);
@@ -688,13 +693,45 @@ namespace OSRTT_Launcher
             this.resultSettingsTab.TabIndex = 1;
             this.resultSettingsTab.Text = "Results Settings";
             // 
+            // panel6
+            // 
+            this.panel6.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.panel6.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel6.Controls.Add(this.label22);
+            this.panel6.Controls.Add(this.showDataBox);
+            this.panel6.Location = new System.Drawing.Point(387, 457);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(615, 50);
+            this.panel6.TabIndex = 53;
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Font = new System.Drawing.Font("Arial", 18F);
+            this.label22.Location = new System.Drawing.Point(10, 11);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(286, 27);
+            this.label22.TabIndex = 23;
+            this.label22.Text = "Show Date on Heatmaps:";
+            // 
+            // showDataBox
+            // 
+            this.showDataBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.showDataBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.showDataBox.FormattingEnabled = true;
+            this.showDataBox.Location = new System.Drawing.Point(311, 8);
+            this.showDataBox.Name = "showDataBox";
+            this.showDataBox.Size = new System.Drawing.Size(289, 32);
+            this.showDataBox.TabIndex = 21;
+            this.showDataBox.SelectedIndexChanged += new System.EventHandler(this.showDataBox_SelectedIndexChanged);
+            // 
             // panel7
             // 
             this.panel7.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.panel7.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel7.Controls.Add(this.label23);
             this.panel7.Controls.Add(this.denoiseSelect);
-            this.panel7.Location = new System.Drawing.Point(387, 531);
+            this.panel7.Location = new System.Drawing.Point(387, 590);
             this.panel7.Name = "panel7";
             this.panel7.Size = new System.Drawing.Size(615, 50);
             this.panel7.TabIndex = 52;
@@ -724,7 +761,7 @@ namespace OSRTT_Launcher
             // 
             this.panel5.BackColor = System.Drawing.Color.Khaki;
             this.panel5.Controls.Add(this.label18);
-            this.panel5.Location = new System.Drawing.Point(7, 531);
+            this.panel5.Location = new System.Drawing.Point(7, 590);
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(356, 54);
             this.panel5.TabIndex = 49;
@@ -745,7 +782,7 @@ namespace OSRTT_Launcher
             this.label20.AutoSize = true;
             this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label20.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.label20.Location = new System.Drawing.Point(9, 588);
+            this.label20.Location = new System.Drawing.Point(9, 647);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(333, 66);
             this.label20.TabIndex = 50;
@@ -1139,37 +1176,37 @@ namespace OSRTT_Launcher
             this.roundButton2.TabIndex = 34;
             this.roundButton2.UseVisualStyleBackColor = false;
             // 
-            // panel6
+            // panel8
             // 
-            this.panel6.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.panel6.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel6.Controls.Add(this.label22);
-            this.panel6.Controls.Add(this.showDataBox);
-            this.panel6.Location = new System.Drawing.Point(387, 457);
-            this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(615, 50);
-            this.panel6.TabIndex = 53;
+            this.panel8.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.panel8.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel8.Controls.Add(this.label28);
+            this.panel8.Controls.Add(this.autosavePNGsSelect);
+            this.panel8.Location = new System.Drawing.Point(387, 524);
+            this.panel8.Name = "panel8";
+            this.panel8.Size = new System.Drawing.Size(615, 50);
+            this.panel8.TabIndex = 54;
             // 
-            // label22
+            // label28
             // 
-            this.label22.AutoSize = true;
-            this.label22.Font = new System.Drawing.Font("Arial", 18F);
-            this.label22.Location = new System.Drawing.Point(10, 11);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(286, 27);
-            this.label22.TabIndex = 23;
-            this.label22.Text = "Show Date on Heatmaps:";
+            this.label28.AutoSize = true;
+            this.label28.Font = new System.Drawing.Font("Arial", 18F);
+            this.label28.Location = new System.Drawing.Point(10, 11);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(199, 27);
+            this.label28.TabIndex = 23;
+            this.label28.Text = "Auto Save PNGs:";
             // 
-            // showDataBox
+            // autosavePNGsSelect
             // 
-            this.showDataBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.showDataBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.showDataBox.FormattingEnabled = true;
-            this.showDataBox.Location = new System.Drawing.Point(311, 8);
-            this.showDataBox.Name = "showDataBox";
-            this.showDataBox.Size = new System.Drawing.Size(289, 32);
-            this.showDataBox.TabIndex = 21;
-            this.showDataBox.SelectedIndexChanged += new System.EventHandler(this.showDataBox_SelectedIndexChanged);
+            this.autosavePNGsSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.autosavePNGsSelect.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.autosavePNGsSelect.FormattingEnabled = true;
+            this.autosavePNGsSelect.Location = new System.Drawing.Point(246, 8);
+            this.autosavePNGsSelect.Name = "autosavePNGsSelect";
+            this.autosavePNGsSelect.Size = new System.Drawing.Size(354, 32);
+            this.autosavePNGsSelect.TabIndex = 21;
+            this.autosavePNGsSelect.SelectedIndexChanged += new System.EventHandler(this.autosavePNGsSelect_SelectedIndexChanged);
             // 
             // ResultsSettings
             // 
@@ -1216,6 +1253,8 @@ namespace OSRTT_Launcher
             this.testSettingsTab.PerformLayout();
             this.resultSettingsTab.ResumeLayout(false);
             this.resultSettingsTab.PerformLayout();
+            this.panel6.ResumeLayout(false);
+            this.panel6.PerformLayout();
             this.panel7.ResumeLayout(false);
             this.panel7.PerformLayout();
             this.panel5.ResumeLayout(false);
@@ -1241,8 +1280,8 @@ namespace OSRTT_Launcher
             ((System.ComponentModel.ISupportInitialize)(this.rtHighNum)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtMidNum)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtLowNum)).EndInit();
-            this.panel6.ResumeLayout(false);
-            this.panel6.PerformLayout();
+            this.panel8.ResumeLayout(false);
+            this.panel8.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1341,5 +1380,8 @@ namespace OSRTT_Launcher
         private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.ComboBox showDataBox;
+        private System.Windows.Forms.Panel panel8;
+        private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.ComboBox autosavePNGsSelect;
     }
 }
