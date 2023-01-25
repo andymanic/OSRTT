@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -103,6 +104,19 @@ namespace OSRTT_Launcher
             barPlot.Plot.SetAxisLimitsY(0, inputLagResults.totalInputLag.MAX + 1);
             barPlot.Plot.Render();
             barPlot.Refresh();
+
+            string[] existingFiles = Directory.GetFiles(resultsFolderPath, "*.png");
+            if (existingFiles.Length == 0 && Properties.Settings.Default.autoSavePNG != 0)
+            {
+                if (Properties.Settings.Default.autoSavePNG == 1)
+                {
+                    saveIMGBtn_Click(null, null);
+                }
+                else
+                {
+                    saveWhitePNGBtn_Click(null, null);
+                }
+            }
         }
         private void switchGraphTypeBtn_Click(object sender, EventArgs e)
         {
@@ -148,6 +162,28 @@ namespace OSRTT_Launcher
                 string run = CFuncs.createFileName(resultsFolderPath, "-OSRTT-INPUT-LAG.png");
                 Color bnColor = BackColor;
                 barPlot.Plot.Style(figureBackground: Color.Transparent, dataBackground: Color.Transparent);
+                barPlot.Plot.SaveFig(resultsFolderPath + "\\" + run, 1920, 1080, false);
+                barPlot.Plot.Style(figureBackground: bnColor, dataBackground: bnColor);
+                Process.Start("explorer.exe", resultsFolderPath);
+            }
+        }
+
+        private void saveWhitePNGBtn_Click(object sender, EventArgs e)
+        {
+            if (ScatterOption)
+            {
+                string run = CFuncs.createFileName(resultsFolderPath, "-OSRTT-INPUT-LAG.png");
+                Color bnColor = BackColor;
+                graphedData.Plot.Style(figureBackground: Color.White, dataBackground: Color.White);
+                graphedData.Plot.SaveFig(resultsFolderPath + "\\" + run, 1920, 1080, false);
+                graphedData.Plot.Style(figureBackground: bnColor, dataBackground: bnColor);
+                Process.Start("explorer.exe", resultsFolderPath);
+            }
+            else
+            {
+                string run = CFuncs.createFileName(resultsFolderPath, "-OSRTT-INPUT-LAG.png");
+                Color bnColor = BackColor;
+                barPlot.Plot.Style(figureBackground: Color.White, dataBackground: Color.White);
                 barPlot.Plot.SaveFig(resultsFolderPath + "\\" + run, 1920, 1080, false);
                 barPlot.Plot.Style(figureBackground: bnColor, dataBackground: bnColor);
                 Process.Start("explorer.exe", resultsFolderPath);

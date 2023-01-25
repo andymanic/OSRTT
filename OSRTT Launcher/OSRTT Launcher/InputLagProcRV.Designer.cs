@@ -34,6 +34,7 @@ namespace OSRTT_Launcher
             this.rtTitle = new System.Windows.Forms.Label();
             this.saveIMGBtn = new System.Windows.Forms.Button();
             this.barPlot = new ScottPlot.FormsPlot();
+            this.saveWhitePNGBtn = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // switchGraphTypeBtn
@@ -73,11 +74,11 @@ namespace OSRTT_Launcher
             this.saveIMGBtn.FlatAppearance.BorderSize = 0;
             this.saveIMGBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.saveIMGBtn.Font = new System.Drawing.Font("Consolas", 16F, System.Drawing.FontStyle.Bold);
-            this.saveIMGBtn.Location = new System.Drawing.Point(475, 16);
+            this.saveIMGBtn.Location = new System.Drawing.Point(391, 16);
             this.saveIMGBtn.Name = "saveIMGBtn";
-            this.saveIMGBtn.Size = new System.Drawing.Size(243, 36);
+            this.saveIMGBtn.Size = new System.Drawing.Size(140, 36);
             this.saveIMGBtn.TabIndex = 32;
-            this.saveIMGBtn.Text = "Save Chart as PNG";
+            this.saveIMGBtn.Text = "Save PNG";
             this.saveIMGBtn.UseVisualStyleBackColor = false;
             this.saveIMGBtn.Click += new System.EventHandler(this.saveIMGBtn_Click);
             // 
@@ -90,11 +91,26 @@ namespace OSRTT_Launcher
             this.barPlot.Size = new System.Drawing.Size(1184, 666);
             this.barPlot.TabIndex = 33;
             // 
+            // saveWhitePNGBtn
+            // 
+            this.saveWhitePNGBtn.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.saveWhitePNGBtn.FlatAppearance.BorderSize = 0;
+            this.saveWhitePNGBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.saveWhitePNGBtn.Font = new System.Drawing.Font("Consolas", 16F, System.Drawing.FontStyle.Bold);
+            this.saveWhitePNGBtn.Location = new System.Drawing.Point(537, 16);
+            this.saveWhitePNGBtn.Name = "saveWhitePNGBtn";
+            this.saveWhitePNGBtn.Size = new System.Drawing.Size(196, 36);
+            this.saveWhitePNGBtn.TabIndex = 34;
+            this.saveWhitePNGBtn.Text = "Save White PNG";
+            this.saveWhitePNGBtn.UseVisualStyleBackColor = false;
+            this.saveWhitePNGBtn.Click += new System.EventHandler(this.saveWhitePNGBtn_Click);
+            // 
             // InputLagProcRV
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Transparent;
+            this.Controls.Add(this.saveWhitePNGBtn);
             this.Controls.Add(this.barPlot);
             this.Controls.Add(this.saveIMGBtn);
             this.Controls.Add(this.rtTitle);
@@ -113,5 +129,6 @@ namespace OSRTT_Launcher
         private System.Windows.Forms.Label rtTitle;
         private System.Windows.Forms.Button saveIMGBtn;
         private ScottPlot.FormsPlot barPlot;
+        private System.Windows.Forms.Button saveWhitePNGBtn;
     }
 }
