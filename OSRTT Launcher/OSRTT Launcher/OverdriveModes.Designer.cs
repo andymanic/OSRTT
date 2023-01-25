@@ -37,6 +37,7 @@ namespace OSRTT_Launcher
             this.continueBtn = new System.Windows.Forms.Button();
             this.extraInfoBox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.cancelButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label6
@@ -100,7 +101,7 @@ namespace OSRTT_Launcher
             this.continueBtn.Font = new System.Drawing.Font("Calibri", 24F, System.Drawing.FontStyle.Bold);
             this.continueBtn.Location = new System.Drawing.Point(20, 231);
             this.continueBtn.Name = "continueBtn";
-            this.continueBtn.Size = new System.Drawing.Size(471, 48);
+            this.continueBtn.Size = new System.Drawing.Size(344, 48);
             this.continueBtn.TabIndex = 30;
             this.continueBtn.Text = "Continue";
             this.continueBtn.UseVisualStyleBackColor = false;
@@ -125,11 +126,26 @@ namespace OSRTT_Launcher
             this.label3.TabIndex = 31;
             this.label3.Text = "Extra Info:";
             // 
+            // cancelButton
+            // 
+            this.cancelButton.BackColor = System.Drawing.Color.DarkSalmon;
+            this.cancelButton.FlatAppearance.BorderSize = 0;
+            this.cancelButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.cancelButton.Font = new System.Drawing.Font("Calibri", 24F, System.Drawing.FontStyle.Bold);
+            this.cancelButton.Location = new System.Drawing.Point(370, 231);
+            this.cancelButton.Name = "cancelButton";
+            this.cancelButton.Size = new System.Drawing.Size(121, 48);
+            this.cancelButton.TabIndex = 33;
+            this.cancelButton.Text = "Cancel";
+            this.cancelButton.UseVisualStyleBackColor = false;
+            this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
+            // 
             // OverdriveModes
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.extraInfoBox);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.continueBtn);
@@ -155,5 +171,6 @@ namespace OSRTT_Launcher
         private System.Windows.Forms.Button continueBtn;
         private System.Windows.Forms.TextBox extraInfoBox;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button cancelButton;
     }
 }

@@ -147,5 +147,10 @@ namespace OSRTT_Launcher
         {
             continueBtn.Enabled = true;
         }
+
+        private void cancelButton_Click(object sender, EventArgs e)
+        {
+            mainWindow.cancelTest = true;
+        }
     }
 }

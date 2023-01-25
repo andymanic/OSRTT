@@ -61,6 +61,7 @@ namespace OSRTT_Launcher
         private bool boardCalibration = false;
         private bool latencyTest = false;
         private bool inputLagRun = false;
+        public bool cancelTest = false;
 
         private List<int> RGBArr = new List<int>{0, 51, 102, 153, 204, 255};
         private List<float> RGBKeys = new List<float> { 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f };
@@ -1830,201 +1831,214 @@ namespace OSRTT_Launcher
                 changeSizeAndState("overdrive");
                 while (runSettings.OverdriveMode == null)
                 {
+                    if (cancelTest)
+                    {
+                        break;
+                    }
                     Thread.Sleep(100);
                 }
-                changeSizeAndState("close brightness");
-                ControlDeviceButtons(false);
-                setProgressBar(true);
-                // Save current & FPS to hardware on run
-                Thread.Sleep(200);
-                setFPSLimit();
-                Thread.Sleep(200);
-                setRepeats();
-                if (port != null)
+                if (cancelTest)
                 {
-                    port.Write("V" + Properties.Settings.Default.VSyncState.ToString());
+                    port.Write("X");
+                    changeSizeAndState("close brightness");
+                    cancelTest = false;
                 }
-                Thread.Sleep(200);
-                if (runSettings.OverdriveMode == null)
+                else
                 {
-                    // OD Mode not entered - cause validation?
-                }
-                testRunning = true;
-                vsyncTrigger = false;
-                gammaTest = true;
-                // Launch UE4 game
-                // thinking about it you can probably just bundle this into one process instead of launching, then finding it again...
-                string ue4Path = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
-                ue4Path = new Uri(System.IO.Path.GetDirectoryName(ue4Path)).LocalPath;
-                ue4Path += @"\OSRTT UE4\ResponseTimeTest.exe";
-                // Move UE4 window to selected monitor if that isn't the primary (will open by default there).
-                int selectedDisplay = getSelectedMonitor();
-                var display = Screen.AllScreens[selectedDisplay];
-                int WinX = 0;
-                int WinY = 0;
-                string vsync = " VSync";
-                if (!Properties.Settings.Default.VSyncState)
-                {
-                    vsync = " NoVSync";
-                }
-                
-                Process ue4 = new Process();
-                try
-                {
-                    ue4.StartInfo.FileName = ue4Path;
-                    if (display.Primary == false)
+                    changeSizeAndState("close brightness");
+                    ControlDeviceButtons(false);
+                    setProgressBar(true);
+                    // Save current & FPS to hardware on run
+                    Thread.Sleep(200);
+                    setFPSLimit();
+                    Thread.Sleep(200);
+                    setRepeats();
+                    if (port != null)
                     {
-                        // Force UE4 window to selected display if selected is not primary
-                        WinX = display.Bounds.Location.X;
-                        WinY = display.Bounds.Location.Y;
-                        ue4.StartInfo.Arguments = ue4Path + " WinX=" + WinX + " WinY=" + WinY;
-                    }
-                    else
-                    {
-                        ue4.StartInfo.Arguments = ue4Path;
-                    }
-                    ue4.Start();
-                    // Process.Start(ue4Path);
-                }
-                catch (Exception strE)
-                {
-                    Console.WriteLine(strE.Message + strE.StackTrace);
-                    SetText(strE.Message + strE.StackTrace);
-                }
-                try
-                {
-                    Process[] p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
-                    while (p.Length == 0)
-                    {
-                        // Added in case game hasn't finished launching yet
-                        p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
-                        Thread.Sleep(100);
-                    }
-                    
-                    try
-                    {
-                        gamma.Clear();
-                        processedGamma.Clear();
-                        results.Clear();
-                        multipleRunData.Clear();
-                        singleResults.Clear();
-                        testLatency.Clear();
-                        int runCount = getRunCount();
-                        for (int r = 0; r < runCount; r++)
-                        {
-                            results.Add(new List<ProcessData.rawResultData>());
-                        }
-                        testStarted = false;
-                        port.Write("T");
-                        while (!testMode)
-                        {
-                            Thread.Sleep(200);
-                            port.Write("T");
-                        }
-                    }
-                    catch (Exception exc)
-                    {
-                        SetText(exc.Message + exc.StackTrace);
-                        Console.WriteLine(exc.Message + exc.StackTrace);
+                        port.Write("V" + Properties.Settings.Default.VSyncState.ToString());
                     }
                     Thread.Sleep(200);
-                    
-                    checkWindowThread = new Thread(new ThreadStart(this.checkFocusedWindow));
-                    checkWindowThread.Start();
-                    
-                        testRunning = true;
-                        
-                        runTestThread = new Thread(new ThreadStart(this.runTest));
-                        runTestThread.Start();
-                    
-                    // Wait for game to close then send cancel command to board
-                    p[0].WaitForExit();
-                    /*if (runTestThread != null)
+                    if (runSettings.OverdriveMode == null)
                     {
-                        runTestThread.Abort();
-                    }*/
-                    if (!testRunning)
-                    {
-                        if (runTestThread != null)
-                        {
-                            runTestThread.Abort();
-                        }
+                        // OD Mode not entered - cause validation?
                     }
-                    checkWindowThread.Abort();
-                    Console.WriteLine("Game closed");
-                    SetText("Game closed");
-                    port.Write("X");
-                    
-                    ControlDeviceButtons(true);
-                    setProgressBar(false);
-                    testRunning = false;
-                    testStarted = false;
-                    testMode = false;
-                    /*if (Properties.Settings.Default.shareResults)
+                    testRunning = true;
+                    vsyncTrigger = false;
+                    gammaTest = true;
+                    // Launch UE4 game
+                    // thinking about it you can probably just bundle this into one process instead of launching, then finding it again...
+                    string ue4Path = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
+                    ue4Path = new Uri(System.IO.Path.GetDirectoryName(ue4Path)).LocalPath;
+                    ue4Path += @"\OSRTT UE4\ResponseTimeTest.exe";
+                    // Move UE4 window to selected monitor if that isn't the primary (will open by default there).
+                    int selectedDisplay = getSelectedMonitor();
+                    var display = Screen.AllScreens[selectedDisplay];
+                    int WinX = 0;
+                    int WinY = 0;
+                    string vsync = " VSync";
+                    if (!Properties.Settings.Default.VSyncState)
                     {
-                        DataUpload du = new DataUpload();
-                        Thread uploadThread = new Thread(() => du.ShareResults(results,processedGamma,testLatency,runSettings));
-                        uploadThread.Start();
-                    }*/
-                    if (results.Count != 0 && results[0].Count != 0)
+                        vsync = " NoVSync";
+                    }
+                
+                    Process ue4 = new Process();
+                    try
                     {
-                        processThread = new Thread(new ThreadStart(runProcessing));
-                        processThread.Start();
-                    
-                        while (processThread.IsAlive)
+                        ue4.StartInfo.FileName = ue4Path;
+                        if (display.Primary == false)
                         {
-                            Thread.Sleep(100);
-                        }
-                        if (multipleRunData.Count != 0 && averageData.Count != 0)
-                        {
-                            this.Invoke((MethodInvoker)delegate ()
-                            {
-                                ResultsView rv = new ResultsView();
-                                rv.setRawData(results);
-                                rv.setGammaData(processedGamma);
-                                rv.setTestLatency(testLatency);
-                                rv.setMultiRunData(multipleRunData);
-                                rv.setAverageData(averageData);
-                                rv.setResultsFolder(resultsFolderPath);
-                                rv.setRtMethod(rtMethod);
-                                rv.setOsMethod(osMethod);
-                                rv.setRunSettings(runSettings);
-                                rv.setStandardView();
-                                rv.Show();
-                            });
+                            // Force UE4 window to selected display if selected is not primary
+                            WinX = display.Bounds.Location.X;
+                            WinY = display.Bounds.Location.Y;
+                            ue4.StartInfo.Arguments = ue4Path + " WinX=" + WinX + " WinY=" + WinY;
                         }
                         else
                         {
-                            MessageBox.Show("One or more results failed to process. Take a look at the raw data in the graph view and adjust your test settings accordingly.", "Failed to Process Data", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                            this.Invoke((MethodInvoker)delegate ()
+                            ue4.StartInfo.Arguments = ue4Path;
+                        }
+                        ue4.Start();
+                        // Process.Start(ue4Path);
+                    }
+                    catch (Exception strE)
+                    {
+                        Console.WriteLine(strE.Message + strE.StackTrace);
+                        SetText(strE.Message + strE.StackTrace);
+                    }
+                    try
+                    {
+                        Process[] p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
+                        while (p.Length == 0)
+                        {
+                            // Added in case game hasn't finished launching yet
+                            p = Process.GetProcessesByName("ResponseTimeTest-Win64-Shipping");
+                            Thread.Sleep(100);
+                        }
+                    
+                        try
+                        {
+                            gamma.Clear();
+                            processedGamma.Clear();
+                            results.Clear();
+                            multipleRunData.Clear();
+                            singleResults.Clear();
+                            testLatency.Clear();
+                            int runCount = getRunCount();
+                            for (int r = 0; r < runCount; r++)
                             {
-                                ResultsView rv = new ResultsView();
-                                rv.setRawData(results);
-                                rv.setResultsFolder(resultsFolderPath);
-                                rv.setRtMethod(rtMethod);
-                                rv.setOsMethod(osMethod);
-                                rv.setRunSettings(runSettings);
-                                rv.setGraphView();
-                                rv.setGammaData(processedGamma);
-                                rv.setTestLatency(testLatency);
-                                rv.Show();
-                            });
+                                results.Add(new List<ProcessData.rawResultData>());
+                            }
+                            testStarted = false;
+                            port.Write("T");
+                            while (!testMode)
+                            {
+                                Thread.Sleep(200);
+                                port.Write("T");
+                            }
+                        }
+                        catch (Exception exc)
+                        {
+                            SetText(exc.Message + exc.StackTrace);
+                            Console.WriteLine(exc.Message + exc.StackTrace);
+                        }
+                        Thread.Sleep(200);
+                    
+                        checkWindowThread = new Thread(new ThreadStart(this.checkFocusedWindow));
+                        checkWindowThread.Start();
+                    
+                            testRunning = true;
+                        
+                            runTestThread = new Thread(new ThreadStart(this.runTest));
+                            runTestThread.Start();
+                    
+                        // Wait for game to close then send cancel command to board
+                        p[0].WaitForExit();
+                        /*if (runTestThread != null)
+                        {
+                            runTestThread.Abort();
+                        }*/
+                        if (!testRunning)
+                        {
+                            if (runTestThread != null)
+                            {
+                                runTestThread.Abort();
+                            }
+                        }
+                        checkWindowThread.Abort();
+                        Console.WriteLine("Game closed");
+                        SetText("Game closed");
+                        port.Write("X");
+                    
+                        ControlDeviceButtons(true);
+                        setProgressBar(false);
+                        testRunning = false;
+                        testStarted = false;
+                        testMode = false;
+                        /*if (Properties.Settings.Default.shareResults)
+                        {
+                            DataUpload du = new DataUpload();
+                            Thread uploadThread = new Thread(() => du.ShareResults(results,processedGamma,testLatency,runSettings));
+                            uploadThread.Start();
+                        }*/
+                        if (results.Count != 0 && results[0].Count != 0)
+                        {
+                            processThread = new Thread(new ThreadStart(runProcessing));
+                            processThread.Start();
+                    
+                            while (processThread.IsAlive)
+                            {
+                                Thread.Sleep(100);
+                            }
+                            if (multipleRunData.Count != 0 && averageData.Count != 0)
+                            {
+                                this.Invoke((MethodInvoker)delegate ()
+                                {
+                                    ResultsView rv = new ResultsView();
+                                    rv.setRawData(results);
+                                    rv.setGammaData(processedGamma);
+                                    rv.setTestLatency(testLatency);
+                                    rv.setMultiRunData(multipleRunData);
+                                    rv.setAverageData(averageData);
+                                    rv.setResultsFolder(resultsFolderPath);
+                                    rv.setRtMethod(rtMethod);
+                                    rv.setOsMethod(osMethod);
+                                    rv.setRunSettings(runSettings);
+                                    rv.setStandardView();
+                                    rv.Show();
+                                });
+                            }
+                            else
+                            {
+                                MessageBox.Show("One or more results failed to process. Take a look at the raw data in the graph view and adjust your test settings accordingly.", "Failed to Process Data", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                                this.Invoke((MethodInvoker)delegate ()
+                                {
+                                    ResultsView rv = new ResultsView();
+                                    rv.setRawData(results);
+                                    rv.setResultsFolder(resultsFolderPath);
+                                    rv.setRtMethod(rtMethod);
+                                    rv.setOsMethod(osMethod);
+                                    rv.setRunSettings(runSettings);
+                                    rv.setGraphView();
+                                    rv.setGammaData(processedGamma);
+                                    rv.setTestLatency(testLatency);
+                                    rv.Show();
+                                });
+                            }
                         }
                     }
-                }
-                catch (InvalidOperationException e)
-                {
-                    Console.WriteLine(e);
-                    SetText(e.Message + e.StackTrace);
-                }
-                catch (IOException ioex)
-                {
-                    Console.WriteLine(ioex);
-                    SetText(ioex.Message + ioex.StackTrace + ioex.Source);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message + " " + ex.StackTrace, "Error Launching Test", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    catch (InvalidOperationException e)
+                    {
+                        Console.WriteLine(e);
+                        SetText(e.Message + e.StackTrace);
+                    }
+                    catch (IOException ioex)
+                    {
+                        Console.WriteLine(ioex);
+                        SetText(ioex.Message + ioex.StackTrace + ioex.Source);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message + " " + ex.StackTrace, "Error Launching Test", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
             else
