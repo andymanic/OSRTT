@@ -89,8 +89,8 @@ namespace OSRTT_Launcher
             this.importResultsViewBtn = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.importProcILBtn = new System.Windows.Forms.Button();
-            this.heatmaps1 = new OSRTT_Launcher.Heatmaps();
             this.inputLagProcRV1 = new OSRTT_Launcher.InputLagProcRV();
+            this.heatmaps1 = new OSRTT_Launcher.Heatmaps();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.graphViewPanel.SuspendLayout();
@@ -771,13 +771,6 @@ namespace OSRTT_Launcher
             this.importProcILBtn.Text = "Import Processed File to Graph";
             this.importProcILBtn.UseVisualStyleBackColor = false;
             // 
-            // heatmaps1
-            // 
-            this.heatmaps1.Location = new System.Drawing.Point(1395, 55);
-            this.heatmaps1.Name = "heatmaps1";
-            this.heatmaps1.Size = new System.Drawing.Size(1775, 950);
-            this.heatmaps1.TabIndex = 6;
-            // 
             // inputLagProcRV1
             // 
             this.inputLagProcRV1.BackColor = System.Drawing.Color.Transparent;
@@ -787,6 +780,13 @@ namespace OSRTT_Launcher
             this.inputLagProcRV1.Size = new System.Drawing.Size(1232, 774);
             this.inputLagProcRV1.TabIndex = 35;
             // 
+            // heatmaps1
+            // 
+            this.heatmaps1.Location = new System.Drawing.Point(1395, 55);
+            this.heatmaps1.Name = "heatmaps1";
+            this.heatmaps1.Size = new System.Drawing.Size(1775, 950);
+            this.heatmaps1.TabIndex = 6;
+            // 
             // ResultsView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -794,12 +794,12 @@ namespace OSRTT_Launcher
             this.BackColor = System.Drawing.SystemColors.ControlDark;
             this.ClientSize = new System.Drawing.Size(2106, 1204);
             this.Controls.Add(this.inputLagProcRV1);
-            this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.heatmaps1);
             this.Controls.Add(this.importPanel);
             this.Controls.Add(this.graphViewPanel);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuStrip1);
+            this.Controls.Add(this.progressBar1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;

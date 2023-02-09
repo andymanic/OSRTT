@@ -115,7 +115,7 @@ void loop() {
     delay(100);
     Serial.print("BoardType:");
     Serial.println(boardType);
-    delay(100);
+    delay(50);
     Serial.print("BoardType:");
     Serial.println(boardType);
     delay(100);
