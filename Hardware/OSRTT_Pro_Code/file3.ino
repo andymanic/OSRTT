@@ -163,6 +163,41 @@ void loop() {
     Serial.println();
     //checkLightLevel();
   }
+  else if (input[0] == 'K')
+  {
+    int count = 1;
+    Serial.println(count);
+    while (count < 256)
+    {
+      buttonState = digitalRead(buttonPin);
+      if (buttonState == HIGH) //Run when button pressed
+      {
+        digitalPotWrite(count);
+        digitalPotWrite(count);
+        //Serial.print(count);
+        //Serial.print(",");
+        delay(200);
+        ADC0->SWTRIG.bit.START = 1; //Start ADC
+        while (!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
+        adcBuff[count] = ADC0->RESULT.reg;
+        //Serial.println(value);
+        //delay(2000);
+        count*=2;
+        Serial.println(count);
+      }
+      delay(50);
+    }
+    Serial.print("PROADC:");
+    for (int i = 0; i < 256; i++)
+    {
+      Serial.print(i);
+      Serial.print(":");
+      Serial.print(adcBuff[i]);
+      Serial.print(",");
+    }
+    Serial.println();
+    //checkLightLevel();
+  }
   else if (input[0] == 'H')
   {
     int state = input[1] - '0';

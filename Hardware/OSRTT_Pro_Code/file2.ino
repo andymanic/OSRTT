@@ -36,7 +36,7 @@ SPISettings settingsA(1000000, MSBFIRST, SPI_MODE0);
 
 //Serial connection values
 int boardType = 1;
-String firmware = "1.4";
+String firmware = "1.5";
 int testRuns = 4;
 bool vsync = true;
 bool extendedGamma = true;
@@ -272,9 +272,12 @@ void digitalPotWrite(int value)
 
   SPI.beginTransaction(settingsA);
   digitalWrite(2, LOW);
+  //delayMicroseconds(500);
   delay(1);
   SPI.transfer(value);
   //SPI.transfer(0);
+  delay(1);
+  //delayMicroseconds(500);
   digitalWrite(2, HIGH);
   SPI.endTransaction();
 }
