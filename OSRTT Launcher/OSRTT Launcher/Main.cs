@@ -26,9 +26,9 @@ namespace OSRTT_Launcher
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
         private double boardVersion = 2.6;
         private double V1DLFW = 2.8;
-        private double ProDLFW = 1.2;
+        private double ProDLFW = 1.5;
         public int boardType = -1;
-        private string softwareVersion = "4.00";
+        private string softwareVersion = "4.10";
 
         // TODO //
         //
@@ -205,8 +205,9 @@ namespace OSRTT_Launcher
 
         private void getODModesJson()
         {
-            /*using (var client = new WebClient())
+            using (var client = new WebClient())
             {
+                client.Headers.Add("user-agent", "OSRTT");
                 string jsonPath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
                 jsonPath = new Uri(System.IO.Path.GetDirectoryName(jsonPath)).LocalPath + @"\lib\odmodes.json";
                 try
@@ -217,7 +218,7 @@ namespace OSRTT_Launcher
                 {
                     Console.WriteLine(ex.Message + ex.StackTrace);
                 }
-            }*/
+            }
         }
 
         private void appRunning()
@@ -323,6 +324,49 @@ namespace OSRTT_Launcher
         }
         private void getDownloadedFirmwareVersions()
         {
+            string ProFirmwareVersion = "";
+            using (WebClient wc = new WebClient())
+            {
+                wc.Headers.Add("user-agent", "OSRTT");
+                
+                try
+                {
+                    string latest = wc.DownloadString("https://api.github.com/repos/andymanic/OSRTT/releases/latest");
+                    //object jsonData = JsonConvert.DeserializeObject(latest);
+                    //Console.WriteLine(jsonData);
+                    string[] splitMessage = latest.Split('}');
+                    foreach (var s in splitMessage)
+                    {
+                        if (s.Contains("browser_download_url"))
+                        {
+                            string[] splitForUrl = s.Split('"');
+                            foreach (var st in splitForUrl)
+                            {
+                                if (st.StartsWith("https://github.com/") && st.Contains(".ino.bin")) // change to .ino.bin for prod
+                                {
+                                    ProFirmwareVersion = st;
+                                    break;
+                                }
+                            }
+                            if (ProFirmwareVersion != "")
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    if (ProFirmwareVersion != "")
+                    {
+                        string[] fileSplit = ProFirmwareVersion.Split('/');
+                        wc.DownloadFile(ProFirmwareVersion, localPath + @"\\arduinoCLI\\" + fileSplit.Last());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message + ex.StackTrace);
+                }
+
+            }
+            Console.WriteLine("");
             string V1FWPath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
             V1FWPath = new Uri(System.IO.Path.GetDirectoryName(V1FWPath)).LocalPath;
             string ProFWPath = V1FWPath;
