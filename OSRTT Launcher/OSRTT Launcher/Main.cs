@@ -1923,7 +1923,7 @@ namespace OSRTT_Launcher
             if (!brightnessCanceled)
             {
                 initRtOsMethods();
-                makeResultsFolder();
+                makeResultsFolder("RT");
                 overdriveModes1.runSetting = runSettings;
                 changeSizeAndState("overdrive");
                 while (runSettings.OverdriveMode == null)
@@ -2425,12 +2425,12 @@ namespace OSRTT_Launcher
             return median;
         }
 
-        private void makeResultsFolder()
+        private void makeResultsFolder(string testType = "RT")
         {
             int monitor = getSelectedMonitor();
             string monitorName = displayList[monitor].Name;
             monitorName = Regex.Replace(monitorName, "[^\\w\\d\\s -]", "");
-            string monitorInfo = monitorName.Replace(" ", "-") + "-" + displayList[monitor].Freq.ToString() + "-" + displayList[monitor].Connection;
+            string monitorInfo = testType + "-" + monitorName.Replace(" ", "-") + "-" + displayList[monitor].Freq.ToString() + "-" + displayList[monitor].Connection;
             if (runSettings != null)
             {
                 if (runSettings.OverdriveMode != null && runSettings.OverdriveMode != "")
@@ -3043,7 +3043,7 @@ namespace OSRTT_Launcher
                 {
                     try
                     {
-                        makeResultsFolder();
+                        makeResultsFolder("IL");
                         port.Write("P");
 
                     }
@@ -3410,7 +3410,7 @@ namespace OSRTT_Launcher
             {
                 avgOsSign = "(RGB %)";
             }
-            string fileName = monitorInfo + ".csv";
+            string fileName = monitorInfo + runSettings.OverdriveMode + ".csv";
             avgCsvString.AppendLine("Starting RGB,End RGB,Complete Response Time (ms)," + avgRtType + "," + avgPerType + "," + avgOsType + " " + avgOsSign + ",Visual Response Rating,Input Lag (ms)");
             foreach (ProcessData.processedResult i in averageData)
             {
