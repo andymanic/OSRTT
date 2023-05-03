@@ -89,7 +89,7 @@ namespace OSRTT_Launcher
             public string Resolution { get; set; }
             public int FPSLimit { get; set; }
             public bool Vsync { get; set; }
-            public string OverdriveMode { get; set; }
+            public string OverdriveMode { get; set; } = "";
             public int Mode { get; set; }
             public rtMethods rtMethod { get; set; }
             public osMethods osMethod { get; set; }

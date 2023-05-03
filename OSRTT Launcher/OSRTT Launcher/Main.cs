@@ -1923,7 +1923,6 @@ namespace OSRTT_Launcher
             if (!brightnessCanceled)
             {
                 initRtOsMethods();
-                makeResultsFolder("RT");
                 overdriveModes1.runSetting = runSettings;
                 changeSizeAndState("overdrive");
                 while (runSettings.OverdriveMode == null)
@@ -1934,6 +1933,7 @@ namespace OSRTT_Launcher
                     }
                     Thread.Sleep(100);
                 }
+                makeResultsFolder("RT");
                 if (cancelTest)
                 {
                     port.Write("X");
@@ -2430,7 +2430,7 @@ namespace OSRTT_Launcher
             int monitor = getSelectedMonitor();
             string monitorName = displayList[monitor].Name;
             monitorName = Regex.Replace(monitorName, "[^\\w\\d\\s -]", "");
-            string monitorInfo = testType + "-" + monitorName.Replace(" ", "-") + "-" + displayList[monitor].Freq.ToString() + "-" + displayList[monitor].Connection;
+            string monitorInfo = testType + "-" + monitorName.Replace(" ", "-") + "-" + displayList[monitor].Freq.ToString() + "-" + displayList[monitor].Connection + runSettings.OverdriveMode;
             if (runSettings != null)
             {
                 if (runSettings.OverdriveMode != null && runSettings.OverdriveMode != "")
