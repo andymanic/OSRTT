@@ -419,15 +419,18 @@ namespace OSRTT_Launcher
             rtViewMenuList.Visible = false;
             denoiseToolStripBtn.Visible = false;
             string[] existingFiles = Directory.GetFiles(resultsFolderPath, "*.png");
-            if (existingFiles.Length == 0 && Properties.Settings.Default.autoSavePNG != 0)
+            if (!ICantBeBotheredToFixThisDuplicationBugProperly && Properties.Settings.Default.autoSavePNG != 0 && existingFiles.Length == 0)
             {
+                ICantBeBotheredToFixThisDuplicationBugProperly = true;
                 Thread autoSaveThread = new Thread(new ThreadStart(autoSavePNG));
                 autoSaveThread.Start();
             }
         }
+        private bool ICantBeBotheredToFixThisDuplicationBugProperly = false;
         private void autoSavePNG()
         {
             Thread.Sleep(3000);
+            //Console.WriteLine(Properties.Settings.Default.autoSavePNG);
             if (Properties.Settings.Default.autoSavePNG == 1)
             {
                 asTransparentPNGToolStripMenuItem_Click(null, null);
@@ -1208,7 +1211,7 @@ namespace OSRTT_Launcher
                     {
                         try
                         {
-                            int num = int.Parse(Path.GetFileNameWithoutExtension(s).Remove(3));
+                            int num = int.Parse(Path.GetFileNameWithoutExtension(s).Remove(1));
                             if (num >= fileNumber)
                             {
                                 fileNumber = num + 1;
@@ -1221,7 +1224,7 @@ namespace OSRTT_Launcher
                     }
                     string[] folders = resultsFolderPath.Split('\\');
                     monitorInfo = folders.Last();
-                    fileName = monitorInfo + ".png";
+                    fileName = fileNumber.ToString() + "-" + monitorInfo + ".png";
                 }
                 else
                 {
@@ -1366,43 +1369,46 @@ namespace OSRTT_Launcher
                 var del = new pngDelegate(asPNGToolStripMenuItem_Click);
                 this.Invoke(del, null, null);
             }
-            string fileName = "OSRTT Heatmaps.png";
-            string monitorInfo = "";
-            
-            if (resultsFolderPath != "")
-            {
-                string[] existingFiles = Directory.GetFiles(resultsFolderPath, "*.png");
-                int fileNumber = 0;
-                //search files for number
-                foreach (var s in existingFiles)
-                {
-                    int num = int.Parse(Path.GetFileNameWithoutExtension(s).Remove(3));
-                    if (num >= fileNumber)
-                    {
-                        fileNumber = num + 1;
-                    }
-                }
-                string[] folders = resultsFolderPath.Split('\\');
-                monitorInfo = folders.Last();
-                fileName = fileNumber.ToString() + "-" + monitorInfo + ".png";
-            }
             else
             {
-                resultsFolderPath = path;
-            }
-            Bitmap heatmaps = new Bitmap(this.Width, this.Height);
-            this.DrawToBitmap(heatmaps, new Rectangle(0, 0, heatmaps.Width, heatmaps.Height));
-            //heatmaps.MakeTransparent(BackColor);
+                string fileName = "OSRTT Heatmaps.png";
+                string monitorInfo = "";
+            
+                if (resultsFolderPath != "")
+                {
+                    string[] existingFiles = Directory.GetFiles(resultsFolderPath, "*.png");
+                    int fileNumber = 0;
+                    //search files for number
+                    foreach (var s in existingFiles)
+                    {
+                        int num = int.Parse(Path.GetFileNameWithoutExtension(s).Remove(1));
+                        if (num >= fileNumber)
+                        {
+                            fileNumber = num + 1;
+                        }
+                    }
+                    string[] folders = resultsFolderPath.Split('\\');
+                    monitorInfo = folders.Last();
+                    fileName = fileNumber.ToString() + "-" + monitorInfo + ".png";
+                }
+                else
+                {
+                    resultsFolderPath = path;
+                }
+                Bitmap heatmaps = new Bitmap(this.Width, this.Height);
+                this.DrawToBitmap(heatmaps, new Rectangle(0, 0, heatmaps.Width, heatmaps.Height));
+                //heatmaps.MakeTransparent(BackColor);
 
-            // crop sides
-            // 80px top, 8px every other side
-            // width - 16, height - 88, x = 8, y = 80
-            var rect = new Rectangle(new Point(8, 80), new Size((this.Width - 16), (this.Height - 88)));
-            //Bitmap scaledHeatmap = CropImage(heatmaps, rect);
-            //Bitmap finalHeatmaps = ScaleImage(scaledHeatmap, 1920, 1080);
-            Bitmap finalHeatmaps = CropImage(heatmaps, rect);
-            finalHeatmaps.Save(resultsFolderPath + "\\" + fileName);
-            //Process.Start("explorer.exe", resultsFolderPath);
+                // crop sides
+                // 80px top, 8px every other side
+                // width - 16, height - 88, x = 8, y = 80
+                var rect = new Rectangle(new Point(8, 80), new Size((this.Width - 16), (this.Height - 88)));
+                //Bitmap scaledHeatmap = CropImage(heatmaps, rect);
+                //Bitmap finalHeatmaps = ScaleImage(scaledHeatmap, 1920, 1080);
+                Bitmap finalHeatmaps = CropImage(heatmaps, rect);
+                finalHeatmaps.Save(resultsFolderPath + "\\" + fileName);
+                //Process.Start("explorer.exe", resultsFolderPath);
+            }
         }
 
         private void perceivedResponseTimeToolStripMenuItem_Click(object sender, EventArgs e)

@@ -1923,9 +1923,10 @@ namespace OSRTT_Launcher
             if (!brightnessCanceled)
             {
                 initRtOsMethods();
+                makeResultsFolder("RT");
                 overdriveModes1.runSetting = runSettings;
                 changeSizeAndState("overdrive");
-                while (runSettings.OverdriveMode == null)
+                while (runSettings.OverdriveMode == "")
                 {
                     if (cancelTest)
                     {
@@ -1933,7 +1934,8 @@ namespace OSRTT_Launcher
                     }
                     Thread.Sleep(100);
                 }
-                makeResultsFolder("RT");
+                resultsFolderPath += "-" + runSettings.OverdriveMode.Replace(" ", "");
+                Directory.CreateDirectory(resultsFolderPath);
                 if (cancelTest)
                 {
                     port.Write("X");
@@ -2430,18 +2432,18 @@ namespace OSRTT_Launcher
             int monitor = getSelectedMonitor();
             string monitorName = displayList[monitor].Name;
             monitorName = Regex.Replace(monitorName, "[^\\w\\d\\s -]", "");
-            string monitorInfo = testType + "-" + monitorName.Replace(" ", "-") + "-" + displayList[monitor].Freq.ToString() + "-" + displayList[monitor].Connection + runSettings.OverdriveMode;
+            string monitorInfo = testType + "-" + monitorName.Replace(" ", "-") + "-" + displayList[monitor].Freq.ToString() + "-" + displayList[monitor].Connection;
             if (runSettings != null)
             {
                 if (runSettings.OverdriveMode != null && runSettings.OverdriveMode != "")
                 {
-                    monitorInfo += "-" + runSettings.OverdriveMode.Replace(" ", "");
+                    //monitorInfo += "-" + runSettings.OverdriveMode.Replace(" ", "");
                 }
             }
 
             decimal fileNumber = 001;
             // search /Results folder for existing file names, pick new name
-            string[] existingFiles = Directory.GetDirectories(path, "*-" + monitorInfo);
+            string[] existingFiles = Directory.GetDirectories(path, "*-" + monitorInfo + "*");
             //search files for number
             if (existingFiles.Length != 0)
             {
@@ -2456,7 +2458,10 @@ namespace OSRTT_Launcher
                 }
             }
             string filePath = path + "\\" + fileNumber.ToString("000") + "-" + monitorInfo;
-            Directory.CreateDirectory(filePath);
+            if (testType != "RT")
+            {
+                Directory.CreateDirectory(filePath);
+            }
             resultsFolderPath = filePath;
             initRunSettingsFile(filePath, monitor);
         }
@@ -3410,7 +3415,7 @@ namespace OSRTT_Launcher
             {
                 avgOsSign = "(RGB %)";
             }
-            string fileName = monitorInfo + runSettings.OverdriveMode + ".csv";
+            string fileName = monitorInfo + ".csv";
             avgCsvString.AppendLine("Starting RGB,End RGB,Complete Response Time (ms)," + avgRtType + "," + avgPerType + "," + avgOsType + " " + avgOsSign + ",Visual Response Rating,Input Lag (ms)");
             foreach (ProcessData.processedResult i in averageData)
             {
