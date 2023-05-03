@@ -421,16 +421,23 @@ namespace OSRTT_Launcher
             string[] existingFiles = Directory.GetFiles(resultsFolderPath, "*.png");
             if (existingFiles.Length == 0 && Properties.Settings.Default.autoSavePNG != 0)
             {
-                if (Properties.Settings.Default.autoSavePNG == 1)
-                {
-                    asTransparentPNGToolStripMenuItem_Click(null, null);
-                }
-                else
-                {
-                    asPNGToolStripMenuItem_Click(null, null);
-                }
+                Thread autoSaveThread = new Thread(new ThreadStart(autoSavePNG));
+                autoSaveThread.Start();
             }
         }
+        private void autoSavePNG()
+        {
+            Thread.Sleep(3000);
+            if (Properties.Settings.Default.autoSavePNG == 1)
+            {
+                asTransparentPNGToolStripMenuItem_Click(null, null);
+            }
+            else
+            {
+                asPNGToolStripMenuItem_Click(null, null);
+            }
+        }
+
         private void graphView()
         {
             // Clear view/import panel
@@ -1180,137 +1187,145 @@ namespace OSRTT_Launcher
                 }
             }
         }
-
+        delegate void transparentPNGDelegate(object sender, EventArgs e);
         private void asTransparentPNGToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string fileName = "OSRTT Heatmaps.png";
-            string monitorInfo = "";
-            if (resultsFolderPath != "")
+            if (this.InvokeRequired)
             {
-                string[] existingFiles = Directory.GetFiles(resultsFolderPath, "*.png");
-                int fileNumber = 0;
-                //search files for number
-                foreach (var s in existingFiles)
-                {
-                    try
-                    {
-                        int num = int.Parse(Path.GetFileNameWithoutExtension(s).Remove(3));
-                        if (num >= fileNumber)
-                        {
-                            fileNumber = num + 1;
-                        }
-                    }
-                    catch
-                    {
-                        Console.WriteLine("Input string error");
-                    }
-                }
-                string[] folders = resultsFolderPath.Split('\\');
-                monitorInfo = folders.Last();
-                fileName = monitorInfo + ".png";
+                var del = new transparentPNGDelegate(asTransparentPNGToolStripMenuItem_Click);
+                this.Invoke(del, null, null);
             }
             else
             {
-                resultsFolderPath = path;
-            }
-            Bitmap heatmaps = new Bitmap(this.Width, this.Height);
-            BackColor = Color.FromArgb(255,240,240,240);
-            heatmaps1.hideText(false);
-            this.DrawToBitmap(heatmaps, new Rectangle(0, 0, heatmaps.Width, heatmaps.Height));
+                string fileName = "OSRTT Heatmaps.png";
+                string monitorInfo = "";
+                if (resultsFolderPath != "")
+                {
+                    string[] existingFiles = Directory.GetFiles(resultsFolderPath, "*.png");
+                    int fileNumber = 0;
+                    //search files for number
+                    foreach (var s in existingFiles)
+                    {
+                        try
+                        {
+                            int num = int.Parse(Path.GetFileNameWithoutExtension(s).Remove(3));
+                            if (num >= fileNumber)
+                            {
+                                fileNumber = num + 1;
+                            }
+                        }
+                        catch
+                        {
+                            Console.WriteLine("Input string error");
+                        }
+                    }
+                    string[] folders = resultsFolderPath.Split('\\');
+                    monitorInfo = folders.Last();
+                    fileName = monitorInfo + ".png";
+                }
+                else
+                {
+                    resultsFolderPath = path;
+                }
+                Bitmap heatmaps = new Bitmap(this.Width, this.Height);
+                BackColor = Color.FromArgb(255,240,240,240);
+                heatmaps1.hideText(false);
+                this.DrawToBitmap(heatmaps, new Rectangle(0, 0, heatmaps.Width, heatmaps.Height));
             
-            // crop sides
-            // 80px top, 8px every other side
-            // width - 16, height - 88, x = 8, y = 80
-            var rect = new Rectangle(new Point(8, 80), new Size((this.Width - 16), (this.Height - 88)));
-            //Bitmap scaledHeatmap = CropImage(heatmaps, rect);
-            //Bitmap finalHeatmaps = ScaleImage(scaledHeatmap, 1920, 1080);
-            Bitmap finalHeatmaps = CropImage(heatmaps, rect);
-            finalHeatmaps.MakeTransparent(BackColor);
-            // draw text back...
-            string rtTitle = "Perceived Response Time";
-            string rtSubTitle = runSettings.rtMethod.Name;
-            string osTitle = "RGB Overshoot";
-            string osSubTitle = "RGB values over/under target";
-            string vrrTitle = "Visual Response Rating";
-            string vrrSubTitle = "Score out of 100 of visible performance";
-            if (initialResponseTimeToolStripMenuItem.Checked)
-            {
-                rtTitle = "Initial Response Time";
-            }
-            else if (completeResponseTimeToolStripMenuItem.Checked)
-            {
-                rtTitle = "Complete Response Time";
-            }
-            if (runSettings.osMethod.gammaCorrected && (!runSettings.osMethod.endPercent || !runSettings.osMethod.rangePercent))
-            {
-                osTitle = "RGB Overshoot";
-                osSubTitle = "RGB values over/under target";
-            }
-            else if (osMethod.gammaCorrected && (osMethod.endPercent || osMethod.rangePercent))
-            {
-                osTitle = "Percent RGB Overshoot";
-                if (osMethod.rangePercent)
+                // crop sides
+                // 80px top, 8px every other side
+                // width - 16, height - 88, x = 8, y = 80
+                var rect = new Rectangle(new Point(8, 80), new Size((this.Width - 16), (this.Height - 88)));
+                //Bitmap scaledHeatmap = CropImage(heatmaps, rect);
+                //Bitmap finalHeatmaps = ScaleImage(scaledHeatmap, 1920, 1080);
+                Bitmap finalHeatmaps = CropImage(heatmaps, rect);
+                finalHeatmaps.MakeTransparent(BackColor);
+                // draw text back...
+                string rtTitle = "Perceived Response Time";
+                string rtSubTitle = runSettings.rtMethod.Name;
+                string osTitle = "RGB Overshoot";
+                string osSubTitle = "RGB values over/under target";
+                string vrrTitle = "Visual Response Rating";
+                string vrrSubTitle = "Score out of 100 of visible performance";
+                if (initialResponseTimeToolStripMenuItem.Checked)
                 {
-                    osSubTitle = "Percentage of RGB values over/under transition range";
+                    rtTitle = "Initial Response Time";
                 }
-                else
+                else if (completeResponseTimeToolStripMenuItem.Checked)
                 {
-                    osSubTitle = "Percentage of RGB values over/under target";
+                    rtTitle = "Complete Response Time";
                 }
-            }
-            else if (!osMethod.gammaCorrected && (osMethod.endPercent || osMethod.rangePercent))
-            {
-                osTitle = "Percent Overshoot";
-                if (osMethod.rangePercent)
+                if (runSettings.osMethod.gammaCorrected && (!runSettings.osMethod.endPercent || !runSettings.osMethod.rangePercent))
                 {
-                    osSubTitle = "Percent of light level over/under transition range";
+                    osTitle = "RGB Overshoot";
+                    osSubTitle = "RGB values over/under target";
                 }
-                else
+                else if (osMethod.gammaCorrected && (osMethod.endPercent || osMethod.rangePercent))
                 {
-                    osSubTitle = "Percent of light level over/under target";
+                    osTitle = "Percent RGB Overshoot";
+                    if (osMethod.rangePercent)
+                    {
+                        osSubTitle = "Percentage of RGB values over/under transition range";
+                    }
+                    else
+                    {
+                        osSubTitle = "Percentage of RGB values over/under target";
+                    }
                 }
-            }
-            using (Graphics g = Graphics.FromImage(finalHeatmaps))
-            {
-                Brush b = new SolidBrush(Properties.Settings.Default.heatmapTextColour);
-                g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
-                g.SmoothingMode = SmoothingMode.AntiAlias;
-                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                StringFormat sf = new StringFormat();
-                sf.Alignment = StringAlignment.Center;
-                sf.LineAlignment = StringAlignment.Center;
-                Rectangle rt = new Rectangle(100, 36, 377, 36);
-                Rectangle rtSub = new Rectangle(100, 65, 377, 36);
-                Rectangle os = new Rectangle(676, 36, 377, 36);
-                Rectangle osSub = new Rectangle(676, 65, 377, 36);
-                Rectangle vrr = new Rectangle(1264, 36, 377, 36);
-                Rectangle vrrSub = new Rectangle(1264, 65, 377, 36);
-                FontFamily ff = new FontFamily("Calibri");
-                Font f = new Font(ff, 20f, FontStyle.Bold);
-                Font fi = new Font(ff, 16f, FontStyle.Italic);
-                Font fk = new Font(ff, 17f, FontStyle.Bold);
-                g.DrawString(rtTitle, f, b, rt, sf);
-                g.DrawString(rtSubTitle, fi, b, rtSub, sf);
-                g.DrawString(osTitle, f, b, os, sf);
-                g.DrawString(osSubTitle, fi, b, osSub, sf);
-                g.DrawString(vrrTitle, f, b, vrr, sf);
-                g.DrawString(vrrSubTitle, fi, b, vrrSub, sf);
-                g.DrawString("From", fi, b, new Point(29, 393));
-                g.DrawString("From", fi, b, new Point(606, 393));
-                g.DrawString("From", fi, b, new Point(1190, 393));
-                g.DrawString("To", fi, b, new Point(556, 106));
-                g.DrawString("To", fi, b, new Point(1132, 106));
-                g.DrawString("To", fi, b, new Point(1717, 106));
-                // DRAW key text too
-                //g.DrawString("Response Time Key", fk, Brushes.Black, new Point(644, 820));
-                //g.DrawString("Overshoot Key", fk, Brushes.Black, new Point(980, 821));
-                //g.DrawString("Response Rating Key", fk, Brushes.Black, new Point(1260, 819));
-            }
+                else if (!osMethod.gammaCorrected && (osMethod.endPercent || osMethod.rangePercent))
+                {
+                    osTitle = "Percent Overshoot";
+                    if (osMethod.rangePercent)
+                    {
+                        osSubTitle = "Percent of light level over/under transition range";
+                    }
+                    else
+                    {
+                        osSubTitle = "Percent of light level over/under target";
+                    }
+                }
+                using (Graphics g = Graphics.FromImage(finalHeatmaps))
+                {
+                    Brush b = new SolidBrush(Properties.Settings.Default.heatmapTextColour);
+                    g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+                    g.SmoothingMode = SmoothingMode.AntiAlias;
+                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    StringFormat sf = new StringFormat();
+                    sf.Alignment = StringAlignment.Center;
+                    sf.LineAlignment = StringAlignment.Center;
+                    Rectangle rt = new Rectangle(100, 36, 377, 36);
+                    Rectangle rtSub = new Rectangle(100, 65, 377, 36);
+                    Rectangle os = new Rectangle(676, 36, 377, 36);
+                    Rectangle osSub = new Rectangle(676, 65, 377, 36);
+                    Rectangle vrr = new Rectangle(1264, 36, 377, 36);
+                    Rectangle vrrSub = new Rectangle(1264, 65, 377, 36);
+                    FontFamily ff = new FontFamily("Calibri");
+                    Font f = new Font(ff, 20f, FontStyle.Bold);
+                    Font fi = new Font(ff, 16f, FontStyle.Italic);
+                    Font fk = new Font(ff, 17f, FontStyle.Bold);
+                    g.DrawString(rtTitle, f, b, rt, sf);
+                    g.DrawString(rtSubTitle, fi, b, rtSub, sf);
+                    g.DrawString(osTitle, f, b, os, sf);
+                    g.DrawString(osSubTitle, fi, b, osSub, sf);
+                    g.DrawString(vrrTitle, f, b, vrr, sf);
+                    g.DrawString(vrrSubTitle, fi, b, vrrSub, sf);
+                    g.DrawString("From", fi, b, new Point(29, 393));
+                    g.DrawString("From", fi, b, new Point(606, 393));
+                    g.DrawString("From", fi, b, new Point(1190, 393));
+                    g.DrawString("To", fi, b, new Point(556, 106));
+                    g.DrawString("To", fi, b, new Point(1132, 106));
+                    g.DrawString("To", fi, b, new Point(1717, 106));
+                    // DRAW key text too
+                    //g.DrawString("Response Time Key", fk, Brushes.Black, new Point(644, 820));
+                    //g.DrawString("Overshoot Key", fk, Brushes.Black, new Point(980, 821));
+                    //g.DrawString("Response Rating Key", fk, Brushes.Black, new Point(1260, 819));
+                }
              
-            finalHeatmaps.Save(resultsFolderPath + "\\" + fileName);
-            //Process.Start("explorer.exe", resultsFolderPath);
-            BackColor = Color.White;
-            heatmaps1.hideText(true);
+                finalHeatmaps.Save(resultsFolderPath + "\\" + fileName);
+                //Process.Start("explorer.exe", resultsFolderPath);
+                BackColor = Color.White;
+                heatmaps1.hideText(true);
+            }
         }
 
         public Bitmap CropImage(Bitmap source, Rectangle section)
@@ -1343,9 +1358,14 @@ namespace OSRTT_Launcher
                 return bitmap;
             }
         }
-
+        delegate void pngDelegate(object sender, EventArgs e);
         private void asPNGToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (this.InvokeRequired)
+            {
+                var del = new pngDelegate(asPNGToolStripMenuItem_Click);
+                this.Invoke(del, null, null);
+            }
             string fileName = "OSRTT Heatmaps.png";
             string monitorInfo = "";
             
