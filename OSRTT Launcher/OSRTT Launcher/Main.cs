@@ -27,7 +27,7 @@ namespace OSRTT_Launcher
         private double boardVersion = 2.6;
         private double V1DLFW = 2.8;
         private double ProDLFW = 1.2;
-        public int boardType = 0;
+        public int boardType = -1;
         private string softwareVersion = "4.00";
 
         // TODO //
@@ -77,6 +77,7 @@ namespace OSRTT_Launcher
         private int numberOfClicks = 20;
 
         string path = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
+        string localPath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
         string resultsFolderPath = "";
         public ProcessData.runSettings runSettings;
         private List<List<ProcessData.rawResultData>> results = new List<List<ProcessData.rawResultData>>();
@@ -325,8 +326,10 @@ namespace OSRTT_Launcher
             string V1FWPath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
             V1FWPath = new Uri(System.IO.Path.GetDirectoryName(V1FWPath)).LocalPath;
             string ProFWPath = V1FWPath;
+            string ProNewFWPath = V1FWPath;
             V1FWPath += @"\\arduinoCLI\\OSRTT_Full_Code\\OSRTT_Full_Code.ino";
             ProFWPath += @"\\arduinoCLI\\OSRTT_Pro_Code\\file2.ino";
+            ProNewFWPath += @"\\arduinoCLI";
             try
             {
                 if (File.Exists(V1FWPath))
@@ -353,6 +356,15 @@ namespace OSRTT_Launcher
                         }
                     }
                 }
+                foreach (var f in Directory.GetFiles(ProNewFWPath))
+                {
+                    if (f.Contains(".ino.bin"))
+                    {
+                        var splitName = f.Split('_');
+                        var splitVersion = splitName.Last().Remove(3);
+                        ProDLFW = double.Parse(splitVersion);
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -374,6 +386,7 @@ namespace OSRTT_Launcher
             ControlDeviceButtons(false);
             path = new Uri(System.IO.Path.GetDirectoryName(path)).LocalPath;
             path += @"\Results";
+            localPath = new Uri(System.IO.Path.GetDirectoryName(path)).LocalPath;
             if (!Directory.Exists(path)) { Directory.CreateDirectory(path); }
             this.FormClosing += new FormClosingEventHandler(Main_FormClosing);
             AppDomain currentDomain = AppDomain.CurrentDomain;
@@ -734,13 +747,31 @@ namespace OSRTT_Launcher
                             System.Diagnostics.Process process = new System.Diagnostics.Process();
                             process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                             process.StartInfo.FileName = "cmd.exe";
-                            string installCommand = "/C .\\arduinoCLI\\arduino-cli.exe lib install Keyboard && .\\arduinoCLI\\arduino-cli.exe lib install Mouse && .\\arduinoCLI\\arduino-cli.exe lib install ArduinoUniqueID";
-                            string updateCommand = "/C .\\arduinoCLI\\arduino-cli.exe compile --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code && .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code";
+                            string installCommand = "";
+                            string updateCommand = "";
                             if (boardType == 1)
                             {
-                                installCommand = "/C .\\arduinoCLI\\arduino-cli.exe lib install Keyboard && .\\arduinoCLI\\arduino-cli.exe lib install Mouse && .\\arduinoCLI\\arduino-cli.exe lib install ArduinoUniqueID" +
+                                string binFileAvailable = "";
+                                foreach (var f in Directory.GetFiles(localPath + @"\\arduinoCLI")) 
+                                {
+                                    if (f.Contains("ino.bin")) { binFileAvailable = f; }
+                                }
+                                if (binFileAvailable != "")
+                                {
+                                    installCommand = "";
+                                    updateCommand = "/C .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 -i .\\arduinoCLI\\" + binFileAvailable;
+                                }
+                                else
+                                {
+                                    installCommand = "/C .\\arduinoCLI\\arduino-cli.exe lib install Keyboard && .\\arduinoCLI\\arduino-cli.exe lib install Mouse && .\\arduinoCLI\\arduino-cli.exe lib install ArduinoUniqueID" +
                                     "&& .\\arduinoCLI\\arduino-cli.exe lib install Adafruit_SSD1306 && .\\arduinoCLI\\arduino-cli.exe lib install Adafruit_GFX_Library";
-                                updateCommand = "/C .\\arduinoCLI\\arduino-cli.exe compile --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Pro_Code && .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Pro_Code";
+                                    updateCommand = "/C .\\arduinoCLI\\arduino-cli.exe compile --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Pro_Code && .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Pro_Code";
+                                }
+                            }
+                            else if (boardType == 0)
+                            {
+                                installCommand = "/C .\\arduinoCLI\\arduino-cli.exe lib install Keyboard && .\\arduinoCLI\\arduino-cli.exe lib install Mouse && .\\arduinoCLI\\arduino-cli.exe lib install ArduinoUniqueID";
+                                updateCommand = "/C .\\arduinoCLI\\arduino-cli.exe compile --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code && .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code";
                             }
                             Console.WriteLine("ready to start");
                             process.StartInfo.Arguments = installCommand;
@@ -840,11 +871,11 @@ namespace OSRTT_Launcher
             }
         }
 
-        private void compareFirmware()
+        private void compareFirmware(bool force = false)
         {
             if ((boardVersion < V1DLFW && boardType == 0) && !Properties.Settings.Default.SuppressDiagBox)
             {
-                DialogResult dialogResult = MessageBox.Show("A newer version of the board's firmware is available, do you want to update now? \n Current version: " + boardVersion + "\n New version: " + V1DLFW, "Board Firmware Update Available!", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                DialogResult dialogResult = MessageBox.Show("OSRTT V1 Firmware Update Available! Update now? \n Current version: " + boardVersion + "\n New version: " + V1DLFW, "Board Firmware Update Available!", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (dialogResult == DialogResult.Yes)
                 {
                     //updateFirmware();
@@ -853,10 +884,20 @@ namespace OSRTT_Launcher
             }
             else if (!Properties.Settings.Default.SuppressDiagBox && (boardVersion < ProDLFW && boardType == 1))
             {
-                DialogResult dialogResult = MessageBox.Show("A newer version of the board's firmware is available, do you want to update now? \n Current version: " + boardVersion + "\n New version: " + ProDLFW, "Board Firmware Update Available!", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                DialogResult dialogResult = MessageBox.Show("OSRTT PRO Firmware Update Available! Update now? \n Current version: " + boardVersion + "\n New version: " + ProDLFW, "Board Firmware Update Available!", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (dialogResult == DialogResult.Yes)
                 {
                     //updateFirmware();
+                    boardUpdate = true;
+                }
+            }
+            else if (force)
+            {
+                DialogResult dialogResult = MessageBox.Show("There isn't a newer version of the firmware available right now. Would you like to force it to re-flash anyway? (Not recommended)", "No New Updates Available", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    //updateFirmware();
+                    forceUpdate = true;
                     boardUpdate = true;
                 }
             }
@@ -2346,25 +2387,7 @@ namespace OSRTT_Launcher
         }
         private void updateDeviceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (boardVersion < V1DLFW && !Properties.Settings.Default.SuppressDiagBox)
-            {
-                DialogResult dialogResult = MessageBox.Show("A newer version of the board's firmware is available, do you want to update now? \n Current version: " + boardVersion + "\n New version: " + V1DLFW, "Board Firmware Update Available!", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (dialogResult == DialogResult.Yes)
-                {
-                    //updateFirmware();
-                    boardUpdate = true;
-                }
-            }
-            else
-            {
-                DialogResult dialogResult = MessageBox.Show("There isn't a newer version of the firmware available right now. Would you like to force it to re-flash anyway? (Not recommended)", "No New Updates Available", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (dialogResult == DialogResult.Yes)
-                {
-                    //updateFirmware();
-                    forceUpdate = true;
-                    boardUpdate = true;
-                }
-            }
+            compareFirmware();
         }
 
         private void heatmapsMenuItem_Click(object sender, EventArgs e)
