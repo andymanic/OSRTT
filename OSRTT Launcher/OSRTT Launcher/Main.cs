@@ -28,7 +28,7 @@ namespace OSRTT_Launcher
         private double V1DLFW = 2.8;
         private double ProDLFW = 1.5;
         public int boardType = -1;
-        private string softwareVersion = "4.10";
+        private string softwareVersion = "4.2";
 
         // TODO //
         //
@@ -802,8 +802,10 @@ namespace OSRTT_Launcher
                                 }
                                 if (binFileAvailable != "")
                                 {
+                                    Console.WriteLine(binFileAvailable);
                                     installCommand = "";
-                                    updateCommand = "/C .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 -i .\\arduinoCLI\\" + binFileAvailable;
+                                    updateCommand = "/C .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 -i \""+ binFileAvailable + "\"";
+                                    Console.WriteLine(updateCommand);
                                 }
                                 else
                                 {
@@ -818,12 +820,19 @@ namespace OSRTT_Launcher
                                 updateCommand = "/C .\\arduinoCLI\\arduino-cli.exe compile --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code && .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code";
                             }
                             Console.WriteLine("ready to start");
-                            process.StartInfo.Arguments = installCommand;
                             process.StartInfo.UseShellExecute = false;
                             process.StartInfo.RedirectStandardOutput = true;
                             process.StartInfo.CreateNoWindow = true;
-                            process.Start();
-                            process.WaitForExit();
+                            if (installCommand == "")
+                            {
+                                process.StartInfo.Arguments = updateCommand;
+                            }
+                            else
+                            {
+                                process.StartInfo.Arguments = installCommand;
+                                process.Start();
+                                process.WaitForExit();
+                            }
                             process.StartInfo.Arguments = updateCommand;
                             try
                             {
