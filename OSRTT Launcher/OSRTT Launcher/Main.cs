@@ -28,7 +28,7 @@ namespace OSRTT_Launcher
         private double V1DLFW = 2.8;
         private double ProDLFW = 1.5;
         public int boardType = -1;
-        private string softwareVersion = "4.2";
+        private string softwareVersion = "4.3";
 
         // TODO //
         //
@@ -798,7 +798,7 @@ namespace OSRTT_Launcher
                                 string binFileAvailable = "";
                                 foreach (var f in Directory.GetFiles(localPath + @"\\arduinoCLI")) 
                                 {
-                                    if (f.Contains("ino.bin")) { binFileAvailable = f; }
+                                    if (f.Contains("ino.bin") && f.Contains("Pro")) { binFileAvailable = f; }
                                 }
                                 if (binFileAvailable != "")
                                 {
@@ -816,8 +816,23 @@ namespace OSRTT_Launcher
                             }
                             else if (boardType == 0)
                             {
-                                installCommand = "/C .\\arduinoCLI\\arduino-cli.exe lib install Keyboard && .\\arduinoCLI\\arduino-cli.exe lib install Mouse && .\\arduinoCLI\\arduino-cli.exe lib install ArduinoUniqueID";
-                                updateCommand = "/C .\\arduinoCLI\\arduino-cli.exe compile --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code && .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code";
+                                string binFileAvailable = "";
+                                foreach (var f in Directory.GetFiles(localPath + @"\\arduinoCLI"))
+                                {
+                                    if (f.Contains("ino.bin") && f.Contains("Full")) { binFileAvailable = f; }
+                                }
+                                if (binFileAvailable != "")
+                                {
+                                    Console.WriteLine(binFileAvailable);
+                                    installCommand = "";
+                                    updateCommand = "/C .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 -i \"" + binFileAvailable + "\"";
+                                    Console.WriteLine(updateCommand);
+                                }
+                                else
+                                {
+                                    installCommand = "/C .\\arduinoCLI\\arduino-cli.exe lib install Keyboard && .\\arduinoCLI\\arduino-cli.exe lib install Mouse && .\\arduinoCLI\\arduino-cli.exe lib install ArduinoUniqueID";
+                                    updateCommand = "/C .\\arduinoCLI\\arduino-cli.exe compile --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code && .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 .\\arduinoCLI\\OSRTT_Full_Code";
+                                }
                             }
                             Console.WriteLine("ready to start");
                             process.StartInfo.UseShellExecute = false;

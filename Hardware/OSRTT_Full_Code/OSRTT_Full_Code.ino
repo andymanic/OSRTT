@@ -36,7 +36,8 @@ SPISettings settingsA(10000000, MSBFIRST, SPI_MODE0);
 
 //Serial connection values
 bool connected = false;
-String firmware = "2.9";
+int boardType = 0;
+String firmware = "3.0";
 int testRuns = 4;
 bool vsync = true;
 bool extendedGamma = true;
@@ -482,6 +483,9 @@ void loop() {
       delay(100);
       Serial.print("Runs:");
       Serial.println(testRuns);
+      delay(100);
+      Serial.print("BoardType:");
+      Serial.println(boardType);
       delay(100);
       Serial.println("FW:" + firmware);
       delay(100);
