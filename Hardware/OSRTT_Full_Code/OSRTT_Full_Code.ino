@@ -37,7 +37,7 @@ SPISettings settingsA(10000000, MSBFIRST, SPI_MODE0);
 //Serial connection values
 bool connected = false;
 int boardType = 0;
-String firmware = "3.0";
+String firmware = "3.1";
 int testRuns = 4;
 bool vsync = true;
 bool extendedGamma = true;
@@ -503,8 +503,7 @@ void loop() {
       
       Serial.println();
       UniqueIDdump(Serial);
-      Serial.print("BoardType:0");
-      Serial.println("Handshake");
+      Serial.println("BoardType:0");
     }
     else if (input[0] == 'H')
     {
