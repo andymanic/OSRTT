@@ -262,6 +262,7 @@ void loop() {
   else if (input[0] == 'T')
   {
     Serial.println("Ready to test");
+    oledFourLines("PRESS", "BUTTON", "TO START", "THE TEST");
     Serial.setTimeout(200);
     while (input[0] != 'X')
     {
