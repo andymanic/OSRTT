@@ -1105,16 +1105,17 @@ namespace OSRTT_Launcher
                 double initialResponseTime = Math.Round(initialTransTime, 1);
                 double perceivedResponseTime = Math.Round(perceivedTransTime, 1);
 
-                double frameTimeScore = 1000 / runSetting.RefreshRate;
+                double frameTimeScore = 1000 / Convert.ToDouble(runSetting.RefreshRate);
                 frameTimeScore = (10 - frameTimeScore)*10;
                 double initialScore = 0;
+                
                 double perceivedScore = 0;
                 double overshootScore = 0;
                 foreach (VRRKey v in VRRTable)
                 {
                     double valueToScore = 0;
                     double range = 0;
-                    double distanceToMiddle = 0;
+                    double distanceToWorst = 0;
                     double Best = v.Best;
                     double Middle = v.Middle;
                     double Worst = v.Worst;
@@ -1125,39 +1126,29 @@ namespace OSRTT_Launcher
                     }
                     else if (v.Type == 1)
                     {
-                        valueToScore = perceivedResponseTime - initialResponseTime;
+                        valueToScore = perceivedResponseTime - initialResponseTime; 
                     }
                     else if (v.Type == 2)
                     {
                         valueToScore = overshootRGBDiff;
                     }
-                    if (valueToScore <= Middle)
+                    if (valueToScore <= Best)
                     {
-                        if (valueToScore <= Best)
-                        {
-                            result = 100;
-                        }
-                        else
-                        {
-                            range = Middle - Best;
-                            distanceToMiddle = Middle - valueToScore;
-                            result = distanceToMiddle / range;
-                            result = 100 * result;
-                        }
+                        result = 100;
+                    }
+                    else if (valueToScore >= Worst)
+                    {
+                        result = 0;
                     }
                     else
                     {
-                        if (valueToScore >= Worst)
-                        {
-                            result = 0;
-                        }
-                        else
-                        {
-                            range = Worst - Middle;
-                            distanceToMiddle = valueToScore - Middle;
-                            result = distanceToMiddle / range;
-                            result = 100 * result;
-                        }
+                        // shifting results to a base of 0 to be able to compute percentage
+                        valueToScore -= Best;
+                        Worst -= Best;
+                        Best -= Best;
+                        distanceToWorst = valueToScore / Worst;
+                        result = 1 - distanceToWorst;
+                        result *= 100;
                     }
                     if (v.Type == 0) // I know this can be done without checking this again.... but I can't engage my brain enough to find out how.
                     {

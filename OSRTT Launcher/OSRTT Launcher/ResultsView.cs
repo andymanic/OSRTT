@@ -1381,11 +1381,15 @@ namespace OSRTT_Launcher
                     //search files for number
                     foreach (var s in existingFiles)
                     {
-                        int num = int.Parse(Path.GetFileNameWithoutExtension(s).Remove(1));
-                        if (num >= fileNumber)
+                        try
                         {
-                            fileNumber = num + 1;
+                            int num = int.Parse(Path.GetFileNameWithoutExtension(s).Remove(1));
+                            if (num >= fileNumber)
+                            {
+                                fileNumber = num + 1;
+                            }
                         }
+                        catch { } // file name exception catch
                     }
                     string[] folders = resultsFolderPath.Split('\\');
                     monitorInfo = folders.Last();
