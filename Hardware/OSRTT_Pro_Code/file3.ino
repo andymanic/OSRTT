@@ -212,7 +212,7 @@ void loop() {
   }
   else if (input[0] == 'L')
   {
-    fpsLimit = input[1];
+    fpsLimit = (convertHexToDec(input[1]) * 100) + (convertHexToDec(input[2]) * 10) + convertHexToDec(input[3]);
     delay(100);
     Serial.print("FPS Key:");
     Serial.println(fpsLimit);
@@ -326,6 +326,7 @@ void loop() {
           oledFourLines("RUNNING", "GAMMA", "TEST", "");
           runGammaTest();
           delay(100);
+          int runCount = 0;
           while (input[0] != 'X')
           {
             //oledFourLines("RUNNING", "FULL", "TEST", "");
@@ -365,12 +366,16 @@ void loop() {
               {
                 nextIndex = input[1] - 55;
               }
+              if (currentIndex == 0 && nextIndex == 1)
+              {
+                runCount++;
+              }
               int arrSize = sizeof(RGBArr) / sizeof(int);
               if (currentIndex >= 0 && currentIndex < arrSize)
               {
                 int current = RGBArr[currentIndex];
                 int next = RGBArr[nextIndex];
-                oledTestRunning(current, next);
+                oledTestRunning(current, next, runCount);
                 Keyboard.print(Keys[currentIndex]);
                 delay(300);
                 runADC(current, next, Keys[nextIndex], "Results: ");

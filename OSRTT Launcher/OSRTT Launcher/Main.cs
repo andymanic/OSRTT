@@ -28,7 +28,7 @@ namespace OSRTT_Launcher
         private double V1DLFW = 2.8;
         private double ProDLFW = 1.5;
         public int boardType = -1;
-        private string softwareVersion = "4.4";
+        private string softwareVersion = "4.5";
 
         // TODO //
         //
@@ -613,16 +613,19 @@ namespace OSRTT_Launcher
         {
             fpsLimitList.Items.Clear();
             fpsList.Clear();
-            fpsList.Add(new FPS { FPSValue = "1000", Key = "1" });
-            fpsList.Add(new FPS { FPSValue = "360", Key = "2" });
-            fpsList.Add(new FPS { FPSValue = "240", Key = "3" });
-            fpsList.Add(new FPS { FPSValue = "170", Key = "4" });
-            fpsList.Add(new FPS { FPSValue = "165", Key = "5" });
-            fpsList.Add(new FPS { FPSValue = "144", Key = "6" });
-            fpsList.Add(new FPS { FPSValue = "120", Key = "7" });
-            fpsList.Add(new FPS { FPSValue = "100", Key = "8" });
-            fpsList.Add(new FPS { FPSValue = "75", Key = "9" });
-            fpsList.Add(new FPS { FPSValue = "60", Key = "0" });
+            fpsList.Add(new FPS { FPSValue = "1000", Key = "49" });
+            fpsList.Add(new FPS { FPSValue = "540", Key = "234" });
+            fpsList.Add(new FPS { FPSValue = "500", Key = "225" });
+            fpsList.Add(new FPS { FPSValue = "480", Key = "226" });
+            fpsList.Add(new FPS { FPSValue = "360", Key = "50" });
+            fpsList.Add(new FPS { FPSValue = "240", Key = "51" });
+            fpsList.Add(new FPS { FPSValue = "170", Key = "52" });
+            fpsList.Add(new FPS { FPSValue = "165", Key = "53" });
+            fpsList.Add(new FPS { FPSValue = "144", Key = "54" });
+            fpsList.Add(new FPS { FPSValue = "120", Key = "55" });
+            fpsList.Add(new FPS { FPSValue = "100", Key = "56" });
+            fpsList.Add(new FPS { FPSValue = "75", Key = "57" });
+            fpsList.Add(new FPS { FPSValue = "60", Key = "48" });
             foreach (var f in fpsList)
             {
                 fpsLimitList.Items.Add(f.FPSValue);
@@ -1489,6 +1492,10 @@ namespace OSRTT_Launcher
                         boardVersion = double.Parse(sp[1]);
                         compareFirmware();
                         this.firmVerLbl.Invoke((MethodInvoker)(() => this.firmVerLbl.Text = "V" + boardVersion));
+                        if ((boardVersion < 3.2 && boardType == 0) || (boardVersion < 1.7 && boardType == 1))
+                        {
+                            MessageBox.Show("Incompatible Firmware Version","Warning - the FPS limmit feature won't work with your current firmware version.",MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                        }
                     }
                     else if (message.Contains("Runs:"))
                     {
@@ -2572,7 +2579,7 @@ namespace OSRTT_Launcher
         {
             var item = fpsList.Find(x => x.FPSValue == getSelectedFps()); 
             //var item = fpsList.Find(x => x.FPSValue == Properties.Settings.Default.FPS.ToString()); //Doesn't work, cba to work out why atm.
-            port.Write("L" + item.Key);
+            port.Write("L" + int.Parse(item.Key).ToString("000"));
         }
 
         private void setCaptureTime()

@@ -126,13 +126,18 @@ void oledFourLines(String keyword1, String keyword2, String keyword3, String key
   delay(100);
 }
 
-void oledTestRunning(int fromRGB, int toRGB) {
+void oledTestRunning(int fromRGB, int toRGB, int runCount) {
   display.clearDisplay();
 
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE); 
   display.setCursor(0, 0);     
   display.println(F("RUNNING TEST:"));
+  display.setTextSize(2);
+  display.print(F("Run "));
+  display.println(runCount);
+  display.setTextSize(1);
+  display.println();
   display.setTextSize(2);
   display.print(F("RGB "));
   display.println(fromRGB);

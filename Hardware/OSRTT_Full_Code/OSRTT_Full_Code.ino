@@ -2,7 +2,7 @@
 #include <Mouse.h>
 #include <SPI.h>
 #include <ArduinoUniqueID.h>
-#define INPUT_SIZE 2
+#define INPUT_SIZE 8
 
 //Test values
 // These are the RGB values it tests with
@@ -37,7 +37,7 @@ SPISettings settingsA(10000000, MSBFIRST, SPI_MODE0);
 //Serial connection values
 bool connected = false;
 int boardType = 0;
-String firmware = "3.1";
+String firmware = "3.2";
 int testRuns = 4;
 bool vsync = true;
 bool extendedGamma = true;
@@ -361,6 +361,14 @@ void checkLatency() {
   }
 }
 
+int convertHexToDec(char c) {
+  if (c <= 57) {
+    return c - '0';  // Convert char to int
+  } else {
+    return c - 55;
+  }
+}
+
 void setup() {
   pinMode (CS, OUTPUT);
   pinMode (3, OUTPUT);
@@ -523,7 +531,7 @@ void loop() {
     }
     else if (input[0] == 'L')
     {
-      fpsLimit = input[1];
+      fpsLimit = (convertHexToDec(input[1]) * 100) + (convertHexToDec(input[2]) * 10) + convertHexToDec(input[3]);
       delay(100);
       Serial.print("FPS Key:");
       Serial.println(fpsLimit);
