@@ -1,12 +1,6 @@
 void loop() {
   Serial.setTimeout(1000);
-  char input[INPUT_SIZE + 1];
-  for (int i = 0; i < INPUT_SIZE + 1; i++)
-  {
-    input[i] = ' ';
-  }
-  byte size = Serial.readBytes(input, INPUT_SIZE);
-  input[size] = 0;
+  getSerialChars();
   if (millis() == (loopTimer + 180000))
   {
     clearDisplayBuffer();
@@ -57,12 +51,7 @@ void loop() {
     while (input[0] != 'X')
     {
       // Check serial for cancel or new potentiometer value
-      for (int i = 0; i < INPUT_SIZE + 1; i++)
-      {
-        input[i] = ' ';
-      }
-      byte sized = Serial.readBytes(input, INPUT_SIZE);
-      input[sized] = 0;
+      getSerialChars();
       int in = 0;
       if (input[0] <= 57)
       {
@@ -297,9 +286,17 @@ void loop() {
         }
         if ((maxVal - minVal) > 1000)
         {
-          oledFourLines("BACKLIGHT", "STROBING", "TEST", "CANCELLED");
-          input[0] = 'X';
-          break;
+          oledFourLines("BACKLIGHT", "STROBING,", "CONTINUE?", "PRESS BTN");
+          bool btn = digitalRead(buttonPin);
+          while (input[0] != 'X' && !btn)
+          {
+            getSerialChars();
+            btn = digitalRead(buttonPin);
+          }
+          if (input[0] == 'X')
+          {
+            break;
+          }
         }
         sample_count = 0;
 
@@ -330,12 +327,7 @@ void loop() {
           while (input[0] != 'X')
           {
             //oledFourLines("RUNNING", "FULL", "TEST", "");
-            for (int i = 0; i < INPUT_SIZE + 1; i++)
-            {
-              input[i] = ' ';
-            }
-            byte sized = Serial.readBytes(input, INPUT_SIZE);
-            input[sized] = 0;
+            getSerialChars();
             if (input[0] == 'X')
             {
               break;
@@ -402,12 +394,7 @@ void loop() {
         {
           while (input[0] != 'X' && input[0] != 'S')
           {
-            for (int i = 0; i < INPUT_SIZE + 1; i++)
-            {
-              input[i] = ' ';
-            }
-            byte sized = Serial.readBytes(input, INPUT_SIZE);
-            input[sized] = 0;
+            getSerialChars();
             curr_time = micros(); //update current time
           }
         }
@@ -429,12 +416,7 @@ void loop() {
     Serial.println("IL Clicks");
     while (input[0] != 'X')
     {
-      for (int i = 0; i < INPUT_SIZE + 1; i++)
-      {
-        input[i] = ' ';
-      }
-      byte sized = Serial.readBytes(input, INPUT_SIZE);
-      input[sized] = 0;
+      getSerialChars();
       if (input[0] != ' ')
       {
         int firstDigit = input[0] - '0';
@@ -457,12 +439,7 @@ void loop() {
       Serial.println("IL Time");
       while (input[0] != 'X')
       {
-        for (int i = 0; i < INPUT_SIZE + 1; i++)
-        {
-          input[i] = ' ';
-        }
-        byte sized = Serial.readBytes(input, INPUT_SIZE);
-        input[sized] = 0;
+        getSerialChars();
         if (input[0] != ' ')
         {
           int firstDigit = input[0] - '0';
@@ -527,12 +504,7 @@ void loop() {
           input[0] = 'X';
           break;
         }
-        for (int i = 0; i < INPUT_SIZE + 1; i++)
-        {
-          input[i] = ' ';
-        }
-        byte sized = Serial.readBytes(input, INPUT_SIZE);
-        input[sized] = 0;
+        getSerialChars();
         delay(10);
       }
     }
@@ -548,12 +520,7 @@ void loop() {
     delay(200);
     while (input[0] != 'X')
     {
-      for (int i = 0; i < INPUT_SIZE + 1; i++)
-      {
-        input[i] = ' ';
-      }
-      byte sized = Serial.readBytes(input, INPUT_SIZE);
-      input[sized] = 0;
+      getSerialChars();
       if (input[0] == 'P')
       {
 

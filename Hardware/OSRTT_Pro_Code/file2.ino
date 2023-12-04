@@ -45,6 +45,8 @@ bool highspeed = false;
 
 unsigned long loopTimer = millis();
 
+char input[INPUT_SIZE + 1];
+
 void ADC_Clocks() // Turns out to be superfluous as Adafruit wiring.c already sets these clocks. Keeping for now to guarantee settings are set.
 {
   MCLK->APBDMASK.bit.ADC0_ = 1;
@@ -363,17 +365,11 @@ void checkLatency() {
   Keyboard.print('Q');
   delay(100);
   runADC(1000, 1000, 'F', "TL:");
-  char input[INPUT_SIZE + 1];
   unsigned long startTime = micros();
   while (curr_time < (startTime + 3000))
   {
     curr_time = micros();
-    for (int i = 0; i < INPUT_SIZE + 1; i++)
-    {
-      input[i] = ' ';
-    }
-    byte sized = Serial.readBytes(input, INPUT_SIZE);
-    input[sized] = 0;
+    getSerialChars();
     if (input[0] == 'X')
     {
       break;
@@ -394,6 +390,14 @@ int convertHexToDec(char c) {
   } else {
     return c - 55;
   }
+}
+
+void getSerialChars() {
+  for (int i = 0; i < INPUT_SIZE + 1; i++) {
+    input[i] = ' ';
+  }
+  byte size = Serial.readBytes(input, INPUT_SIZE);
+  input[size] = 0;
 }
 
 void setup() {

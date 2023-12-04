@@ -232,6 +232,12 @@ namespace OSRTT_Launcher
             }
         }
 
+        private void CleanupDevTools()
+        {
+            if (System.Diagnostics.Debugger.IsAttached) { testButtonMenuItem.Visible = true; }
+            else { testButtonMenuItem.Visible = false; }
+        }
+
         private void setupFormElements()
         {
             this.Icon = (Icon)rm.GetObject("osrttIcon");
@@ -459,6 +465,7 @@ namespace OSRTT_Launcher
             }
             Thread jsonThread = new Thread(new ThreadStart(getODModesJson));
             jsonThread.Start();
+            CleanupDevTools();
         }
 
         private void initialSetup()
@@ -1838,7 +1845,7 @@ namespace OSRTT_Launcher
                             }
                             else { continue; }
                         }
-                        for (int k = 0; k < intValues.Length; k++)
+                        /*for (int k = 0; k < intValues.Length; k++)
                         {
                             if ((k != 0 && k < 129) && (intValues[k] > intValues[k - 1] && intValues[k] != 65520))
                             {
@@ -1857,7 +1864,15 @@ namespace OSRTT_Launcher
                                 Console.WriteLine("FAILED");
                             }
                             
-                        }
+                        }*/
+                        
+                        this.Invoke((MethodInvoker)delegate ()
+                        {
+                            protest rv = new protest();
+                            rv.adcres = intValues.ToList();
+                            rv.drawScatter();
+                            rv.Show();
+                        });
                         // search /Results folder for existing file names, pick new name
                         string[] existingUSBFile = Directory.GetFiles(path, "PRO-DATA.csv");
                         // Search \Results folder for existing results to not overwrite existing or have save conflict errors

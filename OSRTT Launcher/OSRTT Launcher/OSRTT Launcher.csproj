@@ -247,6 +247,12 @@
     <Compile Include="HelpView.Designer.cs">
       <DependentUpon>HelpView.cs</DependentUpon>
     </Compile>
+    <Compile Include="protest.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="protest.Designer.cs">
+      <DependentUpon>protest.cs</DependentUpon>
+    </Compile>
     <Compile Include="ResultsSettings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -309,6 +315,9 @@
     </Compile>
     <EmbeddedResource Include="HelpView.resx">
       <DependentUpon>HelpView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="protest.resx">
+      <DependentUpon>protest.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ResultsSettings.resx">
       <DependentUpon>ResultsSettings.cs</DependentUpon>
