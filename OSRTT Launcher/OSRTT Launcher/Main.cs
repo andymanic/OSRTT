@@ -26,9 +26,9 @@ namespace OSRTT_Launcher
         // CHANGE THESE VALUES WHEN ISSUING A NEW RELEASE
         private double boardVersion = 2.6;
         private double V1DLFW = 2.8;
-        private double ProDLFW = 1.5;
+        private double ProDLFW = 1.7;
         public int boardType = -1;
-        private string softwareVersion = "4.5";
+        private string softwareVersion = "4.51";
 
         // TODO //
         //
@@ -394,7 +394,19 @@ namespace OSRTT_Launcher
                         }
                     }
                 }
-                if (File.Exists(ProFWPath))
+                if (File.Exists(ProNewFWPath))
+                {
+                    foreach (var f in Directory.GetFiles(ProNewFWPath))
+                    {
+                        if (f.Contains(".ino.bin") && f.Contains("Pro"))
+                        {
+                            var splitName = f.Split('_');
+                            var splitVersion = splitName.Last().Remove(3);
+                            ProDLFW = double.Parse(splitVersion);
+                        }
+                    }
+                }
+                else if (File.Exists(ProFWPath))
                 {
                     foreach (var l in File.ReadAllLines(ProFWPath))
                     {
@@ -404,15 +416,6 @@ namespace OSRTT_Launcher
                             ProDLFW = double.Parse(splitLine[1]);
                             break;
                         }
-                    }
-                }
-                foreach (var f in Directory.GetFiles(ProNewFWPath))
-                {
-                    if (f.Contains(".ino.bin"))
-                    {
-                        var splitName = f.Split('_');
-                        var splitVersion = splitName.Last().Remove(3);
-                        ProDLFW = double.Parse(splitVersion);
                     }
                 }
             }
