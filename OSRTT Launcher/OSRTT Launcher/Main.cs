@@ -1504,7 +1504,7 @@ namespace OSRTT_Launcher
                         this.firmVerLbl.Invoke((MethodInvoker)(() => this.firmVerLbl.Text = "V" + boardVersion));
                         if ((boardVersion < 3.2 && boardType == 0) || (boardVersion < 1.7 && boardType == 1))
                         {
-                            MessageBox.Show("Incompatible Firmware Version","Warning - the FPS limmit feature won't work with your current firmware version.",MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                            MessageBox.Show("Warning - the FPS limit feature won't work with your current firmware version.", "Incompatible Firmware Version", MessageBoxButtons.OK, MessageBoxIcon.Hand);
                         }
                     }
                     else if (message.Contains("Runs:"))
