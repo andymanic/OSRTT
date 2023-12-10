@@ -201,7 +201,10 @@ void loop() {
   }
   else if (input[0] == 'L')
   {
-    fpsLimit = (convertHexToDec(input[1]) * 100) + (convertHexToDec(input[2]) * 10) + convertHexToDec(input[3]);
+    int hundreds = convertHexToDec(input[1]) * 100;
+    int tens = convertHexToDec(input[2]) * 10;
+    int ones = convertHexToDec(input[3]);
+    fpsLimit = hundreds + tens + ones;
     delay(100);
     Serial.print("FPS Key:");
     Serial.println(fpsLimit);
@@ -260,8 +263,8 @@ void loop() {
       if (buttonState == HIGH) //Run when button pressed
       {
         Serial.setTimeout(500);
-        Keyboard.print(fpsLimit);
-        Keyboard.print(fpsLimit);
+        Keyboard.print((char)fpsLimit);
+        Keyboard.print((char)fpsLimit);
         oledFourLines("CHECKING", "FOR", "STROBING", "");
         int sample_count = 0;
         while (sample_count < 1000)
@@ -585,9 +588,34 @@ void loop() {
     Serial.print("Rotation set as: ");
     Serial.println(rotation);
   }
+  else if (input[0] == 'W')
+  {
+    delay(1000);
+    Keyboard.print((char)fpsLimit);
+  }
   else if (input[0] == 'Y')
   {
-    //digitalWrite(2, LOW);
+    int counter = 0;
+    digitalPotWrite(0);
+    while (input[0] != 'X')
+    {
+      if (digitalRead(buttonPin))
+      {
+        counter *= 2;
+        if (counter == 0)
+        {
+          counter++;
+        } else if (counter > 128)
+        {
+          counter = 0;
+        }
+        digitalPotWrite(counter);
+        Serial.print("Current value:");
+        Serial.println(counter);
+        delay(300);
+      }
+      delay(10);
+    }
   }
   else if (input[0] == 'Z')
   {

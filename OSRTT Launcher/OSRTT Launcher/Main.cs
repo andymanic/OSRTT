@@ -2598,6 +2598,7 @@ namespace OSRTT_Launcher
             var item = fpsList.Find(x => x.FPSValue == getSelectedFps()); 
             //var item = fpsList.Find(x => x.FPSValue == Properties.Settings.Default.FPS.ToString()); //Doesn't work, cba to work out why atm.
             port.Write("L" + int.Parse(item.Key).ToString("000"));
+            Console.WriteLine("L" + int.Parse(item.Key).ToString("000"));
         }
 
         private void setCaptureTime()
@@ -3301,7 +3302,8 @@ namespace OSRTT_Launcher
         private void testButtonToolStripMenuItemToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //testRawInput();
-            port.Write("J");
+            //port.Write("J");
+            port.Write("W");
             //runDirectXWindow();
         }
         static void testRawInput()

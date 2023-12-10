@@ -36,11 +36,11 @@ SPISettings settingsA(1000000, MSBFIRST, SPI_MODE0);
 
 //Serial connection values
 int boardType = 1;
-String firmware = "1.7";
+String firmware = "1.8";
 int testRuns = 4;
 bool vsync = true;
 bool extendedGamma = true;
-char fpsLimit = '1';
+int fpsLimit = 49;
 bool highspeed = false;
 
 unsigned long loopTimer = millis();

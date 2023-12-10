@@ -41,7 +41,7 @@ String firmware = "3.2";
 int testRuns = 4;
 bool vsync = true;
 bool extendedGamma = true;
-char fpsLimit = '1';
+int fpsLimit = '1';
 int USBV = 0;
 
 void ADC_Clocks() // Turns out to be superfluous as Adafruit wiring.c already sets these clocks. Keeping for now to guarantee settings are set.
@@ -530,12 +530,15 @@ void loop() {
       Serial.println(testRuns);
     }
     else if (input[0] == 'L')
-    {
-      fpsLimit = (convertHexToDec(input[1]) * 100) + (convertHexToDec(input[2]) * 10) + convertHexToDec(input[3]);
-      delay(100);
-      Serial.print("FPS Key:");
-      Serial.println(fpsLimit);
-    }
+  {
+    int hundreds = convertHexToDec(input[1]) * 100;
+    int tens = convertHexToDec(input[2]) * 10;
+    int ones = convertHexToDec(input[3]);
+    fpsLimit = hundreds + tens + ones;
+    delay(100);
+    Serial.print("FPS Key:");
+    Serial.println(fpsLimit);
+  }
     else if (input[0] == 'G')
     {
       runGammaTest();
@@ -587,8 +590,8 @@ void loop() {
         if (buttonState == HIGH) //Run when button pressed
         {
           Serial.setTimeout(500);
-          Keyboard.print(fpsLimit);
-          Keyboard.print(fpsLimit);
+          Keyboard.print((char)fpsLimit);
+          Keyboard.print((char)fpsLimit);
           // Check USB voltage level
           //int voltageTest = checkUSBVoltage();
           //if (voltageTest == 0)
