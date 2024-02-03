@@ -105,6 +105,7 @@
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.toolTipController = new System.Windows.Forms.ToolTip(this.components);
             this.overdriveModes1 = new OSRTT_Launcher.OverdriveModes();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.controlsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.testCount)).BeginInit();
@@ -233,6 +234,7 @@
             this.debugModeToolStripMenuItem,
             this.saveUSBOutputToolStripMenuItem,
             this.updateDeviceToolStripMenuItem,
+            this.toolStripMenuItem1,
             this.testButtonMenuItem});
             this.deviceToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.deviceToolStripMenuItem.Name = "deviceToolStripMenuItem";
@@ -273,7 +275,7 @@
             this.testButtonMenuItem.CheckOnClick = true;
             this.testButtonMenuItem.Name = "testButtonMenuItem";
             this.testButtonMenuItem.Size = new System.Drawing.Size(211, 22);
-            this.testButtonMenuItem.Text = "Test Button";
+            this.testButtonMenuItem.Text = "Pro ADC Sweep";
             this.testButtonMenuItem.Click += new System.EventHandler(this.testButtonToolStripMenuItemToolStripMenuItem_Click);
             // 
             // devStat
@@ -1011,6 +1013,14 @@
             this.overdriveModes1.Size = new System.Drawing.Size(511, 299);
             this.overdriveModes1.TabIndex = 34;
             // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.CheckOnClick = true;
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(211, 22);
+            this.toolStripMenuItem1.Text = "Test Button";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+            // 
             // Main
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -1133,6 +1143,7 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Button LiveViewBtn;
         private OverdriveModes overdriveModes1;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
     }
 }
 

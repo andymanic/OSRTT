@@ -18,6 +18,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using SharpDX.RawInput;
+using System.Reflection;
 
 namespace OSRTT_Launcher
 {
@@ -28,7 +29,7 @@ namespace OSRTT_Launcher
         private double V1DLFW = 2.8;
         private double ProDLFW = 1.7;
         public int boardType = -1;
-        private string softwareVersion = "4.51";
+        private string softwareVersion = "4.52";
 
         // TODO //
         //
@@ -114,6 +115,7 @@ namespace OSRTT_Launcher
         {
             public string FPSValue { get; set; }
             public string Key { get; set; }
+            public string CKey { get; set; }
         }
         public List<FPS> fpsList = new List<FPS>();
         private BackgroundWorker hardWorker;
@@ -234,8 +236,14 @@ namespace OSRTT_Launcher
 
         private void CleanupDevTools()
         {
-            if (System.Diagnostics.Debugger.IsAttached) { testButtonMenuItem.Visible = true; }
-            else { testButtonMenuItem.Visible = false; }
+            if (System.Diagnostics.Debugger.IsAttached) { 
+                testButtonMenuItem.Visible = true;
+                toolStripMenuItem1.Visible = true;
+            }
+            else { 
+                testButtonMenuItem.Visible = false;
+                toolStripMenuItem1.Visible = false;
+            }
         }
 
         private void setupFormElements()
@@ -469,6 +477,7 @@ namespace OSRTT_Launcher
             Thread jsonThread = new Thread(new ThreadStart(getODModesJson));
             jsonThread.Start();
             CleanupDevTools();
+            addKeys();
         }
 
         private void initialSetup()
@@ -619,23 +628,38 @@ namespace OSRTT_Launcher
             monitorCB.SelectedIndex = selected; // Pre-select the primary display
         }
 
+        private void addKeys()
+        {
+            FieldInfo info = typeof(SendKeys).GetField("keywords",
+            BindingFlags.Static | BindingFlags.NonPublic);
+            Array oldKeys = (Array)info.GetValue(null);
+            Type elementType = oldKeys.GetType().GetElementType();
+            Array newKeys = Array.CreateInstance(elementType, oldKeys.Length + 10);
+            Array.Copy(oldKeys, newKeys, oldKeys.Length);
+            for (int i = 0; i < 10; i++)
+            {
+                var newItem = Activator.CreateInstance(elementType, "NUM" + i, (int)Keys.NumPad0 + i);
+                newKeys.SetValue(newItem, oldKeys.Length + i);
+            }
+            info.SetValue(null, newKeys);
+        }
         private void listFramerates()
         {
             fpsLimitList.Items.Clear();
             fpsList.Clear();
-            fpsList.Add(new FPS { FPSValue = "1000", Key = "49" });
-            fpsList.Add(new FPS { FPSValue = "540", Key = "234" });
-            fpsList.Add(new FPS { FPSValue = "500", Key = "225" });
-            fpsList.Add(new FPS { FPSValue = "480", Key = "226" });
-            fpsList.Add(new FPS { FPSValue = "360", Key = "50" });
-            fpsList.Add(new FPS { FPSValue = "240", Key = "51" });
-            fpsList.Add(new FPS { FPSValue = "170", Key = "52" });
-            fpsList.Add(new FPS { FPSValue = "165", Key = "53" });
-            fpsList.Add(new FPS { FPSValue = "144", Key = "54" });
-            fpsList.Add(new FPS { FPSValue = "120", Key = "55" });
-            fpsList.Add(new FPS { FPSValue = "100", Key = "56" });
-            fpsList.Add(new FPS { FPSValue = "75", Key = "57" });
-            fpsList.Add(new FPS { FPSValue = "60", Key = "48" });
+            fpsList.Add(new FPS { FPSValue = "1000", Key = "49", CKey = "1" });
+            fpsList.Add(new FPS { FPSValue = "540", Key = "234" , CKey="{NUM0}" });
+            fpsList.Add(new FPS { FPSValue = "500", Key = "225", CKey="{NUM1}" });
+            fpsList.Add(new FPS { FPSValue = "480", Key = "226", CKey="{NUM2}" });
+            fpsList.Add(new FPS { FPSValue = "360", Key = "50", CKey="2" });
+            fpsList.Add(new FPS { FPSValue = "240", Key = "51", CKey = "3" });
+            fpsList.Add(new FPS { FPSValue = "170", Key = "52", CKey = "4" });
+            fpsList.Add(new FPS { FPSValue = "165", Key = "53", CKey = "5" });
+            fpsList.Add(new FPS { FPSValue = "144", Key = "54", CKey = "6" });
+            fpsList.Add(new FPS { FPSValue = "120", Key = "55", CKey = "7" });
+            fpsList.Add(new FPS { FPSValue = "100", Key = "56", CKey = "8" });
+            fpsList.Add(new FPS { FPSValue = "75", Key = "57", CKey = "9" });
+            fpsList.Add(new FPS { FPSValue = "60", Key = "48", CKey = "0" });
             foreach (var f in fpsList)
             {
                 fpsLimitList.Items.Add(f.FPSValue);
@@ -1246,9 +1270,9 @@ namespace OSRTT_Launcher
                                 }
                             }
                             Thread.Sleep(5);
-                            LiveViewObject.copyListToArray();
-                            LiveViewObject.renderGraph();
-                            LiveViewObject.startStopBtn_Click(null, null);
+                            LiveViewObject.Invoke((MethodInvoker)(() => LiveViewObject.copyListToArray()));
+                            LiveViewObject.Invoke((MethodInvoker)(() => LiveViewObject.renderGraph()));
+                            LiveViewObject.Invoke((MethodInvoker)(() => LiveViewObject.startStopBtn_Click(null, null)));
 
                         }
                     }
@@ -2263,7 +2287,7 @@ namespace OSRTT_Launcher
                         paused = true;
                         Thread.Sleep(300);
                         var item = fpsList.Find(x => x.FPSValue == getSelectedFps());
-                        SendKeys.SendWait(item.Key);
+                        SendKeys.SendWait(item.CKey);
                         Thread.Sleep(100);
                         if (Properties.Settings.Default.VSyncState)
                         {
@@ -3302,8 +3326,10 @@ namespace OSRTT_Launcher
         private void testButtonToolStripMenuItemToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //testRawInput();
-            //port.Write("J");
-            port.Write("W");
+            port.Write("J");
+            //port.Write("W");
+            //Thread.Sleep(500);
+            //SendKeys.SendWait("{NUM0}");
             //runDirectXWindow();
         }
         static void testRawInput()
@@ -3623,6 +3649,11 @@ namespace OSRTT_Launcher
         {
             liveView = false;
             ControlDeviceButtons(true);
+        }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            port.Write("W");
         }
     }
 }

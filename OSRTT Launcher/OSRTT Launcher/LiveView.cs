@@ -161,7 +161,7 @@ namespace OSRTT_Launcher
             graphedData.Plot.AddScatter(xData, yData, lineWidth: 3, markerSize: 4);
             //graphedData.Plot.SetAxisLimits(0, (timeData.Length + 100), 0, (resultData.Max() + 100));
             graphedData.Plot.Render();
-            graphedData.Refresh();
+            graphedData.RefreshRequest();
             //showProcessedData();
         }
         private void onSpanDrag(object sender, EventArgs e)
