@@ -36,12 +36,13 @@ SPISettings settingsA(1000000, MSBFIRST, SPI_MODE0);
 
 //Serial connection values
 int boardType = 1;
-String firmware = "1.8";
+String firmware = "1.9";
 int testRuns = 4;
 bool vsync = true;
 bool extendedGamma = true;
 int fpsLimit = 49;
 bool highspeed = false;
+bool CSVersion = false;
 
 unsigned long loopTimer = millis();
 
@@ -154,8 +155,14 @@ int checkLightLevel() // Check light level & modulate potentiometer value
     upperBound = 15000;
     lowerBound = 14000;
   }
+  int timeoutCount = 0;
   while (value <= lowerBound || value >= upperBound)
   {
+    if (timeoutCount > 500)
+    {
+      Serial.println("Timed out on pot val, using last value");
+      break;
+    }
     value = getADCValue(250);
     if (value >= upperBound)
     {
@@ -207,6 +214,7 @@ int checkLightLevel() // Check light level & modulate potentiometer value
       break; //not needed?
     }
     delay(20);
+    timeoutCount++;
   }
   Keyboard.write('q');
   oledFourLines("POT VAL:", String(potValue), "", "");
@@ -234,7 +242,7 @@ void runADC(int curr, int nxt, char key, String type) // Run test, press key and
   {
     ADC0->SWTRIG.bit.START = 1; //Start ADC
     while (!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
-    adcBuff[sample_count] = ADC0->RESULT.reg; //save new ADC value to buffer @ sample_count position
+    adcBuff[sample_count] = ADC0->RESULT.reg;
     sample_count++; //Increment sample count
     curr_time = micros(); //update current time
   }
@@ -269,19 +277,38 @@ void runADC(int curr, int nxt, char key, String type) // Run test, press key and
   curr_time = micros();
 }
 
+bool isBitSet(int var, int pos)
+{
+  return var & (1 << pos) ? true : false;
+}
+
 void digitalPotWrite(int value)
 {
-
-  SPI.beginTransaction(settingsA);
-  digitalWrite(2, LOW);
-  //delayMicroseconds(500);
-  delay(1);
-  SPI.transfer(value);
-  //SPI.transfer(0);
-  delay(1);
-  //delayMicroseconds(500);
-  digitalWrite(2, HIGH);
-  SPI.endTransaction();
+  if (!CSVersion)
+  {
+    SPI.beginTransaction(settingsA);
+    digitalWrite(2, LOW);
+    //delayMicroseconds(500);
+    delay(1);
+    SPI.transfer(value);
+    //SPI.transfer(0);
+    delay(1);
+    //delayMicroseconds(500);
+    digitalWrite(2, HIGH);
+    SPI.endTransaction();  
+  }
+  else
+  {
+    // 5K D2, 10K D3, 24K D7, 51K D8, 100K D9, 150K D11, 390K D12, 470K D13
+    if (isBitSet(value, 0)) { digitalWrite(2, HIGH); } else { digitalWrite(2, LOW); }
+    if (isBitSet(value, 1)) { digitalWrite(3, HIGH); } else { digitalWrite(3, LOW); }
+    if (isBitSet(value, 2)) { digitalWrite(7, HIGH); } else { digitalWrite(7, LOW); }
+    if (isBitSet(value, 3)) { digitalWrite(8, HIGH); } else { digitalWrite(8, LOW); }
+    if (isBitSet(value, 4)) { digitalWrite(9, HIGH); } else { digitalWrite(9, LOW); }
+    if (isBitSet(value, 5)) { digitalWrite(11, HIGH); } else { digitalWrite(11, LOW); }
+    if (isBitSet(value, 6)) { digitalWrite(12, HIGH); } else { digitalWrite(12, LOW); }
+    if (isBitSet(value, 7)) { digitalWrite(13, HIGH); } else { digitalWrite(13, LOW); }
+  }
 }
 
 void runGammaTest()
@@ -330,9 +357,9 @@ void runInputLagTest(int timeBetween)
   unsigned long start_time = micros();  
   while(curr_time <= (start_time + (sampleTime - 1)))
   {
-    ADC0->SWTRIG.bit.START = 1; 
-    while(!ADC0->INTFLAG.bit.RESRDY); 
-    adcBuff[sample_count] = ADC0->RESULT.reg;  
+    ADC0->SWTRIG.bit.START = 1; //Start ADC
+    while (!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
+    adcBuff[sample_count] = ADC0->RESULT.reg;
     sample_count++; 
     curr_time = micros(); 
   }
@@ -401,9 +428,8 @@ void getSerialChars() {
 }
 
 void setup() {
-  pinMode (CS, OUTPUT);
-  digitalWrite(CS, HIGH);
-  SPI.begin();
+  
+  
   pinMode(buttonPin, INPUT_PULLUP); //Button input on pin 2
   if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
     Serial.println(F("SSD1306 allocation failed"));
@@ -411,10 +437,31 @@ void setup() {
   }
   drawSplashScreen();
 
-  digitalPotWrite(0x00);
   ADC_Clocks();
   ADC_Init(ADC0); //Initialise ADC0
   ADC_Init(ADC1); //Initialise ADC1
+  
+  pinMode( 0, INPUT_PULLDOWN);
+  CSVersion = digitalRead(0);
+  if (CSVersion)
+  {
+    pinMode (2, OUTPUT);
+    pinMode (3, OUTPUT);
+    pinMode (4, OUTPUT);
+    pinMode (7, OUTPUT);
+    pinMode (9, OUTPUT);
+    pinMode (11, OUTPUT);
+    pinMode (12, OUTPUT);
+    pinMode (13, OUTPUT);
+  }
+  else
+  {
+    pinMode (CS, OUTPUT);
+    digitalWrite(CS, HIGH);
+    SPI.begin();
+  }
+
+  digitalPotWrite(0x00);
   Serial.begin(115200); //Open Serial connection at 115200 baud
   long timer = millis();
   while (!Serial)
@@ -432,5 +479,11 @@ void setup() {
   Keyboard.begin(); //Open keyboard connection over USB
   pinMode(buttonPin, INPUT_PULLUP); //Button input on pin 2
   pinMode(13, OUTPUT); //Onboard LED
+  
   Serial.println("Begin...");
+  
+  if (CSVersion)
+  {
+    Serial.println("CSVersion");
+  }
 }

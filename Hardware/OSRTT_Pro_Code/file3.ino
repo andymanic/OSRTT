@@ -123,15 +123,24 @@ void loop() {
 
     Serial.println();
     UniqueIDdump(Serial);
+    if (CSVersion)
+    {
+      Serial.println("CS Version");
+    }
+    else
+    {
+      Serial.println("OG Version");
+    }
     Serial.println("Handshake");
   }
   else if (input[0] == 'J')
   {
+    Serial.println("Starting Pro Potentiometer Check");
     int count = 0;
     while (count < 256)
     {
       digitalPotWrite(count);
-      //Serial.print(count);
+      Serial.println(count);
       //Serial.print(",");
       delay(100);
       ADC0->SWTRIG.bit.START = 1; //Start ADC
@@ -265,6 +274,8 @@ void loop() {
         Serial.setTimeout(500);
         Keyboard.print((char)fpsLimit);
         Keyboard.print((char)fpsLimit);
+        Keyboard.print('f');
+        delay(100);
         oledFourLines("CHECKING", "FOR", "STROBING", "");
         int sample_count = 0;
         while (sample_count < 1000)
@@ -287,6 +298,7 @@ void loop() {
             maxVal = adcBuff[i];
           }
         }
+        oledFourLines("Strobing", "value:", F(maxVal - minVal), "");
         if ((maxVal - minVal) > 1000)
         {
           oledFourLines("BACKLIGHT", "STROBING,", "CONTINUE?", "PRESS BTN");
@@ -590,8 +602,19 @@ void loop() {
   }
   else if (input[0] == 'W')
   {
-    delay(1000);
-    Keyboard.print((char)fpsLimit);
+    long s = micros();
+    int counter = 10000;
+    for(int i = 0; i < counter; i++)
+    {
+      ADC0->SWTRIG.bit.START = 1; //Start ADC
+        while (!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
+      adcBuff[i] = ADC0->RESULT.reg;
+    }
+    long e = micros();
+    Serial.print("Sample time: ");
+    float t = (e - s) / counter;
+    Serial.println(t);
+    
   }
   else if (input[0] == 'Y')
   {

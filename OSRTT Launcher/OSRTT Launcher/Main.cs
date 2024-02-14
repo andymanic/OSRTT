@@ -1022,17 +1022,22 @@ namespace OSRTT_Launcher
         
         private void ControlDeviceButtons(bool state)
         {
+            bool brightnessCal = state;
+            if (boardType == 1)
+            {
+                brightnessCal = false;
+            }
             if (this.launchBtn.InvokeRequired)
             {
                 this.launchBtn.Invoke((MethodInvoker)(() => launchBtn.Enabled = state));
-                this.menuStrip1.Invoke((MethodInvoker)(() => BrightnessCalBtn.Visible = state));
+                this.menuStrip1.Invoke((MethodInvoker)(() => BrightnessCalBtn.Visible = brightnessCal));
                 this.inputLagButton.Invoke((MethodInvoker)(() => inputLagButton.Enabled = state));
                 this.LiveViewBtn.Invoke((MethodInvoker)(() => LiveViewBtn.Enabled = state));
             }
             else
             {
                 this.launchBtn.Enabled = state;
-                this.BrightnessCalBtn.Visible = state;
+                this.BrightnessCalBtn.Visible = brightnessCal;
                 this.inputLagButton.Enabled = state;
                 this.LiveViewBtn.Enabled = state;
             }
@@ -2051,7 +2056,10 @@ namespace OSRTT_Launcher
                     }
                     Thread.Sleep(100);
                 }
-                resultsFolderPath += "-" + runSettings.OverdriveMode.Replace(" ", "");
+                string odmode = runSettings.OverdriveMode.Replace(" ", "");
+                odmode = odmode.Replace("/", "");
+                odmode = odmode.Replace("\\", "");
+                resultsFolderPath += "-" + odmode;
                 Directory.CreateDirectory(resultsFolderPath);
                 if (cancelTest)
                 {
