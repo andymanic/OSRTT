@@ -279,8 +279,6 @@
     <Compile Include="Heatmaps.Designer.cs">
       <DependentUpon>Heatmaps.cs</DependentUpon>
     </Compile>
-    <Compile Include="WebServer\WebServer.cs" />
-    <Compile Include="WebServer\WebSocketServer.cs" />
     <EmbeddedResource Include="Gamma.resx">
       <DependentUpon>Gamma.cs</DependentUpon>
     </EmbeddedResource>
@@ -375,7 +373,6 @@
     <Content Include="DirectX\Font\font01.txt" />
     <Content Include="DirectX\Font\fontdata.txt" />
     <Content Include="osrttIcon.ico" />
-    <Content Include="WebServer\responsetime.html" />
     <None Include="Resources\arrow-rotate-right.png" />
     <None Include="Resources\check.png" />
     <None Include="Resources\icon_small.png" />
