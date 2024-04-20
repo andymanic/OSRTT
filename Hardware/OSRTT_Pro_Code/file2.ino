@@ -36,7 +36,7 @@ SPISettings settingsA(1000000, MSBFIRST, SPI_MODE0);
 
 //Serial connection values
 int boardType = 1;
-String firmware = "1.9";
+String firmware = "2.0";
 int testRuns = 4;
 bool vsync = true;
 bool extendedGamma = true;
@@ -147,7 +147,6 @@ int checkLightLevel() // Check light level & modulate potentiometer value
   digitalPotWrite(potValue);
   delay(200);
   int value = getADCValue(250);
-  Serial.println("got a value");
   int upperBound = 56000;
   int lowerBound = 54000;
   if (highspeed)
@@ -167,7 +166,11 @@ int checkLightLevel() // Check light level & modulate potentiometer value
     if (value >= upperBound)
     {
       //Set digital pot to decrease voltage
-      potValue += 1; //or the other way...
+      potValue += 1; 
+      if (timeoutCount == 256)
+      {
+        potValue += 20; // jump over overlaps in resistor array
+      }
       digitalPotWrite(potValue);
       Serial.print("Value: ");
       Serial.print(value);
@@ -177,7 +180,7 @@ int checkLightLevel() // Check light level & modulate potentiometer value
     else if (value <= lowerBound)
     {
       //Set digital pot to increase volt
-      potValue -= 1; //or the other way...
+      potValue -= 1; 
       if (potValue <= 32 && potValue >= 24)
       {
         potValue = 23;
@@ -306,8 +309,8 @@ void digitalPotWrite(int value)
     if (isBitSet(value, 3)) { digitalWrite(8, HIGH); } else { digitalWrite(8, LOW); }
     if (isBitSet(value, 4)) { digitalWrite(9, HIGH); } else { digitalWrite(9, LOW); }
     if (isBitSet(value, 5)) { digitalWrite(11, HIGH); } else { digitalWrite(11, LOW); }
-    if (isBitSet(value, 6)) { digitalWrite(12, HIGH); } else { digitalWrite(12, LOW); }
-    if (isBitSet(value, 7)) { digitalWrite(13, HIGH); } else { digitalWrite(13, LOW); }
+    if (isBitSet(value, 6)) { digitalWrite(13, HIGH); } else { digitalWrite(13, LOW); }
+    if (isBitSet(value, 7)) { digitalWrite(12, HIGH); } else { digitalWrite(12, LOW); }
   }
 }
 
@@ -443,16 +446,17 @@ void setup() {
   
   pinMode( 0, INPUT_PULLDOWN);
   CSVersion = digitalRead(0);
+  //CSVersion = true; // MAKE SURE TO REMOVE THIS
   if (CSVersion)
   {
-    pinMode (2, OUTPUT);
-    pinMode (3, OUTPUT);
-    pinMode (4, OUTPUT);
-    pinMode (7, OUTPUT);
-    pinMode (9, OUTPUT);
-    pinMode (11, OUTPUT);
-    pinMode (12, OUTPUT);
-    pinMode (13, OUTPUT);
+    pinMode (2, OUTPUT); //D2, SW1
+    pinMode (3, OUTPUT); //D3, SW2 
+    pinMode (4, OUTPUT); //D4, SW3
+    pinMode (7, OUTPUT); //D7, SW4
+    pinMode (9, OUTPUT); //D9, SW5
+    pinMode (11, OUTPUT); //D11, SW6
+    pinMode (12, OUTPUT); //D12, SW8 (whoops)
+    pinMode (13, OUTPUT); //D13, SW7
   }
   else
   {
