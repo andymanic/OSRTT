@@ -38,12 +38,22 @@ namespace OSRTT_Launcher
             initDenoiseSelect();
             initDateSelect();
             initAutoSavePNGSelect();
+            initMASize();
             saveLabel.Visible = false;
+            this.FormClosing += new FormClosingEventHandler(ResultsSettings_FormClosing);
         }
 
         private void ResultsSettings_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void ResultsSettings_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if ((int)movingAverageCount.Value != Properties.Settings.Default.movingAverageSize)
+            {
+                Properties.Settings.Default.movingAverageSize = (int)movingAverageCount.Value;
+            }
         }
 
         private void SavingLabel()
@@ -354,7 +364,12 @@ namespace OSRTT_Launcher
             autosavePNGsSelect.SelectedIndex = Properties.Settings.Default.autoSavePNG;
             
         }
-
+        private void initMASize()
+        {
+            int maSize = Properties.Settings.Default.movingAverageSize;
+            movingAverageCount.Value = (decimal)maSize;
+            
+        }
         private void settingsPresetSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
             var ctrl = sender as ComboBox;
@@ -1067,6 +1082,23 @@ namespace OSRTT_Launcher
                 Properties.Settings.Default.Save();
             }
         }
+
+        private void movingAverageCount_ValueChanged(object sender, EventArgs e)
+        {
+            NumericUpDown n = sender as NumericUpDown;
+            if (n.Focused)
+            {
+                if (saveThread == null || !saveThread.IsAlive)
+                {
+                    saveThread = new Thread(new ThreadStart(this.SavingLabel));
+                    saveThread.Start();
+                }
+                Properties.Settings.Default.movingAverageSize = (int)movingAverageCount.Value;
+                Properties.Settings.Default.Save();
+            }
+        }
+        
+
     }
 
     public class RoundButton : Button

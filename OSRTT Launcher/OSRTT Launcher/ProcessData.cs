@@ -94,6 +94,7 @@ namespace OSRTT_Launcher
             public rtMethods rtMethod { get; set; }
             public osMethods osMethod { get; set; }
             public string ExtraInfo { get; set; }
+            public int MovingAverageSize { get; set; }
         }
 
         public class normalisedGamma
@@ -412,7 +413,11 @@ namespace OSRTT_Launcher
                 {
                     period = 50;
                 }
-
+                if (Properties.Settings.Default.movingAverageSize > period)
+                {
+                    period = Properties.Settings.Default.movingAverageSize;
+                }
+                Console.WriteLine("Moving Average Window Size: " + period);
                 samples = smoothData(samples, period); //Moving average spoils the first 10 samples so currently removing them.
 
                 List<int> fullSmoothedLine = new List<int> { StartingRGB, EndRGB, TimeTaken, SampleCount };
@@ -1513,6 +1518,10 @@ namespace OSRTT_Launcher
                     else
                     {
                         period = 50;
+                    }
+                    if (Properties.Settings.Default.movingAverageSize > period)
+                    {
+                        period = Properties.Settings.Default.movingAverageSize;
                     }
                     int[] smoothedSamples = smoothData(samples, period);
                     ProcessData.rawResultData d = new ProcessData.rawResultData

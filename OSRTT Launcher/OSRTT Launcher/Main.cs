@@ -1276,13 +1276,35 @@ namespace OSRTT_Launcher
                                         result = double.Parse(stringArr[1])
                                     };
                                     LiveViewObject.addData(d);
+                                    dataList.Add(d);
                                 }
                             }
                             Thread.Sleep(5);
                             LiveViewObject.Invoke((MethodInvoker)(() => LiveViewObject.copyListToArray()));
                             LiveViewObject.Invoke((MethodInvoker)(() => LiveViewObject.renderGraph()));
                             LiveViewObject.Invoke((MethodInvoker)(() => LiveViewObject.startStopBtn_Click(null, null)));
-
+                            // Save data to file
+                            decimal fileNumber = 001;
+                            // search /Results folder for existing file names, pick new name
+                            string[] existingFiles = Directory.GetFiles(path + "\\Live Data", "*-LIVE-OSRTT.csv");
+                            //search files for number
+                            foreach (var s in existingFiles)
+                            {
+                                decimal num = decimal.Parse(Path.GetFileNameWithoutExtension(s).Remove(3));
+                                if (num >= fileNumber)
+                                {
+                                    fileNumber = num + 1;
+                                }
+                            }
+                            string filePath = path + "\\Live Data\\" + fileNumber.ToString("000") + "-LIVE-OSRTT.csv";
+                            
+                            StringBuilder csvString = new StringBuilder();
+                            csvString.AppendLine("Timestamp,Light Reading");
+                            foreach (var res in dataList)
+                            {
+                                csvString.AppendLine(res.time.ToString() + "," + res.result.ToString());
+                            }
+                            File.WriteAllText(filePath, csvString.ToString());
                         }
                     }
                     Console.WriteLine(message);

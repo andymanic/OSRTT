@@ -716,6 +716,7 @@ namespace OSRTT_Launcher
 
         private void resetGraphBtn_Click(object sender, EventArgs e)
         {
+            smoothDataThreaded();
             drawGraph(runSelectBox.SelectedIndex, transSelect1.SelectedIndex);
             showProcessedData();
         }

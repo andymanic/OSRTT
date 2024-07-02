@@ -490,5 +490,17 @@ namespace OSRTT_Launcher.Properties {
                 this["autoSavePNG"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public int movingAverageSize {
+            get {
+                return ((int)(this["movingAverageSize"]));
+            }
+            set {
+                this["movingAverageSize"] = value;
+            }
+        }
     }
 }
