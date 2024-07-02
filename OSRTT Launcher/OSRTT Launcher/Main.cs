@@ -781,11 +781,15 @@ namespace OSRTT_Launcher
                     string p = "";
                     foreach (var s in lines)
                     {
-                        if (s.Contains("adafruit:samd:adafruit_itsybitsy_m4"))
+                        if (s.Contains("adafruit:samd:adafruit_itsybitsy_m4") || s.Contains("adafruit:samd:adafruit_feather_m4"))
                         {
                             char[] whitespace = new char[] { ' ', '\t' };
                             string[] split = s.Split(whitespace);
                             p = split[0];
+                        }
+                        if (s.Contains("adafruit:samd:adafruit_feather_m4"))
+                        {
+                            //boardType = 2; // probably not needed 
                         }
                     }
                     if (p != "")

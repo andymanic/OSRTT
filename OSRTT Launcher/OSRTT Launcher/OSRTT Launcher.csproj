@@ -67,10 +67,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>1F23E3ACDD2A6177E6E36FD4DF74CF28A5B18D78</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>C26F78C0204339E833E8E19561FEDFB657D0CF11</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>OSRTT Launcher_3_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>OSRTT Launcher_4_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -337,6 +337,7 @@
     <None Include="OSRTT Launcher_1_TemporaryKey.pfx" />
     <None Include="OSRTT Launcher_2_TemporaryKey.pfx" />
     <None Include="OSRTT Launcher_3_TemporaryKey.pfx" />
+    <None Include="OSRTT Launcher_4_TemporaryKey.pfx" />
     <None Include="OSRTT Launcher_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
