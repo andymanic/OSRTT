@@ -277,7 +277,7 @@ namespace OSRTT_Launcher
                 {
                     xy.Add(new gammaResult { RGB = x[k], LightLevel = y[k] });
                 }
-                return xy;    
+                return xy;
             }
             else
             {
@@ -372,6 +372,96 @@ namespace OSRTT_Launcher
             return averagedSamples.Skip(period).ToArray();
         }
 
+        public class CulledSamples
+        {
+            public int[] sampleArray { get; set; }
+            public int NoiseLevel { get; set; } = 0;
+        }
+
+        public CulledSamples CullBacklightFlicker(int[] samplesIn)
+        {
+            int[] samples = new int[samplesIn.Length];
+            Array.Copy(samplesIn, samples, samplesIn.Length);
+            // Search for flicker drops
+            List<int> flickerLocations = new List<int>();
+            int lookBehind = 3;
+            int lookAhead = 100;
+            for (int i = lookBehind; i < samples.Length; i++) // this doesn't currently account for a flicker at the START.
+            {
+                // check if current sample has dropped dramatically
+                if (samples[i] < (samples[i-lookBehind] * 0.5))
+                {
+                    List<int> potentialLocations = new List<int>();
+                    potentialLocations.AddRange(new List<int> { i - 2, i - 1, i });
+                    for (int k = i + 1; k < i + lookAhead; k++)
+                    {
+                        if (samples[k] < samples[i] || samples[k] < (samples[i] * 1.1) || samples[k] < (samples[i - lookBehind] * 0.5))
+                        {
+                            potentialLocations.Add(k);
+                        }
+                        else if (samples[k] > (samples[i-lookBehind] * 0.9))
+                        {
+                            // samples DO go back up, stop searching, add drops to list, skip ahead
+                            flickerLocations.AddRange(potentialLocations);
+                            // add another 5 samples to be removed to ensure endpoint accuracy
+                            int lastLocation = potentialLocations.Last();
+                            flickerLocations.AddRange(new List<int> { lastLocation + 1, lastLocation + 2, lastLocation + 3, lastLocation + 4, lastLocation + 5 });
+                            i = k + 5;
+                            break;
+                        }
+                    }
+                }
+            }
+            Console.WriteLine(flickerLocations.Count);
+            Console.WriteLine();
+
+            if (flickerLocations.Count != 0 && Properties.Settings.Default.flickerCulling)
+            {
+                for (int p = 0; p < flickerLocations.Count; p++)
+                {
+                    // Find current continuous group to replace
+                    int startLocation = flickerLocations[p];
+                    int endLocation = flickerLocations[p];
+                    for (int m = p + 1; m < flickerLocations.Count; m++)
+                    {
+                        if ((flickerLocations[m] - 1) == endLocation)
+                        {
+                            endLocation = flickerLocations[m];
+                        }
+                        else
+                        {
+                            p = m;
+                            break;
+                        }
+                    }
+
+                    // Replace the group
+                    // Optional upgrade - include more results then only take the middle ones
+                    double[] rawX = new double[2];
+                    double[] rawY = new double[2];
+                    rawX[0] = 0;
+                    rawX[1] = 1;
+                    rawY[0] = samples[startLocation - 1];
+                    rawY[1] = samples[endLocation + 1];
+                    var line = ScottPlot.Statistics.Interpolation.Cubic.InterpolateXY(rawX, rawY, endLocation - startLocation);
+                    for (int q = 0; q < line.ys.Length - 1; q++)
+                    {
+                        samples[startLocation + q] = (int)line.ys[q + 1];
+                    }
+                }
+                int max = 0;
+                int min = 65536;
+                for (int i = 20; i < 300; i++)
+                {
+                    if (samples[i] < min) { min = samples[i]; }
+                    else if (samples[i] > max) { max = samples[i]; }
+                }
+
+                return new CulledSamples { sampleArray = samples, NoiseLevel = max - min };
+            }
+            else { return new CulledSamples { sampleArray = samples, NoiseLevel = 0 }; }
+        }
+
         public processedResult ProcessResponseTimeData(List<List<rawResultData>> data, resultSelection res, int startDelay, List<gammaResult> processedGamma, runSettings runSetting)
         {
             //This is a long one. This is the code that builds the gamma curve, finds the start/end points and calculates response times and overshoot % (gamma corrected)
@@ -382,7 +472,6 @@ namespace OSRTT_Launcher
             List<int[]> fullGammaTable = new List<int[]>();
             List<int[]> smoothedDataTable = new List<int[]>();
             
-
             try //Wrapped whole thing in try just in case
             {
                 // Save start, end, time and sample count then clear the values from the array
@@ -394,9 +483,24 @@ namespace OSRTT_Launcher
 
                 double SampleTime = ((double)TimeTaken / (double)SampleCount); // Get the time taken between samples
 
+                int[] originalSamples = new int[samples.Length];
+                Array.Copy(samples, originalSamples, samples.Length); // make a copy just in case...
+                // Clean up flicker noise before filtering regular noise
+                CulledSamples culledSamples = CullBacklightFlicker(samples);
+                Array.Copy(culledSamples.sampleArray, samples, culledSamples.sampleArray.Length);
+
+                //Debug
+                StringBuilder csv = new StringBuilder();
+                csv.AppendLine(StartingRGB.ToString() + "," + EndRGB.ToString() + "," + String.Join(",", samples));
+                Console.WriteLine(csv.ToString());
                 // Clean up noisy data using moving average function
                 int period = 10;
                 int noise = data[res.arrayIndex][res.resultIndex].noiseLevel;
+                if (culledSamples.NoiseLevel != 0)
+                {
+                    noise = culledSamples.NoiseLevel;
+                    Console.WriteLine("Using culled noise value: " + culledSamples.NoiseLevel);
+                }
                 if (noise < 250)
                 {
                     period = 20;
@@ -1100,6 +1204,7 @@ namespace OSRTT_Launcher
 
                 double initialTransCount = initialTransEnd - initialTransStart;
                 double initialTransTime = (initialTransCount * SampleTime) / 1000;
+                //if (initialTransTime)
 
                 double perceivedTransCount = perceivedTransEnd - perceivedTransStart;
                 double perceivedTransTime = (perceivedTransCount * SampleTime) / 1000;
@@ -1501,8 +1606,16 @@ namespace OSRTT_Launcher
                 foreach (ProcessData.rawResultData raw in res)
                 {
                     int[] samples = raw.Samples.ToArray();
+                    // Clean up flicker noise before filtering regular noise
+                    CulledSamples culledSamples = CullBacklightFlicker(samples);
+                    Array.Copy(culledSamples.sampleArray, samples, culledSamples.sampleArray.Length);
                     int period = 10;
                     int noise = raw.noiseLevel;
+                    if (culledSamples.NoiseLevel != 0)
+                    {
+                        noise = culledSamples.NoiseLevel;
+                        Console.WriteLine("Using culled noise value: " + culledSamples.NoiseLevel);
+                    }
                     if (noise < 250)
                     {
                         period = 20;

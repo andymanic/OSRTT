@@ -496,7 +496,7 @@ namespace OSRTT_Launcher
             int sampleCount = rawData[arrayIndex][resultIndex].SampleCount;
             double averageTime = rawData[arrayIndex][resultIndex].SampleTime;
             double[] resultData;
-            if (Properties.Settings.Default.smoothGraph)
+            if (Properties.Settings.Default.smoothGraph && smoothedData.Count != 0)
             {
                 resultData = smoothedData[arrayIndex][resultIndex].Samples.Select(x => (double)x).ToArray();
             }

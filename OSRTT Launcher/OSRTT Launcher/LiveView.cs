@@ -49,7 +49,15 @@ namespace OSRTT_Launcher
 
         public void addData(LiveData d)
         {
-            xDataList.Add(d.time);
+            if (m.boardType == 2) // Expert only
+            {
+                if (xDataList.Count != 0)
+                {
+                    xDataList.Add(xDataList.Last() + d.time);
+                }
+                else { xDataList.Add(d.time); }
+            }
+            else { xDataList.Add(d.time); }
             yDataList.Add(d.result);
         }
         public void copyListToArray()

@@ -43,6 +43,7 @@
             this.debugModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveUSBOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateDeviceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.testButtonMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.devStat = new System.Windows.Forms.Label();
             this.controlsPanel = new System.Windows.Forms.Panel();
@@ -105,7 +106,6 @@
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.toolTipController = new System.Windows.Forms.ToolTip(this.components);
             this.overdriveModes1 = new OSRTT_Launcher.OverdriveModes();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.controlsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.testCount)).BeginInit();
@@ -270,6 +270,14 @@
             this.updateDeviceToolStripMenuItem.Text = "Update Device Firmware";
             this.updateDeviceToolStripMenuItem.Click += new System.EventHandler(this.updateDeviceToolStripMenuItem_Click);
             // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.CheckOnClick = true;
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(211, 22);
+            this.toolStripMenuItem1.Text = "Test Button";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+            // 
             // testButtonMenuItem
             // 
             this.testButtonMenuItem.CheckOnClick = true;
@@ -328,9 +336,9 @@
             this.vsyncStateList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.vsyncStateList.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.vsyncStateList.FormattingEnabled = true;
-            this.vsyncStateList.Location = new System.Drawing.Point(157, 256);
+            this.vsyncStateList.Location = new System.Drawing.Point(141, 256);
             this.vsyncStateList.Name = "vsyncStateList";
-            this.vsyncStateList.Size = new System.Drawing.Size(111, 26);
+            this.vsyncStateList.Size = new System.Drawing.Size(127, 26);
             this.vsyncStateList.TabIndex = 28;
             this.vsyncStateList.SelectedIndexChanged += new System.EventHandler(this.vsyncStateList_SelectedIndexChanged);
             // 
@@ -349,9 +357,9 @@
             this.captureTimeBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.captureTimeBox.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.captureTimeBox.FormattingEnabled = true;
-            this.captureTimeBox.Location = new System.Drawing.Point(157, 212);
+            this.captureTimeBox.Location = new System.Drawing.Point(141, 212);
             this.captureTimeBox.Name = "captureTimeBox";
-            this.captureTimeBox.Size = new System.Drawing.Size(111, 26);
+            this.captureTimeBox.Size = new System.Drawing.Size(127, 26);
             this.captureTimeBox.TabIndex = 21;
             this.captureTimeBox.SelectedIndexChanged += new System.EventHandler(this.captureTimeBox_SelectedIndexChanged);
             // 
@@ -1012,14 +1020,6 @@
             this.overdriveModes1.Name = "overdriveModes1";
             this.overdriveModes1.Size = new System.Drawing.Size(511, 299);
             this.overdriveModes1.TabIndex = 34;
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.CheckOnClick = true;
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(211, 22);
-            this.toolStripMenuItem1.Text = "Test Button";
-            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
             // Main
             // 

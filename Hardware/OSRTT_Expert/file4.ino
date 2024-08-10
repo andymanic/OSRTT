@@ -1,5 +1,6 @@
 void loop() {
-  Serial.setTimeout(1000);
+  //Delay600ns();
+  Serial.setTimeout(100);
   getSerialChars();
   if (millis() == (loopTimer + 180000))
   {
@@ -9,7 +10,16 @@ void loop() {
   buttonState = digitalRead(buttonPin);
   if (buttonState == HIGH)
   {
-    oledFourLines("CONNECTED", "TO", "DESKTOP", "APP");
+    // oledFourLines("CONNECTED", "TO", "DESKTOP", "APP");
+    //digitalPotWrite(208);
+    fillADCBuffer(10000, 100);
+    for (int i = 0; i < 10000; i++)
+    {
+      Serial.print(adcBuff[i]);
+      Serial.print(",");
+    }
+    Serial.println();
+    
   }
   if (input[0] == 'A')
   {
@@ -34,9 +44,7 @@ void loop() {
     int sample_count = 0;
     while (sample_count < 1000)
     {
-      ADC0->SWTRIG.bit.START = 1; //Start ADC
-      while (!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
-      adcBuff[sample_count] = ADC0->RESULT.reg; //save new ADC value to buffer @ sample_count position
+      adcBuff[sample_count] = getSingleADCValue(); //save new ADC value to buffer @ sample_count position
       sample_count++; //Increment sample count
     }
     Serial.print("Stability:");
@@ -78,9 +86,7 @@ void loop() {
       long value = 0;
       while (counter < 250)
       {
-        ADC0->SWTRIG.bit.START = 1; //Start ADC
-        while (!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
-        value += ADC0->RESULT.reg;
+        value += getSingleADCValue();
         counter++;
       }
       value /= counter;
@@ -123,14 +129,6 @@ void loop() {
 
     Serial.println();
     UniqueIDdump(Serial);
-    if (CSVersion)
-    {
-      Serial.println("CS Version");
-    }
-    else
-    {
-      Serial.println("OG Version");
-    }
     Serial.println("Handshake");
   }
   else if (input[0] == 'J')
@@ -143,9 +141,7 @@ void loop() {
       Serial.println(count);
       //Serial.print(",");
       delay(100);
-      ADC0->SWTRIG.bit.START = 1; //Start ADC
-      while (!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
-      adcBuff[count] = ADC0->RESULT.reg;
+      adcBuff[count] = getSingleADCValue();
       //Serial.println(value);
       //delay(2000);
       count++;
@@ -175,9 +171,7 @@ void loop() {
         //Serial.print(count);
         //Serial.print(",");
         delay(200);
-        ADC0->SWTRIG.bit.START = 1; //Start ADC
-        while (!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
-        adcBuff[count] = ADC0->RESULT.reg;
+        adcBuff[count] = getSingleADCValue();
         //Serial.println(value);
         //delay(2000);
         count*=2;
@@ -195,11 +189,6 @@ void loop() {
     }
     Serial.println();
     //checkLightLevel();
-  }
-  else if (input[0] == 'H')
-  {
-    int state = input[1] - '0';
-    ADCHighSpeedMode(state);
   }
   else if (input[0] == 'M')
   {
@@ -255,10 +244,28 @@ void loop() {
   else if (input[0] == 'N')
   {
     int length = input[1] - '0';
-    length++;
-    samplingTime = 50000 * length;
-    Serial.print("Sampling Time:");
-    Serial.println(samplingTime);
+    if (length == 0) { GlobalSampleCount = 18326; } // 50ms
+    else if (length == 1) { GlobalSampleCount = 36651; } // 100ms
+    else if (length == 2) { GlobalSampleCount = 54976; } // 150ms
+    else if (length == 3) { GlobalSampleCount = 73302; } // 200ms
+    else if (length == 4) { // 250ms
+      GlobalSampleCount = 18326; 
+      GlobalSampleDelay = 1;
+    } 
+    else if (length == 5) { // 350ms
+      GlobalSampleCount = 73877; 
+      GlobalSampleDelay = 2;
+    } 
+    else if (length == 6) { // 500ms
+      GlobalSampleCount = 64615; 
+      GlobalSampleDelay = 5;
+    } 
+    else if (length == 7) { // 1s
+      GlobalSampleCount = 72790; 
+      GlobalSampleDelay = 11;
+    } 
+    // Serial.print("Sampling Time:");
+    // Serial.println(samplingTime);
   }
   else if (input[0] == 'T')
   {
@@ -280,9 +287,7 @@ void loop() {
         int sample_count = 0;
         while (sample_count < 1000)
         {
-          ADC0->SWTRIG.bit.START = 1; //Start ADC
-          while (!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
-          adcBuff[sample_count] = ADC0->RESULT.reg; //save new ADC value to buffer @ sample_count position
+          adcBuff[sample_count] = getSingleADCValue(); //save new ADC value to buffer @ sample_count position
           sample_count++; //Increment sample count
         }
         int minVal = 65520;
@@ -322,7 +327,7 @@ void loop() {
         {
           // If brightness too low or high, don't run the test
           Serial.println("Cancelling test");
-          digitalWrite(13, HIGH);
+          //digitalWrite(13, HIGH);
           digitalPotWrite(0x00);
           oledFourLines("FAILED TO", "CALIBRATE", "LIGHT", "LEVEL");
           break;
@@ -351,7 +356,7 @@ void loop() {
             {
               int t = input[1] - '0';
               t++;
-              samplingTime = 50000 * t;
+              
             }
             else
             {
@@ -385,7 +390,7 @@ void loop() {
                 oledTestRunning(current, next, runCount);
                 Keyboard.print(Keys[currentIndex]);
                 delay(300);
-                runADC(current, next, Keys[nextIndex], "Results: ");
+                runADC(current, next, Keys[nextIndex], "Results: ", GlobalSampleCount, GlobalSampleDelay, GlobalStartDelay);
                 delay(50);
                 Serial.println("NEXT");
               }
@@ -541,15 +546,17 @@ void loop() {
 
         long startTime = micros();
         long currentTime = micros();
-        long times[16000];
+        uint16_t times[16000];
         int count = 0;
+        times[count] = currentTime - startTime;
+        adcBuff[count] = getSingleADCValue();
+        delayMicroseconds(250);
+        count++;
         while (currentTime < (startTime + 3000000))
         {
-          ADC0->SWTRIG.bit.START = 1; //Start ADC
-          while (!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
           currentTime = micros();
-          times[count] = currentTime - startTime;
-          adcBuff[count] = ADC0->RESULT.reg;
+          times[count] = currentTime - times[count - 1];
+          adcBuff[count] = getSingleADCValue();
           delayMicroseconds(250);
           count++;
         }
@@ -592,13 +599,46 @@ void loop() {
       }
     }
   }
-  else if (input[0] == 'R')
+  else if (input[0] == 'W')
   {
-    //digitalWrite(2, LOW);
-    int rotation = input[1] - '0';
-    rotateDisplay(rotation);
-    Serial.print("Rotation set as: ");
-    Serial.println(rotation);
+    // long s = micros();
+    // int counter = 10000;
+    // for(int i = 0; i < counter; i++)
+    // {
+    //   adcBuff[i] = getSingleADCValue();
+    // }
+    // long e = micros();
+    // Serial.print("Sample time: ");
+    // float t = (e - s) / counter;
+    // Serial.println(t);
+    while (input[0] != 'X')
+    {
+      getSerialChars();
+      if (digitalRead(buttonPin))
+      {
+        Serial.println("EXSTART");
+        for (int p = 0; p < 256; p++)
+        {
+          digitalPotWrite(p);
+          delay(10);
+          long t = fillADCBuffer();
+          Serial.print("EXSWEEP:");
+          Serial.print(p);
+          Serial.print(",");
+          Serial.print(p);
+          Serial.print(",");
+          Serial.print(t);
+          Serial.print(",10000,");
+          for (int l = 0; l < 10000; l++)
+          {
+            Serial.print(adcBuff[l]);
+            Serial.print(",");
+          }
+          Serial.println();
+        }
+        Serial.println("EXFIN");
+      }
+    }
   }
   else if (input[0] == 'Y')
   {
@@ -624,49 +664,6 @@ void loop() {
       delay(10);
     }
   }
-  else if (input[0] == 'W')
-  { 
-    if (input[1] == '1')
-    {
-      for (int h = 0; h < 256; h++)
-      {
-        digitalPotWrite(h);
-        Serial.print(h);
-        Serial.print(",,");
-        int counter = 0;
-        long tStart = micros();
-        while (counter < 10000)
-        {
-          ADC0->SWTRIG.bit.START = 1; //Start ADC
-          while (!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
-          adcBuff[counter] = ADC0->RESULT.reg; //save new ADC value to buffer @ sample_count position
-          counter++;
-        }
-        long tEnd = micros();
-        for (int i = 0; i < counter; i++)
-        {
-          Serial.print(adcBuff[i]);
-          Serial.print(",");
-        }
-        Serial.println();
-      }
-    }
-    else if (input[1] == '2')
-    {
-      int potVal = 0;
-      while (potVal < 256)
-      {
-        if (digitalRead(buttonPin))
-        {
-          digitalPotWrite(potVal);
-          Serial.print("POT VAL:");
-          Serial.println(potVal);
-          potVal++;
-          delay(100);
-        }
-      }
-    }
-  }
   else if (input[0] == 'Z')
   {
     int potVal = 1;
@@ -680,14 +677,11 @@ void loop() {
       Serial.print(",");
       while (counter < 100)
       {
-        ADC0->SWTRIG.bit.START = 1; //Start ADC
-        while (!ADC0->INTFLAG.bit.RESRDY); //wait for ADC to have a new value
-        result = ADC0->RESULT.reg; //save new ADC value to buffer @ sample_count position
+        result = getSingleADCValue(); //save new ADC value to buffer @ sample_count position
         counter++;
       }
       Serial.println(result);
       oledFourLines("POT VAL:", String(potVal), "VAL:", String(result));
     }
   }
-  delay(100);
 }

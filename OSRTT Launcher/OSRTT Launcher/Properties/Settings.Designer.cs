@@ -502,5 +502,17 @@ namespace OSRTT_Launcher.Properties {
                 this["movingAverageSize"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool flickerCulling {
+            get {
+                return ((bool)(this["flickerCulling"]));
+            }
+            set {
+                this["flickerCulling"] = value;
+            }
+        }
     }
 }

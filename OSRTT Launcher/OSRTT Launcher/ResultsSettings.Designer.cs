@@ -128,6 +128,9 @@ namespace OSRTT_Launcher
             this.openColourPickerBtn = new OSRTT_Launcher.RoundButton();
             this.roundButton1 = new OSRTT_Launcher.RoundButton();
             this.roundButton2 = new OSRTT_Launcher.RoundButton();
+            this.panel13 = new System.Windows.Forms.Panel();
+            this.label31 = new System.Windows.Forms.Label();
+            this.flickerSelect = new System.Windows.Forms.ComboBox();
             this.panel2.SuspendLayout();
             this.tolerancePanel.SuspendLayout();
             this.testSettingsPanel.SuspendLayout();
@@ -165,6 +168,7 @@ namespace OSRTT_Launcher
             ((System.ComponentModel.ISupportInitialize)(this.rtHighNum)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtMidNum)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtLowNum)).BeginInit();
+            this.panel13.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel2
@@ -595,7 +599,7 @@ namespace OSRTT_Launcher
             this.tabControl1.Location = new System.Drawing.Point(9, 11);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1027, 792);
+            this.tabControl1.Size = new System.Drawing.Size(1027, 818);
             this.tabControl1.TabIndex = 34;
             // 
             // testSettingsTab
@@ -627,6 +631,7 @@ namespace OSRTT_Launcher
             // resultSettingsTab
             // 
             this.resultSettingsTab.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.resultSettingsTab.Controls.Add(this.panel13);
             this.resultSettingsTab.Controls.Add(this.panel9);
             this.resultSettingsTab.Controls.Add(this.panel8);
             this.resultSettingsTab.Controls.Add(this.panel6);
@@ -643,7 +648,7 @@ namespace OSRTT_Launcher
             this.resultSettingsTab.Location = new System.Drawing.Point(4, 42);
             this.resultSettingsTab.Name = "resultSettingsTab";
             this.resultSettingsTab.Padding = new System.Windows.Forms.Padding(3);
-            this.resultSettingsTab.Size = new System.Drawing.Size(1019, 746);
+            this.resultSettingsTab.Size = new System.Drawing.Size(1019, 772);
             this.resultSettingsTab.TabIndex = 1;
             this.resultSettingsTab.Text = "Results Settings";
             // 
@@ -1253,12 +1258,44 @@ namespace OSRTT_Launcher
             this.roundButton2.TabIndex = 34;
             this.roundButton2.UseVisualStyleBackColor = false;
             // 
+            // panel13
+            // 
+            this.panel13.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.panel13.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel13.Controls.Add(this.label31);
+            this.panel13.Controls.Add(this.flickerSelect);
+            this.panel13.Location = new System.Drawing.Point(387, 708);
+            this.panel13.Name = "panel13";
+            this.panel13.Size = new System.Drawing.Size(615, 50);
+            this.panel13.TabIndex = 53;
+            // 
+            // label31
+            // 
+            this.label31.AutoSize = true;
+            this.label31.Font = new System.Drawing.Font("Arial", 18F);
+            this.label31.Location = new System.Drawing.Point(10, 11);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(166, 27);
+            this.label31.TabIndex = 23;
+            this.label31.Text = "Flicker Culling";
+            // 
+            // flickerSelect
+            // 
+            this.flickerSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.flickerSelect.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.flickerSelect.FormattingEnabled = true;
+            this.flickerSelect.Location = new System.Drawing.Point(246, 8);
+            this.flickerSelect.Name = "flickerSelect";
+            this.flickerSelect.Size = new System.Drawing.Size(354, 32);
+            this.flickerSelect.TabIndex = 21;
+            this.flickerSelect.SelectedIndexChanged += new System.EventHandler(this.flickerSelect_SelectedIndexChanged);
+            // 
             // ResultsSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.ClientSize = new System.Drawing.Size(1043, 811);
+            this.ClientSize = new System.Drawing.Size(1043, 841);
             this.Controls.Add(this.saveLabel);
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -1330,6 +1367,8 @@ namespace OSRTT_Launcher
             ((System.ComponentModel.ISupportInitialize)(this.rtHighNum)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtMidNum)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtLowNum)).EndInit();
+            this.panel13.ResumeLayout(false);
+            this.panel13.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1434,5 +1473,8 @@ namespace OSRTT_Launcher
         private System.Windows.Forms.Panel panel9;
         private System.Windows.Forms.NumericUpDown movingAverageCount;
         private System.Windows.Forms.Label label30;
+        private System.Windows.Forms.Panel panel13;
+        private System.Windows.Forms.Label label31;
+        private System.Windows.Forms.ComboBox flickerSelect;
     }
 }

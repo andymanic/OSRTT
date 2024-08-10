@@ -36,6 +36,7 @@ namespace OSRTT_Launcher
             initKeys();
             initTextColour();
             initDenoiseSelect();
+            initFlickerSelect();
             initDateSelect();
             initAutoSavePNGSelect();
             initMASize();
@@ -333,6 +334,20 @@ namespace OSRTT_Launcher
             denoiseSelect.Items.Add("Disabled - Raw");
             denoiseSelect.Items.Add("Enabled - Denoised");
             if (!Properties.Settings.Default.smoothGraph)
+            {
+                denoiseSelect.SelectedIndex = 0;
+            }
+            else
+            {
+                denoiseSelect.SelectedIndex = 1;
+            }
+        }
+        private void initFlickerSelect()
+        {
+            denoiseSelect.Items.Clear();
+            denoiseSelect.Items.Add("Disabled");
+            denoiseSelect.Items.Add("Enabled");
+            if (!Properties.Settings.Default.flickerCulling)
             {
                 denoiseSelect.SelectedIndex = 0;
             }
@@ -1097,8 +1112,28 @@ namespace OSRTT_Launcher
                 Properties.Settings.Default.Save();
             }
         }
-        
 
+        private void flickerSelect_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var ctrl = sender as ComboBox;
+            if (ctrl.Focused)
+            {
+                if (saveThread == null || !saveThread.IsAlive)
+                {
+                    saveThread = new Thread(new ThreadStart(this.SavingLabel));
+                    saveThread.Start();
+                }
+                if (ctrl.SelectedIndex == 0)
+                {
+                    Properties.Settings.Default.flickerCulling = false;
+                }
+                else
+                {
+                    Properties.Settings.Default.flickerCulling = true;
+                }
+                Properties.Settings.Default.Save();
+            }
+        }
     }
 
     public class RoundButton : Button

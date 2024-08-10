@@ -28,14 +28,9 @@ namespace OSRTT_Launcher
         private double boardVersion = 2.6;
         private double V1DLFW = 2.8;
         private double ProDLFW = 1.7;
+        private double ExpertDLFW = 1.0;
         public int boardType = -1;
         private string softwareVersion = "4.7";
-
-        // TODO //
-        //
-        //
-        // Current known issues //
-        //
 
         public static System.IO.Ports.SerialPort port;
         delegate void SetTextCallback(string text);
@@ -668,14 +663,68 @@ namespace OSRTT_Launcher
         }
 
         private void listCaptureTimes()
-        {
-            captureTimeBox.Items.Clear();
-            captureTimeBox.Items.Add("50ms");
-            captureTimeBox.Items.Add("100ms");
-            captureTimeBox.Items.Add("150ms");
-            captureTimeBox.Items.Add("200ms");
-            captureTimeBox.Items.Add("250ms");
-            captureTimeBox.SelectedIndex = Properties.Settings.Default.captureTime;
+        { 
+            if (captureTimeBox.InvokeRequired)
+            {
+                this.Invoke((MethodInvoker)delegate ()
+                {
+                    captureTimeBox.Items.Clear();
+                    if (boardType != 2)
+                    {
+                        captureTimeBox.Items.Add("50ms");
+                        captureTimeBox.Items.Add("100ms");
+                        captureTimeBox.Items.Add("150ms");
+                        captureTimeBox.Items.Add("200ms");
+                        captureTimeBox.Items.Add("250ms");
+                    }
+                    else
+                    {
+                        captureTimeBox.Items.Add("50ms @ 2.7us");
+                        captureTimeBox.Items.Add("100ms @ 2.7us");
+                        captureTimeBox.Items.Add("150ms @ 2.7us");
+                        captureTimeBox.Items.Add("200ms @ 2.7us");
+                        captureTimeBox.Items.Add("250ms @ 3.7us");
+                        captureTimeBox.Items.Add("350ms @ 4.7us");
+                        captureTimeBox.Items.Add("500ms @ 7.7us");
+                        captureTimeBox.Items.Add("1s @ 13.7us");
+                    }
+                    int savedState = Properties.Settings.Default.captureTime;
+                    if (savedState >= captureTimeBox.Items.Count)
+                    {
+                        savedState = captureTimeBox.Items.Count - 1;
+                    }
+                    captureTimeBox.SelectedIndex = savedState;
+                });
+            }
+            else
+            {
+                captureTimeBox.Items.Clear();
+                if (boardType != 2)
+                {
+                    captureTimeBox.Items.Add("50ms");
+                    captureTimeBox.Items.Add("100ms");
+                    captureTimeBox.Items.Add("150ms");
+                    captureTimeBox.Items.Add("200ms");
+                    captureTimeBox.Items.Add("250ms");
+                }
+                else
+                {
+                    captureTimeBox.Items.Add("50ms @ 2.7us");
+                    captureTimeBox.Items.Add("100ms @ 2.7us");
+                    captureTimeBox.Items.Add("150ms @ 2.7us");
+                    captureTimeBox.Items.Add("200ms @ 2.7us");
+                    captureTimeBox.Items.Add("250ms @ 3.7us");
+                    captureTimeBox.Items.Add("350ms @ 4.7us");
+                    captureTimeBox.Items.Add("500ms @ 7.7us");
+                    captureTimeBox.Items.Add("1s @ 13.7us");
+                }
+                int savedState = Properties.Settings.Default.captureTime;
+                if (savedState >= captureTimeBox.Items.Count)
+                {
+                    savedState = captureTimeBox.Items.Count - 1;
+                }
+                captureTimeBox.SelectedIndex = savedState;
+            }
         }
 
         private void listVsyncState()
@@ -789,7 +838,8 @@ namespace OSRTT_Launcher
                         }
                         if (s.Contains("adafruit:samd:adafruit_feather_m4"))
                         {
-                            //boardType = 2; // probably not needed 
+                            boardType = 2; // probably not needed 
+                            listCaptureTimes();
                         }
                     }
                     if (p != "")
@@ -811,7 +861,7 @@ namespace OSRTT_Launcher
                 }
                 else if (boardUpdate)
                 {
-                    if ((boardVersion < V1DLFW && boardType == 0) || forceUpdate || (boardVersion < ProDLFW && boardType == 1))
+                    if ((boardVersion < V1DLFW && boardType == 0) || forceUpdate || (boardVersion < ProDLFW && boardType == 1) || (boardVersion < ExpertDLFW && boardType == 2))
                     {
                         string p = ""; 
                         p = port.PortName;
@@ -834,19 +884,26 @@ namespace OSRTT_Launcher
                             process.StartInfo.FileName = "cmd.exe";
                             string installCommand = "";
                             string updateCommand = "";
-                            if (boardType == 1)
+                            if (boardType == 1 || boardType == 2)
                             {
                                 string binFileAvailable = "";
                                 foreach (var f in Directory.GetFiles(localPath + @"\\arduinoCLI")) 
                                 {
                                     if (f.Contains("ino.bin") && f.Contains("Pro")) { binFileAvailable = f; }
+                                    else if (f.Contains("ino.bin") && f.Contains("Expert")) { binFileAvailable = f; }
                                 }
                                 if (binFileAvailable != "")
                                 {
-                                    Console.WriteLine(binFileAvailable);
+                                    
                                     installCommand = "";
-                                    updateCommand = "/C .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 -i \""+ binFileAvailable + "\"";
-                                    Console.WriteLine(updateCommand);
+                                    if (boardType == 1)
+                                    {
+                                        updateCommand = "/C .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_itsybitsy_m4 -i \""+ binFileAvailable + "\"";
+                                    }
+                                    else if (boardType == 2)
+                                    {
+                                        updateCommand = "/C .\\arduinoCLI\\arduino-cli.exe upload --port " + p + " --fqbn adafruit:samd:adafruit_feather_m4 -i \"" + binFileAvailable + "\"";
+                                    }
                                 }
                                 else
                                 {
@@ -1949,6 +2006,20 @@ namespace OSRTT_Launcher
                         File.WriteAllText(USBOutputPath, USBOutputString.ToString());
                         Console.WriteLine("Test finished");
                     }
+                    else if (message.Contains("EXSTART"))
+                    {
+                        currentRun = 0;
+                    }
+                    else if (message.Contains("EXSWEEP"))
+                    {
+                        string newMessage = message.Remove(0, 8);
+                        File.AppendAllText(path + "\\expertTest.csv", newMessage);
+                            
+                    }
+                    else if (message.Contains("EXFIN"))
+                    {
+                        
+                    }
                     else
                     {
                         this.SetText(message);
@@ -2405,7 +2476,7 @@ namespace OSRTT_Launcher
                             Stopwatch sw = new Stopwatch();
                             sw.Reset();
                             sw.Start();
-                            while (sw.ElapsedMilliseconds < 5000)
+                            while (sw.ElapsedMilliseconds < 20000)
                             { // wait for CORRECT result to come back
                                 if (currentStart == RGBArr[i] && currentEnd == RGBArr[k] && triggerNextResult)
                                 {
@@ -2413,7 +2484,7 @@ namespace OSRTT_Launcher
                                 }
                                 Thread.Sleep(10);
                             }
-                            if (sw.ElapsedMilliseconds > 5000)
+                            if (sw.ElapsedMilliseconds > 20000)
                             {
                                 DialogResult d = showMessageBox("Error: The test was unable to run the last transition, try again?", "Test Timed Out", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
                                 if (d == DialogResult.Retry)
@@ -3360,8 +3431,8 @@ namespace OSRTT_Launcher
         private void testButtonToolStripMenuItemToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //testRawInput();
-            port.Write("J");
-            //port.Write("W");
+            //port.Write("J");
+            port.Write("W");
             //Thread.Sleep(500);
             //SendKeys.SendWait("{NUM0}");
             //runDirectXWindow();
