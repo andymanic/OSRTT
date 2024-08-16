@@ -30,7 +30,7 @@ namespace OSRTT_Launcher
         private double ProDLFW = 1.7;
         private double ExpertDLFW = 1.0;
         public int boardType = -1;
-        private string softwareVersion = "4.7";
+        private string softwareVersion = "4.85";
 
         public static System.IO.Ports.SerialPort port;
         delegate void SetTextCallback(string text);
@@ -3431,8 +3431,8 @@ namespace OSRTT_Launcher
         private void testButtonToolStripMenuItemToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //testRawInput();
-            //port.Write("J");
-            port.Write("W");
+            port.Write("J");
+            //port.Write("W");
             //Thread.Sleep(500);
             //SendKeys.SendWait("{NUM0}");
             //runDirectXWindow();
@@ -3758,7 +3758,43 @@ namespace OSRTT_Launcher
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            port.Write("W");
+            //port.Write("W");
+
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.FileName = "powershell.exe";
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.Arguments = "Get-WinUserLanguageList";
+            process.Start();
+            process.WaitForExit();
+            string output = process.StandardOutput.ReadToEnd();
+            string[] splitOutput = output.Split('\n');
+            for (int i = 0; i < splitOutput.Length; i++)
+            {
+                if (splitOutput[i].Contains("LanguageTag"))
+                {
+                    string[] lang = splitOutput[i].Split(':');
+                    Console.WriteLine(lang.Last().Trim());
+                }
+            }
+            process.StartInfo.Arguments = "";
+            process.StartInfo.RedirectStandardInput = true;
+            process.Start();
+            using (StreamWriter sw = process.StandardInput)
+            {
+                if (sw.BaseStream.CanWrite)
+                {
+                    sw.WriteLine("$LanguageList = New-WinUserLanguageList -LanguageTag \"en-US\"");
+                    sw.WriteLine("Set-WinUserLanguageList -LanguageList $LanguageList");
+                }
+            }
+            process.WaitForExit();
+            output = process.StandardOutput.ReadToEnd();
+            Console.WriteLine(output);
+
+            //Get-WinUserLanguageList
         }
     }
 }

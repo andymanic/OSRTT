@@ -395,6 +395,7 @@ namespace OSRTT_Launcher
                     potentialLocations.AddRange(new List<int> { i - 2, i - 1, i });
                     for (int k = i + 1; k < i + lookAhead; k++)
                     {
+                        if (k >= samples.Length) { break; }
                         if (samples[k] < samples[i] || samples[k] < (samples[i] * 1.1) || samples[k] < (samples[i - lookBehind] * 0.5))
                         {
                             potentialLocations.Add(k);
@@ -417,6 +418,17 @@ namespace OSRTT_Launcher
 
             if (flickerLocations.Count != 0 && Properties.Settings.Default.flickerCulling)
             {
+                if (flickerLocations.Last() >= samples.Length - 1)
+                {
+                    for (int m = flickerLocations.Count - 1; m > 0; m-- )
+                    {
+                        if (flickerLocations[m] >= samples.Length - 1)
+                        {
+                            flickerLocations.RemoveAt(m);
+                        }
+                        else { break; }
+                    }
+                }
                 for (int p = 0; p < flickerLocations.Count; p++)
                 {
                     // Find current continuous group to replace

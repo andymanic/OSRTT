@@ -344,16 +344,16 @@ namespace OSRTT_Launcher
         }
         private void initFlickerSelect()
         {
-            denoiseSelect.Items.Clear();
-            denoiseSelect.Items.Add("Disabled");
-            denoiseSelect.Items.Add("Enabled");
+            flickerSelect.Items.Clear();
+            flickerSelect.Items.Add("Disabled");
+            flickerSelect.Items.Add("Enabled");
             if (!Properties.Settings.Default.flickerCulling)
             {
-                denoiseSelect.SelectedIndex = 0;
+                flickerSelect.SelectedIndex = 0;
             }
             else
             {
-                denoiseSelect.SelectedIndex = 1;
+                flickerSelect.SelectedIndex = 1;
             }
         }
         private void initDateSelect()
