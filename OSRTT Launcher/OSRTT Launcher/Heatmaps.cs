@@ -679,7 +679,7 @@ namespace OSRTT_Launcher
                     double val = Convert.ToDouble(e.Value);
                     if (dgv.Name.Contains("Stats") && e.RowIndex == 5)
                     {
-                        val *= 2;
+                        val /= 2;
                     }
                     if (val == middle)
                     {

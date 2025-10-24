@@ -599,6 +599,10 @@ namespace OSRTT_Launcher
                             name = target.DisplaySource.ToString().Remove(0, 4);
                         }
                         else { manCode = item.DisplayTarget.EDIDManufactureCode; }
+                        name.Replace("\n", "");
+                        name.Replace("\r", "");
+                        name.Replace("\r\n", "");
+                        name.Replace(Environment.NewLine, "");
                         string res = "";
                         try
                         {
@@ -2142,7 +2146,7 @@ namespace OSRTT_Launcher
             if (!brightnessCanceled)
             {
                 initRtOsMethods();
-                makeResultsFolder("RT");
+                cancelTest = !makeResultsFolder("RT"); // ! because function (sensibly) returns true
                 overdriveModes1.runSetting = runSettings;
                 changeSizeAndState("overdrive");
                 while (runSettings.OverdriveMode == "")
@@ -2431,6 +2435,8 @@ namespace OSRTT_Launcher
 
         private void runTest()
         {
+            int testWaitTime = 10000;
+            if (boardType == 2) { testWaitTime = 30000; }
             while (!testStarted)
             { // Wait for user to press the button
                 Thread.Sleep(100);
@@ -2476,7 +2482,7 @@ namespace OSRTT_Launcher
                             Stopwatch sw = new Stopwatch();
                             sw.Reset();
                             sw.Start();
-                            while (sw.ElapsedMilliseconds < 20000)
+                            while (sw.ElapsedMilliseconds < testWaitTime)
                             { // wait for CORRECT result to come back
                                 if (currentStart == RGBArr[i] && currentEnd == RGBArr[k] && triggerNextResult)
                                 {
@@ -2484,7 +2490,7 @@ namespace OSRTT_Launcher
                                 }
                                 Thread.Sleep(10);
                             }
-                            if (sw.ElapsedMilliseconds > 20000)
+                            if (sw.ElapsedMilliseconds > testWaitTime)
                             {
                                 DialogResult d = showMessageBox("Error: The test was unable to run the last transition, try again?", "Test Timed Out", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
                                 if (d == DialogResult.Retry)
@@ -2511,7 +2517,7 @@ namespace OSRTT_Launcher
                             catch (Exception ex) { Console.WriteLine(ex.Message + ex.StackTrace); SetText(ex.Message + ex.StackTrace); }
                             sw.Reset();
                             sw.Start();
-                            while (sw.ElapsedMilliseconds < 5000)
+                            while (sw.ElapsedMilliseconds < testWaitTime)
                             { // wait for CORRECT result to come back
                                 if (currentStart == RGBArr[k] && currentEnd == RGBArr[i] && triggerNextResult)
                                 {
@@ -2519,7 +2525,7 @@ namespace OSRTT_Launcher
                                 }
                                 Thread.Sleep(10);
                             }
-                            if (sw.ElapsedMilliseconds > 5000)
+                            if (sw.ElapsedMilliseconds > testWaitTime)
                             {
                                 DialogResult d = showMessageBox("Error: The test was unable to run the last transition, try again?", "Test Timed Out", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
                                 if (d == DialogResult.Retry)
@@ -2649,43 +2655,52 @@ namespace OSRTT_Launcher
             return median;
         }
 
-        private void makeResultsFolder(string testType = "RT")
+        private bool makeResultsFolder(string testType = "RT")
         {
             int monitor = getSelectedMonitor();
             string monitorName = displayList[monitor].Name;
             monitorName = Regex.Replace(monitorName, "[^\\w\\d\\s -]", "");
             string monitorInfo = testType + "-" + monitorName.Replace(" ", "-") + "-" + displayList[monitor].Freq.ToString() + "-" + displayList[monitor].Connection;
-            if (runSettings != null)
+            try
             {
-                if (runSettings.OverdriveMode != null && runSettings.OverdriveMode != "")
+                //showMessageBox(monitorName + "\n" + path + "\n" + monitorInfo, "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                decimal fileNumber = 001;
+                // search /Results folder for existing file names, pick new name
+                string[] existingFiles = Directory.GetDirectories(path, "*-" + monitorInfo + "*");
+                //search files for number
+                if (existingFiles.Length != 0)
                 {
-                    //monitorInfo += "-" + runSettings.OverdriveMode.Replace(" ", "");
-                }
-            }
-
-            decimal fileNumber = 001;
-            // search /Results folder for existing file names, pick new name
-            string[] existingFiles = Directory.GetDirectories(path, "*-" + monitorInfo + "*");
-            //search files for number
-            if (existingFiles.Length != 0)
-            {
-                foreach (var s in existingFiles)
-                {
-                    var name = new DirectoryInfo(s).Name;
-                    decimal num = decimal.Parse(name.Remove(3));
-                    if (num >= fileNumber)
+                    foreach (var s in existingFiles)
                     {
-                        fileNumber = num + 1;
+                        var name = new DirectoryInfo(s).Name;
+                        decimal num = decimal.Parse(name.Remove(3));
+                        if (num >= fileNumber)
+                        {
+                            fileNumber = num + 1;
+                        }
                     }
                 }
+                string filePath = path + "\\" + fileNumber.ToString("000") + "-" + monitorInfo;
+                if (testType != "RT")
+                {
+                    Directory.CreateDirectory(filePath);
+                }
+                resultsFolderPath = filePath;
+                initRunSettingsFile(filePath, monitor);
+                return true;
             }
-            string filePath = path + "\\" + fileNumber.ToString("000") + "-" + monitorInfo;
-            if (testType != "RT")
+            catch (Exception ex)
             {
-                Directory.CreateDirectory(filePath);
+                Console.WriteLine(ex.Message + ex.StackTrace);
+                SetText(ex.Message + ex.StackTrace);
+                showMessageBox(
+                    "ERROR: Can't Create Directory",
+                    "Error, unable to create the results folder. Check the debug view for more information. The test has been cancelled", 
+                    MessageBoxButtons.OK, 
+                    MessageBoxIcon.Error
+                    );
+                return false;
             }
-            resultsFolderPath = filePath;
-            initRunSettingsFile(filePath, monitor);
         }
         private void initRunSettingsFile(string filePath, int monitor)
         {

@@ -228,7 +228,21 @@ namespace OSRTT_Launcher
             rtViewMenuList.Items.Add("Perceived Response Time");
             rtViewMenuList.Items.Add("Initial Response Time");
             rtViewMenuList.Items.Add("Complete Response Time");
-            rtViewMenuList.SelectedIndex = 0;
+            if (Properties.Settings.Default.defaultRTType == "Initial")
+            {
+                rtViewMenuList.SelectedIndex = 1;
+                initialResponseTimeToolStripMenuItem.Checked = true;
+                perceivedResponseTimeToolStripMenuItem.Checked = false;
+                completeResponseTimeToolStripMenuItem.Checked = false;
+            }
+            else
+            {
+                rtViewMenuList.SelectedIndex = 0;
+                perceivedResponseTimeToolStripMenuItem.Checked = true;
+                initialResponseTimeToolStripMenuItem.Checked = false;
+                completeResponseTimeToolStripMenuItem.Checked = false;
+            }
+
         }
         private void importRawData()
         {
@@ -629,6 +643,7 @@ namespace OSRTT_Launcher
             denoiseToolStripBtn.Visible = false;
             try
             {
+                initRtStyleList();
                 standardView();
             }
             catch (Exception ex)

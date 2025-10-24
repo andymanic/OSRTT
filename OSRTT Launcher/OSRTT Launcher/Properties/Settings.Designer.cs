@@ -301,7 +301,7 @@ namespace OSRTT_Launcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("RGB 5 Tolerance")]
+        [global::System.Configuration.DefaultSettingValueAttribute("RGB 10 Tolerance")]
         public string rtName {
             get {
                 return ((string)(this["rtName"]));
@@ -313,7 +313,7 @@ namespace OSRTT_Launcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
         public int rtTolerance {
             get {
                 return ((int)(this["rtTolerance"]));
@@ -512,6 +512,18 @@ namespace OSRTT_Launcher.Properties {
             }
             set {
                 this["flickerCulling"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Perceived")]
+        public string defaultRTType {
+            get {
+                return ((string)(this["defaultRTType"]));
+            }
+            set {
+                this["defaultRTType"] = value;
             }
         }
     }

@@ -40,6 +40,7 @@ namespace OSRTT_Launcher
             initDateSelect();
             initAutoSavePNGSelect();
             initMASize();
+            initRTType();
             saveLabel.Visible = false;
             this.FormClosing += new FormClosingEventHandler(ResultsSettings_FormClosing);
         }
@@ -385,6 +386,16 @@ namespace OSRTT_Launcher
             movingAverageCount.Value = (decimal)maSize;
             
         }
+        private void initRTType()
+        {
+            rtTypeBox.Items.Add("Initial");
+            rtTypeBox.Items.Add("Perceived");
+            if (Properties.Settings.Default.defaultRTType == "Perceived")
+            {
+                rtTypeBox.SelectedIndex = 1;
+            }
+            else { rtTypeBox.SelectedIndex = 0; }
+        }
         private void settingsPresetSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
             var ctrl = sender as ComboBox;
@@ -398,8 +409,8 @@ namespace OSRTT_Launcher
                 if (settingsPresetSelect.SelectedIndex == 0 && Properties.Settings.Default.advancedSettings)
                 {
                     Properties.Settings.Default.advancedSettings = false;
-                    Properties.Settings.Default.rtName = "RGB 5 Tolerance";
-                    Properties.Settings.Default.rtTolerance = 5 ;
+                    Properties.Settings.Default.rtName = "RGB 10 Tolerance";
+                    Properties.Settings.Default.rtTolerance = 10 ;
                     Properties.Settings.Default.rtGammaCorrected = true;
                     Properties.Settings.Default.rtPercentage = false;
                     Properties.Settings.Default.saveGammaTable = false;
@@ -1131,6 +1142,21 @@ namespace OSRTT_Launcher
                 {
                     Properties.Settings.Default.flickerCulling = true;
                 }
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        private void rtTypeBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var ctrl = sender as ComboBox;
+            if (ctrl.Focused)
+            {
+                if (saveThread == null || !saveThread.IsAlive)
+                {
+                    saveThread = new Thread(new ThreadStart(this.SavingLabel));
+                    saveThread.Start();
+                }
+                Properties.Settings.Default.defaultRTType = ctrl.Items[ctrl.SelectedIndex].ToString();
                 Properties.Settings.Default.Save();
             }
         }

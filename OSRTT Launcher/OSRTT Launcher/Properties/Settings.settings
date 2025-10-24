@@ -72,10 +72,10 @@
       <Value Profile="(Default)">50,70,90</Value>
     </Setting>
     <Setting Name="rtName" Type="System.String" Scope="User">
-      <Value Profile="(Default)">RGB 5 Tolerance</Value>
+      <Value Profile="(Default)">RGB 10 Tolerance</Value>
     </Setting>
     <Setting Name="rtTolerance" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">5</Value>
+      <Value Profile="(Default)">10</Value>
     </Setting>
     <Setting Name="rtGammaCorrected" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -124,6 +124,9 @@
     </Setting>
     <Setting Name="flickerCulling" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="defaultRTType" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Perceived</Value>
     </Setting>
   </Settings>
 </SettingsFile>

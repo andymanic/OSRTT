@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MathNet.Numerics.Interpolation;
 
 namespace OSRTT_Launcher
 {
@@ -244,7 +245,7 @@ namespace OSRTT_Launcher
                         gammaDifference = diff;
                         closestMatchGamma = g.normalisedData;
                     }
-                }
+                } 
                 for (int k = gamma.Count; k < normalLight.Length; k++)
                 {
                     double val = closestMatchGamma[k] * peakLight;
@@ -253,7 +254,7 @@ namespace OSRTT_Launcher
                     lightLevelVals[k] = Math.Round(val,0);
                 }
                 Console.WriteLine();
-
+                
 
 
                 int pointsBetween = 51;
@@ -261,21 +262,24 @@ namespace OSRTT_Launcher
                 {
                     pointsBetween = 17;
                 }
-                var interpPoints = new ScottPlot.Statistics.Interpolation.NaturalSpline(rgbVals, lightLevelVals, pointsBetween);
-                List<int> x = new List<int>();
+                //var interpPoints = new ScottPlot.Statistics.Interpolation.NaturalSpline(rgbVals, lightLevelVals, pointsBetween); // Original method, seems to cause instability especially on the low end. Moving to newer methods.
+                //var interpPoints = ScottPlot.Statistics.Interpolation.CatmullRom.InterpolateXY(rgbVals, lightLevelVals, pointsBetween);
+                IInterpolation spline = CubicSpline.InterpolatePchipSorted(rgbVals, lightLevelVals);
+                /*List<int> x = new List<int>();
                 List<int> y = new List<int>();
-                foreach (var p in interpPoints.interpolatedXs)
+                foreach (var p in interpPoints.xs) // formerly interpPoints.interpolatedXs
                 {
                     x.Add(Convert.ToInt32(p));
                 }
-                foreach (var p in interpPoints.interpolatedYs)
+                foreach (var p in interpPoints.ys) // formerly interpPoints.interpolatedYs
                 {
                     y.Add(Convert.ToInt32(p));
-                }
+                }*/
                 List<gammaResult> xy = new List<gammaResult>();
-                for (int k = 0; k < x.Count; k++)
+                for (int k = 0; k < 307; k++)
                 {
-                    xy.Add(new gammaResult { RGB = x[k], LightLevel = y[k] });
+                    //xy.Add(new gammaResult { RGB = x[k], LightLevel = y[k] });
+                    xy.Add(new gammaResult { RGB = k,  LightLevel = (int)Math.Round(spline.Interpolate(k)) });
                 }
                 return xy;
             }
@@ -972,12 +976,13 @@ namespace OSRTT_Launcher
                 if (StartingRGB < EndRGB)
                 {
                     // Setup variables for start/end trigger points
-                    double start3 = 0;
+                    double start3, end3, endPer3 = 0;
                     double endOffsetRGB = 0;
-                    double end3 = 0;
-                    double endPer3 = 0;
                     double RGBTolerance = res.rtStyle.Tolerance;
                     double tol = (RGBTolerance / 100);
+                    int tol1 = 25;
+                    int tol2 = 50;
+                    int tol3 = 75;
                     if (!res.rtStyle.gammaCorrected)
                     {
                         double range3 = (endAverage - startAverage) * tol; // Subtract low value from high value to get light level range
@@ -1015,9 +1020,9 @@ namespace OSRTT_Launcher
                     {
                         if (samples[j] >= start3 && initialTransStart == 0) // save the FIRST time value exceeds start trigger
                         {
-                            if ((samples[j + 50] > (start3 + 25) || samples[j + 60] > (start3 + 25))
-                                && (samples[j + 100] > (start3 + 50) || samples[j + 110] > (start3 + 50))
-                                && (samples[j + 150] > (start3 + 75) || samples[j + 160] > (start3 + 75)))
+                            if ((samples[j + 50] > (start3 + tol1) || samples[j + 60] > (start3 + tol1))
+                                && (samples[j + 100] > (start3 + tol2) || samples[j + 110] > (start3 + tol2))
+                                && (samples[j + 150] > (start3 + tol3) || samples[j + 160] > (start3 + tol3)))
                             {
                                 initialTransStart = j;
                                 perceivedTransStart = j;
@@ -1030,9 +1035,9 @@ namespace OSRTT_Launcher
                         }
                         else if (samples[j] >= end3) // Save when value exceeds end trigger then break.
                         {
-                            if ((samples[j + 20] > (end3 + 25) || samples[j + 25] > (end3 + 25))
-                                && (samples[j + 30] > (end3 + 50) || samples[j + 35] > (end3 + 50))
-                                && (samples[j + 50] > (end3 + 75) || samples[j + 55] > (end3 + 75)))
+                            if ((samples[j + 20] > (end3 + tol1) || samples[j + 25] > (end3 + tol1))
+                                && (samples[j + 30] > (end3 + tol2) || samples[j + 35] > (end3 + tol2))
+                                && (samples[j + 50] > (end3 + tol3) || samples[j + 55] > (end3 + tol3)))
                             {
                                 initialTransEnd = j;
                                 break;
@@ -1055,8 +1060,8 @@ namespace OSRTT_Launcher
                         {
                             if (samples[j] >= endPer3)  // add the same sort of more detailed check like complete for finding this
                             {
-                                if ((samples[j - 25] > (endPer3 + 25) || samples[j - 30] > (endPer3 + 25))
-                                && (samples[j - 35] > (endPer3 + 50) || samples[j - 40] > (endPer3 + 50)))
+                                if ((samples[j - 25] > (endPer3 + tol1) || samples[j - 30] > (endPer3 + tol1))
+                                && (samples[j - 35] > (endPer3 + tol2) || samples[j - 40] > (endPer3 + tol2)))
                                 {
                                     perceivedTransEnd = j;
                                     break;
@@ -1072,9 +1077,9 @@ namespace OSRTT_Launcher
                         {
                             if (samples[j] <= endPer3)
                             {
-                                if ((samples[j - 50] < (endPer3 - 25) || samples[j - 60] < (endPer3 - 25))
-                                && (samples[j - 100] < (endPer3 - 50) || samples[j - 110] < (endPer3 - 50))
-                                && (samples[j - 150] < (endPer3 - 75) || samples[j - 160] < (endPer3 - 75)))
+                                if ((samples[j - 50] < (endPer3 - tol1) || samples[j - 60] < (endPer3 - tol1))
+                                && (samples[j - 100] < (endPer3 - tol2) || samples[j - 110] < (endPer3 - tol2))
+                                && (samples[j - 150] < (endPer3 - tol3) || samples[j - 160] < (endPer3 - tol3)))
                                 {
                                     perceivedTransEnd = j;
                                     break;
@@ -1095,12 +1100,17 @@ namespace OSRTT_Launcher
                 else
                 {
                     // Setup variables for start/end trigger points
-                    double start3 = 0;
+                    double start3, end3, endPer3 = 0;
                     double endOffsetRGB = 0;
-                    double end3 = 0;
-                    double endPer3 = 0;
+                    int tol1 = 25;
+                    int tol2 = 50;
+                    int tol3 = 75;
+                    int endTol1 = 25;
+                    int endTol2 = 50;
+                    int endTol3 = 75;
                     double RGBTolerance = res.rtStyle.Tolerance;
                     double tol = (RGBTolerance / 100);
+
                     if (!res.rtStyle.gammaCorrected)
                     {
                         double range3 = (startAverage - endAverage) * tol; // Subtract low value from high value to get light level range
@@ -1128,13 +1138,22 @@ namespace OSRTT_Launcher
                         endPer3 = processedGamma[Convert.ToInt32(endOffsetRGB)].LightLevel;
                     }
 
+                    if (end3 < (samples.Min() * 1.2))
+                    {
+                        // Catch for really close to min tolerance levels
+                        endTol1 = (int)(((int)end3 - samples.Min()) * 0.1);
+                        endTol2 = (int)(((int)end3 - samples.Min()) * 0.2);
+                        endTol3 = (int)(((int)end3 - samples.Min()) * 0.3);
+                    }
+
                     for (int j = (transStart - 20); j < (transEnd + 20); j++) // search samples for start point
                     {
+                        // check if start/end are inside the bounds
                         if (samples[j] <= start3 && initialTransStart == 0) // save the FIRST time value exceeds start trigger
                         {
-                            if ((samples[j + 50] < (start3 - 25) || samples[j + 60] < (start3 - 25))
-                                && (samples[j + 100] < (start3 - 50) || samples[j + 110] < (start3 - 50))
-                                && (samples[j + 150] < (start3 - 75) || samples[j + 160] < (start3 - 75)))
+                            if ((samples[j + 50] < (start3 - tol1) || samples[j + 60] < (start3 - tol1))
+                                && (samples[j + 100] < (start3 - tol2) || samples[j + 110] < (start3 - tol2))
+                                && (samples[j + 150] < (start3 - tol3) || samples[j + 160] < (start3 - tol3)))
                             {
                                 initialTransStart = j;
                                 perceivedTransStart = j;
@@ -1147,9 +1166,9 @@ namespace OSRTT_Launcher
                         }
                         else if (samples[j] <= end3) // Save when value exceeds end trigger then break.
                         {
-                            if ((samples[j + 50] < (end3 - 25) || samples[j + 60] < (end3 - 25))
-                                && (samples[j + 100] < (end3 - 50) || samples[j + 110] < (end3 - 50))
-                                && (samples[j + 150] < (end3 - 75) || samples[j + 160] < (end3 - 75)))
+                            if ((samples[j + 50] < (end3 - endTol1) || samples[j + 60] < (end3 - endTol1))
+                                && (samples[j + 100] < (end3 - endTol2) || samples[j + 110] < (end3 - endTol2))
+                                && (samples[j + 150] < (end3 - endTol3) || samples[j + 160] < (end3 - endTol3)))
                             {
                                 initialTransEnd = j;
                                 break;
@@ -1172,8 +1191,8 @@ namespace OSRTT_Launcher
                         {
                             if (samples[j] <= endPer3)
                             {
-                                if ((samples[j - 20] < (endPer3 - 25) || samples[j - 25] < (endPer3 - 25))
-                                    && (samples[j - 30] < (endPer3 - 50) || samples[j - 35] < (endPer3 - 50)))
+                                if ((samples[j - 20] < (endPer3 - endTol1) || samples[j - 25] < (endPer3 - endTol1))
+                                    && (samples[j - 30] < (endPer3 - endTol2) || samples[j - 35] < (endPer3 - endTol2)))
                                 {
                                     perceivedTransEnd = j;
                                     break;
@@ -1190,9 +1209,9 @@ namespace OSRTT_Launcher
                             if (samples[j] >= endPer3)
                             {
 
-                                if ((samples[j - 50] > (endPer3 + 25) || samples[j - 60] > (endPer3 + 25))
-                                && (samples[j - 100] > (endPer3 + 50) || samples[j - 110] > (endPer3 + 50))
-                                && (samples[j - 150] > (endPer3 + 75) || samples[j - 160] > (endPer3 + 75)))
+                                if ((samples[j - 50] > (endPer3 + tol1) || samples[j - 60] > (endPer3 + tol1))
+                                && (samples[j - 100] > (endPer3 + tol2) || samples[j - 110] > (endPer3 + tol2))
+                                && (samples[j - 150] > (endPer3 + tol3) || samples[j - 160] > (endPer3 + tol3)))
                                 {
                                     perceivedTransEnd = j;
                                     break;
@@ -1612,10 +1631,10 @@ namespace OSRTT_Launcher
         public List<List<rawResultData>> SmoothAllData(List<List<rawResultData>> rawData)
         {
             List<List<rawResultData>> smoothedData = new List<List<rawResultData>>();
-            foreach (List<ProcessData.rawResultData> res in rawData)
+            foreach (List<rawResultData> res in rawData)
             {
-                List<ProcessData.rawResultData> tempSmoothed = new List<ProcessData.rawResultData>();
-                foreach (ProcessData.rawResultData raw in res)
+                List<ProcessData.rawResultData> tempSmoothed = new List<rawResultData>();
+                foreach (rawResultData raw in res)
                 {
                     int[] samples = raw.Samples.ToArray();
                     // Clean up flicker noise before filtering regular noise
@@ -1649,7 +1668,7 @@ namespace OSRTT_Launcher
                         period = Properties.Settings.Default.movingAverageSize;
                     }
                     int[] smoothedSamples = smoothData(samples, period);
-                    ProcessData.rawResultData d = new ProcessData.rawResultData
+                    rawResultData d = new rawResultData
                     {
                         StartingRGB = raw.StartingRGB,
                         EndRGB = raw.EndRGB,

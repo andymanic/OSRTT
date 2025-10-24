@@ -46,6 +46,10 @@ namespace OSRTT_Launcher
             this.label9 = new System.Windows.Forms.Label();
             this.osGammaSelect = new System.Windows.Forms.ComboBox();
             this.toleranceLevelPanel = new System.Windows.Forms.Panel();
+            this.Per10Btn = new OSRTT_Launcher.RoundButton();
+            this.Per3Btn = new OSRTT_Launcher.RoundButton();
+            this.RGB10Btn = new OSRTT_Launcher.RoundButton();
+            this.RGB5Btn = new OSRTT_Launcher.RoundButton();
             this.label5 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -72,6 +76,12 @@ namespace OSRTT_Launcher
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.testSettingsTab = new System.Windows.Forms.TabPage();
             this.resultSettingsTab = new System.Windows.Forms.TabPage();
+            this.panel14 = new System.Windows.Forms.Panel();
+            this.label32 = new System.Windows.Forms.Label();
+            this.rtTypeBox = new System.Windows.Forms.ComboBox();
+            this.panel13 = new System.Windows.Forms.Panel();
+            this.label31 = new System.Windows.Forms.Label();
+            this.flickerSelect = new System.Windows.Forms.ComboBox();
             this.panel9 = new System.Windows.Forms.Panel();
             this.movingAverageCount = new System.Windows.Forms.NumericUpDown();
             this.label30 = new System.Windows.Forms.Label();
@@ -93,12 +103,18 @@ namespace OSRTT_Launcher
             this.vrrMidNum = new System.Windows.Forms.NumericUpDown();
             this.vrrLowNum = new System.Windows.Forms.NumericUpDown();
             this.label37 = new System.Windows.Forms.Label();
+            this.roundButton6 = new OSRTT_Launcher.RoundButton();
+            this.roundButton7 = new OSRTT_Launcher.RoundButton();
+            this.roundButton8 = new OSRTT_Launcher.RoundButton();
             this.osKeyPanel = new System.Windows.Forms.Panel();
             this.label19 = new System.Windows.Forms.Label();
             this.osHighNum = new System.Windows.Forms.NumericUpDown();
             this.osMidNum = new System.Windows.Forms.NumericUpDown();
             this.osLowNum = new System.Windows.Forms.NumericUpDown();
             this.label27 = new System.Windows.Forms.Label();
+            this.roundButton3 = new OSRTT_Launcher.RoundButton();
+            this.roundButton4 = new OSRTT_Launcher.RoundButton();
+            this.roundButton5 = new OSRTT_Launcher.RoundButton();
             this.panel4 = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
             this.panel11 = new System.Windows.Forms.Panel();
@@ -114,23 +130,10 @@ namespace OSRTT_Launcher
             this.rtMidNum = new System.Windows.Forms.NumericUpDown();
             this.rtLowNum = new System.Windows.Forms.NumericUpDown();
             this.label29 = new System.Windows.Forms.Label();
-            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
-            this.Per10Btn = new OSRTT_Launcher.RoundButton();
-            this.Per3Btn = new OSRTT_Launcher.RoundButton();
-            this.RGB10Btn = new OSRTT_Launcher.RoundButton();
-            this.RGB5Btn = new OSRTT_Launcher.RoundButton();
-            this.roundButton6 = new OSRTT_Launcher.RoundButton();
-            this.roundButton7 = new OSRTT_Launcher.RoundButton();
-            this.roundButton8 = new OSRTT_Launcher.RoundButton();
-            this.roundButton3 = new OSRTT_Launcher.RoundButton();
-            this.roundButton4 = new OSRTT_Launcher.RoundButton();
-            this.roundButton5 = new OSRTT_Launcher.RoundButton();
             this.openColourPickerBtn = new OSRTT_Launcher.RoundButton();
             this.roundButton1 = new OSRTT_Launcher.RoundButton();
             this.roundButton2 = new OSRTT_Launcher.RoundButton();
-            this.panel13 = new System.Windows.Forms.Panel();
-            this.label31 = new System.Windows.Forms.Label();
-            this.flickerSelect = new System.Windows.Forms.ComboBox();
+            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.panel2.SuspendLayout();
             this.tolerancePanel.SuspendLayout();
             this.testSettingsPanel.SuspendLayout();
@@ -147,6 +150,8 @@ namespace OSRTT_Launcher
             this.tabControl1.SuspendLayout();
             this.testSettingsTab.SuspendLayout();
             this.resultSettingsTab.SuspendLayout();
+            this.panel14.SuspendLayout();
+            this.panel13.SuspendLayout();
             this.panel9.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.movingAverageCount)).BeginInit();
             this.panel8.SuspendLayout();
@@ -168,7 +173,6 @@ namespace OSRTT_Launcher
             ((System.ComponentModel.ISupportInitialize)(this.rtHighNum)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtMidNum)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtLowNum)).BeginInit();
-            this.panel13.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel2
@@ -345,6 +349,58 @@ namespace OSRTT_Launcher
             this.toleranceLevelPanel.Name = "toleranceLevelPanel";
             this.toleranceLevelPanel.Size = new System.Drawing.Size(615, 100);
             this.toleranceLevelPanel.TabIndex = 25;
+            // 
+            // Per10Btn
+            // 
+            this.Per10Btn.BackColor = System.Drawing.Color.SteelBlue;
+            this.Per10Btn.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Per10Btn.ForeColor = System.Drawing.Color.White;
+            this.Per10Btn.Location = new System.Drawing.Point(465, 43);
+            this.Per10Btn.Name = "Per10Btn";
+            this.Per10Btn.Size = new System.Drawing.Size(135, 45);
+            this.Per10Btn.TabIndex = 34;
+            this.Per10Btn.Text = "10% Light Level";
+            this.Per10Btn.UseVisualStyleBackColor = false;
+            this.Per10Btn.Click += new System.EventHandler(this.Per10Btn_Click);
+            // 
+            // Per3Btn
+            // 
+            this.Per3Btn.BackColor = System.Drawing.Color.SteelBlue;
+            this.Per3Btn.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Per3Btn.ForeColor = System.Drawing.Color.White;
+            this.Per3Btn.Location = new System.Drawing.Point(315, 43);
+            this.Per3Btn.Name = "Per3Btn";
+            this.Per3Btn.Size = new System.Drawing.Size(135, 45);
+            this.Per3Btn.TabIndex = 33;
+            this.Per3Btn.Text = "3% RGB Value";
+            this.Per3Btn.UseVisualStyleBackColor = false;
+            this.Per3Btn.Click += new System.EventHandler(this.Per3Btn_Click);
+            // 
+            // RGB10Btn
+            // 
+            this.RGB10Btn.BackColor = System.Drawing.Color.LimeGreen;
+            this.RGB10Btn.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RGB10Btn.ForeColor = System.Drawing.Color.White;
+            this.RGB10Btn.Location = new System.Drawing.Point(165, 43);
+            this.RGB10Btn.Name = "RGB10Btn";
+            this.RGB10Btn.Size = new System.Drawing.Size(135, 45);
+            this.RGB10Btn.TabIndex = 32;
+            this.RGB10Btn.Text = "Fixed RGB 10";
+            this.RGB10Btn.UseVisualStyleBackColor = false;
+            this.RGB10Btn.Click += new System.EventHandler(this.RGB10Btn_Click);
+            // 
+            // RGB5Btn
+            // 
+            this.RGB5Btn.BackColor = System.Drawing.Color.SteelBlue;
+            this.RGB5Btn.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RGB5Btn.ForeColor = System.Drawing.Color.White;
+            this.RGB5Btn.Location = new System.Drawing.Point(15, 43);
+            this.RGB5Btn.Name = "RGB5Btn";
+            this.RGB5Btn.Size = new System.Drawing.Size(135, 45);
+            this.RGB5Btn.TabIndex = 31;
+            this.RGB5Btn.Text = "Fixed RGB 5";
+            this.RGB5Btn.UseVisualStyleBackColor = false;
+            this.RGB5Btn.Click += new System.EventHandler(this.RGB5Btn_Click);
             // 
             // label5
             // 
@@ -599,7 +655,7 @@ namespace OSRTT_Launcher
             this.tabControl1.Location = new System.Drawing.Point(9, 11);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1027, 818);
+            this.tabControl1.Size = new System.Drawing.Size(1027, 867);
             this.tabControl1.TabIndex = 34;
             // 
             // testSettingsTab
@@ -624,13 +680,14 @@ namespace OSRTT_Launcher
             this.testSettingsTab.Location = new System.Drawing.Point(4, 42);
             this.testSettingsTab.Name = "testSettingsTab";
             this.testSettingsTab.Padding = new System.Windows.Forms.Padding(3);
-            this.testSettingsTab.Size = new System.Drawing.Size(1019, 746);
+            this.testSettingsTab.Size = new System.Drawing.Size(1019, 821);
             this.testSettingsTab.TabIndex = 0;
             this.testSettingsTab.Text = "Test Settings";
             // 
             // resultSettingsTab
             // 
             this.resultSettingsTab.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.resultSettingsTab.Controls.Add(this.panel14);
             this.resultSettingsTab.Controls.Add(this.panel13);
             this.resultSettingsTab.Controls.Add(this.panel9);
             this.resultSettingsTab.Controls.Add(this.panel8);
@@ -648,9 +705,73 @@ namespace OSRTT_Launcher
             this.resultSettingsTab.Location = new System.Drawing.Point(4, 42);
             this.resultSettingsTab.Name = "resultSettingsTab";
             this.resultSettingsTab.Padding = new System.Windows.Forms.Padding(3);
-            this.resultSettingsTab.Size = new System.Drawing.Size(1019, 772);
+            this.resultSettingsTab.Size = new System.Drawing.Size(1019, 821);
             this.resultSettingsTab.TabIndex = 1;
             this.resultSettingsTab.Text = "Results Settings";
+            // 
+            // panel14
+            // 
+            this.panel14.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.panel14.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel14.Controls.Add(this.label32);
+            this.panel14.Controls.Add(this.rtTypeBox);
+            this.panel14.Location = new System.Drawing.Point(387, 567);
+            this.panel14.Name = "panel14";
+            this.panel14.Size = new System.Drawing.Size(615, 50);
+            this.panel14.TabIndex = 55;
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Font = new System.Drawing.Font("Arial", 18F);
+            this.label32.Location = new System.Drawing.Point(10, 11);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(269, 27);
+            this.label32.TabIndex = 23;
+            this.label32.Text = "Default Response Time:";
+            // 
+            // rtTypeBox
+            // 
+            this.rtTypeBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.rtTypeBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rtTypeBox.FormattingEnabled = true;
+            this.rtTypeBox.Location = new System.Drawing.Point(311, 8);
+            this.rtTypeBox.Name = "rtTypeBox";
+            this.rtTypeBox.Size = new System.Drawing.Size(289, 32);
+            this.rtTypeBox.TabIndex = 21;
+            this.rtTypeBox.SelectedIndexChanged += new System.EventHandler(this.rtTypeBox_SelectedIndexChanged);
+            // 
+            // panel13
+            // 
+            this.panel13.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.panel13.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel13.Controls.Add(this.label31);
+            this.panel13.Controls.Add(this.flickerSelect);
+            this.panel13.Location = new System.Drawing.Point(387, 761);
+            this.panel13.Name = "panel13";
+            this.panel13.Size = new System.Drawing.Size(615, 50);
+            this.panel13.TabIndex = 53;
+            // 
+            // label31
+            // 
+            this.label31.AutoSize = true;
+            this.label31.Font = new System.Drawing.Font("Arial", 18F);
+            this.label31.Location = new System.Drawing.Point(10, 11);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(166, 27);
+            this.label31.TabIndex = 23;
+            this.label31.Text = "Flicker Culling";
+            // 
+            // flickerSelect
+            // 
+            this.flickerSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.flickerSelect.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.flickerSelect.FormattingEnabled = true;
+            this.flickerSelect.Location = new System.Drawing.Point(246, 8);
+            this.flickerSelect.Name = "flickerSelect";
+            this.flickerSelect.Size = new System.Drawing.Size(354, 32);
+            this.flickerSelect.TabIndex = 21;
+            this.flickerSelect.SelectedIndexChanged += new System.EventHandler(this.flickerSelect_SelectedIndexChanged);
             // 
             // panel9
             // 
@@ -658,7 +779,7 @@ namespace OSRTT_Launcher
             this.panel9.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel9.Controls.Add(this.movingAverageCount);
             this.panel9.Controls.Add(this.label30);
-            this.panel9.Location = new System.Drawing.Point(387, 647);
+            this.panel9.Location = new System.Drawing.Point(387, 700);
             this.panel9.Name = "panel9";
             this.panel9.Size = new System.Drawing.Size(615, 55);
             this.panel9.TabIndex = 53;
@@ -697,7 +818,7 @@ namespace OSRTT_Launcher
             this.panel8.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel8.Controls.Add(this.label28);
             this.panel8.Controls.Add(this.autosavePNGsSelect);
-            this.panel8.Location = new System.Drawing.Point(387, 524);
+            this.panel8.Location = new System.Drawing.Point(387, 508);
             this.panel8.Name = "panel8";
             this.panel8.Size = new System.Drawing.Size(615, 50);
             this.panel8.TabIndex = 54;
@@ -729,7 +850,7 @@ namespace OSRTT_Launcher
             this.panel6.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel6.Controls.Add(this.label22);
             this.panel6.Controls.Add(this.showDataBox);
-            this.panel6.Location = new System.Drawing.Point(387, 457);
+            this.panel6.Location = new System.Drawing.Point(387, 448);
             this.panel6.Name = "panel6";
             this.panel6.Size = new System.Drawing.Size(615, 50);
             this.panel6.TabIndex = 53;
@@ -761,7 +882,7 @@ namespace OSRTT_Launcher
             this.panel7.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel7.Controls.Add(this.label23);
             this.panel7.Controls.Add(this.denoiseSelect);
-            this.panel7.Location = new System.Drawing.Point(387, 590);
+            this.panel7.Location = new System.Drawing.Point(387, 643);
             this.panel7.Name = "panel7";
             this.panel7.Size = new System.Drawing.Size(615, 50);
             this.panel7.TabIndex = 52;
@@ -791,7 +912,7 @@ namespace OSRTT_Launcher
             // 
             this.panel5.BackColor = System.Drawing.Color.Khaki;
             this.panel5.Controls.Add(this.label18);
-            this.panel5.Location = new System.Drawing.Point(7, 590);
+            this.panel5.Location = new System.Drawing.Point(7, 643);
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(356, 54);
             this.panel5.TabIndex = 49;
@@ -812,7 +933,7 @@ namespace OSRTT_Launcher
             this.label20.AutoSize = true;
             this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label20.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.label20.Location = new System.Drawing.Point(9, 647);
+            this.label20.Location = new System.Drawing.Point(9, 700);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(333, 66);
             this.label20.TabIndex = 50;
@@ -831,7 +952,7 @@ namespace OSRTT_Launcher
             this.vrrKeyPanel.Controls.Add(this.roundButton6);
             this.vrrKeyPanel.Controls.Add(this.roundButton7);
             this.vrrKeyPanel.Controls.Add(this.roundButton8);
-            this.vrrKeyPanel.Location = new System.Drawing.Point(387, 288);
+            this.vrrKeyPanel.Location = new System.Drawing.Point(387, 279);
             this.vrrKeyPanel.Name = "vrrKeyPanel";
             this.vrrKeyPanel.Size = new System.Drawing.Size(615, 97);
             this.vrrKeyPanel.TabIndex = 48;
@@ -880,6 +1001,42 @@ namespace OSRTT_Launcher
             this.label37.TabIndex = 23;
             this.label37.Text = "Response Rating Key:";
             // 
+            // roundButton6
+            // 
+            this.roundButton6.BackColor = System.Drawing.Color.LimeGreen;
+            this.roundButton6.Enabled = false;
+            this.roundButton6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.roundButton6.ForeColor = System.Drawing.Color.White;
+            this.roundButton6.Location = new System.Drawing.Point(246, 7);
+            this.roundButton6.Name = "roundButton6";
+            this.roundButton6.Size = new System.Drawing.Size(115, 79);
+            this.roundButton6.TabIndex = 39;
+            this.roundButton6.UseVisualStyleBackColor = false;
+            // 
+            // roundButton7
+            // 
+            this.roundButton7.BackColor = System.Drawing.Color.DarkOrange;
+            this.roundButton7.Enabled = false;
+            this.roundButton7.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.roundButton7.ForeColor = System.Drawing.Color.White;
+            this.roundButton7.Location = new System.Drawing.Point(368, 7);
+            this.roundButton7.Name = "roundButton7";
+            this.roundButton7.Size = new System.Drawing.Size(115, 79);
+            this.roundButton7.TabIndex = 40;
+            this.roundButton7.UseVisualStyleBackColor = false;
+            // 
+            // roundButton8
+            // 
+            this.roundButton8.BackColor = System.Drawing.Color.Tomato;
+            this.roundButton8.Enabled = false;
+            this.roundButton8.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.roundButton8.ForeColor = System.Drawing.Color.White;
+            this.roundButton8.Location = new System.Drawing.Point(490, 7);
+            this.roundButton8.Name = "roundButton8";
+            this.roundButton8.Size = new System.Drawing.Size(115, 79);
+            this.roundButton8.TabIndex = 41;
+            this.roundButton8.UseVisualStyleBackColor = false;
+            // 
             // osKeyPanel
             // 
             this.osKeyPanel.BackColor = System.Drawing.SystemColors.ButtonFace;
@@ -892,7 +1049,7 @@ namespace OSRTT_Launcher
             this.osKeyPanel.Controls.Add(this.roundButton3);
             this.osKeyPanel.Controls.Add(this.roundButton4);
             this.osKeyPanel.Controls.Add(this.roundButton5);
-            this.osKeyPanel.Location = new System.Drawing.Point(387, 190);
+            this.osKeyPanel.Location = new System.Drawing.Point(387, 181);
             this.osKeyPanel.Name = "osKeyPanel";
             this.osKeyPanel.Size = new System.Drawing.Size(615, 100);
             this.osKeyPanel.TabIndex = 47;
@@ -941,6 +1098,42 @@ namespace OSRTT_Launcher
             this.label27.TabIndex = 23;
             this.label27.Text = "Overshoot Key:";
             // 
+            // roundButton3
+            // 
+            this.roundButton3.BackColor = System.Drawing.Color.LimeGreen;
+            this.roundButton3.Enabled = false;
+            this.roundButton3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.roundButton3.ForeColor = System.Drawing.Color.White;
+            this.roundButton3.Location = new System.Drawing.Point(246, 9);
+            this.roundButton3.Name = "roundButton3";
+            this.roundButton3.Size = new System.Drawing.Size(115, 79);
+            this.roundButton3.TabIndex = 35;
+            this.roundButton3.UseVisualStyleBackColor = false;
+            // 
+            // roundButton4
+            // 
+            this.roundButton4.BackColor = System.Drawing.Color.DarkOrange;
+            this.roundButton4.Enabled = false;
+            this.roundButton4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.roundButton4.ForeColor = System.Drawing.Color.White;
+            this.roundButton4.Location = new System.Drawing.Point(368, 9);
+            this.roundButton4.Name = "roundButton4";
+            this.roundButton4.Size = new System.Drawing.Size(115, 79);
+            this.roundButton4.TabIndex = 36;
+            this.roundButton4.UseVisualStyleBackColor = false;
+            // 
+            // roundButton5
+            // 
+            this.roundButton5.BackColor = System.Drawing.Color.Tomato;
+            this.roundButton5.Enabled = false;
+            this.roundButton5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.roundButton5.ForeColor = System.Drawing.Color.White;
+            this.roundButton5.Location = new System.Drawing.Point(490, 9);
+            this.roundButton5.Name = "roundButton5";
+            this.roundButton5.Size = new System.Drawing.Size(115, 79);
+            this.roundButton5.TabIndex = 37;
+            this.roundButton5.UseVisualStyleBackColor = false;
+            // 
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.Color.Khaki;
@@ -967,7 +1160,7 @@ namespace OSRTT_Launcher
             this.panel11.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel11.Controls.Add(this.label24);
             this.panel11.Controls.Add(this.textColourSelect);
-            this.panel11.Location = new System.Drawing.Point(387, 395);
+            this.panel11.Location = new System.Drawing.Point(387, 387);
             this.panel11.Name = "panel11";
             this.panel11.Size = new System.Drawing.Size(615, 50);
             this.panel11.TabIndex = 41;
@@ -1048,7 +1241,7 @@ namespace OSRTT_Launcher
             this.rtKeyPanel.Controls.Add(this.openColourPickerBtn);
             this.rtKeyPanel.Controls.Add(this.roundButton1);
             this.rtKeyPanel.Controls.Add(this.roundButton2);
-            this.rtKeyPanel.Location = new System.Drawing.Point(387, 92);
+            this.rtKeyPanel.Location = new System.Drawing.Point(387, 83);
             this.rtKeyPanel.Name = "rtKeyPanel";
             this.rtKeyPanel.Size = new System.Drawing.Size(615, 100);
             this.rtKeyPanel.TabIndex = 42;
@@ -1097,130 +1290,6 @@ namespace OSRTT_Launcher
             this.label29.TabIndex = 23;
             this.label29.Text = "Response Time Key:";
             // 
-            // Per10Btn
-            // 
-            this.Per10Btn.BackColor = System.Drawing.Color.SteelBlue;
-            this.Per10Btn.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Per10Btn.ForeColor = System.Drawing.Color.White;
-            this.Per10Btn.Location = new System.Drawing.Point(465, 43);
-            this.Per10Btn.Name = "Per10Btn";
-            this.Per10Btn.Size = new System.Drawing.Size(135, 45);
-            this.Per10Btn.TabIndex = 34;
-            this.Per10Btn.Text = "10% Light Level";
-            this.Per10Btn.UseVisualStyleBackColor = false;
-            this.Per10Btn.Click += new System.EventHandler(this.Per10Btn_Click);
-            // 
-            // Per3Btn
-            // 
-            this.Per3Btn.BackColor = System.Drawing.Color.SteelBlue;
-            this.Per3Btn.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Per3Btn.ForeColor = System.Drawing.Color.White;
-            this.Per3Btn.Location = new System.Drawing.Point(315, 43);
-            this.Per3Btn.Name = "Per3Btn";
-            this.Per3Btn.Size = new System.Drawing.Size(135, 45);
-            this.Per3Btn.TabIndex = 33;
-            this.Per3Btn.Text = "3% RGB Value";
-            this.Per3Btn.UseVisualStyleBackColor = false;
-            this.Per3Btn.Click += new System.EventHandler(this.Per3Btn_Click);
-            // 
-            // RGB10Btn
-            // 
-            this.RGB10Btn.BackColor = System.Drawing.Color.SteelBlue;
-            this.RGB10Btn.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.RGB10Btn.ForeColor = System.Drawing.Color.White;
-            this.RGB10Btn.Location = new System.Drawing.Point(165, 43);
-            this.RGB10Btn.Name = "RGB10Btn";
-            this.RGB10Btn.Size = new System.Drawing.Size(135, 45);
-            this.RGB10Btn.TabIndex = 32;
-            this.RGB10Btn.Text = "Fixed RGB 10";
-            this.RGB10Btn.UseVisualStyleBackColor = false;
-            this.RGB10Btn.Click += new System.EventHandler(this.RGB10Btn_Click);
-            // 
-            // RGB5Btn
-            // 
-            this.RGB5Btn.BackColor = System.Drawing.Color.LimeGreen;
-            this.RGB5Btn.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.RGB5Btn.ForeColor = System.Drawing.Color.White;
-            this.RGB5Btn.Location = new System.Drawing.Point(15, 43);
-            this.RGB5Btn.Name = "RGB5Btn";
-            this.RGB5Btn.Size = new System.Drawing.Size(135, 45);
-            this.RGB5Btn.TabIndex = 31;
-            this.RGB5Btn.Text = "Fixed RGB 5";
-            this.RGB5Btn.UseVisualStyleBackColor = false;
-            this.RGB5Btn.Click += new System.EventHandler(this.RGB5Btn_Click);
-            // 
-            // roundButton6
-            // 
-            this.roundButton6.BackColor = System.Drawing.Color.LimeGreen;
-            this.roundButton6.Enabled = false;
-            this.roundButton6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.roundButton6.ForeColor = System.Drawing.Color.White;
-            this.roundButton6.Location = new System.Drawing.Point(246, 7);
-            this.roundButton6.Name = "roundButton6";
-            this.roundButton6.Size = new System.Drawing.Size(115, 79);
-            this.roundButton6.TabIndex = 39;
-            this.roundButton6.UseVisualStyleBackColor = false;
-            // 
-            // roundButton7
-            // 
-            this.roundButton7.BackColor = System.Drawing.Color.DarkOrange;
-            this.roundButton7.Enabled = false;
-            this.roundButton7.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.roundButton7.ForeColor = System.Drawing.Color.White;
-            this.roundButton7.Location = new System.Drawing.Point(368, 7);
-            this.roundButton7.Name = "roundButton7";
-            this.roundButton7.Size = new System.Drawing.Size(115, 79);
-            this.roundButton7.TabIndex = 40;
-            this.roundButton7.UseVisualStyleBackColor = false;
-            // 
-            // roundButton8
-            // 
-            this.roundButton8.BackColor = System.Drawing.Color.Tomato;
-            this.roundButton8.Enabled = false;
-            this.roundButton8.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.roundButton8.ForeColor = System.Drawing.Color.White;
-            this.roundButton8.Location = new System.Drawing.Point(490, 7);
-            this.roundButton8.Name = "roundButton8";
-            this.roundButton8.Size = new System.Drawing.Size(115, 79);
-            this.roundButton8.TabIndex = 41;
-            this.roundButton8.UseVisualStyleBackColor = false;
-            // 
-            // roundButton3
-            // 
-            this.roundButton3.BackColor = System.Drawing.Color.LimeGreen;
-            this.roundButton3.Enabled = false;
-            this.roundButton3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.roundButton3.ForeColor = System.Drawing.Color.White;
-            this.roundButton3.Location = new System.Drawing.Point(246, 9);
-            this.roundButton3.Name = "roundButton3";
-            this.roundButton3.Size = new System.Drawing.Size(115, 79);
-            this.roundButton3.TabIndex = 35;
-            this.roundButton3.UseVisualStyleBackColor = false;
-            // 
-            // roundButton4
-            // 
-            this.roundButton4.BackColor = System.Drawing.Color.DarkOrange;
-            this.roundButton4.Enabled = false;
-            this.roundButton4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.roundButton4.ForeColor = System.Drawing.Color.White;
-            this.roundButton4.Location = new System.Drawing.Point(368, 9);
-            this.roundButton4.Name = "roundButton4";
-            this.roundButton4.Size = new System.Drawing.Size(115, 79);
-            this.roundButton4.TabIndex = 36;
-            this.roundButton4.UseVisualStyleBackColor = false;
-            // 
-            // roundButton5
-            // 
-            this.roundButton5.BackColor = System.Drawing.Color.Tomato;
-            this.roundButton5.Enabled = false;
-            this.roundButton5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.roundButton5.ForeColor = System.Drawing.Color.White;
-            this.roundButton5.Location = new System.Drawing.Point(490, 9);
-            this.roundButton5.Name = "roundButton5";
-            this.roundButton5.Size = new System.Drawing.Size(115, 79);
-            this.roundButton5.TabIndex = 37;
-            this.roundButton5.UseVisualStyleBackColor = false;
-            // 
             // openColourPickerBtn
             // 
             this.openColourPickerBtn.BackColor = System.Drawing.Color.LimeGreen;
@@ -1258,50 +1327,16 @@ namespace OSRTT_Launcher
             this.roundButton2.TabIndex = 34;
             this.roundButton2.UseVisualStyleBackColor = false;
             // 
-            // panel13
-            // 
-            this.panel13.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.panel13.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel13.Controls.Add(this.label31);
-            this.panel13.Controls.Add(this.flickerSelect);
-            this.panel13.Location = new System.Drawing.Point(387, 708);
-            this.panel13.Name = "panel13";
-            this.panel13.Size = new System.Drawing.Size(615, 50);
-            this.panel13.TabIndex = 53;
-            // 
-            // label31
-            // 
-            this.label31.AutoSize = true;
-            this.label31.Font = new System.Drawing.Font("Arial", 18F);
-            this.label31.Location = new System.Drawing.Point(10, 11);
-            this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(166, 27);
-            this.label31.TabIndex = 23;
-            this.label31.Text = "Flicker Culling";
-            // 
-            // flickerSelect
-            // 
-            this.flickerSelect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.flickerSelect.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.flickerSelect.FormattingEnabled = true;
-            this.flickerSelect.Location = new System.Drawing.Point(246, 8);
-            this.flickerSelect.Name = "flickerSelect";
-            this.flickerSelect.Size = new System.Drawing.Size(354, 32);
-            this.flickerSelect.TabIndex = 21;
-            this.flickerSelect.SelectedIndexChanged += new System.EventHandler(this.flickerSelect_SelectedIndexChanged);
-            // 
             // ResultsSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.ClientSize = new System.Drawing.Size(1043, 841);
+            this.ClientSize = new System.Drawing.Size(1043, 890);
             this.Controls.Add(this.saveLabel);
             this.Controls.Add(this.tabControl1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.Name = "ResultsSettings";
-            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Test & Results Settings";
             this.Load += new System.EventHandler(this.ResultsSettings_Load);
             this.panel2.ResumeLayout(false);
@@ -1335,6 +1370,10 @@ namespace OSRTT_Launcher
             this.testSettingsTab.PerformLayout();
             this.resultSettingsTab.ResumeLayout(false);
             this.resultSettingsTab.PerformLayout();
+            this.panel14.ResumeLayout(false);
+            this.panel14.PerformLayout();
+            this.panel13.ResumeLayout(false);
+            this.panel13.PerformLayout();
             this.panel9.ResumeLayout(false);
             this.panel9.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.movingAverageCount)).EndInit();
@@ -1367,8 +1406,6 @@ namespace OSRTT_Launcher
             ((System.ComponentModel.ISupportInitialize)(this.rtHighNum)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtMidNum)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtLowNum)).EndInit();
-            this.panel13.ResumeLayout(false);
-            this.panel13.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1476,5 +1513,8 @@ namespace OSRTT_Launcher
         private System.Windows.Forms.Panel panel13;
         private System.Windows.Forms.Label label31;
         private System.Windows.Forms.ComboBox flickerSelect;
+        private System.Windows.Forms.Panel panel14;
+        private System.Windows.Forms.Label label32;
+        private System.Windows.Forms.ComboBox rtTypeBox;
     }
 }
