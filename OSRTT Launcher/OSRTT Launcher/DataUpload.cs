@@ -124,15 +124,22 @@ namespace OSRTT_Launcher
             }
             si.ram.totalCapcity = capacity;
             si.ram.sticks = sticks;
-            ManagementObjectSearcher nac = new ManagementObjectSearcher("select * from Win32_NetworkAdapterConfiguration");
-            foreach (ManagementObject nacObj in nac.Get())
+            /*ManagementObjectSearcher nac = new ManagementObjectSearcher("select * from Win32_NetworkAdapterConfiguration");
+            try
             {
-                bool enabled = (bool)nacObj["IPEnabled"];
-                if (enabled)
+                foreach (ManagementObject nacObj in nac.Get())
                 {
-                    si.MACAddress = nacObj["MACAddress"].ToString();
+                    bool enabled = (bool)nacObj["IPEnabled"];
+                    if (enabled)
+                    {
+                        try
+                        {
+                            si.MACAddress = nacObj["MACAddress"].ToString();
+                        }
+                        catch { }
+                    }
                 }
-            }
+            } catch { }*/
             return si;
             //UploadData(si, "https://api.osrtt.com/systemInfo");
         }

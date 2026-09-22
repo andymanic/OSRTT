@@ -21,6 +21,7 @@ namespace OSRTT_Launcher
         public ResultsSettings()
         {
             InitializeComponent();
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
             this.Icon = (Icon)rm.GetObject("osrttIcon");
             
@@ -1159,6 +1160,11 @@ namespace OSRTT_Launcher
                 Properties.Settings.Default.defaultRTType = ctrl.Items[ctrl.SelectedIndex].ToString();
                 Properties.Settings.Default.Save();
             }
+        }
+
+        private void fpsLimitBox_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 

@@ -1,4 +1,6 @@
 ﻿using AutoUpdaterDotNET;
+using MaterialSkin;
+using MaterialSkin.Controls;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using System;
@@ -19,6 +21,7 @@ using System.Threading;
 using System.Windows.Forms;
 using SharpDX.RawInput;
 using System.Reflection;
+using System.IO.Ports;
 
 namespace OSRTT_Launcher
 {
@@ -30,7 +33,7 @@ namespace OSRTT_Launcher
         private double ProDLFW = 1.7;
         private double ExpertDLFW = 1.0;
         public int boardType = -1;
-        private string softwareVersion = "4.9";
+        private string softwareVersion = "4.90";
 
         public static System.IO.Ports.SerialPort port;
         delegate void SetTextCallback(string text);
@@ -130,39 +133,6 @@ namespace OSRTT_Launcher
 
         LiveView LiveViewObject;
 
-        public void UpdateMe()
-        {
-            AutoUpdater.InstalledVersion = new Version(softwareVersion);
-            AutoUpdater.ShowSkipButton = false;
-            AutoUpdater.RemindLaterTimeSpan = RemindLaterFormat.Days;
-            AutoUpdater.RemindLaterAt = 2;
-            AutoUpdater.RunUpdateAsAdmin = false;
-            AutoUpdater.HttpUserAgent = "Autoupdater";
-            AutoUpdater.UpdateFormSize = new System.Drawing.Size(1200, 800);
-            AutoUpdater.ParseUpdateInfoEvent += AutoUpdaterOnParseUpdateInfoEvent;
-            AutoUpdater.ApplicationExitEvent += AutoUpdater_ApplicationExitEvent;
-            AutoUpdater.Start("https://api.github.com/repos/andymanic/OSRTT/releases/latest");
-        }
-
-        private void AutoUpdaterOnParseUpdateInfoEvent(ParseUpdateInfoEventArgs args)
-        {
-            dynamic json = JsonConvert.DeserializeObject(args.RemoteData);
-            string dlUrl = "";
-            foreach (var a in json.assets)
-            {
-                string tmp = a.browser_download_url;
-                if (tmp.Contains(".zip"))
-                {
-                    dlUrl = tmp;
-                }
-            }
-            args.UpdateInfo = new UpdateInfoEventArgs
-            {
-                CurrentVersion = json.tag_name,
-                ChangelogURL = json.html_url,
-                DownloadURL = dlUrl,
-            };
-        }
         private void AutoUpdater_ApplicationExitEvent()
         {
             Properties.Settings.Default.updateInProgress = true;
@@ -197,37 +167,9 @@ namespace OSRTT_Launcher
             {
                 port.Close();
             }
-            Application.Exit();
+            //Application.Exit();
         }
 
-        private void getODModesJson()
-        {
-            using (var client = new WebClient())
-            {
-                client.Headers.Add("user-agent", "OSRTT");
-                string jsonPath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
-                jsonPath = new Uri(System.IO.Path.GetDirectoryName(jsonPath)).LocalPath + @"\lib\odmodes.json";
-                try
-                {
-                    client.DownloadFile("https://raw.githubusercontent.com/andymanic/OSRTT/main/OSRTT%20Launcher/OSRTT%20Launcher/odmodes.json", jsonPath);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message + ex.StackTrace);
-                }
-            }
-        }
-
-        private void appRunning()
-        {
-            Process[] p = Process.GetProcessesByName("OSRTT Launcher");
-            if (p.Length > 1)
-            {
-                MessageBox.Show("ERROR: Program already open! Please close it before running again, or check the task bar and system tray for the running app.", "Program Open Already", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Console.WriteLine(p.Length);
-                //this.Close();
-            }
-        }
 
         private void CleanupDevTools()
         {
@@ -279,160 +221,11 @@ namespace OSRTT_Launcher
 
         }
 
-        class userSettings
-        {
-            public class usersetting
-            {
-                public string name { get; set; }
-                public string value { get; set; }
-            }
-            public List<usersetting> usersettings { get; set; } = new List<usersetting>();
-        }
-        private void readAndSaveUserSettings(bool closing)
-        {
-            string UserSettingsFile = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
-            UserSettingsFile = new Uri(System.IO.Path.GetDirectoryName(UserSettingsFile)).LocalPath;
-            UserSettingsFile += @"\\userSettings.json";
-            try
-            {
-                if (closing)
-                {
-                    // write settings to file
-                    userSettings us = new userSettings();
-                    foreach (System.Configuration.SettingsProperty s in Properties.Settings.Default.Properties)
-                    {
-                        us.usersettings.Add(new userSettings.usersetting {name = s.Name, value = Properties.Settings.Default[s.Name].ToString() });
-                    }
-                    string jsonData = JsonConvert.SerializeObject(us);
-                    File.WriteAllText(UserSettingsFile, jsonData);
-                }
-                else if (File.Exists(UserSettingsFile))
-                {
-                    // opening program, read settings from file
-                    string contents = File.ReadAllText(UserSettingsFile);
-                    userSettings settings = JsonConvert.DeserializeObject<userSettings>(contents);
-                    foreach (userSettings.usersetting s in settings.usersettings)
-                    {
-                        try
-                        {
-                            Type t = Properties.Settings.Default[s.name].GetType();
-                            Properties.Settings.Default[s.name] = Convert.ChangeType(s.value, t);
-                        }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine(e.Message + e.StackTrace);
-                        }
-                    }
-                    Properties.Settings.Default.Save();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message + ex.StackTrace);
-            }
-        }
-        private void getDownloadedFirmwareVersions()
-        {
-            string ProFirmwareVersion = "";
-            using (WebClient wc = new WebClient())
-            {
-                wc.Headers.Add("user-agent", "OSRTT");
-                
-                try
-                {
-                    string latest = wc.DownloadString("https://api.github.com/repos/andymanic/OSRTT/releases/latest");
-                    //object jsonData = JsonConvert.DeserializeObject(latest);
-                    //Console.WriteLine(jsonData);
-                    string[] splitMessage = latest.Split('}');
-                    foreach (var s in splitMessage)
-                    {
-                        if (s.Contains("browser_download_url"))
-                        {
-                            string[] splitForUrl = s.Split('"');
-                            foreach (var st in splitForUrl)
-                            {
-                                if (st.StartsWith("https://github.com/") && st.Contains(".ino.bin")) // change to .ino.bin for prod
-                                {
-                                    ProFirmwareVersion = st;
-                                    break;
-                                }
-                            }
-                            if (ProFirmwareVersion != "")
-                            {
-                                break;
-                            }
-                        }
-                    }
-                    if (ProFirmwareVersion != "")
-                    {
-                        string[] fileSplit = ProFirmwareVersion.Split('/');
-                        wc.DownloadFile(ProFirmwareVersion, localPath + @"\\arduinoCLI\\" + fileSplit.Last());
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message + ex.StackTrace);
-                }
-
-            }
-            Console.WriteLine("");
-            string V1FWPath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
-            V1FWPath = new Uri(System.IO.Path.GetDirectoryName(V1FWPath)).LocalPath;
-            string ProFWPath = V1FWPath;
-            string ProNewFWPath = V1FWPath;
-            V1FWPath += @"\\arduinoCLI\\OSRTT_Full_Code\\OSRTT_Full_Code.ino";
-            ProFWPath += @"\\arduinoCLI\\OSRTT_Pro_Code\\file2.ino";
-            ProNewFWPath += @"\\arduinoCLI";
-            try
-            {
-                if (File.Exists(V1FWPath))
-                {
-                    foreach (var l in File.ReadAllLines(V1FWPath))
-                    {
-                        if (l.Contains("firmware"))
-                        {
-                            string[] splitLine = l.Split('"');
-                            V1DLFW = double.Parse(splitLine[1]);
-                            break;
-                        }
-                    }
-                }
-                if (File.Exists(ProNewFWPath))
-                {
-                    foreach (var f in Directory.GetFiles(ProNewFWPath))
-                    {
-                        if (f.Contains(".ino.bin") && f.Contains("Pro"))
-                        {
-                            var splitName = f.Split('_');
-                            var splitVersion = splitName.Last().Remove(3);
-                            ProDLFW = double.Parse(splitVersion);
-                        }
-                    }
-                }
-                else if (File.Exists(ProFWPath))
-                {
-                    foreach (var l in File.ReadAllLines(ProFWPath))
-                    {
-                        if (l.Contains("firmware"))
-                        {
-                            string[] splitLine = l.Split('"');
-                            ProDLFW = double.Parse(splitLine[1]);
-                            break;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message + ex.StackTrace);
-            }
-
-        }
-
         public Main()
         {
             InitializeComponent();
-            UpdateMe();
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            UpdateHandler.UpdateMe(softwareVersion);
             CultureInfo customCulture = (CultureInfo)Thread.CurrentThread.CurrentCulture.Clone();
             customCulture.NumberFormat.NumberDecimalSeparator = ".";
 
@@ -448,7 +241,7 @@ namespace OSRTT_Launcher
             AppDomain currentDomain = AppDomain.CurrentDomain;
             currentDomain.UnhandledException += new UnhandledExceptionEventHandler(IFailedYou);
             this.Resize += new EventHandler(Main_Resize);
-            readAndSaveUserSettings(false);
+            Initialisation.readAndSaveUserSettings(false);
             initialiseSettings();
             hardWorker = new BackgroundWorker();
             connectThread = new Thread(new ThreadStart(this.findAndConnectToBoard));
@@ -460,73 +253,22 @@ namespace OSRTT_Launcher
             listVsyncState();
             progressBar1.Style = ProgressBarStyle.Continuous;
             progressBar1.MarqueeAnimationSpeed = 0;
-            initialSetup();
+            Initialisation.initialSetup(excelInstalled);
             checkFolderPermissions();
-            getDownloadedFirmwareVersions();
+            UpdateHandler.getDownloadedFirmwareVersions(localPath, ProDLFW, V1DLFW);
             uptime = GetUpTime();
             if (uptime.TotalMinutes < 30)
             {
-                showMessageBox("It is HIGHLY RECOMMENDED you allow the display to warm up BEFORE testing - it looks like your system hasn't been running for more than 30 minutes." +
-                    "\n You are welcome to continue, but it's recommended you allow the display to run for around 30 minutes before testing.","Monitor Warm Up",MessageBoxButtons.OK,MessageBoxIcon.Information);
+                showMessageBox("Monitor Warm Up", "It is HIGHLY RECOMMENDED you allow the display to warm up BEFORE testing - it looks like your system hasn't been running for more than 30 minutes." +
+                    "\n You are welcome to continue, but it's recommended you allow the display to run for around 30 minutes before testing.",MessageBoxButtons.OK,MessageBoxIcon.Information);
             }
-            Thread jsonThread = new Thread(new ThreadStart(getODModesJson));
+            Thread jsonThread = new Thread(new ThreadStart(UpdateHandler.getODModesJson));
             jsonThread.Start();
             CleanupDevTools();
             addKeys();
         }
 
-        private void initialSetup()
-        {
-            string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            var samdCore = appData + "\\Arduino15\\packages\\adafruit\\hardware\\samd";
-            Console.WriteLine(samdCore);
-            if (!Directory.Exists(samdCore))
-            {
-                DialogResult d = MessageBox.Show("Further setup is required to connect and update device, do that now?", "Setup Required", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (d == DialogResult.Yes)
-                {
-                    System.Diagnostics.Process process = new System.Diagnostics.Process();
-                    //process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                    process.StartInfo.FileName = "cmd.exe";
-                    process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe config init";
-                    //process.StartInfo.UseShellExecute = false;
-                    //process.StartInfo.RedirectStandardOutput = true;
-                    //process.StartInfo.CreateNoWindow = true;
-                    process.Start();
-                    //string output = process.StandardOutput.ReadToEnd();
-                    process.WaitForExit();
-                    //Console.WriteLine(output);
-                    process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe config set directories.user \"C:\\OSRTT Launcher\\arduinoCLI\"";
-                    process.Start();
-                    process.WaitForExit();
-                    process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe config add board_manager.additional_urls https://adafruit.github.io/arduino-board-index/package_adafruit_index.json";
-                    process.Start();
-                    process.WaitForExit();
-                    process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe core update-index && .\\arduinoCLI\\arduino-cli.exe core install arduino:samd && .\\arduinoCLI\\arduino-cli.exe core install adafruit:samd";
-                    process.Start();
-                    process.WaitForExit();
-                    process.StartInfo.Arguments = "/C .\\arduinoCLI\\arduino-cli.exe lib install Keyboard && .\\arduinoCLI\\arduino-cli.exe lib install Mouse && .\\arduinoCLI\\arduino-cli.exe lib install ArduinoUniqueID";
-                    process.Start();
-                    process.WaitForExit();
-                }
-            }
-            RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\excel.exe");
-            if (key != null)
-            {
-                key.Close();
-                excelInstalled = true;
-            }
-            else
-            {
-                if (Properties.Settings.Default.saveXLSX || Properties.Settings.Default.saveGraphs)
-                {
-                    showMessageBox("Warning: Excel doesn't seem to be installed. Saving to the XLSX or XLSM templates (results or graph view templates) won't work and have been disabled.","Excel Not Installed",MessageBoxButtons.OK,MessageBoxIcon.Exclamation);
-                    Properties.Settings.Default.saveXLSX = false;
-                    Properties.Settings.Default.saveGraphs = false;
-                    Properties.Settings.Default.Save();
-                }
-            }
-        }
+        
         private void Main_Resize(object sender, EventArgs e)
         {
             if (Properties.Settings.Default.MinToTray)
@@ -647,6 +389,7 @@ namespace OSRTT_Launcher
             fpsLimitList.Items.Clear();
             fpsList.Clear();
             fpsList.Add(new FPS { FPSValue = "1000", Key = "49", CKey = "1" });
+            //fpsList.Add(new FPS { FPSValue = "540", Key = "234", CKey = "{NUM0}" });
             fpsList.Add(new FPS { FPSValue = "540", Key = "234" , CKey="{NUM0}" });
             fpsList.Add(new FPS { FPSValue = "500", Key = "225", CKey="{NUM1}" });
             fpsList.Add(new FPS { FPSValue = "480", Key = "226", CKey="{NUM2}" });
@@ -803,7 +546,7 @@ namespace OSRTT_Launcher
                     {
                         if (!checkedRunning)
                         {
-                            appRunning();
+                            Initialisation.appRunning();
                             checkedRunning = true;
                         }
                     }
@@ -2102,7 +1845,7 @@ namespace OSRTT_Launcher
             {
                 port.Close();
             }
-            readAndSaveUserSettings(true);
+            Initialisation.readAndSaveUserSettings(true);
             Environment.Exit(Environment.ExitCode);
         }
 
@@ -2130,8 +1873,7 @@ namespace OSRTT_Launcher
             }
             else
             {
-                CFuncs cf = new CFuncs();
-                DialogResult d = cf.showMessageBox("Error: Can't run test with previous test results open. Close and continue?","Close Results",MessageBoxButtons.YesNo,MessageBoxIcon.Warning);
+                DialogResult d = CFuncs.showMessageBox("Error: Can't run test with previous test results open. Close and continue?","Close Results",MessageBoxButtons.YesNo,MessageBoxIcon.Warning);
                 if (d == DialogResult.Yes)
                 {
                     launchGameThread.Abort();
@@ -2196,6 +1938,11 @@ namespace OSRTT_Launcher
                     gammaTest = true;
                     // Launch UE4 game
                     // thinking about it you can probably just bundle this into one process instead of launching, then finding it again...
+                    string godotPath = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
+                    godotPath = new Uri(System.IO.Path.GetDirectoryName(godotPath)).LocalPath;
+                    godotPath += @"\OSRTTTestWindow\OSRTT_Test.exe";
+
+
                     string ue4Path = System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase;
                     ue4Path = new Uri(System.IO.Path.GetDirectoryName(ue4Path)).LocalPath;
                     ue4Path += @"\OSRTT UE4\ResponseTimeTest.exe";
@@ -2205,11 +1952,15 @@ namespace OSRTT_Launcher
                     int WinX = 0;
                     int WinY = 0;
                     string vsync = " VSync";
+
+                    string GodotOptions = "--display " + selectedDisplay.ToString();
                     if (!Properties.Settings.Default.VSyncState)
                     {
                         vsync = " NoVSync";
+                        GodotOptions += " --no-vsync";
                     }
-                
+
+                    Process Godot = new Process();
                     Process ue4 = new Process();
                     try
                     {
@@ -2227,6 +1978,9 @@ namespace OSRTT_Launcher
                         }
                         ue4.Start();
                         // Process.Start(ue4Path);
+                        Godot.StartInfo.FileName = godotPath;
+                        Godot.StartInfo.Arguments = GodotOptions;
+                        Godot.Start();
                     }
                     catch (Exception strE)
                     {
@@ -3552,7 +3306,6 @@ namespace OSRTT_Launcher
         {
             averageData.Clear();
             multipleRunData.Clear();
-            CFuncs cf = new CFuncs();
             ProcessData pd = new ProcessData();
             int startDelay = pd.processTestLatency(testLatency);
             foreach (var i in results)
@@ -3635,7 +3388,7 @@ namespace OSRTT_Launcher
                 }
                 if (failed)
                 {
-                    cf.showMessageBox("Failed to Process", "One or more of the results failed to process and has been left blank.",MessageBoxButtons.OK,MessageBoxIcon.Warning);
+                    CFuncs.showMessageBox("Failed to Process", "One or more of the results failed to process and has been left blank.",MessageBoxButtons.OK,MessageBoxIcon.Warning);
                 }
                 if (runSettings != null)
                 {
@@ -3757,8 +3510,11 @@ namespace OSRTT_Launcher
                 SetText(ex.Message + ex.StackTrace);
                 Console.WriteLine(ex.Message + ex.StackTrace);
             }
-            DataUpload ds = new DataUpload();
-            ds.ShareResults(results, gamma, testLatency, runSettings);
+            if (Properties.Settings.Default.shareResults)
+            {
+                DataUpload ds = new DataUpload();
+                ds.ShareResults(results, gamma, testLatency, runSettings);
+            }
         }
         private void initRtOsMethods()
         {
@@ -3834,6 +3590,12 @@ namespace OSRTT_Launcher
             Console.WriteLine(output);
 
             //Get-WinUserLanguageList
+        }
+
+        private void testOpenNewFormToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MainWindow mw = new MainWindow();
+            mw.Show();
         }
     }
 }

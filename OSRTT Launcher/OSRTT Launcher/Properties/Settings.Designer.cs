@@ -526,5 +526,17 @@ namespace OSRTT_Launcher.Properties {
                 this["defaultRTType"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2000, 1000, 720, 610, 540, 500, 480, 360, 240, 170, 165, 144, 120, 100, 75, 60")]
+        public string customFPSLimits {
+            get {
+                return ((string)(this["customFPSLimits"]));
+            }
+            set {
+                this["customFPSLimits"] = value;
+            }
+        }
     }
 }

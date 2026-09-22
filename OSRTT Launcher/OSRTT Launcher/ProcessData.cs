@@ -1325,6 +1325,15 @@ namespace OSRTT_Launcher
 
                 double inputLag = Math.Round(inputLagTime, 1);
 
+                
+                if (double.IsNaN(perceivedResponseTime)) perceivedResponseTime = 0.00;
+                if (double.IsNaN(responseTime)) responseTime = 0.00;
+                if (double.IsNaN(initialResponseTime)) initialResponseTime = 0.00;
+                if (double.IsNaN(perceivedResponseTime)) perceivedResponseTime = 0.00;
+                if (double.IsNaN(overshootRGBDiff)) overshootRGBDiff = 0.00;
+                if (double.IsNaN(visualResponseRating)) visualResponseRating = 0.00;
+                if (double.IsNaN(inputLag)) inputLag = 0.00;
+
 
                 if (res.osStyle.gammaCorrected && !res.osStyle.endPercent && !res.osStyle.rangePercent)
                 {
@@ -1638,8 +1647,30 @@ namespace OSRTT_Launcher
             return averageData;
         }
 
-        public List<List<rawResultData>> SmoothAllData(List<List<rawResultData>> rawData)
+        public class smoothingOptions
         {
+            public bool standard { get; set; }
+            public bool culling { get; set; }
+            public bool hampel { get; set; }
+            public bool median { get; set; }
+            public bool zeroPhase { get; set; }
+            public bool bilateral { get; set; }
+        }
+        public List<List<rawResultData>> SmoothAllData(List<List<rawResultData>> rawData, smoothingOptions ops)
+        {
+            if (ops == null)
+            {
+                ops = new smoothingOptions {
+                    standard = true,
+                    culling = Properties.Settings.Default.flickerCulling,
+                    hampel = false,
+                    median = false,
+                    zeroPhase = false,
+                    bilateral = false
+                    };
+            }
+            bool culling = Properties.Settings.Default.flickerCulling;
+            if (ops.culling != culling) Properties.Settings.Default.flickerCulling = ops.culling;
             List<List<rawResultData>> smoothedData = new List<List<rawResultData>>();
             foreach (List<rawResultData> res in rawData)
             {
@@ -1648,7 +1679,7 @@ namespace OSRTT_Launcher
                 {
                     int[] samples = raw.Samples.ToArray();
                     // Clean up flicker noise before filtering regular noise
-                    CulledSamples culledSamples = CullBacklightFlicker(samples);
+                    SmoothData.CulledSamples culledSamples = SmoothData.CullBacklightFlicker(samples);
                     Array.Copy(culledSamples.sampleArray, samples, culledSamples.sampleArray.Length);
                     int period = 10;
                     int noise = raw.noiseLevel;
@@ -1677,7 +1708,13 @@ namespace OSRTT_Launcher
                     {
                         period = Properties.Settings.Default.movingAverageSize;
                     }
-                    int[] smoothedSamples = smoothData(samples, period);
+                    int[] smoothedSamples = samples; 
+                    if (ops.standard) smoothedSamples = SmoothData.smoothData(smoothedSamples, period);
+                    if (ops.hampel) smoothedSamples = SmoothData.ApplyHampelFilter(smoothedSamples, 100);
+                    if (ops.median) smoothedSamples = SmoothData.ApplyMedianFilter(smoothedSamples, 100);
+                    if (ops.zeroPhase) smoothedSamples = SmoothData.ApplyZeroPhaseMovingAverage(smoothedSamples, 100);
+                    if (ops.bilateral) smoothedSamples = SmoothData.ApplyBilateralFilter1D(smoothedSamples, 100);
+
                     rawResultData d = new rawResultData
                     {
                         StartingRGB = raw.StartingRGB,

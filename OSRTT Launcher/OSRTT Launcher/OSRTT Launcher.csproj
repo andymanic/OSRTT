@@ -67,10 +67,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>E096F435A4BAD13E9B18CFCCA63FBD78DE4862E2</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>B084DDC1AB774967BE8E4D0E4C11340CB617A93E</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>OSRTT Launcher_5_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>OSRTT Launcher_6_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -90,6 +90,9 @@
     </Reference>
     <Reference Include="GlobalHotKey, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\GlobalHotKey.1.1.0\lib\GlobalHotKey.dll</HintPath>
+    </Reference>
+    <Reference Include="MaterialSkin, Version=2.3.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MaterialSkin.2.2.3.1\lib\net48\MaterialSkin.dll</HintPath>
     </Reference>
     <Reference Include="MathNet.Numerics, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MathNet.Numerics.5.0.0\lib\net48\MathNet.Numerics.dll</HintPath>
@@ -148,6 +151,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing.Common, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Drawing.Common.6.0.0\lib\net461\System.Drawing.Common.dll</HintPath>
     </Reference>
@@ -209,11 +213,18 @@
     <Compile Include="GammaView.Designer.cs">
       <DependentUpon>GammaView.cs</DependentUpon>
     </Compile>
+    <Compile Include="Initialisation.cs" />
     <Compile Include="InputLagProcRV.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="InputLagProcRV.Designer.cs">
       <DependentUpon>InputLagProcRV.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainWindow.Designer.cs">
+      <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="OverdriveModes.cs">
       <SubType>UserControl</SubType>
@@ -274,6 +285,13 @@
     <Compile Include="ResultsView.Designer.cs">
       <DependentUpon>ResultsView.cs</DependentUpon>
     </Compile>
+    <Compile Include="SmoothData.cs" />
+    <Compile Include="TestSettingsPane.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TestSettingsPane.Designer.cs">
+      <DependentUpon>TestSettingsPane.cs</DependentUpon>
+    </Compile>
     <Compile Include="SaveToExcel.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Heatmaps.cs">
@@ -282,6 +300,7 @@
     <Compile Include="Heatmaps.Designer.cs">
       <DependentUpon>Heatmaps.cs</DependentUpon>
     </Compile>
+    <Compile Include="UpdateHandler.cs" />
     <EmbeddedResource Include="Gamma.resx">
       <DependentUpon>Gamma.cs</DependentUpon>
     </EmbeddedResource>
@@ -296,6 +315,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainWindow.resx">
+      <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MeasurementsExplained.resx">
       <DependentUpon>MeasurementsExplained.cs</DependentUpon>
@@ -331,6 +353,9 @@
     <EmbeddedResource Include="ResultsView.resx">
       <DependentUpon>ResultsView.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="TestSettingsPane.resx">
+      <DependentUpon>TestSettingsPane.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="app.manifest" />
     <None Include="DirectX\Font\Font.ps" />
     <None Include="DirectX\Font\Font.vs" />
@@ -342,6 +367,7 @@
     <None Include="OSRTT Launcher_3_TemporaryKey.pfx" />
     <None Include="OSRTT Launcher_4_TemporaryKey.pfx" />
     <None Include="OSRTT Launcher_5_TemporaryKey.pfx" />
+    <None Include="OSRTT Launcher_6_TemporaryKey.pfx" />
     <None Include="OSRTT Launcher_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -378,6 +404,11 @@
     <Content Include="DirectX\Font\font01.txt" />
     <Content Include="DirectX\Font\fontdata.txt" />
     <Content Include="osrttIcon.ico" />
+    <Content Include="Resources\monitor.png" />
+    <Content Include="Resources\play.png" />
+    <Content Include="Resources\results.png" />
+    <Content Include="Resources\test.png" />
+    <Content Include="Resources\timer.png" />
     <None Include="Resources\arrow-rotate-right.png" />
     <None Include="Resources\check.png" />
     <None Include="Resources\icon_small.png" />

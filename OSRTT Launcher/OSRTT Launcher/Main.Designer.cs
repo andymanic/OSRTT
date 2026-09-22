@@ -106,6 +106,7 @@
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.toolTipController = new System.Windows.Forms.ToolTip(this.components);
             this.overdriveModes1 = new OSRTT_Launcher.OverdriveModes();
+            this.testOpenNewFormToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.controlsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.testCount)).BeginInit();
@@ -235,7 +236,8 @@
             this.saveUSBOutputToolStripMenuItem,
             this.updateDeviceToolStripMenuItem,
             this.toolStripMenuItem1,
-            this.testButtonMenuItem});
+            this.testButtonMenuItem,
+            this.testOpenNewFormToolStripMenuItem});
             this.deviceToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.deviceToolStripMenuItem.Name = "deviceToolStripMenuItem";
             this.deviceToolStripMenuItem.Size = new System.Drawing.Size(108, 20);
@@ -1021,6 +1023,13 @@
             this.overdriveModes1.Size = new System.Drawing.Size(511, 299);
             this.overdriveModes1.TabIndex = 34;
             // 
+            // testOpenNewFormToolStripMenuItem
+            // 
+            this.testOpenNewFormToolStripMenuItem.Name = "testOpenNewFormToolStripMenuItem";
+            this.testOpenNewFormToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.testOpenNewFormToolStripMenuItem.Text = "Test open new form";
+            this.testOpenNewFormToolStripMenuItem.Click += new System.EventHandler(this.testOpenNewFormToolStripMenuItem_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1144,6 +1153,7 @@
         private System.Windows.Forms.Button LiveViewBtn;
         private OverdriveModes overdriveModes1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem testOpenNewFormToolStripMenuItem;
     }
 }
 

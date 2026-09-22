@@ -29,6 +29,7 @@ namespace OSRTT_Launcher
         public OverdriveModes()
         {
             InitializeComponent();
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             controlState(false);
             //initialiseList();
         }

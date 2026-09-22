@@ -35,7 +35,7 @@ namespace OSRTT_Launcher
                 }
                 catch (Exception ex)
                 {
-                    cf.showMessageBox(ex.Message + ex.StackTrace, ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    CFuncs.showMessageBox(ex.Message + ex.StackTrace, ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 resultsTemplate = new Excel.Application();
                 try
@@ -44,7 +44,7 @@ namespace OSRTT_Launcher
                 }
                 catch   
                 {
-                    DialogResult d = cf.showMessageBox("Error writing data to XLSX results file, file may be open already. Would you like to try again?", "Unable to Save to XLSX File", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                    DialogResult d = CFuncs.showMessageBox("Error writing data to XLSX results file, file may be open already. Would you like to try again?", "Unable to Save to XLSX File", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
                     if (d == DialogResult.Yes)
                     {
                         try
@@ -53,7 +53,7 @@ namespace OSRTT_Launcher
                         }
                         catch (Exception ex)
                         {
-                            cf.showMessageBox(ex.Message + ex.StackTrace, "Unable to Save to XLSX File", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            CFuncs.showMessageBox(ex.Message + ex.StackTrace, "Unable to Save to XLSX File", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             failed = true;
                         }
                     }
@@ -91,7 +91,7 @@ namespace OSRTT_Launcher
                     }
                     catch (Exception ex)
                     {
-                        cf.showMessageBox(ex.Message + ex.StackTrace, "Unable to Save to XLSX File", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                        CFuncs.showMessageBox( "Unable to Save to XLSX File", ex.Message + ex.StackTrace, MessageBoxButtons.YesNo, MessageBoxIcon.Error);
                         failed = true;
                     }
                     GC.Collect();
@@ -109,7 +109,7 @@ namespace OSRTT_Launcher
                     }
                     catch (Exception ex)
                     {
-                        cf.showMessageBox(ex.Message + ex.StackTrace, "Unable to Save to XLSX File", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                        CFuncs.showMessageBox("Unable to Save to XLSX File", ex.Message + ex.StackTrace, MessageBoxButtons.YesNo, MessageBoxIcon.Error);
                         failed = true;
                     }
                     GC.Collect();

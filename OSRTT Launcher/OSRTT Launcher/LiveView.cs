@@ -126,6 +126,7 @@ namespace OSRTT_Launcher
         public LiveView()
         {
             InitializeComponent();
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.FormClosing += LiveView_Closing;
             this.Icon = (Icon)rm.GetObject("osrttIcon");
             path = new Uri(System.IO.Path.GetDirectoryName(path)).LocalPath;

@@ -11,7 +11,7 @@ namespace OSRTT_Launcher
 {
     class CFuncs
     {
-        public DialogResult showMessageBox(string title, string message, MessageBoxButtons buttons, MessageBoxIcon icon)
+        public static DialogResult showMessageBox(string title, string message, MessageBoxButtons buttons, MessageBoxIcon icon)
         {
             if (!Properties.Settings.Default.SuppressDiagBox)
             {

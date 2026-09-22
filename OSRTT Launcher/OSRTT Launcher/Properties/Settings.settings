@@ -128,5 +128,8 @@
     <Setting Name="defaultRTType" Type="System.String" Scope="User">
       <Value Profile="(Default)">Perceived</Value>
     </Setting>
+    <Setting Name="customFPSLimits" Type="System.String" Scope="User">
+      <Value Profile="(Default)">2000, 1000, 720, 610, 540, 500, 480, 360, 240, 170, 165, 144, 120, 100, 75, 60</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -134,6 +134,9 @@ namespace OSRTT_Launcher
             this.roundButton1 = new OSRTT_Launcher.RoundButton();
             this.roundButton2 = new OSRTT_Launcher.RoundButton();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
+            this.customFPSPanel = new System.Windows.Forms.Panel();
+            this.label34 = new System.Windows.Forms.Label();
+            this.fpsLimitBox = new System.Windows.Forms.RichTextBox();
             this.panel2.SuspendLayout();
             this.tolerancePanel.SuspendLayout();
             this.testSettingsPanel.SuspendLayout();
@@ -173,13 +176,14 @@ namespace OSRTT_Launcher
             ((System.ComponentModel.ISupportInitialize)(this.rtHighNum)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtMidNum)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtLowNum)).BeginInit();
+            this.customFPSPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.Khaki;
             this.panel2.Controls.Add(this.label1);
-            this.panel2.Location = new System.Drawing.Point(13, 300);
+            this.panel2.Location = new System.Drawing.Point(13, 366);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(356, 54);
             this.panel2.TabIndex = 1;
@@ -200,7 +204,7 @@ namespace OSRTT_Launcher
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.label3.Location = new System.Drawing.Point(17, 363);
+            this.label3.Location = new System.Drawing.Point(17, 429);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(348, 130);
             this.label3.TabIndex = 11;
@@ -225,7 +229,7 @@ namespace OSRTT_Launcher
             this.tolerancePanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tolerancePanel.Controls.Add(this.label4);
             this.tolerancePanel.Controls.Add(this.toleranceStyleSelect);
-            this.tolerancePanel.Location = new System.Drawing.Point(387, 300);
+            this.tolerancePanel.Location = new System.Drawing.Point(387, 366);
             this.tolerancePanel.Name = "tolerancePanel";
             this.tolerancePanel.Size = new System.Drawing.Size(615, 50);
             this.tolerancePanel.TabIndex = 22;
@@ -278,7 +282,7 @@ namespace OSRTT_Launcher
             this.overshootStylePanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.overshootStylePanel.Controls.Add(this.label10);
             this.overshootStylePanel.Controls.Add(this.osPercentSelect);
-            this.overshootStylePanel.Location = new System.Drawing.Point(387, 576);
+            this.overshootStylePanel.Location = new System.Drawing.Point(387, 642);
             this.overshootStylePanel.Name = "overshootStylePanel";
             this.overshootStylePanel.Size = new System.Drawing.Size(615, 50);
             this.overshootStylePanel.TabIndex = 24;
@@ -310,7 +314,7 @@ namespace OSRTT_Launcher
             this.overshootSourcePanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.overshootSourcePanel.Controls.Add(this.label9);
             this.overshootSourcePanel.Controls.Add(this.osGammaSelect);
-            this.overshootSourcePanel.Location = new System.Drawing.Point(387, 527);
+            this.overshootSourcePanel.Location = new System.Drawing.Point(387, 593);
             this.overshootSourcePanel.Name = "overshootSourcePanel";
             this.overshootSourcePanel.Size = new System.Drawing.Size(615, 50);
             this.overshootSourcePanel.TabIndex = 25;
@@ -345,7 +349,7 @@ namespace OSRTT_Launcher
             this.toleranceLevelPanel.Controls.Add(this.RGB10Btn);
             this.toleranceLevelPanel.Controls.Add(this.RGB5Btn);
             this.toleranceLevelPanel.Controls.Add(this.label5);
-            this.toleranceLevelPanel.Location = new System.Drawing.Point(387, 349);
+            this.toleranceLevelPanel.Location = new System.Drawing.Point(387, 415);
             this.toleranceLevelPanel.Name = "toleranceLevelPanel";
             this.toleranceLevelPanel.Size = new System.Drawing.Size(615, 100);
             this.toleranceLevelPanel.TabIndex = 25;
@@ -417,7 +421,7 @@ namespace OSRTT_Launcher
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label7.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.label7.Location = new System.Drawing.Point(17, 590);
+            this.label7.Location = new System.Drawing.Point(17, 656);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(335, 130);
             this.label7.TabIndex = 13;
@@ -428,7 +432,7 @@ namespace OSRTT_Launcher
             // 
             this.panel1.BackColor = System.Drawing.Color.Khaki;
             this.panel1.Controls.Add(this.label8);
-            this.panel1.Location = new System.Drawing.Point(13, 527);
+            this.panel1.Location = new System.Drawing.Point(13, 593);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(356, 54);
             this.panel1.TabIndex = 12;
@@ -450,7 +454,7 @@ namespace OSRTT_Launcher
             this.gammaPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.gammaPanel.Controls.Add(this.label11);
             this.gammaPanel.Controls.Add(this.saveGammaTableSelect);
-            this.gammaPanel.Location = new System.Drawing.Point(387, 448);
+            this.gammaPanel.Location = new System.Drawing.Point(387, 514);
             this.gammaPanel.Name = "gammaPanel";
             this.gammaPanel.Size = new System.Drawing.Size(615, 50);
             this.gammaPanel.TabIndex = 26;
@@ -661,6 +665,7 @@ namespace OSRTT_Launcher
             // testSettingsTab
             // 
             this.testSettingsTab.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.testSettingsTab.Controls.Add(this.customFPSPanel);
             this.testSettingsTab.Controls.Add(this.panel10);
             this.testSettingsTab.Controls.Add(this.panel2);
             this.testSettingsTab.Controls.Add(this.panel3);
@@ -1327,6 +1332,38 @@ namespace OSRTT_Launcher
             this.roundButton2.TabIndex = 34;
             this.roundButton2.UseVisualStyleBackColor = false;
             // 
+            // customFPSPanel
+            // 
+            this.customFPSPanel.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.customFPSPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.customFPSPanel.Controls.Add(this.fpsLimitBox);
+            this.customFPSPanel.Controls.Add(this.label34);
+            this.customFPSPanel.Location = new System.Drawing.Point(387, 276);
+            this.customFPSPanel.Name = "customFPSPanel";
+            this.customFPSPanel.Size = new System.Drawing.Size(615, 50);
+            this.customFPSPanel.TabIndex = 32;
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Font = new System.Drawing.Font("Arial", 18F);
+            this.label34.Location = new System.Drawing.Point(9, 10);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(225, 27);
+            this.label34.TabIndex = 22;
+            this.label34.Text = "Custom FPS Limits:";
+            // 
+            // fpsLimitBox
+            // 
+            this.fpsLimitBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.fpsLimitBox.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.fpsLimitBox.Location = new System.Drawing.Point(233, 5);
+            this.fpsLimitBox.Name = "fpsLimitBox";
+            this.fpsLimitBox.Size = new System.Drawing.Size(367, 35);
+            this.fpsLimitBox.TabIndex = 23;
+            this.fpsLimitBox.Text = "1000, 720, 600, 540, 500, 480, 360, 240, 175, 165, 144, 120, 100, 75, 60";
+            this.fpsLimitBox.TextChanged += new System.EventHandler(this.fpsLimitBox_TextChanged);
+            // 
             // ResultsSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1406,6 +1443,8 @@ namespace OSRTT_Launcher
             ((System.ComponentModel.ISupportInitialize)(this.rtHighNum)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtMidNum)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rtLowNum)).EndInit();
+            this.customFPSPanel.ResumeLayout(false);
+            this.customFPSPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1516,5 +1555,8 @@ namespace OSRTT_Launcher
         private System.Windows.Forms.Panel panel14;
         private System.Windows.Forms.Label label32;
         private System.Windows.Forms.ComboBox rtTypeBox;
+        private System.Windows.Forms.Panel customFPSPanel;
+        private System.Windows.Forms.RichTextBox fpsLimitBox;
+        private System.Windows.Forms.Label label34;
     }
 }

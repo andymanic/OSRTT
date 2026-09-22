@@ -91,6 +91,13 @@ namespace OSRTT_Launcher
             this.importProcILBtn = new System.Windows.Forms.Button();
             this.inputLagProcRV1 = new OSRTT_Launcher.InputLagProcRV();
             this.heatmaps1 = new OSRTT_Launcher.Heatmaps();
+            this.smoothingTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.standardMovingAverageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.backlightFlickerCullingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hampelFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.medianFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.zeroPhaseMovingAverageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dBilateralFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.graphViewPanel.SuspendLayout();
@@ -106,7 +113,8 @@ namespace OSRTT_Launcher
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.viewToolStripMenuItem,
             this.optionsToolStripMenuItem,
-            this.saveHeatmapsToolStripMenuItem});
+            this.saveHeatmapsToolStripMenuItem,
+            this.smoothingTypeToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(2106, 24);
@@ -183,14 +191,14 @@ namespace OSRTT_Launcher
             // asPNGToolStripMenuItem
             // 
             this.asPNGToolStripMenuItem.Name = "asPNGToolStripMenuItem";
-            this.asPNGToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.asPNGToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.asPNGToolStripMenuItem.Text = "As PNG";
             this.asPNGToolStripMenuItem.Click += new System.EventHandler(this.asPNGToolStripMenuItem_Click);
             // 
             // asTransparentPNGToolStripMenuItem
             // 
             this.asTransparentPNGToolStripMenuItem.Name = "asTransparentPNGToolStripMenuItem";
-            this.asTransparentPNGToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.asTransparentPNGToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.asTransparentPNGToolStripMenuItem.Text = "As Transparent PNG";
             this.asTransparentPNGToolStripMenuItem.Click += new System.EventHandler(this.asTransparentPNGToolStripMenuItem_Click);
             // 
@@ -787,6 +795,63 @@ namespace OSRTT_Launcher
             this.heatmaps1.Size = new System.Drawing.Size(1775, 950);
             this.heatmaps1.TabIndex = 6;
             // 
+            // smoothingTypeToolStripMenuItem
+            // 
+            this.smoothingTypeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.standardMovingAverageToolStripMenuItem,
+            this.backlightFlickerCullingToolStripMenuItem,
+            this.hampelFilterToolStripMenuItem,
+            this.medianFilterToolStripMenuItem,
+            this.zeroPhaseMovingAverageToolStripMenuItem,
+            this.dBilateralFilterToolStripMenuItem});
+            this.smoothingTypeToolStripMenuItem.Name = "smoothingTypeToolStripMenuItem";
+            this.smoothingTypeToolStripMenuItem.Size = new System.Drawing.Size(105, 20);
+            this.smoothingTypeToolStripMenuItem.Text = "Smoothing Type";
+            // 
+            // standardMovingAverageToolStripMenuItem
+            // 
+            this.standardMovingAverageToolStripMenuItem.Checked = true;
+            this.standardMovingAverageToolStripMenuItem.CheckOnClick = true;
+            this.standardMovingAverageToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.standardMovingAverageToolStripMenuItem.Name = "standardMovingAverageToolStripMenuItem";
+            this.standardMovingAverageToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.standardMovingAverageToolStripMenuItem.Text = "Standard Moving Average";
+            // 
+            // backlightFlickerCullingToolStripMenuItem
+            // 
+            this.backlightFlickerCullingToolStripMenuItem.CheckOnClick = true;
+            this.backlightFlickerCullingToolStripMenuItem.Name = "backlightFlickerCullingToolStripMenuItem";
+            this.backlightFlickerCullingToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.backlightFlickerCullingToolStripMenuItem.Text = "Backlight Flicker Culling";
+            // 
+            // hampelFilterToolStripMenuItem
+            // 
+            this.hampelFilterToolStripMenuItem.CheckOnClick = true;
+            this.hampelFilterToolStripMenuItem.Name = "hampelFilterToolStripMenuItem";
+            this.hampelFilterToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.hampelFilterToolStripMenuItem.Text = "Hampel Filter";
+            // 
+            // medianFilterToolStripMenuItem
+            // 
+            this.medianFilterToolStripMenuItem.CheckOnClick = true;
+            this.medianFilterToolStripMenuItem.Name = "medianFilterToolStripMenuItem";
+            this.medianFilterToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.medianFilterToolStripMenuItem.Text = "Median Filter";
+            // 
+            // zeroPhaseMovingAverageToolStripMenuItem
+            // 
+            this.zeroPhaseMovingAverageToolStripMenuItem.CheckOnClick = true;
+            this.zeroPhaseMovingAverageToolStripMenuItem.Name = "zeroPhaseMovingAverageToolStripMenuItem";
+            this.zeroPhaseMovingAverageToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.zeroPhaseMovingAverageToolStripMenuItem.Text = "Zero Phase Moving Average";
+            // 
+            // dBilateralFilterToolStripMenuItem
+            // 
+            this.dBilateralFilterToolStripMenuItem.CheckOnClick = true;
+            this.dBilateralFilterToolStripMenuItem.Name = "dBilateralFilterToolStripMenuItem";
+            this.dBilateralFilterToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.dBilateralFilterToolStripMenuItem.Text = "1D Bilateral Filter";
+            // 
             // ResultsView
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -887,5 +952,12 @@ namespace OSRTT_Launcher
         private System.Windows.Forms.Button processRawInputLagBtn;
         private System.Windows.Forms.Button importProcILBtn;
         private InputLagProcRV inputLagProcRV1;
+        private System.Windows.Forms.ToolStripMenuItem smoothingTypeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem standardMovingAverageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem backlightFlickerCullingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem hampelFilterToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem medianFilterToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem zeroPhaseMovingAverageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dBilateralFilterToolStripMenuItem;
     }
 }

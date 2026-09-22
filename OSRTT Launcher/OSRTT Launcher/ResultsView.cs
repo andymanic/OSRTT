@@ -152,6 +152,7 @@ namespace OSRTT_Launcher
         public ResultsView()
         {
             InitializeComponent();
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.Icon = (Icon)rm.GetObject("osrttIcon");
             path = new Uri(System.IO.Path.GetDirectoryName(path)).LocalPath;
             path += @"\Results";
@@ -371,8 +372,17 @@ namespace OSRTT_Launcher
         private void smoothDataThreaded()
         {
             ProcessData pd = new ProcessData();
+            ProcessData.smoothingOptions ops = new ProcessData.smoothingOptions
+            {
+                standard = standardMovingAverageToolStripMenuItem.Checked,
+                culling = backlightFlickerCullingToolStripMenuItem.Checked,
+                hampel = hampelFilterToolStripMenuItem.Checked,
+                median = medianFilterToolStripMenuItem.Checked,
+                zeroPhase = zeroPhaseMovingAverageToolStripMenuItem.Checked,
+                bilateral = dBilateralFilterToolStripMenuItem.Checked
+            };
             smoothedData.Clear();
-            smoothedData.AddRange(pd.SmoothAllData(rawData));
+            smoothedData.AddRange(pd.SmoothAllData(rawData, ops));
         }
 
         private void standardView()
@@ -1552,7 +1562,7 @@ namespace OSRTT_Launcher
                 }
                 if (failed)
                 {
-                    cf.showMessageBox("Failed to Process", "One or more of the results failed to process and has been left blank.", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    CFuncs.showMessageBox("Failed to Process", "One or more of the results failed to process and has been left blank.", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
                 if (runSettings != null)
                 {
@@ -1895,8 +1905,7 @@ namespace OSRTT_Launcher
             }
             catch (Exception ex)
             {
-                CFuncs cf = new CFuncs();
-                cf.showMessageBox(ex.Message + ex.StackTrace, "Error Drawing graph", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                CFuncs.showMessageBox( "Error Drawing graph", ex.Message + ex.StackTrace, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -1959,8 +1968,7 @@ namespace OSRTT_Launcher
             }
             catch (Exception ex)
             {
-                CFuncs cf = new CFuncs();
-                cf.showMessageBox(ex.Message + ex.StackTrace, "Error Drawing graph", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                CFuncs.showMessageBox( "Error Drawing graph", ex.Message + ex.StackTrace, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
